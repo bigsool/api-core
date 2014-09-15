@@ -1,17 +1,17 @@
 <?php
 
-    namespace Archiweb\Filter;
+namespace Archiweb\Filter;
 
-	class StringFilter extends Filter {
+class StringFilter extends Filter {
 
-		private $command;
+    private $command;
 
-		function __construct ($entity, $name, $expression, $command) {
-            parent::__construct($entity,$name,$expression);
-            $this->command = $command;
-        }
-	
-		
-	}
+    function __construct ($entity, $name, $expression, $command) {
 
-?>
+        parent::__construct($entity,$name,$expression);
+        $this->command = $command;
+
+    }
+
+
+}

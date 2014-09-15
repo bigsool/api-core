@@ -2,20 +2,23 @@
 
 namespace Archiweb\Filter;
 	
-	class CallbackFilter extends Filter {
+class CallbackFilter extends Filter {
 
-		private $command;
-		private $callback;
+    private $command;
+    private $callback;
 
-		function __construct ($entity, $name, $command, $callback) {
-            parent::__construct($entity,$name,null);
-            $this->command = $command;
-            $this->callback = $callback;
-        }
+    function __construct ($entity, $name, $command, $callback) {
 
-        public function getExpression () {
-            return call_user_func($this->callback);
-        }
-	}
+        parent::__construct($entity,$name,null);
+        $this->command = $command;
+        $this->callback = $callback;
 
-?>
+    }
+
+    public function getExpression () {
+
+        return call_user_func($this->callback);
+
+    }
+
+}

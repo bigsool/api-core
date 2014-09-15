@@ -2,8 +2,7 @@
 
 namespace Archiweb\Filter;
 
-class FilterReferenceTest extends \PHPUnit_Framework_TestCase
-{
+class FilterReferenceTest extends \PHPUnit_Framework_TestCase {
 
     private $referenceFilter;
 

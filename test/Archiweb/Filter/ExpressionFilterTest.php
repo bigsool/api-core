@@ -2,8 +2,7 @@
 
 namespace Archiweb\Filter;
 
-class ExpressionFilterTest extends \PHPUnit_Framework_TestCase
-{
+class ExpressionFilterTest extends \PHPUnit_Framework_TestCase {
 
     private $expressionFilter;
     private $expressionWithOperator;
