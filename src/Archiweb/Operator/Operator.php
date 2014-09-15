@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Operator;
+namespace Archiweb\Operator;
 
 
 interface Operator {
