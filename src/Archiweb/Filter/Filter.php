@@ -1,5 +1,7 @@
 <?php 
 
+	namespace Filter;
+	
 	abstract class Filter {
 
 		private $expression;

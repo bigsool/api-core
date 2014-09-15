@@ -1,5 +1,7 @@
 <?php 
-
+	
+	namespace Filter;
+	
 	class ExpressionFilter extends Filter {
 
 		private $command;

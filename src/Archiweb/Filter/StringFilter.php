@@ -1,5 +1,7 @@
 <?php 
 
+	namespace Filter;
+	
 	class StringFilter extends Filter {
 
 		private $command;

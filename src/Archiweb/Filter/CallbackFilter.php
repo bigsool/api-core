@@ -1,5 +1,7 @@
 <?php 
 
+	namespace Filter;
+	
 	class CallbackFilter implements Filter {
 
 		private $command;

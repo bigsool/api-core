@@ -1,5 +1,7 @@
 <?php 
-
+	
+	namespace Archiweb\Filter;
+	
 	class AggregatedFilter implements Filter {
 
 		private $command;
