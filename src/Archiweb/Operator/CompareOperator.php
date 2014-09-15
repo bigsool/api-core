@@ -8,9 +8,9 @@ interface CompareOperator extends Operator
 {
 
     /**
-     * @param string $value
+     * @param string|null $value
      * @return string
      */
-    public function toDQL($value);
+    public function toDQL($value = NULL);
 
 } 
