@@ -3,11 +3,13 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Operator\Operator;
+
 interface ExpressionWithOperator extends Expression
 {
 
     /**
-     * @return Archiweb\Operator
+     * @return Operator
      */
     public function getOperator();
 
