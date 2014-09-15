@@ -4,14 +4,16 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context;
 use Archiweb\Operator\Operator;
+use Archiweb\Registry;
 
 class NAryExpression implements ExpressionWithOperator
 {
 
     /**
      * @param Operator $operator
-     * @param [Expression] $expressions
+     * @param Expression[] $expressions
      */
     public function __construct(Operator $operator, array $expressions)
     {
@@ -19,7 +21,7 @@ class NAryExpression implements ExpressionWithOperator
     }
 
     /**
-     * @return [Expression]
+     * @return Expression[]
      */
     public function getExpressions()
     {
@@ -27,17 +29,17 @@ class NAryExpression implements ExpressionWithOperator
     }
 
     /**
-     * @param Archiweb\Registry $registry
-     * @param Archiweb\Context $context
+     * @param Registry $registry
+     * @param Context $context
      * @return string
      */
-    public function resolve($registry, $context)
+    public function resolve(Registry $registry, Context $context)
     {
         // TODO: Implement resolve() method.
     }
 
     /**
-     * @return Archiweb\Operator
+     * @return Operator
      */
     public function getOperator()
     {

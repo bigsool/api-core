@@ -4,11 +4,13 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Filter\Filter;
+
 class KeyPath extends Value
 {
 
     /**
-     * @return [Archiweb\Filter\Filter]
+     * @return Filter[]
      */
     public function getFilters()
     {
