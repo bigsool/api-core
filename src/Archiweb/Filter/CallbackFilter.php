@@ -1,8 +1,8 @@
-<?php 
+<?php
 
-	namespace Filter;
+namespace Archiweb\Filter;
 	
-	class CallbackFilter implements Filter {
+	class CallbackFilter extends Filter {
 
 		private $command;
 		private $callback;

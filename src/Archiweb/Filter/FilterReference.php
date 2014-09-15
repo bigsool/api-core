@@ -1,8 +1,8 @@
-<?php 
+<?php
 
-	namespace Filter;
-	
-	class FilterReference implements Filter {
+    namespace Archiweb\Filter;
+
+	class FilterReference extends Filter {
 
 		function __construct ($entity, $name) {}
 		

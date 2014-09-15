@@ -1,8 +1,8 @@
-<?php 
-	
-	namespace Filter;
-	
-	class ExpressionFilter extends Filter {
+<?php
+
+    namespace Archiweb\Filter;
+
+    class ExpressionFilter extends Filter {
 
 		private $command;
 
