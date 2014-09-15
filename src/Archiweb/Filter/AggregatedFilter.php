@@ -1,15 +1,28 @@
 <?php 
 	
 	namespace Archiweb\Filter;
-	
-	class AggregatedFilter implements Filter {
+
+    use Archiweb\Operator\LogicOperator as LogicOperator;
+
+	class AggregatedFilter extends Filter {
 
 		private $command;
 		private $operator;
+        private $filters;
 
-		function __construct ($entity, $command, $name, LogicOperator $operator) {}
+		function __construct ($entity, $name, $command, LogicOperator $operator) {
+            parent::__construct($entity,$name,null);
+            $this->command = $command;
+            $this->operator = $operator;
+        }
 		
-		function addFilter ($filter) {}
+		public function addFilter (Filter $filter) {
+            $this->filters[] = $filter;
+        }
+
+        public function getFilters () {
+            return $this->filters;
+        }
 		
 	}
 

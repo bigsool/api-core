@@ -14,11 +14,17 @@
             $this->entity = $entity;
         }
 
-		public function getExpression() { return $this->expression; }
+		public function getExpression() {
+            return $this->expression;
+        }
 
-		public function getName() {}
+		public function getName() {
+            return $this->name;
+        }
 
-		public function getEntity() {}
+		public function getEntity() {
+            return $this->entity;
+        }
 
 	}
 
