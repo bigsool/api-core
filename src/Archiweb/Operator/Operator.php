@@ -4,6 +4,7 @@
 namespace Archiweb\Operator;
 
 
-interface Operator {
+interface Operator
+{
 
 } 
