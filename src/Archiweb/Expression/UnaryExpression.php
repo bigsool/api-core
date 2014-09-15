@@ -4,20 +4,24 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context;
+use Archiweb\Operator\CompareOperator;
+use Archiweb\Registry;
+
 class UnaryExpression implements ExpressionWithOperator
 {
 
     /**
-     * @param $compareOperator
-     * @param $value
+     * @param CompareOperator $compareOperator
+     * @param Value $value
      */
-    public function __construct($compareOperator, $value)
+    public function __construct(CompareOperator $compareOperator, Value $value)
     {
         // TODO: Implement constructor
     }
 
     /**
-     * @return Archiweb\Value
+     * @return Value
      */
     public function getValue()
     {
@@ -25,17 +29,17 @@ class UnaryExpression implements ExpressionWithOperator
     }
 
     /**
-     * @param Archiweb\Registry $registry
-     * @param Archiweb\Context $context
+     * @param Registry $registry
+     * @param Context $context
      * @return string
      */
-    public function resolve($registry, $context)
+    public function resolve(Registry $registry, Context $context)
     {
         // TODO: Implement resolve() method.
     }
 
     /**
-     * @return Archiweb\Operator
+     * @return CompareOperator
      */
     public function getOperator()
     {

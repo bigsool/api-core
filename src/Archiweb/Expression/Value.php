@@ -4,6 +4,9 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context;
+use Archiweb\Registry;
+
 class Value implements Expression
 {
 
@@ -24,11 +27,11 @@ class Value implements Expression
     }
 
     /**
-     * @param Archiweb\Registry $registry
-     * @param Archiweb\Context $context
+     * @param Registry $registry
+     * @param Context $context
      * @return string
      */
-    public function resolve($registry, $context)
+    public function resolve(Registry $registry, Context $context)
     {
         // TODO: Implement resolve() method.
     }

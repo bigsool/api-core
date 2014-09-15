@@ -4,15 +4,19 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context;
+use Archiweb\Operator\Operator;
+use Archiweb\Registry;
+
 class BinaryExpression implements ExpressionWithOperator
 {
 
     /**
-     * @param Archiweb\Operator $operator
+     * @param Operator $operator
      * @param Expression $left
      * @param Expression $right
      */
-    public function __construct($operator, $left, $right)
+    public function __construct(Operator $operator, Expression $left, Expression $right)
     {
         // TODO: Implement constructor
     }
@@ -34,17 +38,17 @@ class BinaryExpression implements ExpressionWithOperator
     }
 
     /**
-     * @param Archiweb\Registry $registry
-     * @param Archiweb\Context $context
+     * @param Registry $registry
+     * @param Context $context
      * @return string
      */
-    public function resolve($registry, $context)
+    public function resolve(Registry $registry, Context $context)
     {
         // TODO: Implement resolve() method.
     }
 
     /**
-     * @return Archiweb\Operator
+     * @return Operator
      */
     public function getOperator()
     {
