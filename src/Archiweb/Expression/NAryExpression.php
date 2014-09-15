@@ -4,14 +4,16 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Operator\Operator;
+
 class NAryExpression implements ExpressionWithOperator
 {
 
     /**
-     * @param $operator
+     * @param Operator $operator
      * @param [Expression] $expressions
      */
-    public function __construct($operator, array $expressions)
+    public function __construct(Operator $operator, array $expressions)
     {
         // TODO: Implement constructor
     }
