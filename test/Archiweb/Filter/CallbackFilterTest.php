@@ -2,8 +2,7 @@
 
 namespace Archiweb\Filter;
 
-class CallbackFilterTest extends \PHPUnit_Framework_TestCase
-{
+class CallbackFilterTest extends \PHPUnit_Framework_TestCase {
 
     private $callBackFilter;
 

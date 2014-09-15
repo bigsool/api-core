@@ -3,8 +3,7 @@
 namespace Archiweb\Filter;
 
 
-class AggregatedFilterTest extends \PHPUnit_Framework_TestCase
-{
+class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
     private $aggregateFilter;
 

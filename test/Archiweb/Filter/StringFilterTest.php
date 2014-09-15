@@ -3,8 +3,7 @@
 namespace Archiweb\Filter;
 
 
-class StringFilterTest extends \PHPUnit_Framework_TestCase
-{
+class StringFilterTest extends \PHPUnit_Framework_TestCase {
 
     private $strFilter;
 
