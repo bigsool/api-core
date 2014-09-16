@@ -12,12 +12,23 @@ class UnaryExpression implements ExpressionWithOperator
 {
 
     /**
+     * @var CompareOperator
+     */
+    protected $operator;
+
+    /**
+     * @var Value
+     */
+    protected $value;
+
+    /**
      * @param CompareOperator $compareOperator
      * @param Value $value
      */
     public function __construct(CompareOperator $compareOperator, Value $value)
     {
-        // TODO: Implement constructor
+        $this->operator = $compareOperator;
+        $this->value = $value;
     }
 
     /**
@@ -25,7 +36,7 @@ class UnaryExpression implements ExpressionWithOperator
      */
     public function getValue()
     {
-        // TODO: Implement getValue() method
+        return $this->value;
     }
 
     /**
@@ -35,7 +46,9 @@ class UnaryExpression implements ExpressionWithOperator
      */
     public function resolve(Registry $registry, Context $context)
     {
-        // TODO: Implement resolve() method.
+        $valueStr = $this->getValue()->resolve($registry, $context);
+
+        return $valueStr . ' ' . $this->getOperator()->toDQL();
     }
 
     /**
@@ -43,6 +56,6 @@ class UnaryExpression implements ExpressionWithOperator
      */
     public function getOperator()
     {
-        // TODO: Implement getOperator() method.
+        return $this->operator;
     }
 }

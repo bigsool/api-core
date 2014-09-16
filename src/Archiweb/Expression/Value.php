@@ -11,11 +11,16 @@ class Value implements Expression
 {
 
     /**
+     * @var mixed
+     */
+    protected $value;
+
+    /**
      * @param mixed $value
      */
     public function __construct($value)
     {
-        // TODO: Implement constructor
+        $this->value = $value;
     }
 
     /**
@@ -23,7 +28,7 @@ class Value implements Expression
      */
     public function getValue()
     {
-        // TODO: Implement getValue() method
+        return $this->value;
     }
 
     /**

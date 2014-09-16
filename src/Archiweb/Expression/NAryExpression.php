@@ -12,12 +12,23 @@ class NAryExpression implements ExpressionWithOperator
 {
 
     /**
+     * @var Expression[]
+     */
+    protected $expressions;
+
+    /**
+     * @var Operator
+     */
+    protected $operator;
+
+    /**
      * @param Operator $operator
      * @param Expression[] $expressions
      */
     public function __construct(Operator $operator, array $expressions)
     {
-        // TODO: Implement constructor
+        $this->operator = $operator;
+        $this->expressions = $expressions;
     }
 
     /**
@@ -25,7 +36,7 @@ class NAryExpression implements ExpressionWithOperator
      */
     public function getExpressions()
     {
-        // TODO: Implement getExpressions
+        return $this->expressions;
     }
 
     /**
@@ -35,7 +46,12 @@ class NAryExpression implements ExpressionWithOperator
      */
     public function resolve(Registry $registry, Context $context)
     {
-        // TODO: Implement resolve() method.
+        return array_reduce($this->getExpressions(), function ($prev, Expression $expr) use ($registry, $context) {
+            if ($prev) {
+                $prev = $prev . ' ' . $this->getOperator()->toDQL() . ' ';
+            }
+            return $prev . $expr->resolve($registry, $context);
+        });
     }
 
     /**
@@ -43,6 +59,6 @@ class NAryExpression implements ExpressionWithOperator
      */
     public function getOperator()
     {
-        // TODO: Implement getOperator() method.
+        return $this->operator;
     }
 }

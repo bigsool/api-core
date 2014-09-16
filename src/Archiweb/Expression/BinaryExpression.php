@@ -12,13 +12,30 @@ class BinaryExpression implements ExpressionWithOperator
 {
 
     /**
+     * @var Operator
+     */
+    protected $operator;
+
+    /**
+     * @var Expression
+     */
+    protected $left;
+
+    /**
+     * @var Expression
+     */
+    protected $right;
+
+    /**
      * @param Operator $operator
      * @param Expression $left
      * @param Expression $right
      */
     public function __construct(Operator $operator, Expression $left, Expression $right)
     {
-        // TODO: Implement constructor
+        $this->operator = $operator;
+        $this->left = $left;
+        $this->right = $right;
     }
 
     /**
@@ -26,7 +43,7 @@ class BinaryExpression implements ExpressionWithOperator
      */
     public function getLeft()
     {
-        // TODO: Implement getLeft() method
+        return $this->left;
     }
 
     /**
@@ -34,7 +51,7 @@ class BinaryExpression implements ExpressionWithOperator
      */
     public function getRight()
     {
-        // TODO: Implement getRight() method
+        return $this->right;
     }
 
     /**
@@ -44,7 +61,10 @@ class BinaryExpression implements ExpressionWithOperator
      */
     public function resolve(Registry $registry, Context $context)
     {
-        // TODO: Implement resolve() method.
+        $leftStr = $this->getLeft()->resolve($registry, $context);
+        $rightStr = $this->getRight()->resolve($registry, $context);
+
+        return $leftStr . ' ' . $this->getOperator()->toDQL($rightStr);
     }
 
     /**
@@ -52,6 +72,6 @@ class BinaryExpression implements ExpressionWithOperator
      */
     public function getOperator()
     {
-        // TODO: Implement getOperator() method.
+        return $this->operator;
     }
 }
