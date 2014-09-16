@@ -2,7 +2,9 @@
 	
 namespace Archiweb\Filter;
 
+use Archiweb\Expression\BinaryExpression;
 use Archiweb\Operator\LogicOperator as LogicOperator;
+use Archiweb\Expression\NAryExpression as NAryExpression;
 
 class AggregatedFilter extends Filter {
 
@@ -27,6 +29,16 @@ class AggregatedFilter extends Filter {
     public function getFilters () {
 
         return $this->filters;
+
+    }
+
+    public function getExpression () {
+
+        foreach ($this->filters as $filter) {
+            $expressions[] = $filter->getExpression();
+        }
+
+        return new NAryExpression($this->$operator,$expressions);
 
     }
 
