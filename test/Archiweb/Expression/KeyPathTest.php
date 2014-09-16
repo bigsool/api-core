@@ -44,10 +44,10 @@ class KeyPathTest extends \PHPUnit_Framework_TestCase
 
         $param = 'company.storage.url';
 
-        $param1 = new Parameter($param);
+        $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $param2 = new Parameter($param);
+        $param2 = new KeyPath($param);
         $resolve2 = $param2->resolve($registry, $context);
 
         $this->assertEquals('companyStorage.url', $resolve1);
