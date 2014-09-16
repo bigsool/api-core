@@ -27,6 +27,14 @@ class KeyPathTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testInvalidType()
+    {
+        new KeyPath(new \stdClass());
+    }
+
+    /**
      *
      */
     public function testGetFilters()
