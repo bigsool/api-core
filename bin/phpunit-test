@@ -1,1 +1,1 @@
-../vendor/bin/phpunit --strict --colors ../test/
+../vendor/bin/phpunit --verbose --strict --colors ../test/
