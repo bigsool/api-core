@@ -14,6 +14,5 @@ $iterator = Finder::create()
 return new Sami($iterator, array(
     'build_dir'            => __DIR__.'/doc/build',
     'cache_dir'            => __DIR__.'/doc/cache',
-    'simulate_namespaces'  => true,
     'default_opened_level' => 1,
 ));

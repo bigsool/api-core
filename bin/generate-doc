@@ -1,1 +1,1 @@
-../vendor/bin/sami.php update ../sami.php
+../vendor/bin/sami.php update --force ../sami.php
