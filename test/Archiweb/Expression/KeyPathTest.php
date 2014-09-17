@@ -44,7 +44,9 @@ class KeyPathTest extends \PHPUnit_Framework_TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMock('\Archiweb\Registry');
+        $registry = $this->getMockBuilder('\Archiweb\Registry')
+                         ->disableOriginalConstructor()
+                         ->getMock();
         $context = $this->getMock('\Archiweb\Context');
 
         $param = 'company.storage.url';

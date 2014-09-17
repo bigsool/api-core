@@ -11,10 +11,14 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testShouldApply () {
 
-        $ctx = $this->getMock('\Archiweb\ActionContext');
+        $ctx = $this->getMockBuilder('\Archiweb\ActionContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
         $mockRule = $this->getMock('\Archiweb\Rule\Rule');
 
-        $filter = $this->getMock('\Archiweb\Filter\Filter');
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
@@ -45,7 +49,9 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testListChildRules () {
 
-        $filter = $this->getMock('\Archiweb\Filter\Filter');
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
@@ -58,7 +64,9 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetName () {
 
-        $filter = $this->getMock('\Archiweb\Filter\Filter');
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
 
         $name = 'isYourCompany';
         $rule = new SimpleRule('select', 'Company', $name, $filter);
@@ -72,7 +80,9 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetEntity () {
 
-        $filter = $this->getMock('\Archiweb\Filter\Filter');
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
 
         $entity = 'Company';
         $rule = new SimpleRule('select', $entity, 'isYourCompany', $filter);

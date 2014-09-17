@@ -11,11 +11,14 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testShouldApply () {
 
-        $ctx = $this->getMock('\Archiweb\ActionContext');
+        $ctx = $this->getMockBuilder('\Archiweb\ActionContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
         $mockRule = $this->getMock('\Archiweb\Rule\Rule');
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-            }, []);
+        }, []);
 
         // not rules already in the list to apply
         $mockRule->method('listChildRules')->willReturn([]);
@@ -47,11 +50,11 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
         $mockRule = $this->getMock('\Archiweb\Rule\Rule');
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-            }, []);
+        }, []);
         $this->assertEquals([], $rule->listChildRules());
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-            }, [$mockRule]);
+        }, [$mockRule]);
         $this->assertEquals([$mockRule], $rule->listChildRules());
 
     }
@@ -63,7 +66,7 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
 
         $name = 'isYourCompany';
         $rule = new CallbackRule('select', 'Company', $name, function () {
-            }, []);
+        }, []);
 
         $this->assertEquals($name, $rule->getName());
 
@@ -76,7 +79,7 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
 
         $entity = 'Company';
         $rule = new CallbackRule('select', $entity, 'isYourCompany', function () {
-            }, []);
+        }, []);
 
         $this->assertEquals($entity, $rule->getEntity());
 

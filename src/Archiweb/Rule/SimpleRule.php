@@ -5,6 +5,7 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\ActionContext;
+use Archiweb\Filter\Filter;
 
 class SimpleRule implements Rule {
 
