@@ -26,6 +26,14 @@ class ParameterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testInvalidType()
+    {
+        new Parameter(new \stdClass());
+    }
+
+    /**
      *
      */
     public function testResolve()
