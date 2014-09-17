@@ -7,6 +7,12 @@ class CallbackFilter extends Filter {
     private $command;
     private $callback;
 
+    /**
+     * @param string $entity
+     * @param string $name
+     * @param string $command
+     * @param Function $callback
+     */
     function __construct ($entity, $name, $command, $callback) {
 
         parent::__construct($entity,$name,null);
@@ -15,6 +21,9 @@ class CallbackFilter extends Filter {
 
     }
 
+    /**
+     * @return Expression
+     */
     public function getExpression () {
 
         return call_user_func($this->callback);

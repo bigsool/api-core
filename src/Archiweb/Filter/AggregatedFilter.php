@@ -2,7 +2,6 @@
 	
 namespace Archiweb\Filter;
 
-use Archiweb\Expression\BinaryExpression;
 use Archiweb\Operator\LogicOperator as LogicOperator;
 use Archiweb\Expression\NAryExpression as NAryExpression;
 
@@ -12,6 +11,12 @@ class AggregatedFilter extends Filter {
     private $operator;
     private $filters;
 
+    /**
+     * @param string $entity
+     * @param string $name
+     * @param string $command
+     * @param LogicOperator $operator
+     */
     function __construct ($entity, $name, $command, LogicOperator $operator) {
 
         parent::__construct($entity,$name,null);
@@ -20,18 +25,27 @@ class AggregatedFilter extends Filter {
 
     }
 
+    /**
+     * @param Filter $filter
+     */
     public function addFilter (Filter $filter) {
 
         $this->filters[] = $filter;
 
     }
 
+    /**
+     * @return Filter
+     */
     public function getFilters () {
 
         return $this->filters;
 
     }
 
+    /**
+     * @return NAryExpression
+     */
     public function getExpression () {
 
         foreach ($this->filters as $filter) {

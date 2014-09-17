@@ -34,9 +34,11 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
     public function testGetExpression() {
         $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
         $aggregateFilter = new AggregatedFilter('project','myProject','select', $operator);
-        $strFilter = new FilterReference('project','myProject');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
         $aggregateFilter->addFilter($strFilter);
-        // $expression = $aggregateFilter->getExpression(); TO TEST
+        $strFilter = new StringFilter('project', 'myProject', 'project.id = 2', 'select');
+        $aggregateFilter->addFilter($strFilter);
+      //  $expression = $aggregateFilter->getExpression();
 
     }
 
