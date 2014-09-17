@@ -1,0 +1,6 @@
+0 - You need at least PHP 5.4
+1 - Get Composer : https://getcomposer.org/doc/00-intro.md#globally
+2 - Open a terminal in this directory and tape the command: composer update
+3 - (optional) Generate the documentation of the source code with bin/generate-doc
+4 - (optional) Generate the unit test code coverage documentation with bin/phpunit-coverage
+5 - (optional) Execute the unit tests with bin/phpunit-test
