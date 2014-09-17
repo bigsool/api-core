@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class GreaterOrEqualOperatorTest extends \PHPUnit_Framework_TestCase
-{
+class GreaterOrEqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testToDQL()
-    {
+    public function testToDQL () {
+
         $operator = new GreaterOrEqualOperator();
         $this->assertEquals('>= qwe', $operator->toDQL('qwe'));
     }
@@ -19,8 +18,8 @@ class GreaterOrEqualOperatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFormat()
-    {
+    public function testInvalidFormat () {
+
         $operator = new GreaterOrEqualOperator();
         $operator->toDQL();
     }

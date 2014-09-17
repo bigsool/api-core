@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class OrOperator implements LogicOperator
-{
+class OrOperator implements LogicOperator {
 
     /**
      * @return string
      */
-    public function toDQL()
-    {
+    public function toDQL () {
+
         return 'OR';
     }
 

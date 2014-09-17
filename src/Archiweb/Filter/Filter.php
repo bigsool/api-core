@@ -7,15 +7,17 @@ use Archiweb\Expression\Expression;
 abstract class Filter {
 
     private $expression;
+
     private $name;
+
     private $entity;
 
     /**
-     * @param string $entity
-     * @param string $name
+     * @param string     $entity
+     * @param string     $name
      * @param Expression $expression
      */
-    function __construct ($entity,$name,Expression $expression = null) {
+    function __construct ($entity, $name, Expression $expression = NULL) {
 
         $this->expression = $expression;
         $this->name = $name;
@@ -26,7 +28,7 @@ abstract class Filter {
     /**
      * @return Expression
      */
-    public function getExpression() {
+    public function getExpression () {
 
         return $this->expression;
 
@@ -35,7 +37,7 @@ abstract class Filter {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName () {
 
         return $this->name;
 
@@ -44,7 +46,7 @@ abstract class Filter {
     /**
      * @return string
      */
-    public function getEntity() {
+    public function getEntity () {
 
         return $this->entity;
 

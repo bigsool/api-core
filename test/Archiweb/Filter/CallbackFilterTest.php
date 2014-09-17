@@ -4,9 +4,10 @@ namespace Archiweb\Filter;
 
 class CallbackFilterTest extends \PHPUnit_Framework_TestCase {
 
+    public function testGetEntity () {
 
-    public function testGetEntity() {
         $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+
             return 'project.owner = 1';
         });
         $entity = $callBackFilter->getEntity();
@@ -14,8 +15,10 @@ class CallbackFilterTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function testGetName() {
+    public function testGetName () {
+
         $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+
             return 'project.owner = 1';
         });
         $name = $callBackFilter->getName();
@@ -23,8 +26,10 @@ class CallbackFilterTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function testGetExpression() {
+    public function testGetExpression () {
+
         $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+
             return 'project.owner = 1';
         });
         $expression = $callBackFilter->getExpression();

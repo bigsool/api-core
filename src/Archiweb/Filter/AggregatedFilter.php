@@ -1,25 +1,27 @@
-<?php 
-	
+<?php
+
 namespace Archiweb\Filter;
 
-use Archiweb\Operator\LogicOperator as LogicOperator;
 use Archiweb\Expression\NAryExpression as NAryExpression;
+use Archiweb\Operator\LogicOperator as LogicOperator;
 
 class AggregatedFilter extends Filter {
 
     private $command;
+
     private $operator;
+
     private $filters;
 
     /**
-     * @param string $entity
-     * @param string $name
-     * @param string $command
+     * @param string        $entity
+     * @param string        $name
+     * @param string        $command
      * @param LogicOperator $operator
      */
     function __construct ($entity, $name, $command, LogicOperator $operator) {
 
-        parent::__construct($entity,$name,null);
+        parent::__construct($entity, $name, NULL);
         $this->command = $command;
         $this->operator = $operator;
 
@@ -52,7 +54,7 @@ class AggregatedFilter extends Filter {
             $expressions[] = $filter->getExpression();
         }
 
-        return new NAryExpression($this->$operator,$expressions);
+        return new NAryExpression($this->$operator, $expressions);
 
     }
 

@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class EqualOperatorTest extends \PHPUnit_Framework_TestCase
-{
+class EqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testToDQL()
-    {
+    public function testToDQL () {
+
         $operator = new EqualOperator();
         $this->assertEquals('= qwe', $operator->toDQL('qwe'));
     }
@@ -19,8 +18,8 @@ class EqualOperatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFormat()
-    {
+    public function testInvalidFormat () {
+
         $operator = new EqualOperator();
         $operator->toDQL();
     }

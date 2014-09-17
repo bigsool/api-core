@@ -3,17 +3,17 @@
 
 namespace Archiweb\Expression;
 
-class NAryExpressionTest extends \PHPUnit_Framework_TestCase
-{
+class NAryExpressionTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testGetExpressions()
-    {
+    public function testGetExpressions () {
+
         $operator = $this->getMock('\Archiweb\Operator\Operator');
 
         $tester = function ($params) use ($operator) {
+
             $exp = new NAryExpression($operator, $params);
             $this->assertEquals($params, $exp->getExpressions());
         };
@@ -23,17 +23,16 @@ class NAryExpressionTest extends \PHPUnit_Framework_TestCase
         $tester([$this->getMock('\Archiweb\Expression\Expression')]);
 
         $tester([
-            $this->getMock('\Archiweb\Expression\Expression'),
-            $this->getMock('\Archiweb\Expression\Expression'),
-            $this->getMock('\Archiweb\Expression\Expression')
-        ]);
+                    $this->getMock('\Archiweb\Expression\Expression'),
+                    $this->getMock('\Archiweb\Expression\Expression'),
+                    $this->getMock('\Archiweb\Expression\Expression')
+                ]);
     }
 
     /**
      *
      */
-    public function testGetOperator()
-    {
+    public function testGetOperator () {
 
         $operator = $this->getMock('\Archiweb\Operator\Operator');
 
@@ -46,8 +45,8 @@ class NAryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
+
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');
 

@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class OrOperatorTest extends \PHPUnit_Framework_TestCase
-{
+class OrOperatorTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testToDQL()
-    {
+    public function testToDQL () {
+
         $operator = new OrOperator();
         $this->assertEquals('OR', $operator->toDQL());
     }

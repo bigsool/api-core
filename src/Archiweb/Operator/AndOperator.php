@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class AndOperator implements LogicOperator
-{
+class AndOperator implements LogicOperator {
 
     /**
      * @return string
      */
-    public function toDQL()
-    {
+    public function toDQL () {
+
         return 'AND';
     }
 }

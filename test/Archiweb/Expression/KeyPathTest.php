@@ -4,14 +4,12 @@
 namespace Archiweb\Expression;
 
 
-class KeyPathTest extends \PHPUnit_Framework_TestCase
-{
+class KeyPathTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testGetValue()
-    {
+    public function testGetValue () {
 
         $param = new KeyPath('user.company.storage');
         $this->assertEquals('user.company.storage', $param->getValue());
@@ -21,32 +19,31 @@ class KeyPathTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFormat()
-    {
+    public function testInvalidFormat () {
+
         new KeyPath('qwe/qwe');
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testInvalidType()
-    {
+    public function testInvalidType () {
+
         new KeyPath(new \stdClass());
     }
 
     /**
      *
      */
-    public function testGetFilters()
-    {
+    public function testGetFilters () {
         // TODO: Implements the testGetFilters() method
     }
 
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
+
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');
 

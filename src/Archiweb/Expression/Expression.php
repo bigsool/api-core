@@ -6,14 +6,14 @@ namespace Archiweb\Expression;
 use Archiweb\Context;
 use Archiweb\Registry;
 
-interface Expression
-{
+interface Expression {
 
     /**
      * @param Registry $registry
-     * @param Context $context
+     * @param Context  $context
+     *
      * @return string
      */
-    public function resolve(Registry $registry, Context $context);
+    public function resolve (Registry $registry, Context $context);
 
 } 

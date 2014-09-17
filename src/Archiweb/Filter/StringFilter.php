@@ -14,20 +14,23 @@ class StringFilter extends Filter {
      */
     function __construct ($entity, $name, $expression, $command) {
 
-        parent::__construct($entity,$name);
+        parent::__construct($entity, $name);
         $this->command = $command;
 
     }
 
     function parseExpression ($expression) {
-        $operator = null;
-        if (strpos($expression,'=')) {
+
+        $operator = NULL;
+        if (strpos($expression, '=')) {
             $operator = '=';
         }
-        else if (strpos($expression,'!=')) {
-            $operator = '!=';
+        else {
+            if (strpos($expression, '!=')) {
+                $operator = '!=';
+            }
         }
-        $result = explode($operator,$expression);
+        $result = explode($operator, $expression);
 
     }
 

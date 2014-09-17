@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class InOperatorTest extends \PHPUnit_Framework_TestCase
-{
+class InOperatorTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testToDQL()
-    {
+    public function testToDQL () {
+
         $operator = new InOperator();
         $this->assertEquals('IN ()', $operator->toDQL());
 
@@ -22,8 +21,8 @@ class InOperatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFormat()
-    {
+    public function testInvalidFormat () {
+
         $operator = new InOperator();
         $operator->toDQL(new \stdClass());
     }

@@ -4,13 +4,12 @@
 namespace Archiweb\Expression;
 
 
-class ParameterTest extends \PHPUnit_Framework_TestCase
-{
+class ParameterTest extends \PHPUnit_Framework_TestCase {
+
     /**
      *
      */
-    public function testGetValue()
-    {
+    public function testGetValue () {
 
         $param = new Parameter(':company');
         $this->assertEquals(':company', $param->getValue());
@@ -20,24 +19,23 @@ class ParameterTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFormat()
-    {
+    public function testInvalidFormat () {
+
         new Parameter('qwe');
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testInvalidType()
-    {
+    public function testInvalidType () {
+
         new Parameter(new \stdClass());
     }
 
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
 
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');

@@ -4,16 +4,15 @@
 namespace Archiweb\Expression;
 
 
-class ValueTest extends \PHPUnit_Framework_TestCase
-{
+class ValueTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testGetValue()
-    {
+    public function testGetValue () {
 
         $tester = function ($value) {
+
             $val = new Value($value);
             $this->assertEquals($value, $val->getValue());
         };
@@ -31,12 +30,13 @@ class ValueTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
+
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');
 
-        $tester = function ($value) use($registry, $context) {
+        $tester = function ($value) use ($registry, $context) {
+
             $val = new Value($value);
             $this->assertEquals($value, $val->resolve($registry, $context));
         };

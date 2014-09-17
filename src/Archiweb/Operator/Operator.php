@@ -4,7 +4,7 @@
 namespace Archiweb\Operator;
 
 
-interface Operator
-{
-    public function toDQL();
+interface Operator {
+
+    public function toDQL ();
 } 

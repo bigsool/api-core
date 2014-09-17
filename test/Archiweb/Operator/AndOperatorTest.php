@@ -4,14 +4,13 @@
 namespace Archiweb\Operator;
 
 
-class AndOperatorTest extends \PHPUnit_Framework_TestCase
-{
+class AndOperatorTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testToDQL()
-    {
+    public function testToDQL () {
+
         $operator = new AndOperator();
         $this->assertEquals('AND', $operator->toDQL());
     }

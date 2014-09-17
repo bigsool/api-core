@@ -4,14 +4,12 @@
 namespace Archiweb\Expression;
 
 
-class BinaryExpressionTest extends \PHPUnit_Framework_TestCase
-{
+class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testGetOperator()
-    {
+    public function testGetOperator () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
 
@@ -28,8 +26,7 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testGetLeft()
-    {
+    public function testGetLeft () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $left = $this->getMock('\Archiweb\Expression\Expression');
@@ -44,8 +41,7 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testGetRight()
-    {
+    public function testGetRight () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $left = $this->getMock('\Archiweb\Expression\Expression');
@@ -60,13 +56,14 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
+
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $operator->method('toDQL')->will($this->returnCallback(function ($v) {
+
             return "= $v";
         }));
 

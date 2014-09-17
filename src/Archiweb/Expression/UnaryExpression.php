@@ -8,8 +8,7 @@ use Archiweb\Context;
 use Archiweb\Operator\CompareOperator;
 use Archiweb\Registry;
 
-class UnaryExpression implements ExpressionWithOperator
-{
+class UnaryExpression implements ExpressionWithOperator {
 
     /**
      * @var CompareOperator
@@ -23,39 +22,40 @@ class UnaryExpression implements ExpressionWithOperator
 
     /**
      * @param CompareOperator $compareOperator
-     * @param Value $value
+     * @param Value           $value
      */
-    public function __construct(CompareOperator $compareOperator, Value $value)
-    {
+    public function __construct (CompareOperator $compareOperator, Value $value) {
+
         $this->operator = $compareOperator;
         $this->value = $value;
     }
 
     /**
-     * @return Value
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
      * @param Registry $registry
-     * @param Context $context
+     * @param Context  $context
+     *
      * @return string
      */
-    public function resolve(Registry $registry, Context $context)
-    {
+    public function resolve (Registry $registry, Context $context) {
+
         $valueStr = $this->getValue()->resolve($registry, $context);
 
         return $valueStr . ' ' . $this->getOperator()->toDQL();
     }
 
     /**
+     * @return Value
+     */
+    public function getValue () {
+
+        return $this->value;
+    }
+
+    /**
      * @return CompareOperator
      */
-    public function getOperator()
-    {
+    public function getOperator () {
+
         return $this->operator;
     }
 }

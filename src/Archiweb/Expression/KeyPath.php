@@ -8,15 +8,15 @@ use Archiweb\Context;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
 
-class KeyPath extends Value
-{
+class KeyPath extends Value {
 
     /**
      * @param string $value
+     *
      * @throws \RuntimeException
      */
-    public function __construct($value)
-    {
+    public function __construct ($value) {
+
         if (!is_string($value)) {
             throw new \RuntimeException('invalid type');
         }
@@ -29,18 +29,17 @@ class KeyPath extends Value
     /**
      * @return Filter[]
      */
-    public function getFilters()
-    {
+    public function getFilters () {
         // TODO: Implement getFilters() method
     }
 
     /**
      * @param Registry $registry
-     * @param Context $context
+     * @param Context  $context
+     *
      * @return string
      */
-    public function resolve(Registry $registry, Context $context)
-    {
+    public function resolve (Registry $registry, Context $context) {
         // TODO: Implement the resolve() method
     }
 

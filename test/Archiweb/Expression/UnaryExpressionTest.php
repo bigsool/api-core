@@ -4,14 +4,12 @@
 namespace Archiweb\Expression;
 
 
-class UnaryExpressionTest extends \PHPUnit_Framework_TestCase
-{
+class UnaryExpressionTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testGetOperator()
-    {
+    public function testGetOperator () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $value = $this->getMockBuilder('\Archiweb\Expression\Value')->disableOriginalConstructor()->getMock();
@@ -25,8 +23,7 @@ class UnaryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testGetValue()
-    {
+    public function testGetValue () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $value = $this->getMockBuilder('\Archiweb\Expression\Value')->disableOriginalConstructor()->getMock();
@@ -40,8 +37,8 @@ class UnaryExpressionTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testResolve()
-    {
+    public function testResolve () {
+
         $registry = $this->getMock('\Archiweb\Registry');
         $context = $this->getMock('\Archiweb\Context');
 
