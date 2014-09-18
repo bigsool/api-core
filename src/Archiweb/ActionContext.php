@@ -10,10 +10,17 @@ use Archiweb\Rule\Rule;
 class ActionContext extends Context {
 
     /**
+     * @var Rule[]
+     */
+    protected $rules = array();
+
+    /**
      * @param Context $context
      */
     public function __construct (Context $context) {
-        // TODO: Implement constructor
+
+        $this->setParams($context->getParams());
+
     }
 
     /**.
@@ -27,14 +34,20 @@ class ActionContext extends Context {
      * @return Rule[]
      */
     public function getRules () {
-        // TODO: Implement getRules() method
+
+        return $this->rules;
+
     }
 
     /**
      * @param Rule $rule
      */
     public function addRule (Rule $rule) {
-        // TODO: Implement addRule() method
+
+        if (!in_array($rule, $this->rules, true)) {
+            $this->rules[] = $rule;
+        }
+
     }
 
 }

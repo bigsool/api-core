@@ -4,29 +4,53 @@
 namespace Archiweb;
 
 
+use Archiweb\Parameter\Parameter;
+
 class Context implements \ArrayAccess {
 
     /**
-     * @return array
+     * @var array
+     */
+    protected $array = array();
+
+    /**
+     * @var Parameter[]
+     */
+    protected $params = array();
+
+    /**
+     * @return Parameter[]
      */
     public function getParams () {
-        // TODO: Implement getParams() method
+
+        return $this->params;
+
+    }
+
+    /**
+     * @param Parameter[] $params
+     */
+    public function setParams (array $params) {
+
+        foreach ($params as $param) {
+            if (!($param instanceof Parameter)) {
+                throw new \RuntimeException('invalid type');
+            }
+        }
+
+        $this->params = $params;
+
     }
 
     /**
      * @param mixed $key
      *
-     * @return mixed
+     * @return Parameter
      */
     public function getParam ($key) {
-        // TODO: Implement getParam() method
-    }
 
-    /**
-     * @param array $params
-     */
-    public function setParams (array $params) {
-        // TODO: Implement setParams() method
+        return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
     }
 
     /**
@@ -44,7 +68,9 @@ class Context implements \ArrayAccess {
      * The return value will be casted to boolean if non-boolean was returned.
      */
     public function offsetExists ($offset) {
-        // TODO: Implement offsetExists() method.
+
+        return isset($this->array[$offset]);
+
     }
 
     /**
@@ -59,7 +85,9 @@ class Context implements \ArrayAccess {
      * @return mixed Can return all value types.
      */
     public function offsetGet ($offset) {
-        // TODO: Implement offsetGet() method.
+
+        return $this->array[$offset];
+
     }
 
     /**
@@ -77,7 +105,9 @@ class Context implements \ArrayAccess {
      * @return void
      */
     public function offsetSet ($offset, $value) {
-        // TODO: Implement offsetSet() method.
+
+        $this->array[$offset] = $value;
+
     }
 
     /**
@@ -92,6 +122,8 @@ class Context implements \ArrayAccess {
      * @return void
      */
     public function offsetUnset ($offset) {
-        // TODO: Implement offsetUnset() method.
+
+        unset($this->array[$offset]);
+
     }
 }

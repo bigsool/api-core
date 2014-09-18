@@ -6,14 +6,20 @@ namespace Archiweb\Parameter;
 
 class UnsafeParameterTest extends \PHPUnit_Framework_TestCase {
 
-    public function testIsSafe() {
+    /**
+     *
+     */
+    public function testIsSafe () {
 
         $param = new UnsafeParameter('qwe');
         $this->assertFalse($param->isSafe());
 
     }
 
-    public function testGetValue() {
+    /**
+     *
+     */
+    public function testGetValue () {
 
         $obj = new \stdClass();
         $param = new UnsafeParameter($obj);

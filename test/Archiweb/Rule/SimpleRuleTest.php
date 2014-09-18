@@ -17,8 +17,8 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
         $mockRule = $this->getMock('\Archiweb\Rule\Rule');
 
         $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+                       ->disableOriginalConstructor()
+                       ->getMock();
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
