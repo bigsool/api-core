@@ -6,33 +6,40 @@ namespace Archiweb\Rule;
 
 use Archiweb\ActionContext;
 
-class CallbackRule implements Rule {
+class CallbackRule extends Rule {
+
+    /**
+     * @var callable
+     */
+    protected $callback;
+
+    /**
+     * @var Rule[]|array
+     */
+    protected $childRules;
 
     /**
      * @param string   $command
      * @param string   $entity
      * @param string   $name
      * @param callable $callback
-     * @param string[] $childRuleList
+     * @param Rule[]   $childRuleList
      */
     public function __construct ($command, $entity, $name, callable $callback, array $childRuleList) {
-        // TODO: Implement constructor
-    }
 
-    /**
-     * @param ActionContext $ctx
-     *
-     * @return bool
-     */
-    public function shouldApply (ActionContext $ctx) {
-        // TODO: Implement shouldApply() method.
+        parent::__construct($command, $entity, $name);
+        $this->callback = $callback;
+        $this->childRules = $childRuleList;
+
     }
 
     /**
      * @return Rule[]
      */
     public function listChildRules () {
-        // TODO: Implement listChildRules() method.
+
+        return $this->childRules;
+
     }
 
     /**
@@ -40,19 +47,5 @@ class CallbackRule implements Rule {
      */
     public function apply (ActionContext $ctx) {
         // TODO: Implement apply() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getName () {
-        // TODO: Implement getName() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getEntity () {
-        // TODO: Implement getEntity() method.
     }
 }

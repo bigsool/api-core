@@ -15,6 +15,11 @@ class ActionContext extends Context {
     protected $rules = array();
 
     /**
+     * @var Filter[]
+     */
+    protected $filters = array();
+
+    /**
      * @param Context $context
      */
     public function __construct (Context $context) {
@@ -27,7 +32,9 @@ class ActionContext extends Context {
      * @return Filter[]
      */
     public function getFilters () {
-        // TODO: Implement getFilters() method
+
+        return $this->filters;
+
     }
 
     /**
@@ -46,6 +53,17 @@ class ActionContext extends Context {
 
         if (!in_array($rule, $this->rules, true)) {
             $this->rules[] = $rule;
+        }
+
+    }
+
+    /**
+     * @param Filter $filter
+     */
+    public function addFilter (Filter $filter) {
+
+        if (!in_array($filter, $this->filters, true)) {
+            $this->filters[] = $filter;
         }
 
     }

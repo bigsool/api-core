@@ -75,12 +75,12 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame([], $ctx->getRules());
 
         // only one rule
-        $rule = $this->getMock('\Archiweb\Rule\Rule');
+        $rule = $this->getRuleMock();
         $ctx->addRule($rule);
         $this->assertSame([$rule], $ctx->getRules());
 
         // several rules
-        $rules = [$this->getMock('\Archiweb\Rule\Rule'), $this->getMock('\Archiweb\Rule\Rule')];
+        $rules = [$this->getRuleMock(), $this->getRuleMock()];
         foreach ($rules as $r) {
             $ctx->addRule($r);
         }
@@ -93,12 +93,61 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     *
+     */
+    public function testFilters () {
+
+        // empty rule list
+        $ctx = new ActionContext(new Context());
+        $this->assertSame([], $ctx->getFilters());
+
+        // only one rule
+        $filter = $this->getFilterMock();
+        $ctx->addFilter($filter);
+        $this->assertSame([$filter], $ctx->getFilters());
+
+        // several rules
+        $filters = [$this->getFilterMock(), $this->getFilterMock()];
+        foreach ($filters as $f) {
+            $ctx->addFilter($f);
+        }
+        $filters[] = $filter;
+        $this->assertSameSize($filters, $ctx->getFilters());
+        foreach ($filters as $f) {
+            $this->assertContains($f, $ctx->getFilters());
+        }
+
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testInvalidRule () {
 
         $ctx = new ActionContext(new Context());
         $ctx->addRule('qwe');
+
+    }
+
+    /**
+     * @return Rule
+     */
+    protected function getRuleMock () {
+
+        return $this->getMockBuilder('\Archiweb\Rule\Rule')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Filter
+     */
+    protected function getFilterMock () {
+
+        return $this->getMockBuilder('\Archiweb\Filter\Filter')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 

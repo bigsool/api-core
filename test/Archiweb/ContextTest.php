@@ -45,7 +45,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
      */
     public function testInvalidParameterType () {
 
-        (new Context())->setParams(['key'=>'value']);
+        (new Context())->setParams(['key' => 'value']);
 
     }
 

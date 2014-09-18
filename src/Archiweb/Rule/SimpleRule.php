@@ -7,7 +7,12 @@ namespace Archiweb\Rule;
 use Archiweb\ActionContext;
 use Archiweb\Filter\Filter;
 
-class SimpleRule implements Rule {
+class SimpleRule extends Rule {
+
+    /**
+     * @var Filter
+     */
+    protected $filter;
 
     /**
      * @param string $command
@@ -16,43 +21,37 @@ class SimpleRule implements Rule {
      * @param Filter $filter
      */
     public function __construct ($command, $entity, $name, Filter $filter) {
-        // TODO: Implement constructor
-    }
 
-    /**
-     * @param ActionContext $ctx
-     *
-     * @return bool
-     */
-    public function shouldApply (ActionContext $ctx) {
-        // TODO: Implement shouldApply() method.
+        parent::__construct($command, $entity, $name);
+        $this->filter = $filter;
+
     }
 
     /**
      * @return Rule[]
      */
     public function listChildRules () {
-        // TODO: Implement listChildRules() method.
+
+        return [];
+
     }
 
     /**
      * @param ActionContext $ctx
      */
     public function apply (ActionContext $ctx) {
-        // TODO: Implement apply() method.
+
+        $ctx->addFilter($this->getFilter());
+
     }
 
     /**
-     * @return string
+     * @return Filter
      */
-    public function getName () {
-        // TODO: Implement getName() method.
+    public function getFilter () {
+
+        return $this->filter;
+
     }
 
-    /**
-     * @return string
-     */
-    public function getEntity () {
-        // TODO: Implement getEntity() method.
-    }
 }

@@ -11,33 +11,43 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testShouldApply () {
 
-        $ctx = $this->getMockBuilder('\Archiweb\ActionContext')
+        $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
                     ->disableOriginalConstructor()
                     ->getMock();
 
-        $mockRule = $this->getMock('\Archiweb\Rule\Rule');
+        $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
+                         ->disableOriginalConstructor()
+                         ->getMock();
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
         }, []);
 
         // not rules already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
         $ctx->method('getRules')->willReturn([]);
         $this->assertTrue($rule->shouldApply($ctx));
 
         // tested rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
         $ctx->method('getRules')->willReturn([$rule]);
         $this->assertFalse($rule->shouldApply($ctx));
 
         // other rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
-        $ctx->method('getRules')->willReturn([$mockRule]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
+        $ctx->method('getRules')->willReturn([$_rule]);
         $this->assertTrue($rule->shouldApply($ctx));
 
         // other rule which contain tested rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([$rule]);
-        $ctx->method('getRules')->willReturn([$mockRule]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([$rule]);
+        $ctx = clone $ctxMock;
+        $ctx->method('getRules')->willReturn([$_rule]);
         $this->assertFalse($rule->shouldApply($ctx));
 
     }
@@ -47,15 +57,17 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testListChildRules () {
 
-        $mockRule = $this->getMock('\Archiweb\Rule\Rule');
+        $mockRule = $this->getMockBuilder('\Archiweb\Rule\Rule')
+                         ->disableOriginalConstructor()
+                         ->getMock();
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
         }, []);
-        $this->assertEquals([], $rule->listChildRules());
+        $this->assertSame([], $rule->listChildRules());
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
         }, [$mockRule]);
-        $this->assertEquals([$mockRule], $rule->listChildRules());
+        $this->assertSame([$mockRule], $rule->listChildRules());
 
     }
 
@@ -68,7 +80,7 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
         $rule = new CallbackRule('select', 'Company', $name, function () {
         }, []);
 
-        $this->assertEquals($name, $rule->getName());
+        $this->assertSame($name, $rule->getName());
 
     }
 
@@ -81,7 +93,7 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
         $rule = new CallbackRule('select', $entity, 'isYourCompany', function () {
         }, []);
 
-        $this->assertEquals($entity, $rule->getEntity());
+        $this->assertSame($entity, $rule->getEntity());
 
     }
 

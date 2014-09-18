@@ -11,10 +11,12 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testShouldApply () {
 
-        $ctx = $this->getMockBuilder('\Archiweb\ActionContext')
+        $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
                     ->disableOriginalConstructor()
                     ->getMock();
-        $mockRule = $this->getMock('\Archiweb\Rule\Rule');
+        $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
+                         ->disableOriginalConstructor()
+                         ->getMock();
 
         $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
                        ->disableOriginalConstructor()
@@ -23,23 +25,31 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
         // not rules already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
         $ctx->method('getRules')->willReturn([]);
         $this->assertTrue($rule->shouldApply($ctx));
 
         // tested rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
         $ctx->method('getRules')->willReturn([$rule]);
         $this->assertFalse($rule->shouldApply($ctx));
 
         // other rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([]);
-        $ctx->method('getRules')->willReturn([$mockRule]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([]);
+        $ctx = clone $ctxMock;
+        $ctx->method('getRules')->willReturn([$_rule]);
         $this->assertTrue($rule->shouldApply($ctx));
 
         // other rule which contain tested rule already in the list to apply
-        $mockRule->method('listChildRules')->willReturn([$rule]);
-        $ctx->method('getRules')->willReturn([$mockRule]);
+        $_rule = clone $ruleMock;
+        $_rule->method('listChildRules')->willReturn([$rule]);
+        $ctx = clone $ctxMock;
+        $ctx->method('getRules')->willReturn([$_rule]);
         $this->assertFalse($rule->shouldApply($ctx));
 
     }
@@ -55,7 +65,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
-        $this->assertEquals([], $rule->listChildRules());
+        $this->assertSame([], $rule->listChildRules());
 
     }
 
@@ -71,7 +81,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
         $name = 'isYourCompany';
         $rule = new SimpleRule('select', 'Company', $name, $filter);
 
-        $this->assertEquals($name, $rule->getName());
+        $this->assertSame($name, $rule->getName());
 
     }
 
@@ -87,7 +97,19 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
         $entity = 'Company';
         $rule = new SimpleRule('select', $entity, 'isYourCompany', $filter);
 
-        $this->assertEquals($entity, $rule->getEntity());
+        $this->assertSame($entity, $rule->getEntity());
+
+    }
+
+    public function testGetFilter() {
+
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
+
+        $rule = new SimpleRule('select', 'entity', 'name', $filter);
+
+        $this->assertSame($filter, $rule->getFilter());
 
     }
 
