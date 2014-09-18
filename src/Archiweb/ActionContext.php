@@ -25,6 +25,7 @@ class ActionContext extends Context {
     public function __construct (Context $context) {
 
         $this->setParams($context->getParams());
+        $this->setEntityManager($context->getEntityManager());
 
     }
 

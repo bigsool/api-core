@@ -151,4 +151,28 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testEntityManager () {
+
+        $ctx = new Context();
+        $em = $this->getMockBuilder('\Doctrine\ORM\EntityManager')
+                   ->disableOriginalConstructor()
+                   ->getMock();
+        $ctx->setEntityManager($em);
+
+        $actionCtx = new ActionContext($ctx);
+
+        $this->assertSame($em, $actionCtx->getEntityManager());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testEntityManagerNotFound () {
+
+        $ctx = new Context();
+        (new ActionContext($ctx))->getEntityManager();
+
+    }
+
 } 
