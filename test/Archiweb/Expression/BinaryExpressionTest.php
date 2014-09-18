@@ -56,7 +56,7 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
     /**
      *
      */
-    public function testResolve () {
+    public function testResolveWithMocks () {
 
         $registry = $this->getMockBuilder('\Archiweb\Registry')
                          ->disableOriginalConstructor()
@@ -78,6 +78,24 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
         $exp = new BinaryExpression($operator, $left, $right);
 
         $this->assertEquals("I'm left = I'm right", $exp->resolve($registry, $context));
+    }
+
+    public function testResolveQweEquals1 () {
+
+        $registry = $this->getMockBuilder('\Archiweb\Registry')
+                         ->disableOriginalConstructor()
+                         ->getMock();
+        $context = $this->getMock('\Archiweb\Context');
+
+
+        $operator = new \Archiweb\Operator\EqualOperator();
+
+        $left = new \Archiweb\Expression\Value("Qwe");
+        $right = new \Archiweb\Expression\Value(1);
+
+        $exp = new BinaryExpression($operator, $left, $right);
+
+        $this->assertEquals('"Qwe" = 1', $exp->resolve($registry, $context));
     }
 
 } 

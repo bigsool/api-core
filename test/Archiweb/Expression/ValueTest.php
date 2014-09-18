@@ -6,51 +6,62 @@ namespace Archiweb\Expression;
 
 class ValueTest extends \PHPUnit_Framework_TestCase {
 
-    /**
-     *
-     */
-    public function testGetValue () {
+    protected $registry;
+    protected $context;
 
-        $tester = function ($value) {
-
-            $val = new Value($value);
-            $this->assertEquals($value, $val->getValue());
-        };
-
-        $tester(123);
-
-        $tester('String');
-
-        $tester(['A', 'R', 'R', 'A', 'Y']);
-
-        $tester(new \stdClass());
-
+    protected function setUp()
+    {
+        $this->registry = $this->getMockBuilder('\Archiweb\Registry')
+                         ->disableOriginalConstructor()
+                         ->getMock();
+        $this->context = $this->getMock('\Archiweb\Context');
     }
 
     /**
-     *
+     * @expectedException \RuntimeException
      */
-    public function testResolve () {
+    public function testValueWithObject() {
+        new Value(new \stdClass());
+    }
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+     /**
+     * @expectedException \RuntimeException
+     */
+    public function testValueWithArray() {
+        new Value(array());
+    }
 
-        $tester = function ($value) use ($registry, $context) {
+    public function testValueWithString() {
+        $v = "string";
+        
+        $value = new Value($v);
+        $this->assertEquals($v, $value->getValue());
+        $this->assertEquals('"'. $v .'"', $value->resolve($this->registry, $this->context));
+    }
 
-            $val = new Value($value);
-            $this->assertEquals($value, $val->resolve($registry, $context));
-        };
+    public function testValueWithInt() {
+        $v = 10;
+        
+        $value = new Value($v);
+        $this->assertEquals($v, $value->getValue());
+        $this->assertEquals($v.'', $value->resolve($this->registry, $this->context));
+    }
 
-        $tester(123);
+    public function testValueWithSignedInt() {
+        $v = -10;
+        
+        $value = new Value($v);
+        $this->assertEquals($v, $value->getValue());
+        $this->assertEquals($v.'', $value->resolve($this->registry, $this->context));
+    }
 
-        $tester('String');
 
-        $tester(['A', 'R', 'R', 'A', 'Y']);
-
-        $tester(new \stdClass());
-
+    public function testValueWithFloat() {
+        $v = 1.1;
+        
+        $value = new Value($v);
+        $this->assertEquals($v, $value->getValue());
+        $this->assertEquals($v.'', $value->resolve($this->registry, $this->context));
     }
 
 } 
