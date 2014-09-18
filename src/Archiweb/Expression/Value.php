@@ -18,6 +18,8 @@ class Value implements Expression {
      * @param mixed $value
      */
     public function __construct ($value) {
+        if ( ! is_scalar($value) )
+            throw new \RuntimeException("Value can only be a scalar, got ". gettype($value));
 
         $this->value = $value;
     }
@@ -26,7 +28,6 @@ class Value implements Expression {
      * @return mixed
      */
     public function getValue () {
-
         return $this->value;
     }
 
@@ -37,6 +38,10 @@ class Value implements Expression {
      * @return string
      */
     public function resolve (Registry $registry, Context $context) {
-        // TODO: Implement resolve() method.
+        $v = $this->getValue();
+        if ( is_string($v) )
+            return '"'. $v . '"';
+
+        return $v.'';   // cast to string
     }
 }
