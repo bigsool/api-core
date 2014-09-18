@@ -93,6 +93,17 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return Rule
+     */
+    protected function getRuleMock () {
+
+        return $this->getMockBuilder('\Archiweb\Rule\Rule')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      *
      */
     public function testFilters () {
@@ -120,27 +131,6 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Exception
-     */
-    public function testInvalidRule () {
-
-        $ctx = new ActionContext(new Context());
-        $ctx->addRule('qwe');
-
-    }
-
-    /**
-     * @return Rule
-     */
-    protected function getRuleMock () {
-
-        return $this->getMockBuilder('\Archiweb\Rule\Rule')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
      * @return Filter
      */
     protected function getFilterMock () {
@@ -148,6 +138,16 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
         return $this->getMockBuilder('\Archiweb\Filter\Filter')
                     ->disableOriginalConstructor()
                     ->getMock();
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidRule () {
+
+        $ctx = new ActionContext(new Context());
+        $ctx->addRule('qwe');
 
     }
 

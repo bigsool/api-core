@@ -4,6 +4,8 @@
 namespace Archiweb\Rule;
 
 
+use Archiweb\ActionContext;
+
 class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -12,8 +14,8 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
     public function testShouldApply () {
 
         $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+                        ->disableOriginalConstructor()
+                        ->getMock();
 
         $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
                          ->disableOriginalConstructor()
@@ -94,6 +96,37 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
         }, []);
 
         $this->assertSame($entity, $rule->getEntity());
+
+    }
+
+    /**
+     *
+     */
+    public function testGetCallback () {
+
+        $fn = function () {
+        };
+        $rule = new CallbackRule('select', 'entity', 'name', $fn, []);
+
+        $this->assertSame($fn, $rule->getCallback());
+
+    }
+
+    public function testApply () {
+
+        $functionCalled = false;
+
+        $rule = new CallbackRule('select', 'entity', 'name', function (ActionContext $ctx) use (&$functionCalled) {
+
+            $functionCalled = true;
+
+        }, []);
+
+        $rule->apply($this->getMockBuilder('\Archiweb\ActionContext')
+                          ->disableOriginalConstructor()
+                          ->getMock());
+
+        $this->assertTrue($functionCalled);
 
     }
 

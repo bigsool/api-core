@@ -4,6 +4,9 @@
 namespace Archiweb\Rule;
 
 
+use Archiweb\ActionContext;
+use Archiweb\Context;
+
 class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -12,8 +15,8 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
     public function testShouldApply () {
 
         $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+                        ->disableOriginalConstructor()
+                        ->getMock();
         $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
                          ->disableOriginalConstructor()
                          ->getMock();
@@ -101,7 +104,10 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function testGetFilter() {
+    /**
+     *
+     */
+    public function testGetFilter () {
 
         $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
                        ->disableOriginalConstructor()
@@ -110,6 +116,39 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
         $rule = new SimpleRule('select', 'entity', 'name', $filter);
 
         $this->assertSame($filter, $rule->getFilter());
+
+    }
+
+    /**
+     *
+     */
+    public function testApply () {
+
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
+
+        $rule = new SimpleRule('command', 'entity', 'name', $filter);
+        $ctx = new ActionContext(new Context());
+        $rule->apply($ctx);
+
+        $this->assertContains($filter, $ctx->getFilters());
+
+    }
+
+    /**
+     *
+     */
+    public function testGetCommand () {
+
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
+
+        $command = 'select';
+        $rule = new SimpleRule($command, 'Company', 'isYourCompany', $filter);
+
+        $this->assertSame($command, $rule->getCommand());
 
     }
 

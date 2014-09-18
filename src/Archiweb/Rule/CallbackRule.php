@@ -46,6 +46,17 @@ class CallbackRule extends Rule {
      * @param ActionContext $ctx
      */
     public function apply (ActionContext $ctx) {
-        // TODO: Implement apply() method.
+
+        call_user_func($this->getCallback(), $ctx);
+
+    }
+
+    /**
+     * @return callable
+     */
+    public function getCallback () {
+
+        return $this->callback;
+
     }
 }
