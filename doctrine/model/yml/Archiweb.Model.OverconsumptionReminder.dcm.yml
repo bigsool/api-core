@@ -1,0 +1,43 @@
+Archiweb\Model\OverconsumptionReminder:
+    type: entity
+    table: overconsumptionReminder
+    indexes:
+        company_id:
+            columns:
+                - company_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        date:
+            type: date
+            nullable: false
+            comment: ''
+        nextReminderDate:
+            type: date
+            nullable: true
+            comment: ''
+            column: nextReminderDate
+        level:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+    manyToOne:
+        company:
+            targetEntity: Archiweb\Model\Company
+            inversedBy: overconsumptionReminders
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: false
+    oneToOne:
+        companyForWhichThisOverconsumptionReminderIsStillCurrent:
+            targetEntity: Archiweb\Model\Company
+            mappedBy: currentOverconsumptionReminder

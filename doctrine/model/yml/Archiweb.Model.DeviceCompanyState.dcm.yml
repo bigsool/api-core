@@ -1,0 +1,47 @@
+Archiweb\Model\DeviceCompanyState:
+    type: entity
+    table: deviceCompanyState
+    indexes:
+        device_id:
+            columns:
+                - device_id
+        company_id:
+            columns:
+                - company_id
+        IDX_4816AACA39EDDC8:
+            columns:
+                - functionality_id
+    id:
+        company:
+              associationKey: true
+        functionality:
+              associationKey: true
+        device:
+              associationKey: true
+    fields:
+        enabled:
+            type: boolean
+            nullable: false
+            comment: ''
+    manyToOne:
+        company:
+            targetEntity: Archiweb\Model\Company
+            inversedBy: deviceCompanyStates
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: false
+        functionality:
+            targetEntity: Archiweb\Model\Functionality
+            inversedBy: deviceCompanyStates
+            joinColumns:
+                functionality_id:
+                    referencedColumnName: id
+                    nullable: false
+        device:
+            targetEntity: Archiweb\Model\Device
+            inversedBy: deviceCompanyStates
+            joinColumns:
+                device_id:
+                    referencedColumnName: id
+                    nullable: false

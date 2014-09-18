@@ -1,0 +1,41 @@
+Archiweb\Model\Functionality:
+    type: entity
+    table: functionality
+    uniqueConstraints:
+        functionalityBundleId:
+            columns:
+                - bundleId
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        bundleId:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+            column: bundleId
+        name:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        consumable:
+            type: boolean
+            nullable: false
+            comment: ''
+    oneToMany:
+        deviceCompanyStates:
+            targetEntity: Archiweb\Model\DeviceCompanyState
+            mappedBy: functionality
+        productFunctionalities:
+            targetEntity: Archiweb\Model\ProductFunctionality
+            mappedBy: functionality

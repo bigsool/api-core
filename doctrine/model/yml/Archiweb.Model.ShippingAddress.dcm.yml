@@ -1,0 +1,52 @@
+Archiweb\Model\ShippingAddress:
+    type: entity
+    table: shippingAddress
+    id:
+        transaction:
+              associationKey: true
+    fields:
+        name:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        address:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        zipcode:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: zipCode
+        city:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        state:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        country:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+    oneToOne:
+        transaction:
+            targetEntity: Archiweb\Model\Transaction
+            inversedBy: shippingAddress
+            joinColumns:
+                transaction_id:
+                    referencedColumnName: id
+                    nullable: false

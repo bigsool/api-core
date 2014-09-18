@@ -1,0 +1,112 @@
+Archiweb\Model\Company:
+    type: entity
+    table: company
+    indexes:
+        owner_id:
+            columns:
+                - owner_id
+        overconsumptionReminder_id:
+            columns:
+                - overconsumptionReminder_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+        address:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+        zipCode:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            column: zipCode
+        city:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+        state:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+        country:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+        tel:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+        fax:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+        tva:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+    oneToOne:
+        currentOverconsumptionReminder:
+            targetEntity: Archiweb\Model\OverconsumptionReminder
+            inversedBy: companyForWhichThisOverconsumptionReminderIsStillCurrent
+            joinColumns:
+                overconsumptionReminder_id:
+                    referencedColumnName: id
+        owner:
+            targetEntity: Archiweb\Model\User
+            inversedBy: ownedCompany
+            joinColumns:
+                owner_id:
+                    referencedColumnName: id
+                    nullable: false
+        storage:
+            targetEntity: Archiweb\Model\Storage
+            mappedBy: company
+    oneToMany:
+        overconsumptionReminders:
+            targetEntity: Archiweb\Model\OverconsumptionReminder
+            mappedBy: company
+        deviceCompanies:
+            targetEntity: Archiweb\Model\DeviceCompany
+            mappedBy: company
+        devicesUsedForTheFreetrial:
+            targetEntity: Archiweb\Model\Device
+            mappedBy: freetrialCompany
+        users:
+            targetEntity: Archiweb\Model\User
+            mappedBy: company
+        sharedReports:
+            targetEntity: Archiweb\Model\SharedReport
+            mappedBy: company
+    manyToMany:
+        defaultRoles:
+            targetEntity: Archiweb\Model\ProjectRole
+            inversedBy: companiesForWhichThisProjectRoleIsDefault
+            joinTable:
+                name: companyProjectDefaultRole
+                joinColumns:
+                    -
+                        name: company_id
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    -
+                        name: role_id
+                        referencedColumnName: id

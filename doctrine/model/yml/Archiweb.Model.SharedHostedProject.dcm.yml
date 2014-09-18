@@ -1,0 +1,29 @@
+Archiweb\Model\SharedHostedProject:
+    type: entity
+    table: sharedHostedProject
+    id:
+        participant:
+              associationKey: true
+        hostedProject:
+              associationKey: true
+    fields:
+        permission:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+    manyToOne:
+        participant:
+            targetEntity: Archiweb\Model\User
+            inversedBy: sharedHostedProjects
+            joinColumns:
+                participantId:
+                    referencedColumnName: id
+                    nullable: false
+        hostedProject:
+            targetEntity: Archiweb\Model\HostedProject
+            inversedBy: sharedHostedProjects
+            joinColumns:
+                hostedProjectId:
+                    referencedColumnName: id
+                    nullable: false

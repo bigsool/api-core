@@ -1,7 +1,8 @@
 {
     "require": {
         "phpunit/phpunit": "~4.2.2",
-        "sami/sami": "~2.0"
+        "sami/sami": "~2.0",
+        "doctrine/orm": "~2.4"
     },
     "autoload": {
         "psr-0": {"Archiweb": "src/"}
