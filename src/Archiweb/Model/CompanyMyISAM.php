@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * CompanyMyISAM
  */
-class CompanyMyISAM
-{
+class CompanyMyISAM {
+
     /**
      * @var integer
      */
@@ -54,49 +54,36 @@ class CompanyMyISAM
      */
     private $fax;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return CompanyMyISAM
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return CompanyMyISAM
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -104,22 +91,23 @@ class CompanyMyISAM
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set zipcode
+     * Set address
      *
-     * @param string $zipcode
+     * @param string $address
+     *
      * @return CompanyMyISAM
      */
-    public function setZipcode($zipcode)
-    {
-        $this->zipcode = $zipcode;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -127,22 +115,23 @@ class CompanyMyISAM
     /**
      * Get zipcode
      *
-     * @return string 
+     * @return string
      */
-    public function getZipcode()
-    {
+    public function getZipcode () {
+
         return $this->zipcode;
     }
 
     /**
-     * Set city
+     * Set zipcode
      *
-     * @param string $city
+     * @param string $zipcode
+     *
      * @return CompanyMyISAM
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setZipcode ($zipcode) {
+
+        $this->zipcode = $zipcode;
 
         return $this;
     }
@@ -150,22 +139,23 @@ class CompanyMyISAM
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
+     *
      * @return CompanyMyISAM
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -173,22 +163,23 @@ class CompanyMyISAM
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set country
+     * Set state
      *
-     * @param string $country
+     * @param string $state
+     *
      * @return CompanyMyISAM
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -196,22 +187,23 @@ class CompanyMyISAM
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set tel
+     * Set country
      *
-     * @param string $tel
+     * @param string $country
+     *
      * @return CompanyMyISAM
      */
-    public function setTel($tel)
-    {
-        $this->tel = $tel;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -219,22 +211,23 @@ class CompanyMyISAM
     /**
      * Get tel
      *
-     * @return string 
+     * @return string
      */
-    public function getTel()
-    {
+    public function getTel () {
+
         return $this->tel;
     }
 
     /**
-     * Set fax
+     * Set tel
      *
-     * @param string $fax
+     * @param string $tel
+     *
      * @return CompanyMyISAM
      */
-    public function setFax($fax)
-    {
-        $this->fax = $fax;
+    public function setTel ($tel) {
+
+        $this->tel = $tel;
 
         return $this;
     }
@@ -242,10 +235,24 @@ class CompanyMyISAM
     /**
      * Get fax
      *
-     * @return string 
+     * @return string
      */
-    public function getFax()
-    {
+    public function getFax () {
+
         return $this->fax;
+    }
+
+    /**
+     * Set fax
+     *
+     * @param string $fax
+     *
+     * @return CompanyMyISAM
+     */
+    public function setFax ($fax) {
+
+        $this->fax = $fax;
+
+        return $this;
     }
 }

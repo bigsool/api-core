@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Payment
  */
-class Payment
-{
+class Payment {
+
     /**
      * @var integer
      */
@@ -64,49 +64,36 @@ class Payment
      */
     private $transaction;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType () {
+
+        return $this->type;
     }
 
     /**
      * Set type
      *
      * @param string $type
+     *
      * @return Payment
      */
-    public function setType($type)
-    {
+    public function setType ($type) {
+
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set receiptData
-     *
-     * @param string $receiptData
-     * @return Payment
-     */
-    public function setReceiptData($receiptData)
-    {
-        $this->receiptData = $receiptData;
 
         return $this;
     }
@@ -114,22 +101,23 @@ class Payment
     /**
      * Get receiptData
      *
-     * @return string 
+     * @return string
      */
-    public function getReceiptData()
-    {
+    public function getReceiptData () {
+
         return $this->receiptData;
     }
 
     /**
-     * Set amount
+     * Set receiptData
      *
-     * @param float $amount
+     * @param string $receiptData
+     *
      * @return Payment
      */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+    public function setReceiptData ($receiptData) {
+
+        $this->receiptData = $receiptData;
 
         return $this;
     }
@@ -137,22 +125,23 @@ class Payment
     /**
      * Get amount
      *
-     * @return float 
+     * @return float
      */
-    public function getAmount()
-    {
+    public function getAmount () {
+
         return $this->amount;
     }
 
     /**
-     * Set currency
+     * Set amount
      *
-     * @param string $currency
+     * @param float $amount
+     *
      * @return Payment
      */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
+    public function setAmount ($amount) {
+
+        $this->amount = $amount;
 
         return $this;
     }
@@ -160,22 +149,23 @@ class Payment
     /**
      * Get currency
      *
-     * @return string 
+     * @return string
      */
-    public function getCurrency()
-    {
+    public function getCurrency () {
+
         return $this->currency;
     }
 
     /**
-     * Set timestamp
+     * Set currency
      *
-     * @param \DateTime $timestamp
+     * @param string $currency
+     *
      * @return Payment
      */
-    public function setTimestamp($timestamp)
-    {
-        $this->timestamp = $timestamp;
+    public function setCurrency ($currency) {
+
+        $this->currency = $currency;
 
         return $this;
     }
@@ -183,22 +173,23 @@ class Payment
     /**
      * Get timestamp
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getTimestamp()
-    {
+    public function getTimestamp () {
+
         return $this->timestamp;
     }
 
     /**
-     * Set txnId
+     * Set timestamp
      *
-     * @param string $txnId
+     * @param \DateTime $timestamp
+     *
      * @return Payment
      */
-    public function setTxnId($txnId)
-    {
-        $this->txnId = $txnId;
+    public function setTimestamp ($timestamp) {
+
+        $this->timestamp = $timestamp;
 
         return $this;
     }
@@ -206,22 +197,23 @@ class Payment
     /**
      * Get txnId
      *
-     * @return string 
+     * @return string
      */
-    public function getTxnId()
-    {
+    public function getTxnId () {
+
         return $this->txnId;
     }
 
     /**
-     * Set externalid
+     * Set txnId
      *
-     * @param string $externalid
+     * @param string $txnId
+     *
      * @return Payment
      */
-    public function setExternalid($externalid)
-    {
-        $this->externalid = $externalid;
+    public function setTxnId ($txnId) {
+
+        $this->txnId = $txnId;
 
         return $this;
     }
@@ -229,22 +221,23 @@ class Payment
     /**
      * Get externalid
      *
-     * @return string 
+     * @return string
      */
-    public function getExternalid()
-    {
+    public function getExternalid () {
+
         return $this->externalid;
     }
 
     /**
-     * Set vat
+     * Set externalid
      *
-     * @param float $vat
+     * @param string $externalid
+     *
      * @return Payment
      */
-    public function setVat($vat)
-    {
-        $this->vat = $vat;
+    public function setExternalid ($externalid) {
+
+        $this->externalid = $externalid;
 
         return $this;
     }
@@ -252,22 +245,23 @@ class Payment
     /**
      * Get vat
      *
-     * @return float 
+     * @return float
      */
-    public function getVat()
-    {
+    public function getVat () {
+
         return $this->vat;
     }
 
     /**
-     * Set shipping
+     * Set vat
      *
-     * @param float $shipping
+     * @param float $vat
+     *
      * @return Payment
      */
-    public function setShipping($shipping)
-    {
-        $this->shipping = $shipping;
+    public function setVat ($vat) {
+
+        $this->vat = $vat;
 
         return $this;
     }
@@ -275,22 +269,23 @@ class Payment
     /**
      * Get shipping
      *
-     * @return float 
+     * @return float
      */
-    public function getShipping()
-    {
+    public function getShipping () {
+
         return $this->shipping;
     }
 
     /**
-     * Set transaction
+     * Set shipping
      *
-     * @param \Archiweb\Model\Transaction $transaction
+     * @param float $shipping
+     *
      * @return Payment
      */
-    public function setTransaction(\Archiweb\Model\Transaction $transaction = null)
-    {
-        $this->transaction = $transaction;
+    public function setShipping ($shipping) {
+
+        $this->shipping = $shipping;
 
         return $this;
     }
@@ -298,10 +293,24 @@ class Payment
     /**
      * Get transaction
      *
-     * @return \Archiweb\Model\Transaction 
+     * @return \Archiweb\Model\Transaction
      */
-    public function getTransaction()
-    {
+    public function getTransaction () {
+
         return $this->transaction;
+    }
+
+    /**
+     * Set transaction
+     *
+     * @param \Archiweb\Model\Transaction $transaction
+     *
+     * @return Payment
+     */
+    public function setTransaction (\Archiweb\Model\Transaction $transaction = NULL) {
+
+        $this->transaction = $transaction;
+
+        return $this;
     }
 }

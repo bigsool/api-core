@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Functionality
  */
-class Functionality
-{
+class Functionality {
+
     /**
      * @var integer
      */
@@ -42,8 +42,8 @@ class Functionality
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->deviceCompanyStates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->productFunctionalities = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -51,45 +51,33 @@ class Functionality
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get bundleId
+     *
+     * @return string
+     */
+    public function getBundleId () {
+
+        return $this->bundleId;
     }
 
     /**
      * Set bundleId
      *
      * @param string $bundleId
+     *
      * @return Functionality
      */
-    public function setBundleId($bundleId)
-    {
+    public function setBundleId ($bundleId) {
+
         $this->bundleId = $bundleId;
-
-        return $this;
-    }
-
-    /**
-     * Get bundleId
-     *
-     * @return string 
-     */
-    public function getBundleId()
-    {
-        return $this->bundleId;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Functionality
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
 
         return $this;
     }
@@ -97,22 +85,23 @@ class Functionality
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName () {
+
         return $this->name;
     }
 
     /**
-     * Set consumable
+     * Set name
      *
-     * @param boolean $consumable
+     * @param string $name
+     *
      * @return Functionality
      */
-    public function setConsumable($consumable)
-    {
-        $this->consumable = $consumable;
+    public function setName ($name) {
+
+        $this->name = $name;
 
         return $this;
     }
@@ -120,21 +109,36 @@ class Functionality
     /**
      * Get consumable
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getConsumable()
-    {
+    public function getConsumable () {
+
         return $this->consumable;
+    }
+
+    /**
+     * Set consumable
+     *
+     * @param boolean $consumable
+     *
+     * @return Functionality
+     */
+    public function setConsumable ($consumable) {
+
+        $this->consumable = $consumable;
+
+        return $this;
     }
 
     /**
      * Add deviceCompanyStates
      *
      * @param \Archiweb\Model\DeviceCompanyState $deviceCompanyStates
+     *
      * @return Functionality
      */
-    public function addDeviceCompanyState(\Archiweb\Model\DeviceCompanyState $deviceCompanyStates)
-    {
+    public function addDeviceCompanyState (\Archiweb\Model\DeviceCompanyState $deviceCompanyStates) {
+
         $this->deviceCompanyStates[] = $deviceCompanyStates;
 
         return $this;
@@ -145,18 +149,18 @@ class Functionality
      *
      * @param \Archiweb\Model\DeviceCompanyState $deviceCompanyStates
      */
-    public function removeDeviceCompanyState(\Archiweb\Model\DeviceCompanyState $deviceCompanyStates)
-    {
+    public function removeDeviceCompanyState (\Archiweb\Model\DeviceCompanyState $deviceCompanyStates) {
+
         $this->deviceCompanyStates->removeElement($deviceCompanyStates);
     }
 
     /**
      * Get deviceCompanyStates
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDeviceCompanyStates()
-    {
+    public function getDeviceCompanyStates () {
+
         return $this->deviceCompanyStates;
     }
 
@@ -164,10 +168,11 @@ class Functionality
      * Add productFunctionalities
      *
      * @param \Archiweb\Model\ProductFunctionality $productFunctionalities
+     *
      * @return Functionality
      */
-    public function addProductFunctionality(\Archiweb\Model\ProductFunctionality $productFunctionalities)
-    {
+    public function addProductFunctionality (\Archiweb\Model\ProductFunctionality $productFunctionalities) {
+
         $this->productFunctionalities[] = $productFunctionalities;
 
         return $this;
@@ -178,18 +183,18 @@ class Functionality
      *
      * @param \Archiweb\Model\ProductFunctionality $productFunctionalities
      */
-    public function removeProductFunctionality(\Archiweb\Model\ProductFunctionality $productFunctionalities)
-    {
+    public function removeProductFunctionality (\Archiweb\Model\ProductFunctionality $productFunctionalities) {
+
         $this->productFunctionalities->removeElement($productFunctionalities);
     }
 
     /**
      * Get productFunctionalities
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getProductFunctionalities()
-    {
+    public function getProductFunctionalities () {
+
         return $this->productFunctionalities;
     }
 }

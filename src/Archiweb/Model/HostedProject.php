@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * HostedProject
  */
-class HostedProject
-{
+class HostedProject {
+
     /**
      * @var integer
      */
@@ -77,8 +77,8 @@ class HostedProject
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->userProjectRoles = new \Doctrine\Common\Collections\ArrayCollection();
         $this->sharedHostedProjects = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -86,45 +86,33 @@ class HostedProject
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return HostedProject
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set creationDate
-     *
-     * @param \DateTime $creationDate
-     * @return HostedProject
-     */
-    public function setCreationDate($creationDate)
-    {
-        $this->creationDate = $creationDate;
 
         return $this;
     }
@@ -132,22 +120,23 @@ class HostedProject
     /**
      * Get creationDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreationDate()
-    {
+    public function getCreationDate () {
+
         return $this->creationDate;
     }
 
     /**
-     * Set patchId
+     * Set creationDate
      *
-     * @param string $patchId
+     * @param \DateTime $creationDate
+     *
      * @return HostedProject
      */
-    public function setPatchId($patchId)
-    {
-        $this->patchId = $patchId;
+    public function setCreationDate ($creationDate) {
+
+        $this->creationDate = $creationDate;
 
         return $this;
     }
@@ -155,22 +144,23 @@ class HostedProject
     /**
      * Get patchId
      *
-     * @return string 
+     * @return string
      */
-    public function getPatchId()
-    {
+    public function getPatchId () {
+
         return $this->patchId;
     }
 
     /**
-     * Set lastModificationDate
+     * Set patchId
      *
-     * @param \DateTime $lastModificationDate
+     * @param string $patchId
+     *
      * @return HostedProject
      */
-    public function setLastModificationDate($lastModificationDate)
-    {
-        $this->lastModificationDate = $lastModificationDate;
+    public function setPatchId ($patchId) {
+
+        $this->patchId = $patchId;
 
         return $this;
     }
@@ -178,22 +168,23 @@ class HostedProject
     /**
      * Get lastModificationDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getLastModificationDate()
-    {
+    public function getLastModificationDate () {
+
         return $this->lastModificationDate;
     }
 
     /**
-     * Set clientNameCreator
+     * Set lastModificationDate
      *
-     * @param string $clientNameCreator
+     * @param \DateTime $lastModificationDate
+     *
      * @return HostedProject
      */
-    public function setClientNameCreator($clientNameCreator)
-    {
-        $this->clientNameCreator = $clientNameCreator;
+    public function setLastModificationDate ($lastModificationDate) {
+
+        $this->lastModificationDate = $lastModificationDate;
 
         return $this;
     }
@@ -201,22 +192,23 @@ class HostedProject
     /**
      * Get clientNameCreator
      *
-     * @return string 
+     * @return string
      */
-    public function getClientNameCreator()
-    {
+    public function getClientNameCreator () {
+
         return $this->clientNameCreator;
     }
 
     /**
-     * Set clientVersionCreator
+     * Set clientNameCreator
      *
-     * @param string $clientVersionCreator
+     * @param string $clientNameCreator
+     *
      * @return HostedProject
      */
-    public function setClientVersionCreator($clientVersionCreator)
-    {
-        $this->clientVersionCreator = $clientVersionCreator;
+    public function setClientNameCreator ($clientNameCreator) {
+
+        $this->clientNameCreator = $clientNameCreator;
 
         return $this;
     }
@@ -224,22 +216,23 @@ class HostedProject
     /**
      * Get clientVersionCreator
      *
-     * @return string 
+     * @return string
      */
-    public function getClientVersionCreator()
-    {
+    public function getClientVersionCreator () {
+
         return $this->clientVersionCreator;
     }
 
     /**
-     * Set UUIDCreator
+     * Set clientVersionCreator
      *
-     * @param string $uUIDCreator
+     * @param string $clientVersionCreator
+     *
      * @return HostedProject
      */
-    public function setUUIDCreator($uUIDCreator)
-    {
-        $this->UUIDCreator = $uUIDCreator;
+    public function setClientVersionCreator ($clientVersionCreator) {
+
+        $this->clientVersionCreator = $clientVersionCreator;
 
         return $this;
     }
@@ -247,22 +240,23 @@ class HostedProject
     /**
      * Get UUIDCreator
      *
-     * @return string 
+     * @return string
      */
-    public function getUUIDCreator()
-    {
+    public function getUUIDCreator () {
+
         return $this->UUIDCreator;
     }
 
     /**
-     * Set isUploading
+     * Set UUIDCreator
      *
-     * @param boolean $isUploading
+     * @param string $uUIDCreator
+     *
      * @return HostedProject
      */
-    public function setIsUploading($isUploading)
-    {
-        $this->isUploading = $isUploading;
+    public function setUUIDCreator ($uUIDCreator) {
+
+        $this->UUIDCreator = $uUIDCreator;
 
         return $this;
     }
@@ -270,22 +264,23 @@ class HostedProject
     /**
      * Get isUploading
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsUploading()
-    {
+    public function getIsUploading () {
+
         return $this->isUploading;
     }
 
     /**
-     * Set isSynchronizable
+     * Set isUploading
      *
-     * @param boolean $isSynchronizable
+     * @param boolean $isUploading
+     *
      * @return HostedProject
      */
-    public function setIsSynchronizable($isSynchronizable)
-    {
-        $this->isSynchronizable = $isSynchronizable;
+    public function setIsUploading ($isUploading) {
+
+        $this->isUploading = $isUploading;
 
         return $this;
     }
@@ -293,21 +288,36 @@ class HostedProject
     /**
      * Get isSynchronizable
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsSynchronizable()
-    {
+    public function getIsSynchronizable () {
+
         return $this->isSynchronizable;
+    }
+
+    /**
+     * Set isSynchronizable
+     *
+     * @param boolean $isSynchronizable
+     *
+     * @return HostedProject
+     */
+    public function setIsSynchronizable ($isSynchronizable) {
+
+        $this->isSynchronizable = $isSynchronizable;
+
+        return $this;
     }
 
     /**
      * Add userProjectRoles
      *
      * @param \Archiweb\Model\UserProjectRole $userProjectRoles
+     *
      * @return HostedProject
      */
-    public function addUserProjectRole(\Archiweb\Model\UserProjectRole $userProjectRoles)
-    {
+    public function addUserProjectRole (\Archiweb\Model\UserProjectRole $userProjectRoles) {
+
         $this->userProjectRoles[] = $userProjectRoles;
 
         return $this;
@@ -318,18 +328,18 @@ class HostedProject
      *
      * @param \Archiweb\Model\UserProjectRole $userProjectRoles
      */
-    public function removeUserProjectRole(\Archiweb\Model\UserProjectRole $userProjectRoles)
-    {
+    public function removeUserProjectRole (\Archiweb\Model\UserProjectRole $userProjectRoles) {
+
         $this->userProjectRoles->removeElement($userProjectRoles);
     }
 
     /**
      * Get userProjectRoles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUserProjectRoles()
-    {
+    public function getUserProjectRoles () {
+
         return $this->userProjectRoles;
     }
 
@@ -337,10 +347,11 @@ class HostedProject
      * Add sharedHostedProjects
      *
      * @param \Archiweb\Model\SharedHostedProject $sharedHostedProjects
+     *
      * @return HostedProject
      */
-    public function addSharedHostedProject(\Archiweb\Model\SharedHostedProject $sharedHostedProjects)
-    {
+    public function addSharedHostedProject (\Archiweb\Model\SharedHostedProject $sharedHostedProjects) {
+
         $this->sharedHostedProjects[] = $sharedHostedProjects;
 
         return $this;
@@ -351,41 +362,42 @@ class HostedProject
      *
      * @param \Archiweb\Model\SharedHostedProject $sharedHostedProjects
      */
-    public function removeSharedHostedProject(\Archiweb\Model\SharedHostedProject $sharedHostedProjects)
-    {
+    public function removeSharedHostedProject (\Archiweb\Model\SharedHostedProject $sharedHostedProjects) {
+
         $this->sharedHostedProjects->removeElement($sharedHostedProjects);
     }
 
     /**
      * Get sharedHostedProjects
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSharedHostedProjects()
-    {
+    public function getSharedHostedProjects () {
+
         return $this->sharedHostedProjects;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \Archiweb\Model\User
+     */
+    public function getCreator () {
+
+        return $this->creator;
     }
 
     /**
      * Set creator
      *
      * @param \Archiweb\Model\User $creator
+     *
      * @return HostedProject
      */
-    public function setCreator(\Archiweb\Model\User $creator)
-    {
+    public function setCreator (\Archiweb\Model\User $creator) {
+
         $this->creator = $creator;
 
         return $this;
-    }
-
-    /**
-     * Get creator
-     *
-     * @return \Archiweb\Model\User 
-     */
-    public function getCreator()
-    {
-        return $this->creator;
     }
 }

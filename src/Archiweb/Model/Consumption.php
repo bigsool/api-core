@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Consumption
  */
-class Consumption
-{
+class Consumption {
+
     /**
      * @var integer
      */
@@ -24,49 +24,36 @@ class Consumption
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get functionality
+     *
+     * @return \Archiweb\Model\Functionality
+     */
+    public function getFunctionality () {
+
+        return $this->functionality;
     }
 
     /**
      * Set functionality
      *
      * @param \Archiweb\Model\Functionality $functionality
+     *
      * @return Consumption
      */
-    public function setFunctionality(\Archiweb\Model\Functionality $functionality)
-    {
+    public function setFunctionality (\Archiweb\Model\Functionality $functionality) {
+
         $this->functionality = $functionality;
-
-        return $this;
-    }
-
-    /**
-     * Get functionality
-     *
-     * @return \Archiweb\Model\Functionality 
-     */
-    public function getFunctionality()
-    {
-        return $this->functionality;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Archiweb\Model\Company $company
-     * @return Consumption
-     */
-    public function setCompany(\Archiweb\Model\Company $company)
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -74,10 +61,24 @@ class Consumption
     /**
      * Get company
      *
-     * @return \Archiweb\Model\Company 
+     * @return \Archiweb\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Archiweb\Model\Company $company
+     *
+     * @return Consumption
+     */
+    public function setCompany (\Archiweb\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

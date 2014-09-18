@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * SystemMessage
  */
-class SystemMessage
-{
+class SystemMessage {
+
     /**
      * @var integer
      */
@@ -49,49 +49,36 @@ class SystemMessage
      */
     private $user;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get message
+     *
+     * @return string
+     */
+    public function getMessage () {
+
+        return $this->message;
     }
 
     /**
      * Set message
      *
      * @param string $message
+     *
      * @return SystemMessage
      */
-    public function setMessage($message)
-    {
+    public function setMessage ($message) {
+
         $this->message = $message;
-
-        return $this;
-    }
-
-    /**
-     * Get message
-     *
-     * @return string 
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    /**
-     * Set localizedmessage
-     *
-     * @param string $localizedmessage
-     * @return SystemMessage
-     */
-    public function setLocalizedmessage($localizedmessage)
-    {
-        $this->localizedmessage = $localizedmessage;
 
         return $this;
     }
@@ -99,22 +86,23 @@ class SystemMessage
     /**
      * Get localizedmessage
      *
-     * @return string 
+     * @return string
      */
-    public function getLocalizedmessage()
-    {
+    public function getLocalizedmessage () {
+
         return $this->localizedmessage;
     }
 
     /**
-     * Set type
+     * Set localizedmessage
      *
-     * @param string $type
+     * @param string $localizedmessage
+     *
      * @return SystemMessage
      */
-    public function setType($type)
-    {
-        $this->type = $type;
+    public function setLocalizedmessage ($localizedmessage) {
+
+        $this->localizedmessage = $localizedmessage;
 
         return $this;
     }
@@ -122,22 +110,23 @@ class SystemMessage
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
-    public function getType()
-    {
+    public function getType () {
+
         return $this->type;
     }
 
     /**
-     * Set sent
+     * Set type
      *
-     * @param boolean $sent
+     * @param string $type
+     *
      * @return SystemMessage
      */
-    public function setSent($sent)
-    {
-        $this->sent = $sent;
+    public function setType ($type) {
+
+        $this->type = $type;
 
         return $this;
     }
@@ -145,22 +134,23 @@ class SystemMessage
     /**
      * Get sent
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getSent()
-    {
+    public function getSent () {
+
         return $this->sent;
     }
 
     /**
-     * Set creationdate
+     * Set sent
      *
-     * @param \DateTime $creationdate
+     * @param boolean $sent
+     *
      * @return SystemMessage
      */
-    public function setCreationdate($creationdate)
-    {
-        $this->creationdate = $creationdate;
+    public function setSent ($sent) {
+
+        $this->sent = $sent;
 
         return $this;
     }
@@ -168,22 +158,23 @@ class SystemMessage
     /**
      * Get creationdate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreationdate()
-    {
+    public function getCreationdate () {
+
         return $this->creationdate;
     }
 
     /**
-     * Set expirationdate
+     * Set creationdate
      *
-     * @param \DateTime $expirationdate
+     * @param \DateTime $creationdate
+     *
      * @return SystemMessage
      */
-    public function setExpirationdate($expirationdate)
-    {
-        $this->expirationdate = $expirationdate;
+    public function setCreationdate ($creationdate) {
+
+        $this->creationdate = $creationdate;
 
         return $this;
     }
@@ -191,22 +182,23 @@ class SystemMessage
     /**
      * Get expirationdate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getExpirationdate()
-    {
+    public function getExpirationdate () {
+
         return $this->expirationdate;
     }
 
     /**
-     * Set user
+     * Set expirationdate
      *
-     * @param \Archiweb\Model\User $user
+     * @param \DateTime $expirationdate
+     *
      * @return SystemMessage
      */
-    public function setUser(\Archiweb\Model\User $user)
-    {
-        $this->user = $user;
+    public function setExpirationdate ($expirationdate) {
+
+        $this->expirationdate = $expirationdate;
 
         return $this;
     }
@@ -214,10 +206,24 @@ class SystemMessage
     /**
      * Get user
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Archiweb\Model\User $user
+     *
+     * @return SystemMessage
+     */
+    public function setUser (\Archiweb\Model\User $user) {
+
+        $this->user = $user;
+
+        return $this;
     }
 }

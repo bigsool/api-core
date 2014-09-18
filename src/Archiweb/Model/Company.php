@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Company
  */
-class Company
-{
+class Company {
+
     /**
      * @var integer
      */
@@ -107,8 +107,8 @@ class Company
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->overconsumptionReminders = new \Doctrine\Common\Collections\ArrayCollection();
         $this->deviceCompanies = new \Doctrine\Common\Collections\ArrayCollection();
         $this->devicesUsedForTheFreetrial = new \Doctrine\Common\Collections\ArrayCollection();
@@ -120,45 +120,33 @@ class Company
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Company
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return Company
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -166,22 +154,23 @@ class Company
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set zipCode
+     * Set address
      *
-     * @param string $zipCode
+     * @param string $address
+     *
      * @return Company
      */
-    public function setZipCode($zipCode)
-    {
-        $this->zipCode = $zipCode;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -189,22 +178,23 @@ class Company
     /**
      * Get zipCode
      *
-     * @return string 
+     * @return string
      */
-    public function getZipCode()
-    {
+    public function getZipCode () {
+
         return $this->zipCode;
     }
 
     /**
-     * Set city
+     * Set zipCode
      *
-     * @param string $city
+     * @param string $zipCode
+     *
      * @return Company
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setZipCode ($zipCode) {
+
+        $this->zipCode = $zipCode;
 
         return $this;
     }
@@ -212,22 +202,23 @@ class Company
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
+     *
      * @return Company
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -235,22 +226,23 @@ class Company
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set country
+     * Set state
      *
-     * @param string $country
+     * @param string $state
+     *
      * @return Company
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -258,22 +250,23 @@ class Company
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set tel
+     * Set country
      *
-     * @param string $tel
+     * @param string $country
+     *
      * @return Company
      */
-    public function setTel($tel)
-    {
-        $this->tel = $tel;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -281,22 +274,23 @@ class Company
     /**
      * Get tel
      *
-     * @return string 
+     * @return string
      */
-    public function getTel()
-    {
+    public function getTel () {
+
         return $this->tel;
     }
 
     /**
-     * Set fax
+     * Set tel
      *
-     * @param string $fax
+     * @param string $tel
+     *
      * @return Company
      */
-    public function setFax($fax)
-    {
-        $this->fax = $fax;
+    public function setTel ($tel) {
+
+        $this->tel = $tel;
 
         return $this;
     }
@@ -304,22 +298,23 @@ class Company
     /**
      * Get fax
      *
-     * @return string 
+     * @return string
      */
-    public function getFax()
-    {
+    public function getFax () {
+
         return $this->fax;
     }
 
     /**
-     * Set tva
+     * Set fax
      *
-     * @param string $tva
+     * @param string $fax
+     *
      * @return Company
      */
-    public function setTva($tva)
-    {
-        $this->tva = $tva;
+    public function setFax ($fax) {
+
+        $this->fax = $fax;
 
         return $this;
     }
@@ -327,22 +322,23 @@ class Company
     /**
      * Get tva
      *
-     * @return string 
+     * @return string
      */
-    public function getTva()
-    {
+    public function getTva () {
+
         return $this->tva;
     }
 
     /**
-     * Set currentOverconsumptionReminder
+     * Set tva
      *
-     * @param \Archiweb\Model\OverconsumptionReminder $currentOverconsumptionReminder
+     * @param string $tva
+     *
      * @return Company
      */
-    public function setCurrentOverconsumptionReminder(\Archiweb\Model\OverconsumptionReminder $currentOverconsumptionReminder = null)
-    {
-        $this->currentOverconsumptionReminder = $currentOverconsumptionReminder;
+    public function setTva ($tva) {
+
+        $this->tva = $tva;
 
         return $this;
     }
@@ -350,22 +346,23 @@ class Company
     /**
      * Get currentOverconsumptionReminder
      *
-     * @return \Archiweb\Model\OverconsumptionReminder 
+     * @return \Archiweb\Model\OverconsumptionReminder
      */
-    public function getCurrentOverconsumptionReminder()
-    {
+    public function getCurrentOverconsumptionReminder () {
+
         return $this->currentOverconsumptionReminder;
     }
 
     /**
-     * Set owner
+     * Set currentOverconsumptionReminder
      *
-     * @param \Archiweb\Model\User $owner
+     * @param \Archiweb\Model\OverconsumptionReminder $currentOverconsumptionReminder
+     *
      * @return Company
      */
-    public function setOwner(\Archiweb\Model\User $owner)
-    {
-        $this->owner = $owner;
+    public function setCurrentOverconsumptionReminder (\Archiweb\Model\OverconsumptionReminder $currentOverconsumptionReminder = NULL) {
+
+        $this->currentOverconsumptionReminder = $currentOverconsumptionReminder;
 
         return $this;
     }
@@ -373,22 +370,23 @@ class Company
     /**
      * Get owner
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getOwner()
-    {
+    public function getOwner () {
+
         return $this->owner;
     }
 
     /**
-     * Set storage
+     * Set owner
      *
-     * @param \Archiweb\Model\Storage $storage
+     * @param \Archiweb\Model\User $owner
+     *
      * @return Company
      */
-    public function setStorage(\Archiweb\Model\Storage $storage = null)
-    {
-        $this->storage = $storage;
+    public function setOwner (\Archiweb\Model\User $owner) {
+
+        $this->owner = $owner;
 
         return $this;
     }
@@ -396,21 +394,36 @@ class Company
     /**
      * Get storage
      *
-     * @return \Archiweb\Model\Storage 
+     * @return \Archiweb\Model\Storage
      */
-    public function getStorage()
-    {
+    public function getStorage () {
+
         return $this->storage;
+    }
+
+    /**
+     * Set storage
+     *
+     * @param \Archiweb\Model\Storage $storage
+     *
+     * @return Company
+     */
+    public function setStorage (\Archiweb\Model\Storage $storage = NULL) {
+
+        $this->storage = $storage;
+
+        return $this;
     }
 
     /**
      * Add overconsumptionReminders
      *
      * @param \Archiweb\Model\OverconsumptionReminder $overconsumptionReminders
+     *
      * @return Company
      */
-    public function addOverconsumptionReminder(\Archiweb\Model\OverconsumptionReminder $overconsumptionReminders)
-    {
+    public function addOverconsumptionReminder (\Archiweb\Model\OverconsumptionReminder $overconsumptionReminders) {
+
         $this->overconsumptionReminders[] = $overconsumptionReminders;
 
         return $this;
@@ -421,18 +434,18 @@ class Company
      *
      * @param \Archiweb\Model\OverconsumptionReminder $overconsumptionReminders
      */
-    public function removeOverconsumptionReminder(\Archiweb\Model\OverconsumptionReminder $overconsumptionReminders)
-    {
+    public function removeOverconsumptionReminder (\Archiweb\Model\OverconsumptionReminder $overconsumptionReminders) {
+
         $this->overconsumptionReminders->removeElement($overconsumptionReminders);
     }
 
     /**
      * Get overconsumptionReminders
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getOverconsumptionReminders()
-    {
+    public function getOverconsumptionReminders () {
+
         return $this->overconsumptionReminders;
     }
 
@@ -440,10 +453,11 @@ class Company
      * Add deviceCompanies
      *
      * @param \Archiweb\Model\DeviceCompany $deviceCompanies
+     *
      * @return Company
      */
-    public function addDeviceCompany(\Archiweb\Model\DeviceCompany $deviceCompanies)
-    {
+    public function addDeviceCompany (\Archiweb\Model\DeviceCompany $deviceCompanies) {
+
         $this->deviceCompanies[] = $deviceCompanies;
 
         return $this;
@@ -454,18 +468,18 @@ class Company
      *
      * @param \Archiweb\Model\DeviceCompany $deviceCompanies
      */
-    public function removeDeviceCompany(\Archiweb\Model\DeviceCompany $deviceCompanies)
-    {
+    public function removeDeviceCompany (\Archiweb\Model\DeviceCompany $deviceCompanies) {
+
         $this->deviceCompanies->removeElement($deviceCompanies);
     }
 
     /**
      * Get deviceCompanies
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDeviceCompanies()
-    {
+    public function getDeviceCompanies () {
+
         return $this->deviceCompanies;
     }
 
@@ -473,10 +487,11 @@ class Company
      * Add devicesUsedForTheFreetrial
      *
      * @param \Archiweb\Model\Device $devicesUsedForTheFreetrial
+     *
      * @return Company
      */
-    public function addDevicesUsedForTheFreetrial(\Archiweb\Model\Device $devicesUsedForTheFreetrial)
-    {
+    public function addDevicesUsedForTheFreetrial (\Archiweb\Model\Device $devicesUsedForTheFreetrial) {
+
         $this->devicesUsedForTheFreetrial[] = $devicesUsedForTheFreetrial;
 
         return $this;
@@ -487,18 +502,18 @@ class Company
      *
      * @param \Archiweb\Model\Device $devicesUsedForTheFreetrial
      */
-    public function removeDevicesUsedForTheFreetrial(\Archiweb\Model\Device $devicesUsedForTheFreetrial)
-    {
+    public function removeDevicesUsedForTheFreetrial (\Archiweb\Model\Device $devicesUsedForTheFreetrial) {
+
         $this->devicesUsedForTheFreetrial->removeElement($devicesUsedForTheFreetrial);
     }
 
     /**
      * Get devicesUsedForTheFreetrial
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDevicesUsedForTheFreetrial()
-    {
+    public function getDevicesUsedForTheFreetrial () {
+
         return $this->devicesUsedForTheFreetrial;
     }
 
@@ -506,10 +521,11 @@ class Company
      * Add users
      *
      * @param \Archiweb\Model\User $users
+     *
      * @return Company
      */
-    public function addUser(\Archiweb\Model\User $users)
-    {
+    public function addUser (\Archiweb\Model\User $users) {
+
         $this->users[] = $users;
 
         return $this;
@@ -520,18 +536,18 @@ class Company
      *
      * @param \Archiweb\Model\User $users
      */
-    public function removeUser(\Archiweb\Model\User $users)
-    {
+    public function removeUser (\Archiweb\Model\User $users) {
+
         $this->users->removeElement($users);
     }
 
     /**
      * Get users
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUsers()
-    {
+    public function getUsers () {
+
         return $this->users;
     }
 
@@ -539,10 +555,11 @@ class Company
      * Add sharedReports
      *
      * @param \Archiweb\Model\SharedReport $sharedReports
+     *
      * @return Company
      */
-    public function addSharedReport(\Archiweb\Model\SharedReport $sharedReports)
-    {
+    public function addSharedReport (\Archiweb\Model\SharedReport $sharedReports) {
+
         $this->sharedReports[] = $sharedReports;
 
         return $this;
@@ -553,18 +570,18 @@ class Company
      *
      * @param \Archiweb\Model\SharedReport $sharedReports
      */
-    public function removeSharedReport(\Archiweb\Model\SharedReport $sharedReports)
-    {
+    public function removeSharedReport (\Archiweb\Model\SharedReport $sharedReports) {
+
         $this->sharedReports->removeElement($sharedReports);
     }
 
     /**
      * Get sharedReports
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSharedReports()
-    {
+    public function getSharedReports () {
+
         return $this->sharedReports;
     }
 
@@ -572,10 +589,11 @@ class Company
      * Add defaultRoles
      *
      * @param \Archiweb\Model\ProjectRole $defaultRoles
+     *
      * @return Company
      */
-    public function addDefaultRole(\Archiweb\Model\ProjectRole $defaultRoles)
-    {
+    public function addDefaultRole (\Archiweb\Model\ProjectRole $defaultRoles) {
+
         $this->defaultRoles[] = $defaultRoles;
 
         return $this;
@@ -586,18 +604,18 @@ class Company
      *
      * @param \Archiweb\Model\ProjectRole $defaultRoles
      */
-    public function removeDefaultRole(\Archiweb\Model\ProjectRole $defaultRoles)
-    {
+    public function removeDefaultRole (\Archiweb\Model\ProjectRole $defaultRoles) {
+
         $this->defaultRoles->removeElement($defaultRoles);
     }
 
     /**
      * Get defaultRoles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getDefaultRoles()
-    {
+    public function getDefaultRoles () {
+
         return $this->defaultRoles;
     }
 }

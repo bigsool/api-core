@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ReportTemplate
  */
-class ReportTemplate
-{
+class ReportTemplate {
+
     /**
      * @var integer
      */
@@ -34,49 +34,36 @@ class ReportTemplate
      */
     private $user;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ReportTemplate
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set data
-     *
-     * @param string $data
-     * @return ReportTemplate
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
 
         return $this;
     }
@@ -84,22 +71,23 @@ class ReportTemplate
     /**
      * Get data
      *
-     * @return string 
+     * @return string
      */
-    public function getData()
-    {
+    public function getData () {
+
         return $this->data;
     }
 
     /**
-     * Set date
+     * Set data
      *
-     * @param \DateTime $date
+     * @param string $data
+     *
      * @return ReportTemplate
      */
-    public function setDate($date)
-    {
-        $this->date = $date;
+    public function setData ($data) {
+
+        $this->data = $data;
 
         return $this;
     }
@@ -107,22 +95,23 @@ class ReportTemplate
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getDate()
-    {
+    public function getDate () {
+
         return $this->date;
     }
 
     /**
-     * Set user
+     * Set date
      *
-     * @param \Archiweb\Model\User $user
+     * @param \DateTime $date
+     *
      * @return ReportTemplate
      */
-    public function setUser(\Archiweb\Model\User $user)
-    {
-        $this->user = $user;
+    public function setDate ($date) {
+
+        $this->date = $date;
 
         return $this;
     }
@@ -130,10 +119,24 @@ class ReportTemplate
     /**
      * Get user
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Archiweb\Model\User $user
+     *
+     * @return ReportTemplate
+     */
+    public function setUser (\Archiweb\Model\User $user) {
+
+        $this->user = $user;
+
+        return $this;
     }
 }

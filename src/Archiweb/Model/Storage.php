@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Storage
  */
-class Storage
-{
+class Storage {
+
     /**
      * @var integer
      */
@@ -49,49 +49,36 @@ class Storage
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl () {
+
+        return $this->url;
     }
 
     /**
      * Set url
      *
      * @param string $url
+     *
      * @return Storage
      */
-    public function setUrl($url)
-    {
+    public function setUrl ($url) {
+
         $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string 
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set login
-     *
-     * @param string $login
-     * @return Storage
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
 
         return $this;
     }
@@ -99,22 +86,23 @@ class Storage
     /**
      * Get login
      *
-     * @return string 
+     * @return string
      */
-    public function getLogin()
-    {
+    public function getLogin () {
+
         return $this->login;
     }
 
     /**
-     * Set password
+     * Set login
      *
-     * @param string $password
+     * @param string $login
+     *
      * @return Storage
      */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+    public function setLogin ($login) {
+
+        $this->login = $login;
 
         return $this;
     }
@@ -122,22 +110,23 @@ class Storage
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set usedspace
+     * Set password
      *
-     * @param integer $usedspace
+     * @param string $password
+     *
      * @return Storage
      */
-    public function setUsedspace($usedspace)
-    {
-        $this->usedspace = $usedspace;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -145,22 +134,23 @@ class Storage
     /**
      * Get usedspace
      *
-     * @return integer 
+     * @return integer
      */
-    public function getUsedspace()
-    {
+    public function getUsedspace () {
+
         return $this->usedspace;
     }
 
     /**
-     * Set lastusedspaceupdate
+     * Set usedspace
      *
-     * @param \DateTime $lastusedspaceupdate
+     * @param integer $usedspace
+     *
      * @return Storage
      */
-    public function setLastusedspaceupdate($lastusedspaceupdate)
-    {
-        $this->lastusedspaceupdate = $lastusedspaceupdate;
+    public function setUsedspace ($usedspace) {
+
+        $this->usedspace = $usedspace;
 
         return $this;
     }
@@ -168,22 +158,23 @@ class Storage
     /**
      * Get lastusedspaceupdate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getLastusedspaceupdate()
-    {
+    public function getLastusedspaceupdate () {
+
         return $this->lastusedspaceupdate;
     }
 
     /**
-     * Set isoutofquota
+     * Set lastusedspaceupdate
      *
-     * @param boolean $isoutofquota
+     * @param \DateTime $lastusedspaceupdate
+     *
      * @return Storage
      */
-    public function setIsoutofquota($isoutofquota)
-    {
-        $this->isoutofquota = $isoutofquota;
+    public function setLastusedspaceupdate ($lastusedspaceupdate) {
+
+        $this->lastusedspaceupdate = $lastusedspaceupdate;
 
         return $this;
     }
@@ -191,22 +182,23 @@ class Storage
     /**
      * Get isoutofquota
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsoutofquota()
-    {
+    public function getIsoutofquota () {
+
         return $this->isoutofquota;
     }
 
     /**
-     * Set company
+     * Set isoutofquota
      *
-     * @param \Archiweb\Model\Company $company
+     * @param boolean $isoutofquota
+     *
      * @return Storage
      */
-    public function setCompany(\Archiweb\Model\Company $company)
-    {
-        $this->company = $company;
+    public function setIsoutofquota ($isoutofquota) {
+
+        $this->isoutofquota = $isoutofquota;
 
         return $this;
     }
@@ -214,10 +206,24 @@ class Storage
     /**
      * Get company
      *
-     * @return \Archiweb\Model\Company 
+     * @return \Archiweb\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Archiweb\Model\Company $company
+     *
+     * @return Storage
+     */
+    public function setCompany (\Archiweb\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

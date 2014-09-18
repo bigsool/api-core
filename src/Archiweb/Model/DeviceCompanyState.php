@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * DeviceCompanyState
  */
-class DeviceCompanyState
-{
+class DeviceCompanyState {
+
     /**
      * @var boolean
      */
@@ -29,39 +29,26 @@ class DeviceCompanyState
      */
     private $device;
 
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled () {
+
+        return $this->enabled;
+    }
 
     /**
      * Set enabled
      *
      * @param boolean $enabled
+     *
      * @return DeviceCompanyState
      */
-    public function setEnabled($enabled)
-    {
+    public function setEnabled ($enabled) {
+
         $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Get enabled
-     *
-     * @return boolean 
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Archiweb\Model\Company $company
-     * @return DeviceCompanyState
-     */
-    public function setCompany(\Archiweb\Model\Company $company)
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -69,22 +56,23 @@ class DeviceCompanyState
     /**
      * Get company
      *
-     * @return \Archiweb\Model\Company 
+     * @return \Archiweb\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
     }
 
     /**
-     * Set functionality
+     * Set company
      *
-     * @param \Archiweb\Model\Functionality $functionality
+     * @param \Archiweb\Model\Company $company
+     *
      * @return DeviceCompanyState
      */
-    public function setFunctionality(\Archiweb\Model\Functionality $functionality)
-    {
-        $this->functionality = $functionality;
+    public function setCompany (\Archiweb\Model\Company $company) {
+
+        $this->company = $company;
 
         return $this;
     }
@@ -92,22 +80,23 @@ class DeviceCompanyState
     /**
      * Get functionality
      *
-     * @return \Archiweb\Model\Functionality 
+     * @return \Archiweb\Model\Functionality
      */
-    public function getFunctionality()
-    {
+    public function getFunctionality () {
+
         return $this->functionality;
     }
 
     /**
-     * Set device
+     * Set functionality
      *
-     * @param \Archiweb\Model\Device $device
+     * @param \Archiweb\Model\Functionality $functionality
+     *
      * @return DeviceCompanyState
      */
-    public function setDevice(\Archiweb\Model\Device $device)
-    {
-        $this->device = $device;
+    public function setFunctionality (\Archiweb\Model\Functionality $functionality) {
+
+        $this->functionality = $functionality;
 
         return $this;
     }
@@ -115,10 +104,24 @@ class DeviceCompanyState
     /**
      * Get device
      *
-     * @return \Archiweb\Model\Device 
+     * @return \Archiweb\Model\Device
      */
-    public function getDevice()
-    {
+    public function getDevice () {
+
         return $this->device;
+    }
+
+    /**
+     * Set device
+     *
+     * @param \Archiweb\Model\Device $device
+     *
+     * @return DeviceCompanyState
+     */
+    public function setDevice (\Archiweb\Model\Device $device) {
+
+        $this->device = $device;
+
+        return $this;
     }
 }

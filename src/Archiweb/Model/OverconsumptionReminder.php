@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * OverconsumptionReminder
  */
-class OverconsumptionReminder
-{
+class OverconsumptionReminder {
+
     /**
      * @var integer
      */
@@ -39,49 +39,36 @@ class OverconsumptionReminder
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate () {
+
+        return $this->date;
     }
 
     /**
      * Set date
      *
      * @param \DateTime $date
+     *
      * @return OverconsumptionReminder
      */
-    public function setDate($date)
-    {
+    public function setDate ($date) {
+
         $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * Set nextReminderDate
-     *
-     * @param \DateTime $nextReminderDate
-     * @return OverconsumptionReminder
-     */
-    public function setNextReminderDate($nextReminderDate)
-    {
-        $this->nextReminderDate = $nextReminderDate;
 
         return $this;
     }
@@ -89,22 +76,23 @@ class OverconsumptionReminder
     /**
      * Get nextReminderDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getNextReminderDate()
-    {
+    public function getNextReminderDate () {
+
         return $this->nextReminderDate;
     }
 
     /**
-     * Set level
+     * Set nextReminderDate
      *
-     * @param integer $level
+     * @param \DateTime $nextReminderDate
+     *
      * @return OverconsumptionReminder
      */
-    public function setLevel($level)
-    {
-        $this->level = $level;
+    public function setNextReminderDate ($nextReminderDate) {
+
+        $this->nextReminderDate = $nextReminderDate;
 
         return $this;
     }
@@ -112,22 +100,23 @@ class OverconsumptionReminder
     /**
      * Get level
      *
-     * @return integer 
+     * @return integer
      */
-    public function getLevel()
-    {
+    public function getLevel () {
+
         return $this->level;
     }
 
     /**
-     * Set companyForWhichThisOverconsumptionReminderIsStillCurrent
+     * Set level
      *
-     * @param \Archiweb\Model\Company $companyForWhichThisOverconsumptionReminderIsStillCurrent
+     * @param integer $level
+     *
      * @return OverconsumptionReminder
      */
-    public function setCompanyForWhichThisOverconsumptionReminderIsStillCurrent(\Archiweb\Model\Company $companyForWhichThisOverconsumptionReminderIsStillCurrent = null)
-    {
-        $this->companyForWhichThisOverconsumptionReminderIsStillCurrent = $companyForWhichThisOverconsumptionReminderIsStillCurrent;
+    public function setLevel ($level) {
+
+        $this->level = $level;
 
         return $this;
     }
@@ -135,22 +124,24 @@ class OverconsumptionReminder
     /**
      * Get companyForWhichThisOverconsumptionReminderIsStillCurrent
      *
-     * @return \Archiweb\Model\Company 
+     * @return \Archiweb\Model\Company
      */
-    public function getCompanyForWhichThisOverconsumptionReminderIsStillCurrent()
-    {
+    public function getCompanyForWhichThisOverconsumptionReminderIsStillCurrent () {
+
         return $this->companyForWhichThisOverconsumptionReminderIsStillCurrent;
     }
 
     /**
-     * Set company
+     * Set companyForWhichThisOverconsumptionReminderIsStillCurrent
      *
-     * @param \Archiweb\Model\Company $company
+     * @param \Archiweb\Model\Company $companyForWhichThisOverconsumptionReminderIsStillCurrent
+     *
      * @return OverconsumptionReminder
      */
-    public function setCompany(\Archiweb\Model\Company $company)
-    {
-        $this->company = $company;
+    public function setCompanyForWhichThisOverconsumptionReminderIsStillCurrent (\Archiweb\Model\Company $companyForWhichThisOverconsumptionReminderIsStillCurrent = NULL) {
+
+        $this->companyForWhichThisOverconsumptionReminderIsStillCurrent =
+            $companyForWhichThisOverconsumptionReminderIsStillCurrent;
 
         return $this;
     }
@@ -158,10 +149,24 @@ class OverconsumptionReminder
     /**
      * Get company
      *
-     * @return \Archiweb\Model\Company 
+     * @return \Archiweb\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Archiweb\Model\Company $company
+     *
+     * @return OverconsumptionReminder
+     */
+    public function setCompany (\Archiweb\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

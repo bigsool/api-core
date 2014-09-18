@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserProjectRole
  */
-class UserProjectRole
-{
+class UserProjectRole {
+
     /**
      * @var \Archiweb\Model\ProjectRole
      */
@@ -24,39 +24,26 @@ class UserProjectRole
      */
     private $hostedProject;
 
+    /**
+     * Get projectRole
+     *
+     * @return \Archiweb\Model\ProjectRole
+     */
+    public function getProjectRole () {
+
+        return $this->projectRole;
+    }
 
     /**
      * Set projectRole
      *
      * @param \Archiweb\Model\ProjectRole $projectRole
+     *
      * @return UserProjectRole
      */
-    public function setProjectRole(\Archiweb\Model\ProjectRole $projectRole)
-    {
+    public function setProjectRole (\Archiweb\Model\ProjectRole $projectRole) {
+
         $this->projectRole = $projectRole;
-
-        return $this;
-    }
-
-    /**
-     * Get projectRole
-     *
-     * @return \Archiweb\Model\ProjectRole 
-     */
-    public function getProjectRole()
-    {
-        return $this->projectRole;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \Archiweb\Model\User $user
-     * @return UserProjectRole
-     */
-    public function setUser(\Archiweb\Model\User $user)
-    {
-        $this->user = $user;
 
         return $this;
     }
@@ -64,22 +51,23 @@ class UserProjectRole
     /**
      * Get user
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
     }
 
     /**
-     * Set hostedProject
+     * Set user
      *
-     * @param \Archiweb\Model\HostedProject $hostedProject
+     * @param \Archiweb\Model\User $user
+     *
      * @return UserProjectRole
      */
-    public function setHostedProject(\Archiweb\Model\HostedProject $hostedProject)
-    {
-        $this->hostedProject = $hostedProject;
+    public function setUser (\Archiweb\Model\User $user) {
+
+        $this->user = $user;
 
         return $this;
     }
@@ -87,10 +75,24 @@ class UserProjectRole
     /**
      * Get hostedProject
      *
-     * @return \Archiweb\Model\HostedProject 
+     * @return \Archiweb\Model\HostedProject
      */
-    public function getHostedProject()
-    {
+    public function getHostedProject () {
+
         return $this->hostedProject;
+    }
+
+    /**
+     * Set hostedProject
+     *
+     * @param \Archiweb\Model\HostedProject $hostedProject
+     *
+     * @return UserProjectRole
+     */
+    public function setHostedProject (\Archiweb\Model\HostedProject $hostedProject) {
+
+        $this->hostedProject = $hostedProject;
+
+        return $this;
     }
 }

@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Student
  */
-class Student
-{
+class Student {
+
     /**
      * @var string
      */
@@ -29,39 +29,26 @@ class Student
      */
     private $licenseTransaction;
 
+    /**
+     * Get schoolname
+     *
+     * @return string
+     */
+    public function getSchoolname () {
+
+        return $this->schoolname;
+    }
 
     /**
      * Set schoolname
      *
      * @param string $schoolname
+     *
      * @return Student
      */
-    public function setSchoolname($schoolname)
-    {
+    public function setSchoolname ($schoolname) {
+
         $this->schoolname = $schoolname;
-
-        return $this;
-    }
-
-    /**
-     * Get schoolname
-     *
-     * @return string 
-     */
-    public function getSchoolname()
-    {
-        return $this->schoolname;
-    }
-
-    /**
-     * Set number
-     *
-     * @param string $number
-     * @return Student
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
 
         return $this;
     }
@@ -69,22 +56,23 @@ class Student
     /**
      * Get number
      *
-     * @return string 
+     * @return string
      */
-    public function getNumber()
-    {
+    public function getNumber () {
+
         return $this->number;
     }
 
     /**
-     * Set user
+     * Set number
      *
-     * @param \Archiweb\Model\User $user
+     * @param string $number
+     *
      * @return Student
      */
-    public function setUser(\Archiweb\Model\User $user)
-    {
-        $this->user = $user;
+    public function setNumber ($number) {
+
+        $this->number = $number;
 
         return $this;
     }
@@ -92,22 +80,23 @@ class Student
     /**
      * Get user
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
     }
 
     /**
-     * Set licenseTransaction
+     * Set user
      *
-     * @param \Archiweb\Model\Transaction $licenseTransaction
+     * @param \Archiweb\Model\User $user
+     *
      * @return Student
      */
-    public function setLicenseTransaction(\Archiweb\Model\Transaction $licenseTransaction = null)
-    {
-        $this->licenseTransaction = $licenseTransaction;
+    public function setUser (\Archiweb\Model\User $user) {
+
+        $this->user = $user;
 
         return $this;
     }
@@ -115,10 +104,24 @@ class Student
     /**
      * Get licenseTransaction
      *
-     * @return \Archiweb\Model\Transaction 
+     * @return \Archiweb\Model\Transaction
      */
-    public function getLicenseTransaction()
-    {
+    public function getLicenseTransaction () {
+
         return $this->licenseTransaction;
+    }
+
+    /**
+     * Set licenseTransaction
+     *
+     * @param \Archiweb\Model\Transaction $licenseTransaction
+     *
+     * @return Student
+     */
+    public function setLicenseTransaction (\Archiweb\Model\Transaction $licenseTransaction = NULL) {
+
+        $this->licenseTransaction = $licenseTransaction;
+
+        return $this;
     }
 }

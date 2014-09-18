@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ProjectRole
  */
-class ProjectRole
-{
+class ProjectRole {
+
     /**
      * @var integer
      */
@@ -32,8 +32,8 @@ class ProjectRole
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->userProjectRoles = new \Doctrine\Common\Collections\ArrayCollection();
         $this->companiesForWhichThisProjectRoleIsDefault = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -41,44 +41,46 @@ class ProjectRole
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get label
+     *
+     * @return string
+     */
+    public function getLabel () {
+
+        return $this->label;
     }
 
     /**
      * Set label
      *
      * @param string $label
+     *
      * @return ProjectRole
      */
-    public function setLabel($label)
-    {
+    public function setLabel ($label) {
+
         $this->label = $label;
 
         return $this;
     }
 
     /**
-     * Get label
-     *
-     * @return string 
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
      * Add userProjectRoles
      *
      * @param \Archiweb\Model\UserProjectRole $userProjectRoles
+     *
      * @return ProjectRole
      */
-    public function addUserProjectRole(\Archiweb\Model\UserProjectRole $userProjectRoles)
-    {
+    public function addUserProjectRole (\Archiweb\Model\UserProjectRole $userProjectRoles) {
+
         $this->userProjectRoles[] = $userProjectRoles;
 
         return $this;
@@ -89,18 +91,18 @@ class ProjectRole
      *
      * @param \Archiweb\Model\UserProjectRole $userProjectRoles
      */
-    public function removeUserProjectRole(\Archiweb\Model\UserProjectRole $userProjectRoles)
-    {
+    public function removeUserProjectRole (\Archiweb\Model\UserProjectRole $userProjectRoles) {
+
         $this->userProjectRoles->removeElement($userProjectRoles);
     }
 
     /**
      * Get userProjectRoles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUserProjectRoles()
-    {
+    public function getUserProjectRoles () {
+
         return $this->userProjectRoles;
     }
 
@@ -108,10 +110,11 @@ class ProjectRole
      * Add companiesForWhichThisProjectRoleIsDefault
      *
      * @param \Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault
+     *
      * @return ProjectRole
      */
-    public function addCompaniesForWhichThisProjectRoleIsDefault(\Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault)
-    {
+    public function addCompaniesForWhichThisProjectRoleIsDefault (\Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault) {
+
         $this->companiesForWhichThisProjectRoleIsDefault[] = $companiesForWhichThisProjectRoleIsDefault;
 
         return $this;
@@ -122,18 +125,18 @@ class ProjectRole
      *
      * @param \Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault
      */
-    public function removeCompaniesForWhichThisProjectRoleIsDefault(\Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault)
-    {
+    public function removeCompaniesForWhichThisProjectRoleIsDefault (\Archiweb\Model\Company $companiesForWhichThisProjectRoleIsDefault) {
+
         $this->companiesForWhichThisProjectRoleIsDefault->removeElement($companiesForWhichThisProjectRoleIsDefault);
     }
 
     /**
      * Get companiesForWhichThisProjectRoleIsDefault
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getCompaniesForWhichThisProjectRoleIsDefault()
-    {
+    public function getCompaniesForWhichThisProjectRoleIsDefault () {
+
         return $this->companiesForWhichThisProjectRoleIsDefault;
     }
 }

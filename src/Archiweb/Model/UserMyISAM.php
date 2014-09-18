@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserMyISAM
  */
-class UserMyISAM
-{
+class UserMyISAM {
+
     /**
      * @var integer
      */
@@ -34,49 +34,36 @@ class UserMyISAM
      */
     private $firstname;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get companyId
+     *
+     * @return integer
+     */
+    public function getCompanyId () {
+
+        return $this->companyId;
     }
 
     /**
      * Set companyId
      *
      * @param integer $companyId
+     *
      * @return UserMyISAM
      */
-    public function setCompanyId($companyId)
-    {
+    public function setCompanyId ($companyId) {
+
         $this->companyId = $companyId;
-
-        return $this;
-    }
-
-    /**
-     * Get companyId
-     *
-     * @return integer 
-     */
-    public function getCompanyId()
-    {
-        return $this->companyId;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     * @return UserMyISAM
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
 
         return $this;
     }
@@ -84,22 +71,23 @@ class UserMyISAM
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail () {
+
         return $this->email;
     }
 
     /**
-     * Set name
+     * Set email
      *
-     * @param string $name
+     * @param string $email
+     *
      * @return UserMyISAM
      */
-    public function setName($name)
-    {
-        $this->name = $name;
+    public function setEmail ($email) {
+
+        $this->email = $email;
 
         return $this;
     }
@@ -107,22 +95,23 @@ class UserMyISAM
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName () {
+
         return $this->name;
     }
 
     /**
-     * Set firstname
+     * Set name
      *
-     * @param string $firstname
+     * @param string $name
+     *
      * @return UserMyISAM
      */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = $firstname;
+    public function setName ($name) {
+
+        $this->name = $name;
 
         return $this;
     }
@@ -130,10 +119,24 @@ class UserMyISAM
     /**
      * Get firstname
      *
-     * @return string 
+     * @return string
      */
-    public function getFirstname()
-    {
+    public function getFirstname () {
+
         return $this->firstname;
+    }
+
+    /**
+     * Set firstname
+     *
+     * @param string $firstname
+     *
+     * @return UserMyISAM
+     */
+    public function setFirstname ($firstname) {
+
+        $this->firstname = $firstname;
+
+        return $this;
     }
 }

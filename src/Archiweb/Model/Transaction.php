@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Transaction
  */
-class Transaction
-{
+class Transaction {
+
     /**
      * @var integer
      */
@@ -54,49 +54,36 @@ class Transaction
      */
     private $user;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get timestamp
+     *
+     * @return \DateTime
+     */
+    public function getTimestamp () {
+
+        return $this->timestamp;
     }
 
     /**
      * Set timestamp
      *
      * @param \DateTime $timestamp
+     *
      * @return Transaction
      */
-    public function setTimestamp($timestamp)
-    {
+    public function setTimestamp ($timestamp) {
+
         $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    /**
-     * Get timestamp
-     *
-     * @return \DateTime 
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * Set invoicingstatus
-     *
-     * @param string $invoicingstatus
-     * @return Transaction
-     */
-    public function setInvoicingstatus($invoicingstatus)
-    {
-        $this->invoicingstatus = $invoicingstatus;
 
         return $this;
     }
@@ -104,22 +91,23 @@ class Transaction
     /**
      * Get invoicingstatus
      *
-     * @return string 
+     * @return string
      */
-    public function getInvoicingstatus()
-    {
+    public function getInvoicingstatus () {
+
         return $this->invoicingstatus;
     }
 
     /**
-     * Set paymentstatus
+     * Set invoicingstatus
      *
-     * @param string $paymentstatus
+     * @param string $invoicingstatus
+     *
      * @return Transaction
      */
-    public function setPaymentstatus($paymentstatus)
-    {
-        $this->paymentstatus = $paymentstatus;
+    public function setInvoicingstatus ($invoicingstatus) {
+
+        $this->invoicingstatus = $invoicingstatus;
 
         return $this;
     }
@@ -127,22 +115,23 @@ class Transaction
     /**
      * Get paymentstatus
      *
-     * @return string 
+     * @return string
      */
-    public function getPaymentstatus()
-    {
+    public function getPaymentstatus () {
+
         return $this->paymentstatus;
     }
 
     /**
-     * Set comment
+     * Set paymentstatus
      *
-     * @param string $comment
+     * @param string $paymentstatus
+     *
      * @return Transaction
      */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
+    public function setPaymentstatus ($paymentstatus) {
+
+        $this->paymentstatus = $paymentstatus;
 
         return $this;
     }
@@ -150,22 +139,23 @@ class Transaction
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
-    public function getComment()
-    {
+    public function getComment () {
+
         return $this->comment;
     }
 
     /**
-     * Set billingAddress
+     * Set comment
      *
-     * @param \Archiweb\Model\BillingAddress $billingAddress
+     * @param string $comment
+     *
      * @return Transaction
      */
-    public function setBillingAddress(\Archiweb\Model\BillingAddress $billingAddress = null)
-    {
-        $this->billingAddress = $billingAddress;
+    public function setComment ($comment) {
+
+        $this->comment = $comment;
 
         return $this;
     }
@@ -173,22 +163,23 @@ class Transaction
     /**
      * Get billingAddress
      *
-     * @return \Archiweb\Model\BillingAddress 
+     * @return \Archiweb\Model\BillingAddress
      */
-    public function getBillingAddress()
-    {
+    public function getBillingAddress () {
+
         return $this->billingAddress;
     }
 
     /**
-     * Set invoice
+     * Set billingAddress
      *
-     * @param \Archiweb\Model\Invoice $invoice
+     * @param \Archiweb\Model\BillingAddress $billingAddress
+     *
      * @return Transaction
      */
-    public function setInvoice(\Archiweb\Model\Invoice $invoice = null)
-    {
-        $this->invoice = $invoice;
+    public function setBillingAddress (\Archiweb\Model\BillingAddress $billingAddress = NULL) {
+
+        $this->billingAddress = $billingAddress;
 
         return $this;
     }
@@ -196,22 +187,23 @@ class Transaction
     /**
      * Get invoice
      *
-     * @return \Archiweb\Model\Invoice 
+     * @return \Archiweb\Model\Invoice
      */
-    public function getInvoice()
-    {
+    public function getInvoice () {
+
         return $this->invoice;
     }
 
     /**
-     * Set payment
+     * Set invoice
      *
-     * @param \Archiweb\Model\Payment $payment
+     * @param \Archiweb\Model\Invoice $invoice
+     *
      * @return Transaction
      */
-    public function setPayment(\Archiweb\Model\Payment $payment = null)
-    {
-        $this->payment = $payment;
+    public function setInvoice (\Archiweb\Model\Invoice $invoice = NULL) {
+
+        $this->invoice = $invoice;
 
         return $this;
     }
@@ -219,22 +211,23 @@ class Transaction
     /**
      * Get payment
      *
-     * @return \Archiweb\Model\Payment 
+     * @return \Archiweb\Model\Payment
      */
-    public function getPayment()
-    {
+    public function getPayment () {
+
         return $this->payment;
     }
 
     /**
-     * Set user
+     * Set payment
      *
-     * @param \Archiweb\Model\User $user
+     * @param \Archiweb\Model\Payment $payment
+     *
      * @return Transaction
      */
-    public function setUser(\Archiweb\Model\User $user)
-    {
-        $this->user = $user;
+    public function setPayment (\Archiweb\Model\Payment $payment = NULL) {
+
+        $this->payment = $payment;
 
         return $this;
     }
@@ -242,10 +235,24 @@ class Transaction
     /**
      * Get user
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Archiweb\Model\User $user
+     *
+     * @return Transaction
+     */
+    public function setUser (\Archiweb\Model\User $user) {
+
+        $this->user = $user;
+
+        return $this;
     }
 }

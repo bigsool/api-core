@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * SharedHostedProject
  */
-class SharedHostedProject
-{
+class SharedHostedProject {
+
     /**
      * @var string
      */
@@ -24,39 +24,26 @@ class SharedHostedProject
      */
     private $hostedProject;
 
+    /**
+     * Get permission
+     *
+     * @return string
+     */
+    public function getPermission () {
+
+        return $this->permission;
+    }
 
     /**
      * Set permission
      *
      * @param string $permission
+     *
      * @return SharedHostedProject
      */
-    public function setPermission($permission)
-    {
+    public function setPermission ($permission) {
+
         $this->permission = $permission;
-
-        return $this;
-    }
-
-    /**
-     * Get permission
-     *
-     * @return string 
-     */
-    public function getPermission()
-    {
-        return $this->permission;
-    }
-
-    /**
-     * Set participant
-     *
-     * @param \Archiweb\Model\User $participant
-     * @return SharedHostedProject
-     */
-    public function setParticipant(\Archiweb\Model\User $participant)
-    {
-        $this->participant = $participant;
 
         return $this;
     }
@@ -64,22 +51,23 @@ class SharedHostedProject
     /**
      * Get participant
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getParticipant()
-    {
+    public function getParticipant () {
+
         return $this->participant;
     }
 
     /**
-     * Set hostedProject
+     * Set participant
      *
-     * @param \Archiweb\Model\HostedProject $hostedProject
+     * @param \Archiweb\Model\User $participant
+     *
      * @return SharedHostedProject
      */
-    public function setHostedProject(\Archiweb\Model\HostedProject $hostedProject)
-    {
-        $this->hostedProject = $hostedProject;
+    public function setParticipant (\Archiweb\Model\User $participant) {
+
+        $this->participant = $participant;
 
         return $this;
     }
@@ -87,10 +75,24 @@ class SharedHostedProject
     /**
      * Get hostedProject
      *
-     * @return \Archiweb\Model\HostedProject 
+     * @return \Archiweb\Model\HostedProject
      */
-    public function getHostedProject()
-    {
+    public function getHostedProject () {
+
         return $this->hostedProject;
+    }
+
+    /**
+     * Set hostedProject
+     *
+     * @param \Archiweb\Model\HostedProject $hostedProject
+     *
+     * @return SharedHostedProject
+     */
+    public function setHostedProject (\Archiweb\Model\HostedProject $hostedProject) {
+
+        $this->hostedProject = $hostedProject;
+
+        return $this;
     }
 }

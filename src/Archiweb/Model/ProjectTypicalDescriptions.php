@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ProjectTypicalDescriptions
  */
-class ProjectTypicalDescriptions
-{
+class ProjectTypicalDescriptions {
+
     /**
      * @var integer
      */
@@ -29,49 +29,36 @@ class ProjectTypicalDescriptions
      */
     private $creator;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get category
+     *
+     * @return string
+     */
+    public function getCategory () {
+
+        return $this->category;
     }
 
     /**
      * Set category
      *
      * @param string $category
+     *
      * @return ProjectTypicalDescriptions
      */
-    public function setCategory($category)
-    {
+    public function setCategory ($category) {
+
         $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return string 
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    /**
-     * Set descriptions
-     *
-     * @param string $descriptions
-     * @return ProjectTypicalDescriptions
-     */
-    public function setDescriptions($descriptions)
-    {
-        $this->descriptions = $descriptions;
 
         return $this;
     }
@@ -79,22 +66,23 @@ class ProjectTypicalDescriptions
     /**
      * Get descriptions
      *
-     * @return string 
+     * @return string
      */
-    public function getDescriptions()
-    {
+    public function getDescriptions () {
+
         return $this->descriptions;
     }
 
     /**
-     * Set creator
+     * Set descriptions
      *
-     * @param \Archiweb\Model\User $creator
+     * @param string $descriptions
+     *
      * @return ProjectTypicalDescriptions
      */
-    public function setCreator(\Archiweb\Model\User $creator)
-    {
-        $this->creator = $creator;
+    public function setDescriptions ($descriptions) {
+
+        $this->descriptions = $descriptions;
 
         return $this;
     }
@@ -102,10 +90,24 @@ class ProjectTypicalDescriptions
     /**
      * Get creator
      *
-     * @return \Archiweb\Model\User 
+     * @return \Archiweb\Model\User
      */
-    public function getCreator()
-    {
+    public function getCreator () {
+
         return $this->creator;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \Archiweb\Model\User $creator
+     *
+     * @return ProjectTypicalDescriptions
+     */
+    public function setCreator (\Archiweb\Model\User $creator) {
+
+        $this->creator = $creator;
+
+        return $this;
     }
 }

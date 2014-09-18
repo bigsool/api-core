@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ProductFunctionality
  */
-class ProductFunctionality
-{
+class ProductFunctionality {
+
     /**
      * @var integer
      */
@@ -24,39 +24,26 @@ class ProductFunctionality
      */
     private $product;
 
+    /**
+     * Get quantity
+     *
+     * @return integer
+     */
+    public function getQuantity () {
+
+        return $this->quantity;
+    }
 
     /**
      * Set quantity
      *
      * @param integer $quantity
+     *
      * @return ProductFunctionality
      */
-    public function setQuantity($quantity)
-    {
+    public function setQuantity ($quantity) {
+
         $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer 
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * Set functionality
-     *
-     * @param \Archiweb\Model\Functionality $functionality
-     * @return ProductFunctionality
-     */
-    public function setFunctionality(\Archiweb\Model\Functionality $functionality)
-    {
-        $this->functionality = $functionality;
 
         return $this;
     }
@@ -64,22 +51,23 @@ class ProductFunctionality
     /**
      * Get functionality
      *
-     * @return \Archiweb\Model\Functionality 
+     * @return \Archiweb\Model\Functionality
      */
-    public function getFunctionality()
-    {
+    public function getFunctionality () {
+
         return $this->functionality;
     }
 
     /**
-     * Set product
+     * Set functionality
      *
-     * @param \Archiweb\Model\Product $product
+     * @param \Archiweb\Model\Functionality $functionality
+     *
      * @return ProductFunctionality
      */
-    public function setProduct(\Archiweb\Model\Product $product)
-    {
-        $this->product = $product;
+    public function setFunctionality (\Archiweb\Model\Functionality $functionality) {
+
+        $this->functionality = $functionality;
 
         return $this;
     }
@@ -87,10 +75,24 @@ class ProductFunctionality
     /**
      * Get product
      *
-     * @return \Archiweb\Model\Product 
+     * @return \Archiweb\Model\Product
      */
-    public function getProduct()
-    {
+    public function getProduct () {
+
         return $this->product;
+    }
+
+    /**
+     * Set product
+     *
+     * @param \Archiweb\Model\Product $product
+     *
+     * @return ProductFunctionality
+     */
+    public function setProduct (\Archiweb\Model\Product $product) {
+
+        $this->product = $product;
+
+        return $this;
     }
 }

@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ShippingAddress
  */
-class ShippingAddress
-{
+class ShippingAddress {
+
     /**
      * @var string
      */
@@ -44,39 +44,26 @@ class ShippingAddress
      */
     private $transaction;
 
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
+    }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ShippingAddress
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return ShippingAddress
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -84,22 +71,23 @@ class ShippingAddress
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set zipcode
+     * Set address
      *
-     * @param string $zipcode
+     * @param string $address
+     *
      * @return ShippingAddress
      */
-    public function setZipcode($zipcode)
-    {
-        $this->zipcode = $zipcode;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -107,22 +95,23 @@ class ShippingAddress
     /**
      * Get zipcode
      *
-     * @return string 
+     * @return string
      */
-    public function getZipcode()
-    {
+    public function getZipcode () {
+
         return $this->zipcode;
     }
 
     /**
-     * Set city
+     * Set zipcode
      *
-     * @param string $city
+     * @param string $zipcode
+     *
      * @return ShippingAddress
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setZipcode ($zipcode) {
+
+        $this->zipcode = $zipcode;
 
         return $this;
     }
@@ -130,22 +119,23 @@ class ShippingAddress
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
+     *
      * @return ShippingAddress
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -153,22 +143,23 @@ class ShippingAddress
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set country
+     * Set state
      *
-     * @param string $country
+     * @param string $state
+     *
      * @return ShippingAddress
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -176,22 +167,23 @@ class ShippingAddress
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set transaction
+     * Set country
      *
-     * @param \Archiweb\Model\Transaction $transaction
+     * @param string $country
+     *
      * @return ShippingAddress
      */
-    public function setTransaction(\Archiweb\Model\Transaction $transaction)
-    {
-        $this->transaction = $transaction;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -199,10 +191,24 @@ class ShippingAddress
     /**
      * Get transaction
      *
-     * @return \Archiweb\Model\Transaction 
+     * @return \Archiweb\Model\Transaction
      */
-    public function getTransaction()
-    {
+    public function getTransaction () {
+
         return $this->transaction;
+    }
+
+    /**
+     * Set transaction
+     *
+     * @param \Archiweb\Model\Transaction $transaction
+     *
+     * @return ShippingAddress
+     */
+    public function setTransaction (\Archiweb\Model\Transaction $transaction) {
+
+        $this->transaction = $transaction;
+
+        return $this;
     }
 }
