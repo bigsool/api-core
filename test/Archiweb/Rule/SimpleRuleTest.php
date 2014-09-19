@@ -129,10 +129,15 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
                        ->getMock();
 
         $rule = new SimpleRule('command', 'entity', 'name', $filter);
-        $ctx = new ActionContext(new Context());
-        $rule->apply($ctx);
+        $context = new Context();
+        $entityManager = $this->getMockBuilder('\Doctrine\ORM\EntityManager')
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
+        $context->setEntityManager($entityManager);
+        $actionCtx = new ActionContext($context);
+        $rule->apply($actionCtx);
 
-        $this->assertContains($filter, $ctx->getFilters());
+        $this->assertContains($filter, $actionCtx->getFilters());
 
     }
 

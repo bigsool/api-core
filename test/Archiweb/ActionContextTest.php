@@ -3,14 +3,26 @@
 namespace Archiweb;
 
 
+use Doctrine\ORM\EntityManager;
+
 class ActionContextTest extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * @var Context
+     */
+    protected $context;
+
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
 
     /**
      *
      */
     public function testParams () {
 
-        $ctx = new Context();
+        $ctx = $this->context;
 
         $array = [$this->getParameterMock('a'), 'b' => $this->getParameterMock(2), $this->getParameterMock(['c'])];
 
@@ -45,7 +57,7 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
      */
     public function testImplementArrayAccess () {
 
-        $ctx = new ActionContext(new Context());
+        $ctx = new ActionContext($this->context);
 
         $this->assertInstanceOf('\ArrayAccess', $ctx);
 
@@ -71,7 +83,7 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     public function testRules () {
 
         // empty rule list
-        $ctx = new ActionContext(new Context());
+        $ctx = new ActionContext($this->context);
         $this->assertSame([], $ctx->getRules());
 
         // only one rule
@@ -109,7 +121,7 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     public function testFilters () {
 
         // empty rule list
-        $ctx = new ActionContext(new Context());
+        $ctx = new ActionContext($this->context);
         $this->assertSame([], $ctx->getFilters());
 
         // only one rule
@@ -146,22 +158,16 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
      */
     public function testInvalidRule () {
 
-        $ctx = new ActionContext(new Context());
+        $ctx = new ActionContext($this->context);
         $ctx->addRule('qwe');
 
     }
 
     public function testEntityManager () {
 
-        $ctx = new Context();
-        $em = $this->getMockBuilder('\Doctrine\ORM\EntityManager')
-                   ->disableOriginalConstructor()
-                   ->getMock();
-        $ctx->setEntityManager($em);
+        $actionCtx = new ActionContext($this->context);
 
-        $actionCtx = new ActionContext($ctx);
-
-        $this->assertSame($em, $actionCtx->getEntityManager());
+        $this->assertSame($this->entityManager, $actionCtx->getEntityManager());
 
     }
 
@@ -172,6 +178,16 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
 
         $ctx = new Context();
         (new ActionContext($ctx))->getEntityManager();
+
+    }
+
+    protected function setUp () {
+
+        $this->context = new Context();
+        $this->entityManager = $this->getMockBuilder('\Doctrine\ORM\EntityManager')
+                                    ->disableOriginalConstructor()
+                                    ->getMock();
+        $this->context->setEntityManager($this->entityManager);
 
     }
 
