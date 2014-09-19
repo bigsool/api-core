@@ -25,7 +25,7 @@ class ValueTest extends \PHPUnit_Framework_TestCase {
     public function testValueWithObject () {
 
         new Value(new \stdClass());
-        
+
     }
 
     /**

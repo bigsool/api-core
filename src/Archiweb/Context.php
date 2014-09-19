@@ -25,24 +25,24 @@ class Context implements \ArrayAccess {
     protected $entityManager;
 
     /**
-     * @param EntityManager $em
-     */
-    public function setEntityManager(EntityManager $em) {
-
-        $this->entityManager = $em;
-
-    }
-
-    /**
      * @return EntityManager
      */
-    public function getEntityManager() {
+    public function getEntityManager () {
 
         if (!isset($this->entityManager)) {
             throw new \RuntimeException('entity manager not found');
         }
 
         return $this->entityManager;
+
+    }
+
+    /**
+     * @param EntityManager $em
+     */
+    public function setEntityManager (EntityManager $em) {
+
+        $this->entityManager = $em;
 
     }
 
