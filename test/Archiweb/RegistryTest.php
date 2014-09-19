@@ -126,6 +126,19 @@ class RegistryTest extends \PHPUnit_Framework_TestCase {
         $dql = $qb->getDQL();
         $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company WHERE ' . $where, $dql);
 
+        // find with 3 filters
+        $ctx = clone $this->ctx;
+        $wheres = ['1 = 1', '2 = 2', '3 = 3'];
+        foreach ($wheres as $where) {
+            $ctx->addFilter($this->getFilterMock($this->getExpressionMock($where)));
+        }
+        $registry = new Registry($ctx);
+        $qb = $registry->find('Company');
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
+        $dql = $qb->getDQL();
+        $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company WHERE ' . implode(' AND ', $wheres),
+                            $dql);
+
     }
 
     /**
