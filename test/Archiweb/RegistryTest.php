@@ -4,6 +4,8 @@
 namespace Archiweb;
 
 
+use Archiweb\Expression\Expression;
+use Archiweb\Filter\Filter;
 use Archiweb\Model\Company;
 use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
@@ -108,10 +110,63 @@ class RegistryTest extends \PHPUnit_Framework_TestCase {
 
     public function testFind () {
 
+        // find without anything else
         $qb = $this->registry->find('Company');
         $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
         $dql = $qb->getDQL();
         $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company', $dql);
+
+        // find with one filter
+        $ctx = clone $this->ctx;
+        $where = '1 = 1';
+        $ctx->addFilter($this->getFilterMock($this->getExpressionMock($where)));
+        $registry = new Registry($ctx);
+        $qb = $registry->find('Company');
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
+        $dql = $qb->getDQL();
+        $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company WHERE ' . $where, $dql);
+
+    }
+
+    /**
+     * @param Expression $expression
+     *
+     * @return Filter
+     */
+    public function getFilterMock (Expression $expression) {
+
+        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
+                       ->disableOriginalConstructor()
+                       ->getMock();
+
+        $filter->method('getExpression')->willReturn($expression);
+
+        return $filter;
+
+    }
+
+    /**
+     * @param string|callable $resolve
+     *
+     * @return Expression
+     */
+    public function getExpressionMock ($resolve = '') {
+
+        $expression = $this->getMockBuilder('\Archiweb\Expression\Expression')
+                           ->disableOriginalConstructor()
+                           ->getMock();
+        $method = $expression->method('resolve');
+        if (is_string($resolve)) {
+            $method->willReturn($resolve);
+        }
+        elseif (is_callable($resolve)) {
+            $method->will($this->returnCallback($resolve));
+        }
+        else {
+            $this->markTestIncomplete('$resolve must be a string or a callable, ' . gettype($resolve) . ' given');
+        }
+
+        return $expression;
 
     }
 

@@ -154,6 +154,44 @@ class ActionContextTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     *
+     */
+    public function testFields () {
+
+        // empty rule list
+        $ctx = new ActionContext($this->context);
+        $this->assertSame([], $ctx->getFields());
+
+        // only one rule
+        $field = $this->getFieldMock();
+        $ctx->addField($field);
+        $this->assertSame([$field], $ctx->getFields());
+
+        // several rules
+        $fields = [$this->getFieldMock(), $this->getFieldMock()];
+        foreach ($fields as $f) {
+            $ctx->addField($f);
+        }
+        $fields[] = $field;
+        $this->assertSameSize($fields, $ctx->getFields());
+        foreach ($fields as $f) {
+            $this->assertContains($f, $ctx->getFields());
+        }
+
+    }
+
+    /**
+     * @return Field
+     */
+    protected function getFieldMock () {
+
+        return $this->getMockBuilder('\Archiweb\Field')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testInvalidRule () {

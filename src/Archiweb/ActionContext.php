@@ -20,6 +20,11 @@ class ActionContext extends Context {
     protected $filters = array();
 
     /**
+     * @var Field[]
+     */
+    protected $fields = array();
+
+    /**
      * @param Context $context
      */
     public function __construct (Context $context) {
@@ -66,6 +71,26 @@ class ActionContext extends Context {
         if (!in_array($filter, $this->filters, true)) {
             $this->filters[] = $filter;
         }
+
+    }
+
+    /**
+     * @param Field $field
+     */
+    public function addField (Field $field) {
+
+        if (!in_array($field, $this->fields, true)) {
+            $this->fields[] = $field;
+        }
+
+    }
+
+    /**.
+     * @return Field[]
+     */
+    public function getFields () {
+
+        return $this->fields;
 
     }
 

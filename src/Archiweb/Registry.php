@@ -4,6 +4,8 @@
 namespace Archiweb;
 
 
+use Archiweb\Expression\NAryExpression;
+use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
@@ -91,7 +93,22 @@ class Registry {
         $class = self::realModelClassName($entity);
 
         $qb = $this->em->createQueryBuilder();
-        $qb->from($class, lcfirst($entity));
+        $alias = lcfirst($entity);
+        $qb->from($class, $alias);
+
+        $fields = $this->context->getFields();
+        if (empty($fields)) {
+            $qb->select($alias);
+        }
+
+        $expressions = [];
+        foreach ($this->context->getFilters() as $filter) {
+            $expressions[] = $filter->getExpression();
+        }
+        if ($expressions) {
+            $expression = new NAryExpression(new AndOperator(), $expressions);
+            $qb->andWhere($expression->resolve($this, $this->context));
+        }
 
         return $qb;
 
