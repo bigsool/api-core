@@ -4,7 +4,10 @@
 namespace Archiweb\Expression;
 
 
-class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\Operator\EqualOperator;
+use Archiweb\TestCase;
+
+class BinaryExpressionTest extends TestCase {
 
     /**
      *
@@ -58,10 +61,8 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testResolveWithMocks () {
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $operator->method('toDQL')->will($this->returnCallback(function ($v) {
@@ -82,16 +83,14 @@ class BinaryExpressionTest extends \PHPUnit_Framework_TestCase {
 
     public function testResolveQweEquals1 () {
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
 
 
-        $operator = new \Archiweb\Operator\EqualOperator();
+        $operator = new EqualOperator();
 
-        $left = new \Archiweb\Expression\Value("Qwe");
-        $right = new \Archiweb\Expression\Value(1);
+        $left = new Value("Qwe");
+        $right = new Value(1);
 
         $exp = new BinaryExpression($operator, $left, $right);
 

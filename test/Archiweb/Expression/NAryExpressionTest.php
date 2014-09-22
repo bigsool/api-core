@@ -3,7 +3,9 @@
 
 namespace Archiweb\Expression;
 
-class NAryExpressionTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\TestCase;
+
+class NAryExpressionTest extends TestCase {
 
     /**
      *
@@ -47,10 +49,8 @@ class NAryExpressionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
         $operator->method('toDQL')->willReturn('AND');

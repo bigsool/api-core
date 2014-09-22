@@ -4,7 +4,7 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
 
 class Parameter extends Value {
@@ -26,12 +26,12 @@ class Parameter extends Value {
     }
 
     /**
-     * @param Registry $registry
-     * @param Context  $context
+     * @param Registry       $registry
+     * @param QueryContext $context
      *
      * @return string
      */
-    public function resolve (Registry $registry, Context $context) {
+    public function resolve (Registry $registry, QueryContext $context) {
         // TODO: Implement the resolve() method
     }
 

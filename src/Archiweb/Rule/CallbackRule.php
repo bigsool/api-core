@@ -4,7 +4,8 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\ActionContext;
+use Archiweb\Context\QueryContext;
+
 
 class CallbackRule extends Rule {
 
@@ -43,9 +44,9 @@ class CallbackRule extends Rule {
     }
 
     /**
-     * @param ActionContext $ctx
+     * @param QueryContext $ctx
      */
-    public function apply (ActionContext $ctx) {
+    public function apply (QueryContext $ctx) {
 
         call_user_func($this->getCallback(), $ctx);
 

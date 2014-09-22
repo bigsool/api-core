@@ -1,1 +1,1 @@
-../vendor/bin/phpunit -c ../phpunit.xml --verbose --strict --colors ../test/
+../vendor/bin/phpunit --bootstrap ../test/autoload.php -c ../phpunit.xml --verbose --strict --colors ../test/

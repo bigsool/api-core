@@ -4,7 +4,7 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\ActionContext;
+use Archiweb\Context\QueryContext;
 
 abstract class Rule {
 
@@ -37,12 +37,13 @@ abstract class Rule {
     }
 
     /**
-     * @param ActionContext $ctx
+     * @param QueryContext $ctx
      *
      * @return bool
      */
-    public function shouldApply (ActionContext $ctx) {
+    public function shouldApply (QueryContext $ctx) {
 
+        /*
         $isThisInRules = function (array $rules) use (&$isThisInRules) {
 
             foreach ($rules as $rule) {
@@ -55,6 +56,7 @@ abstract class Rule {
         };
 
         return $isThisInRules($ctx->getRules());
+        */
 
     }
 
@@ -64,9 +66,9 @@ abstract class Rule {
     public abstract function listChildRules ();
 
     /**
-     * @param ActionContext $ctx
+     * @param QueryContext $ctx
      */
-    public abstract function apply (ActionContext $ctx);
+    public abstract function apply (QueryContext $ctx);
 
     /**
      * @return string

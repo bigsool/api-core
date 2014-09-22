@@ -4,7 +4,7 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
 use Archiweb\Operator\Operator;
 use Archiweb\Registry;
 
@@ -31,12 +31,12 @@ class NAryExpression implements ExpressionWithOperator {
     }
 
     /**
-     * @param Registry $registry
-     * @param Context  $context
+     * @param Registry       $registry
+     * @param QueryContext $context
      *
      * @return string
      */
-    public function resolve (Registry $registry, Context $context) {
+    public function resolve (Registry $registry, QueryContext $context) {
 
         return array_reduce($this->getExpressions(), function ($prev, Expression $expr) use ($registry, $context) {
 

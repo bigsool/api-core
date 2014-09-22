@@ -4,26 +4,20 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\ActionContext;
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
+use Archiweb\Context\RequestContext;
+use Archiweb\TestCase;
 
-class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
+class SimpleRuleTest extends TestCase {
 
     /**
      *
      */
     public function testShouldApply () {
 
-        $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-        $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $ctxMock = $this->getMockQueryContext();
+        $ruleMock = $this->getMockRule();
+        $filter = $this->getMockFilter();
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
@@ -62,9 +56,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testListChildRules () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
 
@@ -77,9 +69,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetName () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $name = 'isYourCompany';
         $rule = new SimpleRule('select', 'Company', $name, $filter);
@@ -93,9 +83,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetEntity () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $entity = 'Company';
         $rule = new SimpleRule('select', $entity, 'isYourCompany', $filter);
@@ -109,9 +97,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetFilter () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $rule = new SimpleRule('select', 'entity', 'name', $filter);
 
@@ -124,17 +110,10 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testApply () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $rule = new SimpleRule('command', 'entity', 'name', $filter);
-        $context = new Context();
-        $entityManager = $this->getMockBuilder('\Doctrine\ORM\EntityManager')
-                              ->disableOriginalConstructor()
-                              ->getMock();
-        $context->setEntityManager($entityManager);
-        $actionCtx = new ActionContext($context);
+        $actionCtx = new QueryContext($this->getApplicationContext());
         $rule->apply($actionCtx);
 
         $this->assertContains($filter, $actionCtx->getFilters());
@@ -146,9 +125,7 @@ class SimpleRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGetCommand () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $filter = $this->getMockFilter();
 
         $command = 'select';
         $rule = new SimpleRule($command, 'Company', 'isYourCompany', $filter);

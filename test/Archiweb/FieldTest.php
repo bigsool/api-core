@@ -4,7 +4,7 @@
 namespace Archiweb;
 
 
-class FieldTest extends \PHPUnit_Framework_TestCase {
+class FieldTest extends TestCase {
 
     public function testGetEntity () {
 
@@ -24,15 +24,13 @@ class FieldTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetFilter () {
 
-        $filter = NULL;
-        $field = new Field('entity', 'name', $filter);
-        $this->assertSame($filter, $field->getFilter());
+        $rule = NULL;
+        $field = new Field('entity', 'name', $rule);
+        $this->assertSame($rule, $field->getRule());
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
-        $field = new Field('entity', 'name', $filter);
-        $this->assertSame($filter, $field->getFilter());
+        $rule = $this->getMockRule();
+        $field = new Field('entity', 'name', $rule);
+        $this->assertSame($rule, $field->getRule());
 
     }
 
@@ -57,7 +55,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidFilterType () {
+    public function testInvalidRuleType () {
 
         new Field('entity', 'name', new \stdClass());
 

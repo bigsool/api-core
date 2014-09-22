@@ -4,7 +4,7 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
 use Archiweb\Operator\Operator;
 use Archiweb\Registry;
 
@@ -38,12 +38,12 @@ class BinaryExpression implements ExpressionWithOperator {
     }
 
     /**
-     * @param Registry $registry
-     * @param Context  $context
+     * @param Registry     $registry
+     * @param QueryContext $context
      *
      * @return string
      */
-    public function resolve (Registry $registry, Context $context) {
+    public function resolve (Registry $registry, QueryContext $context) {
 
         $leftStr = $this->getLeft()->resolve($registry, $context);
         $rightStr = $this->getRight()->resolve($registry, $context);

@@ -4,7 +4,7 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
 use Archiweb\Operator\CompareOperator;
 use Archiweb\Registry;
 
@@ -31,12 +31,12 @@ class UnaryExpression implements ExpressionWithOperator {
     }
 
     /**
-     * @param Registry $registry
-     * @param Context  $context
+     * @param Registry       $registry
+     * @param QueryContext $context
      *
      * @return string
      */
-    public function resolve (Registry $registry, Context $context) {
+    public function resolve (Registry $registry, QueryContext $context) {
 
         $valueStr = $this->getValue()->resolve($registry, $context);
 

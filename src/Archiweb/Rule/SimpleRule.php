@@ -4,7 +4,7 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\ActionContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Filter\Filter;
 
 class SimpleRule extends Rule {
@@ -37,9 +37,9 @@ class SimpleRule extends Rule {
     }
 
     /**
-     * @param ActionContext $ctx
+     * @param QueryContext $ctx
      */
-    public function apply (ActionContext $ctx) {
+    public function apply (QueryContext $ctx) {
 
         $ctx->addFilter($this->getFilter());
 

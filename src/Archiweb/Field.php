@@ -4,7 +4,7 @@
 namespace Archiweb;
 
 
-use Archiweb\Filter\Filter;
+use Archiweb\Rule\Rule;
 
 class Field {
 
@@ -19,16 +19,16 @@ class Field {
     protected $name;
 
     /**
-     * @var Filter
+     * @var Rule
      */
-    protected $filter;
+    protected $rule;
 
     /**
      * @param string $entity
      * @param string $name
-     * @param Filter $filter
+     * @param Rule   $rule
      */
-    public function __construct ($entity, $name, Filter $filter = NULL) {
+    public function __construct ($entity, $name, Rule $rule = NULL) {
 
         if (!is_string($entity) || !is_string($name)) {
             throw new \RuntimeException('invalid type');
@@ -36,7 +36,7 @@ class Field {
 
         $this->entity = $entity;
         $this->name = $name;
-        $this->filter = $filter;
+        $this->rule = $rule;
 
     }
 
@@ -59,11 +59,11 @@ class Field {
     }
 
     /**
-     * @return void|string
+     * @return void|Rule
      */
-    public function getFilter () {
+    public function getRule () {
 
-        return $this->filter;
+        return $this->rule;
 
     }
 

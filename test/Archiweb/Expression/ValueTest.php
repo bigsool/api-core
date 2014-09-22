@@ -4,20 +4,10 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
-use Archiweb\Registry;
+use Archiweb\RequestContext;
+use Archiweb\TestCase;
 
-class ValueTest extends \PHPUnit_Framework_TestCase {
-
-    /**
-     * @var Registry
-     */
-    protected $registry;
-
-    /**
-     * @var Context
-     */
-    protected $context;
+class ValueTest extends TestCase {
 
     /**
      * @expectedException \RuntimeException
@@ -43,7 +33,7 @@ class ValueTest extends \PHPUnit_Framework_TestCase {
 
         $value = new Value($v);
         $this->assertEquals($v, $value->getValue());
-        $this->assertEquals('"' . $v . '"', $value->resolve($this->registry, $this->context));
+        $this->assertEquals('"' . $v . '"', $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
 
     }
 
@@ -53,7 +43,7 @@ class ValueTest extends \PHPUnit_Framework_TestCase {
 
         $value = new Value($v);
         $this->assertEquals($v, $value->getValue());
-        $this->assertEquals($v . '', $value->resolve($this->registry, $this->context));
+        $this->assertEquals($v . '', $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
 
     }
 
@@ -63,7 +53,7 @@ class ValueTest extends \PHPUnit_Framework_TestCase {
 
         $value = new Value($v);
         $this->assertEquals($v, $value->getValue());
-        $this->assertEquals($v . '', $value->resolve($this->registry, $this->context));
+        $this->assertEquals($v . '', $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
 
     }
 
@@ -73,16 +63,7 @@ class ValueTest extends \PHPUnit_Framework_TestCase {
 
         $value = new Value($v);
         $this->assertEquals($v, $value->getValue());
-        $this->assertEquals($v . '', $value->resolve($this->registry, $this->context));
-
-    }
-
-    protected function setUp () {
-
-        $this->registry = $this->getMockBuilder('\Archiweb\Registry')
-                               ->disableOriginalConstructor()
-                               ->getMock();
-        $this->context = $this->getMock('\Archiweb\Context');
+        $this->assertEquals($v . '', $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
 
     }
 

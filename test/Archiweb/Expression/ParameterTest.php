@@ -4,7 +4,9 @@
 namespace Archiweb\Expression;
 
 
-class ParameterTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\TestCase;
+
+class ParameterTest extends TestCase {
 
     /**
      *
@@ -37,10 +39,8 @@ class ParameterTest extends \PHPUnit_Framework_TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
 
         $param = ':company';
 

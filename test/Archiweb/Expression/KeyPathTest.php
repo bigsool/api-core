@@ -4,7 +4,9 @@
 namespace Archiweb\Expression;
 
 
-class KeyPathTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\TestCase;
+
+class KeyPathTest extends TestCase {
 
     /**
      *
@@ -44,10 +46,8 @@ class KeyPathTest extends \PHPUnit_Framework_TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMockBuilder('\Archiweb\Registry')
-                         ->disableOriginalConstructor()
-                         ->getMock();
-        $context = $this->getMock('\Archiweb\Context');
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
 
         $param = 'company.storage.url';
 

@@ -4,22 +4,19 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\ActionContext;
+use Archiweb\Context\QueryContext;
+use Archiweb\TestCase;
 
-class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
+class CallbackRuleTest extends TestCase {
 
     /**
      *
      */
     public function testShouldApply () {
 
-        $ctxMock = $this->getMockBuilder('\Archiweb\ActionContext')
-                        ->disableOriginalConstructor()
-                        ->getMock();
+        $ctxMock = $this->getMockQueryContext();
 
-        $ruleMock = $this->getMockBuilder('\Archiweb\Rule\Rule')
-                         ->disableOriginalConstructor()
-                         ->getMock();
+        $ruleMock = $this->getMockRule();
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
         }, []);
@@ -59,9 +56,7 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
      */
     public function testListChildRules () {
 
-        $mockRule = $this->getMockBuilder('\Archiweb\Rule\Rule')
-                         ->disableOriginalConstructor()
-                         ->getMock();
+        $mockRule = $this->getMockRule();
 
         $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
         }, []);
@@ -116,15 +111,13 @@ class CallbackRuleTest extends \PHPUnit_Framework_TestCase {
 
         $functionCalled = false;
 
-        $rule = new CallbackRule('select', 'entity', 'name', function (ActionContext $ctx) use (&$functionCalled) {
+        $rule = new CallbackRule('select', 'entity', 'name', function (QueryContext $ctx) use (&$functionCalled) {
 
             $functionCalled = true;
 
         }, []);
 
-        $rule->apply($this->getMockBuilder('\Archiweb\ActionContext')
-                          ->disableOriginalConstructor()
-                          ->getMock());
+        $rule->apply($this->getMockQueryContext());
 
         $this->assertTrue($functionCalled);
 

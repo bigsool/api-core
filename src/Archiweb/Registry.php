@@ -4,6 +4,7 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\QueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
@@ -13,23 +14,31 @@ use Doctrine\ORM\QueryBuilder;
 class Registry {
 
     /**
-     * @var ActionContext
+     * @param QueryContext $qryCtx
+     *
+     * @return Object|QueryBuilder
      */
-    protected $context;
+    public function query (QueryContext $qryCtx) {
+
+        // TODO: Implement query() method
+
+    }
 
     /**
-     * @var EntityManager
+     * @param string $joinName
+     *
+     * @return string
      */
-    protected $em;
+    public function addJoin ($joinName) {
+        // TODO: Implement addJoin() method
+    }
 
     /**
-     * @param ActionContext $context
+     * @param string $parameter
+     * @param mixed  $value
      */
-    public function __construct (ActionContext $context) {
-
-        $this->context = $context;
-        $this->em = $context->getEntityManager();
-
+    public function setParameter ($parameter, $value) {
+        // TODO: Implement setParameter() method
     }
 
     /**
@@ -38,7 +47,7 @@ class Registry {
      *
      * @return Object
      */
-    public function create ($entity, array $params) {
+    protected function create ($entity, array $params) {
 
         $class = self::realModelClassName($entity);
 
@@ -88,7 +97,7 @@ class Registry {
      *
      * @return QueryBuilder
      */
-    public function find ($entity) {
+    protected function find ($entity) {
 
         $class = self::realModelClassName($entity);
 
@@ -112,23 +121,6 @@ class Registry {
 
         return $qb;
 
-    }
-
-    /**
-     * @param string $joinName
-     *
-     * @return string
-     */
-    public function addJoin ($joinName) {
-        // TODO: Implement addJoin() method
-    }
-
-    /**
-     * @param string $parameter
-     * @param mixed  $value
-     */
-    public function setParameter ($parameter, $value) {
-        // TODO: Implement setParameter() method
     }
 
 } 

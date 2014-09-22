@@ -4,7 +4,7 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\Context;
+use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
 
 class Value implements Expression {
@@ -27,12 +27,12 @@ class Value implements Expression {
     }
 
     /**
-     * @param Registry $registry
-     * @param Context  $context
+     * @param Registry       $registry
+     * @param QueryContext $context
      *
      * @return string
      */
-    public function resolve (Registry $registry, Context $context) {
+    public function resolve (Registry $registry, QueryContext $context) {
 
         $v = $this->getValue();
         if (is_string($v)) {

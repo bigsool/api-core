@@ -1,1 +1,1 @@
-../vendor/bin/phpunit -c ../phpunit.xml --coverage-html ../coverage --strict --colors ../test/
+../vendor/bin/phpunit --bootstrap ../test/autoload.php -c ../phpunit.xml --coverage-html ../coverage --strict --colors ../test/
