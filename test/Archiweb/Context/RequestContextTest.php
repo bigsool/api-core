@@ -3,7 +3,7 @@
 namespace Archiweb\Context;
 
 
-use Archiweb\Parameter\Parameter;
+use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\TestCase;
 
 class RequestContextTest extends TestCase {
@@ -13,49 +13,55 @@ class RequestContextTest extends TestCase {
      */
     public function testParams () {
 
-        $ctx = new RequestContext($this->getApplicationContext());
+        $ctx = $this->getRequestContext();
 
-        $array = [$this->getParameterMock('a'), 'b' => $this->getParameterMock(2), $this->getParameterMock(['c'])];
+        $array = ['a', 'b' => 2, ['c']];
 
         $ctx->setParams($array);
 
         $this->assertSame($array, $ctx->getParams());
         $this->assertSame($array[0], $ctx->getParam(0));
         $this->assertSame($array['b'], $ctx->getParam('b'));
+        $this->assertSame(NULL, $ctx->getParam('qwe'));
 
     }
 
-    /**
-     * @param $value
-     *
-     * @return Parameter
-     */
-    protected function getParameterMock ($value) {
+    public function testGetNewActionContextWithoutParameter () {
 
-        $mock = $this->getMockBuilder('\Archiweb\Parameter\Parameter')
-                     ->disableOriginalConstructor()
-                     ->getMock();
-        $mock->method('getValue')->willReturn($value);
+        $ctx = $this->getRequestContext();
+        $actionContext = $ctx->getNewActionContext();
+        $expected = new ActionContext($ctx);
 
-        return $mock;
+        $this->assertEquals($expected, $actionContext);
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testInvalidParameterType () {
+    public function testGetNewActionContextWithParameters () {
 
-        (new RequestContext($this->getApplicationContext()))->setParams(['key' => 'value']);
+        $ctx = $this->getRequestContext();
+
+        $params = ['a', 'b' => 1, ['c'], new \stdClass()];
+        $expectedParams = [];
+        foreach ($params as $key => $param) {
+            $expectedParams[$key] = new UnsafeParameter($param);
+        }
+
+        $ctx->setParams($params);
+        $actionContext = $ctx->getNewActionContext();
+
+        $expected = new ActionContext($ctx);
+        $expected->setParams($expectedParams);
+
+        $this->assertEquals($expected, $actionContext);
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testInvalidParametersType () {
+    public function testGetApplicationContext() {
 
-        (new RequestContext($this->getApplicationContext()))->setParams('value');
+        $ctx = $this->getRequestContext();
+        $appCtx = $ctx->getApplicationContext();
+
+        $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
 
     }
 

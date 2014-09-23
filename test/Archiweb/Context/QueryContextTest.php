@@ -3,6 +3,7 @@
 namespace Archiweb\Context;
 
 
+use Archiweb\Operation;
 use Archiweb\TestCase;
 use Doctrine\ORM\EntityManager;
 
@@ -18,30 +19,40 @@ class QueryContextTest extends TestCase {
      */
     public function testParams () {
 
-        $array = [$this->getParameterMock('a'), 'b' => $this->getParameterMock(2), $this->getParameterMock(['c'])];
+        $array = ['a', 'b' => 2, ['c']];
 
-        $actionCtx = new QueryContext($this->getApplicationContext());
-        $actionCtx->setParams($array);
+        $ctx = $this->getQueryContext();
+        $ctx->setParams($array);
 
-        $this->assertSame($array, $actionCtx->getParams());
-        $this->assertSame($array[0], $actionCtx->getParam(0));
-        $this->assertSame($array['b'], $actionCtx->getParam('b'));
+        $this->assertSame($array, $ctx->getParams());
+        $this->assertSame($array[0], $ctx->getParam(0));
+        $this->assertSame($array['b'], $ctx->getParam('b'));
 
     }
 
     /**
-     * @param $value
      *
-     * @return Parameter
      */
-    protected function getParameterMock ($value) {
+    public function testEntity () {
 
-        $mock = $this->getMockBuilder('\Archiweb\Parameter\Parameter')
-                     ->disableOriginalConstructor()
-                     ->getMock();
-        $mock->method('getValue')->willReturn($value);
+        $entity = 'Company';
+        $ctx = $this->getQueryContext();
+        $ctx->setEntity($entity);
 
-        return $mock;
+        $this->assertSame($entity, $ctx->getEntity());
+
+    }
+
+    /**
+     *
+     */
+    public function testOperation () {
+
+        $ctx = $this->getQueryContext();
+        $operation = 'SELECT';
+        $ctx->setOperation('SELECT');
+
+        $this->assertSame($operation, $ctx->getOperation());
 
     }
 
@@ -51,16 +62,16 @@ class QueryContextTest extends TestCase {
     public function testFilters () {
 
         // empty rule list
-        $ctx = new QueryContext($this->getApplicationContext());
+        $ctx = $this->getQueryContext();
         $this->assertSame([], $ctx->getFilters());
 
         // only one rule
-        $filter = $this->getFilterMock();
+        $filter = $this->getMockFilter();
         $ctx->addFilter($filter);
         $this->assertSame([$filter], $ctx->getFilters());
 
         // several rules
-        $filters = [$this->getFilterMock(), $this->getFilterMock()];
+        $filters = [$this->getMockFilter(), $this->getMockFilter()];
         foreach ($filters as $f) {
             $ctx->addFilter($f);
         }
@@ -73,32 +84,21 @@ class QueryContextTest extends TestCase {
     }
 
     /**
-     * @return Filter
-     */
-    protected function getFilterMock () {
-
-        return $this->getMockBuilder('\Archiweb\Filter\Filter')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
      *
      */
     public function testFields () {
 
         // empty rule list
-        $ctx = new QueryContext($this->getApplicationContext());
+        $ctx = $this->getQueryContext();
         $this->assertSame([], $ctx->getFields());
 
         // only one rule
-        $field = $this->getFieldMock();
+        $field = $this->getMockField();
         $ctx->addField($field);
         $this->assertSame([$field], $ctx->getFields());
 
         // several rules
-        $fields = [$this->getFieldMock(), $this->getFieldMock()];
+        $fields = [$this->getMockField(), $this->getMockField()];
         foreach ($fields as $f) {
             $ctx->addField($f);
         }
@@ -110,14 +110,12 @@ class QueryContextTest extends TestCase {
 
     }
 
-    /**
-     * @return Field
-     */
-    protected function getFieldMock () {
+    public function testGetApplicationContext() {
 
-        return $this->getMockBuilder('\Archiweb\Field')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+        $ctx = $this->getQueryContext();
+        $appCtx = $ctx->getApplicationContext();
+
+        $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
 
     }
 
