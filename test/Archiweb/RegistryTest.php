@@ -4,37 +4,36 @@
 namespace Archiweb;
 
 
-use Archiweb\Expression\Expression;
-use Archiweb\Filter\Filter;
-use Archiweb\Parameter\Parameter;
+use Archiweb\Model\Company;
 
 class RegistryTest extends TestCase {
 
-    /**
-     * @var Registry
-     */
-    protected $registry;
+    public function testCreateWithoutParams () {
 
-    /**
-     * @var QueryContext
-     */
-    protected $ctx;
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('INSERT');
+        $qryCtx->setEntity('Company');
 
-    public function setUp () {
+        $registry = new Registry();
+        $company = $registry->query($qryCtx);
+
+        $this->assertEquals(new Company(), $company);
 
     }
 
-    public function testCreate () {
+    public function testCreateWithParams () {
 
-        /*
-        $company = $this->registry->create('Company', array());
-        $this->assertInstanceOf('\Archiweb\Model\Company', $company);
-        $this->assertEquals(new Company(), $company);
+        $companyName = 'bigsool';
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('INSERT');
+        $qryCtx->setEntity('Company');
+        $qryCtx->setParams(['name' => $companyName]);
 
-        $company = $this->registry->create('Company', array('name' => $this->getParameterMock('company name', true)));
+        $registry = new Registry();
+        $company = $registry->query($qryCtx);
+
         $this->assertInstanceOf('\Archiweb\Model\Company', $company);
-        $this->assertEquals('company name', $company->getName());
-        */
+        $this->assertEquals($companyName, $company->getName());
 
     }
 
@@ -61,7 +60,12 @@ class RegistryTest extends TestCase {
      */
     public function testEntityNotFound () {
 
-        //$this->registry->create('Qwe', array());
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('INSERT');
+        $qryCtx->setEntity('qwe');
+
+        $registry = new Registry();
+        $registry->query($qryCtx);
 
     }
 
@@ -74,97 +78,86 @@ class RegistryTest extends TestCase {
 
     }
 
-    public function testFind () {
+    /**
+     * @expectedException \Exception
+     */
+    public function testNoneFieldGiven () {
 
-        /*
-        // find without anything else
-        $qb = $this->registry->find('Company');
-        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
-        $dql = $qb->getDQL();
-        $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company', $dql);
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('SELECT');
+        $qryCtx->setEntity('Company');
 
-        // find with one filter
-        $ctx = clone $this->ctx;
-        $where = '1 = 1';
-        $ctx->addFilter($this->getFilterMock($this->getExpressionMock($where)));
-        $registry = new Registry($ctx);
-        $qb = $registry->find('Company');
-        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
-        $dql = $qb->getDQL();
-        $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company WHERE ' . $where, $dql);
-
-        // find with 3 filters
-        $ctx = clone $this->ctx;
-        $wheres = ['1 = 1', '2 = 2', '3 = 3'];
-        foreach ($wheres as $where) {
-            $ctx->addFilter($this->getFilterMock($this->getExpressionMock($where)));
-        }
-        $registry = new Registry($ctx);
-        $qb = $registry->find('Company');
-        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
-        $dql = $qb->getDQL();
-        $this->assertEquals('SELECT company FROM \Archiweb\Model\Company company WHERE ' . implode(' AND ', $wheres),
-                            $dql);
-        */
+        $registry = new Registry();
+        $registry->query($qryCtx);
 
     }
 
-    /**
-     * @param Expression $expression
-     *
-     * @return Filter
-     */
-    public function getFilterMock (Expression $expression) {
+    public function testFindWithoutFilter () {
 
-        $filter = $this->getMockBuilder('\Archiweb\Filter\Filter')
-                       ->disableOriginalConstructor()
-                       ->getMock();
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('SELECT');
+        $qryCtx->setEntity('Company');
+        $qryCtx->addField(new StarField($qryCtx->getEntity()));
 
+        $registry = new Registry();
+        $qb = $registry->query($qryCtx);
+
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
+
+        $dql = $qb->getDQL();
+        $this->assertSame('SELECT company FROM \Archiweb\Model\Company company', $dql);
+
+    }
+
+    public function testFindWithoutOneFilter () {
+
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('SELECT');
+        $qryCtx->setEntity('Company');
+        $qryCtx->addField(new StarField($qryCtx->getEntity()));
+
+        $filter = $this->getMockFilter();
+        $expression = $this->getMockExpression();
+        $expression->method('resolve')->willReturn('1 = 1');
         $filter->method('getExpression')->willReturn($expression);
+        $qryCtx->addFilter($filter);
 
-        return $filter;
+        $registry = new Registry();
+        $qb = $registry->query($qryCtx);
 
-    }
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
 
-    /**
-     * @param string|callable $resolve
-     *
-     * @return Expression
-     */
-    public function getExpressionMock ($resolve = '') {
-
-        $expression = $this->getMockBuilder('\Archiweb\Expression\Expression')
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $method = $expression->method('resolve');
-        if (is_string($resolve)) {
-            $method->willReturn($resolve);
-        }
-        elseif (is_callable($resolve)) {
-            $method->will($this->returnCallback($resolve));
-        }
-        else {
-            $this->markTestIncomplete('$resolve must be a string or a callable, ' . gettype($resolve) . ' given');
-        }
-
-        return $expression;
+        $dql = $qb->getDQL();
+        $this->assertSame('SELECT company FROM \Archiweb\Model\Company company WHERE 1 = 1', $dql);
 
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return Parameter
-     */
-    protected function getParameterMock ($value, $isSafe) {
+    public function testFindWithoutMultiParams () {
 
-        $parameter = $this->getMockBuilder('\Archiweb\Parameter\Parameter')
-                          ->disableOriginalConstructor()
-                          ->getMock();
-        $parameter->method('isSafe')->willReturn($isSafe);
-        $parameter->method('getValue')->willReturn($value);
+        $qryCtx = $this->getQueryContext();
+        $qryCtx->setCommand('SELECT');
+        $qryCtx->setEntity('Company');
+        $qryCtx->addField(new StarField($qryCtx->getEntity()));
 
-        return $parameter;
+        $wheres = ['1 = 1', '2 = 2', '3 = 3'];
+
+        foreach ($wheres as $where) {
+
+            $filter = $this->getMockFilter();
+            $expression = $this->getMockExpression();
+            $expression->method('resolve')->willReturn($where);
+            $filter->method('getExpression')->willReturn($expression);
+            $qryCtx->addFilter($filter);
+
+        }
+        $registry = new Registry();
+        $qb = $registry->query($qryCtx);
+
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $qb);
+
+        $dql = $qb->getDQL();
+        $this->assertSame('SELECT company FROM \Archiweb\Model\Company company WHERE ' . implode(' AND ', $wheres),
+                          $dql);
 
     }
 

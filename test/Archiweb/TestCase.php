@@ -8,6 +8,7 @@ use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
+use Archiweb\Expression\Expression;
 use Archiweb\Filter\Filter;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\EntityManager;
@@ -105,6 +106,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockParameter () {
 
         return $this->getMockBuilder('\Archiweb\Parameter\Parameter')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Expression
+     */
+    public function getMockExpression () {
+
+        return $this->getMockBuilder('\Archiweb\Expression\Expression')
                     ->disableOriginalConstructor()
                     ->getMock();
 
