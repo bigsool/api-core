@@ -27,7 +27,7 @@ class Value implements Expression {
     }
 
     /**
-     * @param Registry       $registry
+     * @param Registry     $registry
      * @param QueryContext $context
      *
      * @return string

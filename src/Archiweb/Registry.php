@@ -8,7 +8,6 @@ use Archiweb\Context\QueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 
 class Registry {

@@ -42,7 +42,7 @@ class ActionContextTest extends TestCase {
 
     }
 
-    public function testGetApplicationContext() {
+    public function testGetApplicationContext () {
 
         $ctx = $this->getActionContext();
         $appCtx = $ctx->getApplicationContext();

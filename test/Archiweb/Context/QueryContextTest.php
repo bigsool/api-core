@@ -5,7 +5,6 @@ namespace Archiweb\Context;
 
 use Archiweb\Operation;
 use Archiweb\TestCase;
-use Doctrine\ORM\EntityManager;
 
 class QueryContextTest extends TestCase {
 
@@ -46,13 +45,13 @@ class QueryContextTest extends TestCase {
     /**
      *
      */
-    public function testOperation () {
+    public function testCommand () {
 
         $ctx = $this->getQueryContext();
         $operation = 'SELECT';
-        $ctx->setOperation('SELECT');
+        $ctx->setCommand('SELECT');
 
-        $this->assertSame($operation, $ctx->getOperation());
+        $this->assertSame($operation, $ctx->getCommand());
 
     }
 
@@ -110,7 +109,7 @@ class QueryContextTest extends TestCase {
 
     }
 
-    public function testGetApplicationContext() {
+    public function testGetApplicationContext () {
 
         $ctx = $this->getQueryContext();
         $appCtx = $ctx->getApplicationContext();

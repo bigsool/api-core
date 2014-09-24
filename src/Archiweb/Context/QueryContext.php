@@ -33,7 +33,7 @@ class QueryContext implements ApplicationContextProvider {
     /**
      * @var string
      */
-    protected $operation;
+    protected $command;
 
     /**
      * @var ApplicationContext
@@ -139,18 +139,18 @@ class QueryContext implements ApplicationContextProvider {
     /**
      * @return string
      */
-    public function getOperation () {
+    public function getCommand () {
 
-        return $this->operation;
+        return $this->command;
 
     }
 
     /**
-     * @param string $operation
+     * @param string $command
      */
-    public function setOperation ($operation) {
+    public function setCommand ($command) {
 
-        $this->operation = $operation;
+        $this->command = $command;
 
     }
 

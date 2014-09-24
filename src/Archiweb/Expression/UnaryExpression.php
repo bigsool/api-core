@@ -31,7 +31,7 @@ class UnaryExpression implements ExpressionWithOperator {
     }
 
     /**
-     * @param Registry       $registry
+     * @param Registry     $registry
      * @param QueryContext $context
      *
      * @return string

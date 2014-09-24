@@ -4,10 +4,8 @@
 namespace Archiweb;
 
 
-use Archiweb\Context\RequestContext;
 use Archiweb\Expression\Expression;
 use Archiweb\Filter\Filter;
-use Archiweb\Model\Company;
 use Archiweb\Parameter\Parameter;
 
 class RegistryTest extends TestCase {
@@ -37,23 +35,6 @@ class RegistryTest extends TestCase {
         $this->assertInstanceOf('\Archiweb\Model\Company', $company);
         $this->assertEquals('company name', $company->getName());
         */
-
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return Parameter
-     */
-    protected function getParameterMock ($value, $isSafe) {
-
-        $parameter = $this->getMockBuilder('\Archiweb\Parameter\Parameter')
-                          ->disableOriginalConstructor()
-                          ->getMock();
-        $parameter->method('isSafe')->willReturn($isSafe);
-        $parameter->method('getValue')->willReturn($value);
-
-        return $parameter;
 
     }
 
@@ -167,6 +148,23 @@ class RegistryTest extends TestCase {
         }
 
         return $expression;
+
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return Parameter
+     */
+    protected function getParameterMock ($value, $isSafe) {
+
+        $parameter = $this->getMockBuilder('\Archiweb\Parameter\Parameter')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $parameter->method('isSafe')->willReturn($isSafe);
+        $parameter->method('getValue')->willReturn($value);
+
+        return $parameter;
 
     }
 

@@ -91,7 +91,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return RequestContext
      */
-    public function getMockRequestContext() {
+    public function getMockRequestContext () {
 
         return $this->getMockBuilder('\Archiweb\Context\RequestContext')
                     ->disableOriginalConstructor()
@@ -102,7 +102,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return RequestContext
      */
-    public function getMockParameter() {
+    public function getMockParameter () {
 
         return $this->getMockBuilder('\Archiweb\Parameter\Parameter')
                     ->disableOriginalConstructor()
@@ -116,24 +116,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getRequestContext () {
 
         return new RequestContext($this->getApplicationContext());
-
-    }
-
-    /**
-     * @return ActionContext
-     */
-    public function getActionContext() {
-
-        return (new RequestContext($this->getApplicationContext()))->getNewActionContext();
-
-    }
-
-    /**
-     * @return QueryContext
-     */
-    public function getQueryContext() {
-
-        return new QueryContext($this->getApplicationContext());
 
     }
 
@@ -167,6 +149,24 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $ctx->setEntityManager($em);
 
         return $ctx;
+
+    }
+
+    /**
+     * @return ActionContext
+     */
+    public function getActionContext () {
+
+        return (new RequestContext($this->getApplicationContext()))->getNewActionContext();
+
+    }
+
+    /**
+     * @return QueryContext
+     */
+    public function getQueryContext () {
+
+        return new QueryContext($this->getApplicationContext());
 
     }
 

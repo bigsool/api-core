@@ -56,7 +56,7 @@ class RequestContextTest extends TestCase {
 
     }
 
-    public function testGetApplicationContext() {
+    public function testGetApplicationContext () {
 
         $ctx = $this->getRequestContext();
         $appCtx = $ctx->getApplicationContext();
