@@ -58,7 +58,7 @@ class FindQueryContext implements QueryContext {
      */
     public function getEntity () {
 
-        $this->entity;
+        return $this->entity;
 
     }
 

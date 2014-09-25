@@ -18,8 +18,8 @@ class BinaryExpressionTest extends TestCase {
 
         $exp = new BinaryExpression(
             $operator,
-            $this->getMock('\Archiweb\Expression\Expression'),
-            $this->getMock('\Archiweb\Expression\Expression')
+            $this->getMockExpression(),
+            $this->getMockExpression()
         );
 
         $this->assertEquals($operator, $exp->getOperator());
@@ -32,8 +32,8 @@ class BinaryExpressionTest extends TestCase {
     public function testGetLeft () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
-        $left = $this->getMock('\Archiweb\Expression\Expression');
-        $right = $this->getMock('\Archiweb\Expression\Expression');
+        $left = $this->getMockExpression();
+        $right = $this->getMockExpression();
 
         $exp = new BinaryExpression($operator, $left, $right);
 
@@ -47,8 +47,8 @@ class BinaryExpressionTest extends TestCase {
     public function testGetRight () {
 
         $operator = $this->getMock('\Archiweb\Operator\CompareOperator');
-        $left = $this->getMock('\Archiweb\Expression\Expression');
-        $right = $this->getMock('\Archiweb\Expression\Expression');
+        $left = $this->getMockExpression();
+        $right = $this->getMockExpression();
 
         $exp = new BinaryExpression($operator, $left, $right);
 
@@ -68,12 +68,13 @@ class BinaryExpressionTest extends TestCase {
         $operator->method('toDQL')->will($this->returnCallback(function ($v) {
 
             return "= $v";
+
         }));
 
-        $left = $this->getMock('\Archiweb\Expression\Expression');
+        $left = $this->getMockExpression();
         $left->method('resolve')->willReturn('I\'m left');
 
-        $right = $this->getMock('\Archiweb\Expression\Expression');
+        $right = $this->getMockExpression();
         $right->method('resolve')->willReturn('I\'m right');
 
         $exp = new BinaryExpression($operator, $left, $right);

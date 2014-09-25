@@ -34,7 +34,9 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getMockRegistry () {
 
-        return $this->getMock('\Archiweb\Registry');
+        return $this->getMockBuilder('\Archiweb\Registry')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 
@@ -196,6 +198,15 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
 
         return new FindQueryContext($this->getApplicationContext(), $entity, $fields, $filters);
+
+    }
+
+    /**
+     * @return Registry
+     */
+    public function getRegistry() {
+
+        return new Registry($this->getApplicationContext());
 
     }
 

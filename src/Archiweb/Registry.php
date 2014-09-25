@@ -4,6 +4,7 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\EntityManagerReceiver;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\NAryExpression;
@@ -11,7 +12,6 @@ use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 
 class Registry implements EntityManagerReceiver {
 
@@ -19,6 +19,21 @@ class Registry implements EntityManagerReceiver {
      * @var EntityManager
      */
     protected $entityManager;
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $applicationContext;
+
+    /**
+     * @param ApplicationContext $appCtx
+     */
+    public function __construct (ApplicationContext $appCtx) {
+
+        $this->applicationContext = $appCtx;
+        $appCtx->getEntityManager($this);
+
+    }
 
     /**
      * @param $model
