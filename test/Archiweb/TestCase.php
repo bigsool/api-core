@@ -30,6 +30,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return QueryContext
+     */
+    public function getMockFindQueryContext () {
+
+        return $this->getMockBuilder('\Archiweb\Context\FindQueryContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @return Registry
      */
     public function getMockRegistry () {

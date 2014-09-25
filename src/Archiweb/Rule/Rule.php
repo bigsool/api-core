@@ -4,6 +4,7 @@
 namespace Archiweb\Rule;
 
 
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 
 abstract class Rule {
@@ -66,9 +67,11 @@ abstract class Rule {
     public abstract function listChildRules ();
 
     /**
-     * @param QueryContext $ctx
+     * @param FindQueryContext $ctx
+     *
+     * @return
      */
-    public abstract function apply (QueryContext $ctx);
+    public abstract function apply (FindQueryContext $ctx);
 
     /**
      * @return string

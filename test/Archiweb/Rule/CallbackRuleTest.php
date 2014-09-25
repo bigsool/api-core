@@ -14,7 +14,7 @@ class CallbackRuleTest extends TestCase {
      */
     public function testShouldApply () {
 
-        $ctxMock = $this->getMockQueryContext();
+        $ctxMock = $this->getMockFindQueryContext();
 
         $ruleMock = $this->getMockRule();
 
@@ -117,7 +117,7 @@ class CallbackRuleTest extends TestCase {
 
         }, []);
 
-        $rule->apply($this->getMockQueryContext());
+        $rule->apply($this->getMockFindQueryContext());
 
         $this->assertTrue($functionCalled);
 

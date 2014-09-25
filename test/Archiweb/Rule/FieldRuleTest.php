@@ -151,7 +151,7 @@ class FieldRuleTest extends TestCase {
         }));
 
         $rule = new FieldRule($field, $mockRule);
-        $rule->apply($this->getMockQueryContext());
+        $rule->apply($this->getMockFindQueryContext());
 
         $this->assertTrue($called);
 

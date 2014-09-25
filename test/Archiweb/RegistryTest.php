@@ -77,7 +77,7 @@ class RegistryTest extends TestCase {
 
         $qryCtx = $this->getFindQueryContext('Company');
 
-        $registry = new Registry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
     }

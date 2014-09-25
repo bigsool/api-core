@@ -4,7 +4,7 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\Context\QueryContext;
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Field;
 
 class FieldRule extends Rule {
@@ -50,7 +50,7 @@ class FieldRule extends Rule {
     }
 
     /**
-     * @return Field
+     * @return Rule
      */
     public function getRule () {
 
@@ -59,10 +59,12 @@ class FieldRule extends Rule {
     }
 
     /**
-     * @param QueryContext $ctx
+     * @param FindQueryContext $ctx
      */
-    public function apply (QueryContext $ctx) {
-        // TODO: Implement apply() method.
+    public function apply (FindQueryContext $ctx) {
+
+        $this->getRule()->apply($ctx);
+
     }
 
     /**
