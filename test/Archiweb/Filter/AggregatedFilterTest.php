@@ -37,11 +37,27 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
         $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
-        $aggregateFilter->addFilter($strFilter);
-        $strFilter = new StringFilter('project', 'myProject', 'project.id = 2', 'select');
-        $aggregateFilter->addFilter($strFilter);
-        //  $expression = $aggregateFilter->getExpression();
+        $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
+        $aggregateFilter->addFilter($strFilter1);
+        $strFilter2 = new StringFilter('project', 'myProject', 'project.id = 2', 'select');
+        $aggregateFilter->addFilter($strFilter2);
+        $expression = $aggregateFilter->getExpression();
+
+        $expressions = $expression->getExpressions();
+        $this->assertSame($strFilter1->getExpression(), $expressions[0]);
+        $this->assertSame($strFilter2->getExpression(), $expressions[1]);
+
+    }
+
+    public function testGetOperator () {
+
+        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
+        $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
+        $aggregateFilter->addFilter($strFilter1);
+        $expression = $aggregateFilter->getExpression();
+        $operator = $expression->getOperator();
+        $this->assertInstanceOf('\Archiweb\Operator\LogicOperator',$operator);
 
     }
 

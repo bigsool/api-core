@@ -25,7 +25,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertEquals('project.owner = 1', $expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
 
     }
 
