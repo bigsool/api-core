@@ -10,7 +10,7 @@ class SaveQueryContext implements QueryContext {
      * @param ApplicationContext $ctx
      * @param                    $model
      */
-    public function __construct(ApplicationContext $ctx, $model) {
+    public function __construct (ApplicationContext $ctx, $model) {
 
     }
 

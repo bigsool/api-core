@@ -53,7 +53,7 @@ class FieldRuleTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testIncompatibleRule() {
+    public function testIncompatibleRule () {
 
         $field = $this->getMockField();
         $field->method('getEntity')->willReturn('a');

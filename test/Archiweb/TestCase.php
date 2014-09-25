@@ -129,7 +129,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return EntityManagerReceiver
      */
-    public function getMockEntityManagerReceiver() {
+    public function getMockEntityManagerReceiver () {
 
         return $this->getMockBuilder('\Archiweb\Context\EntityManagerReceiver')
                     ->disableOriginalConstructor()
@@ -204,7 +204,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return Registry
      */
-    public function getRegistry() {
+    public function getRegistry () {
 
         return new Registry($this->getApplicationContext());
 

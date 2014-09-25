@@ -4,7 +4,6 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\Context\QueryContext;
 use Archiweb\TestCase;
 
 class SimpleRuleTest extends TestCase {

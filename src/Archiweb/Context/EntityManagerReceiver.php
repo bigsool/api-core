@@ -11,6 +11,6 @@ interface EntityManagerReceiver {
     /**
      * @param EntityManager $em
      */
-    public function setEntityManager(EntityManager $em);
+    public function setEntityManager (EntityManager $em);
 
 } 
