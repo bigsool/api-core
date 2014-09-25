@@ -51,6 +51,17 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     }
 
     /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function getParam ($key) {
+
+        return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
+    }
+
+    /**
      * @return ApplicationContext
      */
     public function getApplicationContext () {

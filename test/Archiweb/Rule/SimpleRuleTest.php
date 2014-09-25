@@ -4,8 +4,6 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\Context\QueryContext;
-use Archiweb\Context\RequestContext;
 use Archiweb\TestCase;
 
 class SimpleRuleTest extends TestCase {
@@ -113,10 +111,10 @@ class SimpleRuleTest extends TestCase {
         $filter = $this->getMockFilter();
 
         $rule = new SimpleRule('command', 'entity', 'name', $filter);
-        $actionCtx = new QueryContext($this->getApplicationContext());
-        $rule->apply($actionCtx);
+        $ctx = $this->getFindQueryContext('entity');
+        $rule->apply($ctx);
 
-        $this->assertContains($filter, $actionCtx->getFilters());
+        $this->assertContains($filter, $ctx->getFilters());
 
     }
 

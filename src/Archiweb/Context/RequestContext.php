@@ -11,7 +11,7 @@ class RequestContext implements ApplicationContextProvider {
     /**
      * @var array
      */
-    protected $params;
+    protected $params = [];
 
     /**
      * @var ApplicationContext
@@ -24,17 +24,6 @@ class RequestContext implements ApplicationContextProvider {
     public function __construct (ApplicationContext $context) {
 
         $this->applicationContext = $context;
-
-    }
-
-    /**
-     * @param mixed $key
-     *
-     * @return mixed
-     */
-    public function getParam ($key) {
-
-        return isset($this->params[$key]) ? $this->params[$key] : NULL;
 
     }
 
@@ -71,6 +60,17 @@ class RequestContext implements ApplicationContextProvider {
     public function setParams (array $params) {
 
         $this->params = $params;
+
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function getParam ($key) {
+
+        return isset($this->params[$key]) ? $this->params[$key] : NULL;
 
     }
 

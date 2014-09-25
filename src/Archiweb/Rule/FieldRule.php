@@ -5,9 +5,7 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\QueryContext;
-use Archiweb\Context\Rule\Rule;
 use Archiweb\Field;
-use Archiweb\Operation;
 
 class FieldRule extends Rule {
 
@@ -17,17 +15,28 @@ class FieldRule extends Rule {
     protected $field;
 
     /**
-     * @param Field $field
+     * @var Rule
      */
-    public function __construct (Field $field) {
+    protected $rule;
+
+    /**
+     * @param Field $field
+     * @param Rule  $rule
+     */
+    public function __construct (Field $field, Rule $rule) {
 
         $entity = $field->getEntity();
         $fieldName = $field->getName();
-        $name = $entity . lcfirst($fieldName) . 'FieldRule';
+        $name = $entity . ucfirst($fieldName) . 'FieldRule';
 
-        parent::__construct(Operation::SELECT, $entity, $name);
+        if ($entity != $rule->getEntity()) {
+            throw new \RuntimeException('incompatible rule');
+        }
+
+        parent::__construct($rule->getCommand(), $entity, $name);
 
         $this->field = $field;
+        $this->rule = $rule;
 
     }
 
@@ -35,7 +44,18 @@ class FieldRule extends Rule {
      * @return Rule[]
      */
     public function listChildRules () {
-        // TODO: Implement listChildRules() method.
+
+        return [$this->getRule()];
+
+    }
+
+    /**
+     * @return Field
+     */
+    public function getRule () {
+
+        return $this->rule;
+
     }
 
     /**
@@ -43,5 +63,14 @@ class FieldRule extends Rule {
      */
     public function apply (QueryContext $ctx) {
         // TODO: Implement apply() method.
+    }
+
+    /**
+     * @return Field
+     */
+    public function getField () {
+
+        return $this->field;
+
     }
 }

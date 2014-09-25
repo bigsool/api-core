@@ -4,55 +4,50 @@
 namespace Archiweb;
 
 
-use Archiweb\Context\QueryContext;
+use Archiweb\Context\ApplicationContext;
+use Archiweb\Context\EntityManagerReceiver;
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
 
-class Registry {
+class Registry implements EntityManagerReceiver {
 
     /**
-     * @param QueryContext $qryCtx
-     *
-     * @return Object|QueryBuilder
+     * @var EntityManager
      */
-    public function query (QueryContext $qryCtx) {
+    protected $entityManager;
 
-        // TODO: Implement query() method
+    /**
+     * @var ApplicationContext
+     */
+    protected $applicationContext;
+
+    /**
+     * @param ApplicationContext $appCtx
+     */
+    public function __construct (ApplicationContext $appCtx) {
+
+        $this->applicationContext = $appCtx;
+        $appCtx->getEntityManager($this);
 
     }
 
     /**
-     * @param string $joinName
+     * @param $model
      *
-     * @return string
+     * @return mixed
      */
-    public function addJoin ($joinName) {
-        // TODO: Implement addJoin() method
-    }
+    public function save ($model) {
 
-    /**
-     * @param string $parameter
-     * @param mixed  $value
-     */
-    public function setParameter ($parameter, $value) {
-        // TODO: Implement setParameter() method
-    }
-
-    /**
-     * @param string      $entity
-     * @param Parameter[] $params
-     *
-     * @return Object
-     */
-    protected function create ($entity, array $params) {
-
+        $entity = $qryCtx->getEntity();
+        $params = $qryCtx->getParams();
         $class = self::realModelClassName($entity);
 
         $obj = new $class;
-        $metadata = $this->em->getClassMetadata($class);
+        $metadata = $qryCtx->getApplicationContext()->getEntityManager()->getClassMetadata($class);
         $fieldNames = $metadata->getFieldNames();
 
         foreach ($params as $key => $param) {
@@ -93,34 +88,61 @@ class Registry {
     }
 
     /**
-     * @param string $entity
+     * @param string $joinName
      *
-     * @return QueryBuilder
+     * @return string
      */
-    protected function find ($entity) {
+    public function addJoin ($joinName) {
+        // TODO: Implement addJoin() method
+    }
 
+    /**
+     * @param string $parameter
+     * @param mixed  $value
+     */
+    public function setParameter ($parameter, $value) {
+        // TODO: Implement setParameter() method
+    }
+
+    /**
+     * @param EntityManager $em
+     */
+    public function setEntityManager (EntityManager $em) {
+
+        $this->entityManager = $em;
+
+    }
+
+    /**
+     * @param FindQueryContext $ctx
+     * @param bool             $hydrateArray
+     *
+     * @return array
+     */
+    public function find (FindQueryContext $ctx, $hydrateArray = true) {
+
+        $entity = $ctx->getEntity();
         $class = self::realModelClassName($entity);
 
-        $qb = $this->em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $alias = lcfirst($entity);
         $qb->from($class, $alias);
 
-        $fields = $this->context->getFields();
+        $fields = $ctx->getFields();
         if (empty($fields)) {
             $qb->select($alias);
         }
 
         $expressions = [];
-        foreach ($this->context->getFilters() as $filter) {
+        foreach ($ctx->getFilters() as $filter) {
             $expressions[] = $filter->getExpression();
         }
         if ($expressions) {
             $expression = new NAryExpression(new AndOperator(), $expressions);
-            $qb->andWhere($expression->resolve($this, $this->context));
+            $qb->andWhere($expression->resolve($this, $ctx));
         }
 
-        return $qb;
+        return $qb->getQuery()->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
     }
-
-} 
+}

@@ -4,14 +4,147 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
+use Archiweb\Context\EntityManagerReceiver;
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
+use Archiweb\Context\RequestContext;
+use Archiweb\Expression\Expression;
 use Archiweb\Filter\Filter;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * @return QueryContext
+     */
+    public function getMockQueryContext () {
+
+        return $this->getMockBuilder('\Archiweb\Context\QueryContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Registry
+     */
+    public function getMockRegistry () {
+
+        return $this->getMockBuilder('\Archiweb\Registry')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Rule
+     */
+    public function getMockRule () {
+
+        return $this->getMockBuilder('\Archiweb\Rule\Rule')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Filter
+     */
+    public function getMockFilter () {
+
+        return $this->getMockBuilder('\Archiweb\Filter\Filter')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Field
+     */
+    public function getMockField () {
+
+        return $this->getMockBuilder('\Archiweb\Field')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return RuleManager
+     */
+    public function getMockRuleManager () {
+
+        return $this->getMock('\Archiweb\RuleManager');
+
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getMockEntityManager () {
+
+        return $this->getMockBuilder('\Doctrine\ORM\EntityManager')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getMockRequestContext () {
+
+        return $this->getMockBuilder('\Archiweb\Context\RequestContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getMockParameter () {
+
+        return $this->getMockBuilder('\Archiweb\Parameter\Parameter')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Expression
+     */
+    public function getMockExpression () {
+
+        return $this->getMockBuilder('\Archiweb\Expression\Expression')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return EntityManagerReceiver
+     */
+    public function getMockEntityManagerReceiver () {
+
+        return $this->getMockBuilder('\Archiweb\Context\EntityManagerReceiver')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getRequestContext () {
+
+        return new RequestContext($this->getApplicationContext());
+
+    }
 
     /**
      * @return ApplicationContext
@@ -47,44 +180,33 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return QueryContext
+     * @return ActionContext
      */
-    public function getMockQueryContext () {
+    public function getActionContext () {
 
-        return $this->getMockBuilder('\Archiweb\Context\QueryContext')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+        return (new RequestContext($this->getApplicationContext()))->getNewActionContext();
+
+    }
+
+    /**
+     * @param string $entity
+     * @param array  $fields
+     * @param array  $filters
+     *
+     * @return FindQueryContext
+     */
+    public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
+
+        return new FindQueryContext($this->getApplicationContext(), $entity, $fields, $filters);
 
     }
 
     /**
      * @return Registry
      */
-    public function getMockRegistry () {
+    public function getRegistry () {
 
-        return $this->getMock('\Archiweb\Registry');
-
-    }
-
-    /**
-     * @return Rule
-     */
-    public function getMockRule () {
-
-        return $this->getMockBuilder('\Archiweb\Rule\Rule')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
-     * @return Filter
-     */
-    public function getMockFilter() {
-
-        return $this->getMockBuilder('\Archiweb\Filter\Filter')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+        return new Registry($this->getApplicationContext());
 
     }
 
