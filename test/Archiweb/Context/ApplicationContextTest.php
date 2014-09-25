@@ -23,8 +23,23 @@ class ApplicationContextTest extends TestCase {
         $ctx = new ApplicationContext();
         $em = $this->getMockEntityManager();
 
+        $getEM = new \ReflectionMethod($ctx, 'getEntityManager');
+        $getEM->setAccessible(true);
+
         $ctx->setEntityManager($em);
-        $this->assertSame($em, $ctx->getEntityManager());
+
+        $called = false;
+        $receiver = $this->getMockEntityManagerReceiver();
+        $receiver->method('setEntityManager')->will($this->returnCallback(function ($entityManager) use (
+            $em, &$called
+        ) {
+
+            $this->assertSame($em, $entityManager);
+            $called = true;
+
+        }));
+
+        $ctx->getEntityManager($receiver);
 
     }
 

@@ -38,11 +38,11 @@ class ApplicationContext {
     }
 
     /**
-     * @return EntityManager
+     * @param EntityManagerReceiver $class
      */
-    public function getEntityManager () {
+    public function getEntityManager (EntityManagerReceiver $class) {
 
-        return $this->entityManager;
+        $class->setEntityManager($this->entityManager);
 
     }
 

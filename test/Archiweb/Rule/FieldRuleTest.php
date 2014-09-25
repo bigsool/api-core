@@ -131,9 +131,7 @@ class FieldRuleTest extends TestCase {
         $mockRule = $this->getMockSelectCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
-        $qryCtx = $this->getQueryContext();
-        $qryCtx->setEntity('company');
-        $qryCtx->setCommand($mockRule->getCommand());
+        $qryCtx = $this->getFindQueryContext('Company');
 
         $this->assertTrue($rule->shouldApply($qryCtx));
 

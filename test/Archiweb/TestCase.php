@@ -6,6 +6,8 @@ namespace Archiweb;
 
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
+use Archiweb\Context\EntityManagerReceiver;
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Expression\Expression;
@@ -123,6 +125,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return EntityManagerReceiver
+     */
+    public function getMockEntityManagerReceiver() {
+
+        return $this->getMockBuilder('\Archiweb\Context\EntityManagerReceiver')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @return RequestContext
      */
     public function getRequestContext () {
@@ -174,11 +187,15 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return QueryContext
+     * @param string $entity
+     * @param array  $fields
+     * @param array  $filters
+     *
+     * @return FindQueryContext
      */
-    public function getQueryContext () {
+    public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
 
-        return new QueryContext($this->getApplicationContext());
+        return new FindQueryContext($this->getApplicationContext(), $entity, $fields, $filters);
 
     }
 

@@ -6,7 +6,7 @@ namespace Archiweb\Context;
 use Archiweb\Operation;
 use Archiweb\TestCase;
 
-class QueryContextTest extends TestCase {
+class FindQueryContextTest extends TestCase {
 
     /**
      * @var RequestContext
@@ -16,42 +16,12 @@ class QueryContextTest extends TestCase {
     /**
      *
      */
-    public function testParams () {
-
-        $array = ['a', 'b' => 2, ['c']];
-
-        $ctx = $this->getQueryContext();
-        $ctx->setParams($array);
-
-        $this->assertSame($array, $ctx->getParams());
-        $this->assertSame($array[0], $ctx->getParam(0));
-        $this->assertSame($array['b'], $ctx->getParam('b'));
-
-    }
-
-    /**
-     *
-     */
     public function testEntity () {
 
         $entity = 'Company';
-        $ctx = $this->getQueryContext();
-        $ctx->setEntity($entity);
+        $ctx = $this->getFindQueryContext($entity);
 
         $this->assertSame($entity, $ctx->getEntity());
-
-    }
-
-    /**
-     *
-     */
-    public function testCommand () {
-
-        $ctx = $this->getQueryContext();
-        $operation = 'SELECT';
-        $ctx->setCommand('SELECT');
-
-        $this->assertSame($operation, $ctx->getCommand());
 
     }
 
@@ -61,7 +31,7 @@ class QueryContextTest extends TestCase {
     public function testFilters () {
 
         // empty rule list
-        $ctx = $this->getQueryContext();
+        $ctx = $this->getFindQueryContext('Company');
         $this->assertSame([], $ctx->getFilters());
 
         // only one rule
@@ -88,7 +58,7 @@ class QueryContextTest extends TestCase {
     public function testFields () {
 
         // empty rule list
-        $ctx = $this->getQueryContext();
+        $ctx = $this->getFindQueryContext('Company');
         $this->assertSame([], $ctx->getFields());
 
         // only one rule
@@ -111,7 +81,7 @@ class QueryContextTest extends TestCase {
 
     public function testGetApplicationContext () {
 
-        $ctx = $this->getQueryContext();
+        $ctx = $this->getFindQueryContext('Company');
         $appCtx = $ctx->getApplicationContext();
 
         $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
