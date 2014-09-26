@@ -22,15 +22,16 @@ class FieldTest extends TestCase {
 
     }
 
-    public function testGetFilter () {
+    public function testRules () {
 
-        $rule = NULL;
-        $field = new Field('entity', 'name', $rule);
-        $this->assertSame($rule, $field->getRule());
+        $field = new Field('entity', 'name');
+        $this->assertSame([], $field->getRules());
 
         $rule = $this->getMockRule();
-        $field = new Field('entity', 'name', $rule);
-        $this->assertSame($rule, $field->getRule());
+        $field = new Field('entity', 'name');
+        $field->addRule($rule);
+
+        $this->assertSame([$rule], $field->getRules());
 
     }
 

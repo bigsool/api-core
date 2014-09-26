@@ -6,49 +6,6 @@ namespace Archiweb;
 
 class RegistryTest extends TestCase {
 
-    public function testCreateWithoutParams () {
-        /*
-                $qryCtx = $this->getFindQueryContext('Company');
-
-                $registry = new Registry();
-                $company = $registry->query($qryCtx);
-
-                $this->assertEquals(new Company(), $company);
-        */
-    }
-
-    public function testCreateWithParams () {
-        /*
-                $companyName = 'bigsool';
-                $qryCtx = $this->getFindQueryContext();
-                $qryCtx->setCommand('INSERT');
-                $qryCtx->setEntity('Company');
-                $qryCtx->setParams(['name' => $companyName]);
-
-                $registry = new Registry();
-                $company = $registry->query($qryCtx);
-
-                $this->assertInstanceOf('\Archiweb\Model\Company', $company);
-                $this->assertEquals($companyName, $company->getName());
-        */
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testCreateWithFieldNotExists () {
-        /*
-                $companyName = 'bigsool';
-                $qryCtx = $this->getFindQueryContext();
-                $qryCtx->setCommand('INSERT');
-                $qryCtx->setEntity('Company');
-                $qryCtx->setParams(['qwe' => $companyName]);
-
-                $registry = new Registry();
-                $registry->query($qryCtx);
-        */
-    }
-
     /**
      * @expectedException \Exception
      */
@@ -56,7 +13,7 @@ class RegistryTest extends TestCase {
 
         $qryCtx = $this->getFindQueryContext('qwe');
 
-        $registry = new Registry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
     }

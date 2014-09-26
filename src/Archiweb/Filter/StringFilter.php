@@ -19,7 +19,7 @@ class StringFilter extends Filter {
      */
     function __construct ($entity, $name, $expression, $command) {
 
-        parent::__construct($entity, $name,$this->stringToExpression($expression));
+        parent::__construct($entity, $name, $this->stringToExpression($expression));
         $this->command = $command;
 
     }
@@ -27,15 +27,17 @@ class StringFilter extends Filter {
     function stringToExpression ($expression) {
 
         $operator = NULL;
-        $strOperator= "";
+        $strOperator = "";
 
         if (strpos($expression, '!=')) {
             $strOperator = '!=';
             $operator = new NotEqualOperator();
         }
-        else if (strpos($expression, '=')) {
-            $strOperator = '=';
-            $operator = new EqualOperator();
+        else {
+            if (strpos($expression, '=')) {
+                $strOperator = '=';
+                $operator = new EqualOperator();
+            }
         }
 
         $operandes = explode($strOperator, $expression);

@@ -5,9 +5,10 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Field;
 
-class FieldRule extends Rule {
+class FieldRule implements Rule {
 
     /**
      * @var Field
@@ -26,14 +27,10 @@ class FieldRule extends Rule {
     public function __construct (Field $field, Rule $rule) {
 
         $entity = $field->getEntity();
-        $fieldName = $field->getName();
-        $name = $entity . ucfirst($fieldName) . 'FieldRule';
 
         if ($entity != $rule->getEntity()) {
             throw new \RuntimeException('incompatible rule');
         }
-
-        parent::__construct($rule->getCommand(), $entity, $name);
 
         $this->field = $field;
         $this->rule = $rule;
@@ -64,6 +61,24 @@ class FieldRule extends Rule {
     public function apply (FindQueryContext $ctx) {
 
         $this->getRule()->apply($ctx);
+
+    }
+
+    /**
+     * @param QueryContext $ctx
+     *
+     * @return bool
+     */
+    public function shouldApply (QueryContext $ctx) {
+        // TODO: Implement shouldApply() method.
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return $this->getField()->getEntity() . ucfirst($this->getField()->getName()) . 'FieldRule';
 
     }
 

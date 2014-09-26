@@ -43,7 +43,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testFilters() {
+    public function testFilters () {
 
         $ctx = new ApplicationContext();
         $filters = [$this->getMockFilter(), $this->getMockFilter(), $this->getMockFilter()];
@@ -59,7 +59,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testFields() {
+    public function testFields () {
 
         $ctx = new ApplicationContext();
         $fields = [$this->getMockField(), $this->getMockField(), $this->getMockField()];
@@ -75,7 +75,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testRules() {
+    public function testRules () {
 
         $ctx = new ApplicationContext();
         $rules = [$this->getMockRule(), $this->getMockRule(), $this->getMockRule()];

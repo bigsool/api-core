@@ -3,6 +3,8 @@
 
 namespace Archiweb;
 
+use Archiweb\Rule\Rule;
+
 
 class StarField extends Field {
 

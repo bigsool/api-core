@@ -41,7 +41,7 @@ class AggregatedFilter extends Filter {
      */
     public function getFilters () {
 
-        return $this->filters ? $this->filters : null;
+        return $this->filters ? $this->filters : NULL;
 
     }
 
@@ -50,7 +50,9 @@ class AggregatedFilter extends Filter {
      */
     public function getExpression () {
 
-        if (!$this->filters) return null;
+        if (!$this->filters) {
+            return NULL;
+        }
 
         foreach ($this->filters as $filter) {
             $expressions[] = $filter->getExpression();

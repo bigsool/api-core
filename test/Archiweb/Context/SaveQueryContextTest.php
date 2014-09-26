@@ -12,7 +12,7 @@ class SaveQueryContextTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidModelType() {
+    public function testInvalidModelType () {
 
         new SaveQueryContext($this->getApplicationContext(), 'qwe');
 
@@ -21,13 +21,13 @@ class SaveQueryContextTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidModelClass() {
+    public function testInvalidModelClass () {
 
         new SaveQueryContext($this->getApplicationContext(), new \stdClass());
 
     }
 
-    public function testGetApplication() {
+    public function testGetApplication () {
 
         $appCtx = $this->getApplicationContext();
         $ctx = new SaveQueryContext($appCtx, new Company());
@@ -36,7 +36,7 @@ class SaveQueryContextTest extends TestCase {
 
     }
 
-    public function testGetEntity() {
+    public function testGetEntity () {
 
         $ctx = new SaveQueryContext($this->getApplicationContext(), new Company());
 

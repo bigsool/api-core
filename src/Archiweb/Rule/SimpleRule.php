@@ -5,9 +5,10 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Filter\Filter;
 
-class SimpleRule extends Rule {
+class SimpleRule implements Rule {
 
     /**
      * @var Filter
@@ -15,15 +16,25 @@ class SimpleRule extends Rule {
     protected $filter;
 
     /**
-     * @param string $command
-     * @param string $entity
-     * @param string $name
-     * @param Filter $filter
+     * @var string
      */
-    public function __construct ($command, $entity, $name, Filter $filter) {
+    protected $name;
 
-        parent::__construct($command, $entity, $name);
+    /**
+     * @var callable
+     */
+    protected $shouldApplyCb;
+
+    /**
+     * @param string   $name
+     * @param callable $shouldApplyCb
+     * @param Filter   $filter
+     */
+    public function __construct ($name, callable $shouldApplyCb, Filter $filter) {
+
         $this->filter = $filter;
+        $this->name = name;
+        $this->shouldApplyCb = $shouldApplyCb;
 
     }
 
@@ -54,4 +65,23 @@ class SimpleRule extends Rule {
 
     }
 
+    /**
+     * @param QueryContext $ctx
+     *
+     * @return bool
+     */
+    public function shouldApply (QueryContext $ctx) {
+
+        return call_user_func($this->shouldApplyCb, $ctx);
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
+
+    }
 }
