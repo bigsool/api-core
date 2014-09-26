@@ -79,20 +79,6 @@ class SimpleRuleTest extends TestCase {
     /**
      *
      */
-    public function testGetEntity () {
-
-        $filter = $this->getMockFilter();
-
-        $entity = 'Company';
-        $rule = new SimpleRule('select', $entity, 'isYourCompany', $filter);
-
-        $this->assertSame($entity, $rule->getEntity());
-
-    }
-
-    /**
-     *
-     */
     public function testGetFilter () {
 
         $filter = $this->getMockFilter();
@@ -115,20 +101,6 @@ class SimpleRuleTest extends TestCase {
         $rule->apply($ctx);
 
         $this->assertContains($filter, $ctx->getFilters());
-
-    }
-
-    /**
-     *
-     */
-    public function testGetCommand () {
-
-        $filter = $this->getMockFilter();
-
-        $command = 'select';
-        $rule = new SimpleRule($command, 'Company', 'isYourCompany', $filter);
-
-        $this->assertSame($command, $rule->getCommand());
 
     }
 

@@ -26,12 +26,6 @@ class FieldRule implements Rule {
      */
     public function __construct (Field $field, Rule $rule) {
 
-        $entity = $field->getEntity();
-
-        if ($entity != $rule->getEntity()) {
-            throw new \RuntimeException('incompatible rule');
-        }
-
         $this->field = $field;
         $this->rule = $rule;
 
@@ -90,4 +84,5 @@ class FieldRule implements Rule {
         return $this->field;
 
     }
+
 }

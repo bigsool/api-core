@@ -84,19 +84,6 @@ class CallbackRuleTest extends TestCase {
     /**
      *
      */
-    public function testGetEntity () {
-
-        $entity = 'Company';
-        $rule = new CallbackRule('select', $entity, 'isYourCompany', function () {
-        }, []);
-
-        $this->assertSame($entity, $rule->getEntity());
-
-    }
-
-    /**
-     *
-     */
     public function testGetCallback () {
 
         $fn = function () {
