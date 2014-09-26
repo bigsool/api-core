@@ -13,39 +13,17 @@ class SimpleRuleTest extends TestCase {
      */
     public function testShouldApply () {
 
-        $ctxMock = $this->getMockQueryContext();
-        $ruleMock = $this->getMockRule();
-        $filter = $this->getMockFilter();
+        $called = false;
 
-        $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
+        $rule = new SimpleRule('isYourCompany', function () use (&$called) {
 
-        // not rules already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([]);
-        $this->assertTrue($rule->shouldApply($ctx));
+            $called = true;
 
-        // tested rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$rule]);
-        $this->assertFalse($rule->shouldApply($ctx));
+        }, $this->getMockFilter());
 
-        // other rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$_rule]);
-        $this->assertTrue($rule->shouldApply($ctx));
+        $rule->shouldApply($this->getMockQueryContext());
 
-        // other rule which contain tested rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([$rule]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$_rule]);
-        $this->assertFalse($rule->shouldApply($ctx));
+        $this->assertTrue($called);
 
     }
 
@@ -56,7 +34,7 @@ class SimpleRuleTest extends TestCase {
 
         $filter = $this->getMockFilter();
 
-        $rule = new SimpleRule('select', 'Company', 'isYourCompany', $filter);
+        $rule = new SimpleRule('isYourCompany', $this->getCallable(), $filter);
 
         $this->assertSame([], $rule->listChildRules());
 
@@ -70,7 +48,7 @@ class SimpleRuleTest extends TestCase {
         $filter = $this->getMockFilter();
 
         $name = 'isYourCompany';
-        $rule = new SimpleRule('select', 'Company', $name, $filter);
+        $rule = new SimpleRule($name, $this->getCallable(), $filter);
 
         $this->assertSame($name, $rule->getName());
 
@@ -83,7 +61,7 @@ class SimpleRuleTest extends TestCase {
 
         $filter = $this->getMockFilter();
 
-        $rule = new SimpleRule('select', 'entity', 'name', $filter);
+        $rule = new SimpleRule('name', $this->getCallable(), $filter);
 
         $this->assertSame($filter, $rule->getFilter());
 
@@ -96,7 +74,7 @@ class SimpleRuleTest extends TestCase {
 
         $filter = $this->getMockFilter();
 
-        $rule = new SimpleRule('command', 'entity', 'name', $filter);
+        $rule = new SimpleRule('name', $this->getCallable(), $filter);
         $ctx = $this->getFindQueryContext('entity');
         $rule->apply($ctx);
 

@@ -18,31 +18,6 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testEntityManager () {
-
-        $ctx = new ApplicationContext();
-        $em = $this->getMockEntityManager();
-
-        $getEM = new \ReflectionMethod($ctx, 'getEntityManager');
-        $getEM->setAccessible(true);
-
-        $ctx->setEntityManager($em);
-
-        $called = false;
-        $receiver = $this->getMockEntityManagerReceiver();
-        $receiver->method('setEntityManager')->will($this->returnCallback(function ($entityManager) use (
-            $em, &$called
-        ) {
-
-            $this->assertSame($em, $entityManager);
-            $called = true;
-
-        }));
-
-        $ctx->getEntityManager($receiver);
-
-    }
-
     public function testFilters () {
 
         $ctx = new ApplicationContext();
@@ -88,6 +63,23 @@ class ApplicationContextTest extends TestCase {
         $ctx->addRule($rules[1]);
         $ctx->addRule($rules[2]);
         $this->assertSame($rules, $ctx->getRules());
+
+    }
+
+    public function testGetNewRegistry() {
+
+        $registry = $this->getApplicationContext()->getNewRegistry();
+
+        $this->assertInstanceOf('\Archiweb\Registry', $registry);
+
+    }
+
+    public function testGetClassMetadata() {
+
+        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Archiweb\Model\Company');
+
+        $this->assertInstanceOf('\Doctrine\ORM\Mapping\ClassMetadata', $classMetadata);
+        $this->assertSame('Archiweb\Model\Company', $classMetadata->getName());
 
     }
 

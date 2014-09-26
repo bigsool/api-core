@@ -14,40 +14,17 @@ class CallbackRuleTest extends TestCase {
      */
     public function testShouldApply () {
 
-        $ctxMock = $this->getMockFindQueryContext();
+        $called = false;
 
-        $ruleMock = $this->getMockRule();
+        $rule = new CallbackRule('isYourCompany', function () use (&$called) {
 
-        $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-        }, []);
+            $called = true;
 
-        // not rules already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([]);
-        $this->assertTrue($rule->shouldApply($ctx));
+        }, $this->getCallable(), []);
 
-        // tested rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$rule]);
-        $this->assertFalse($rule->shouldApply($ctx));
+        $rule->shouldApply($this->getMockQueryContext());
 
-        // other rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$_rule]);
-        $this->assertTrue($rule->shouldApply($ctx));
-
-        // other rule which contain tested rule already in the list to apply
-        $_rule = clone $ruleMock;
-        $_rule->method('listChildRules')->willReturn([$rule]);
-        $ctx = clone $ctxMock;
-        $ctx->method('getRules')->willReturn([$_rule]);
-        $this->assertFalse($rule->shouldApply($ctx));
+        $this->assertTrue($called);
 
     }
 
@@ -58,12 +35,10 @@ class CallbackRuleTest extends TestCase {
 
         $mockRule = $this->getMockRule();
 
-        $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-        }, []);
+        $rule = new CallbackRule('isYourCompany', $this->getCallable(), $this->getCallable(), []);
         $this->assertSame([], $rule->listChildRules());
 
-        $rule = new CallbackRule('select', 'Company', 'isYourCompany', function () {
-        }, [$mockRule]);
+        $rule = new CallbackRule('isYourCompany', $this->getCallable(), $this->getCallable(), [$mockRule]);
         $this->assertSame([$mockRule], $rule->listChildRules());
 
     }
@@ -74,8 +49,7 @@ class CallbackRuleTest extends TestCase {
     public function testGetName () {
 
         $name = 'isYourCompany';
-        $rule = new CallbackRule('select', 'Company', $name, function () {
-        }, []);
+        $rule = new CallbackRule($name, $this->getCallable(), $this->getCallable(), []);
 
         $this->assertSame($name, $rule->getName());
 
@@ -86,9 +60,8 @@ class CallbackRuleTest extends TestCase {
      */
     public function testGetCallback () {
 
-        $fn = function () {
-        };
-        $rule = new CallbackRule('select', 'entity', 'name', $fn, []);
+        $fn = $this->getCallable();
+        $rule = new CallbackRule('name', $this->getCallable(), $fn, []);
 
         $this->assertSame($fn, $rule->getCallback());
 
@@ -98,7 +71,7 @@ class CallbackRuleTest extends TestCase {
 
         $functionCalled = false;
 
-        $rule = new CallbackRule('select', 'entity', 'name', function (QueryContext $ctx) use (&$functionCalled) {
+        $rule = new CallbackRule('name', $this->getCallable(), function (QueryContext $ctx) use (&$functionCalled) {
 
             $functionCalled = true;
 

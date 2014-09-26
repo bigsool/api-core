@@ -141,17 +141,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return EntityManagerReceiver
-     */
-    public function getMockEntityManagerReceiver () {
-
-        return $this->getMockBuilder('\Archiweb\Context\EntityManagerReceiver')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
      * @return LogicOperator
      */
     public function getMockLogicOperator () {
@@ -172,8 +161,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             ->getMock();
 
     }
-
-
 
     /**
      * @return RequestContext
@@ -218,6 +205,16 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return callable
+     */
+    public function getCallable () {
+
+        return function () {
+        };
+
+    }
+
+    /**
      * @return ActionContext
      */
     public function getActionContext () {
@@ -247,6 +244,5 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         return new Registry($this->getApplicationContext());
 
     }
-
 
 } 
