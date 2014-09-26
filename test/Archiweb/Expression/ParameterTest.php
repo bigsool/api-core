@@ -60,4 +60,34 @@ class ParameterTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidContext () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getSaveQueryContext(new Company());
+
+        $param = ':company';
+
+        $param1 = new Parameter($param);
+        $param1->resolve($registry, $context);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testParameterNotFound () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('Company');
+
+        $param = ':company';
+
+        $param1 = new Parameter($param);
+        $param1->resolve($registry, $context);
+
+    }
+
 } 

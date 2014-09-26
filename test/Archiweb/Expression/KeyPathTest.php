@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Model\HostedProject;
 use Archiweb\TestCase;
 
 class KeyPathTest extends TestCase {
@@ -37,7 +38,7 @@ class KeyPathTest extends TestCase {
     /**
      *
      */
-    public function testResolve () {
+    public function testResolveField () {
 
         $registry = $this->getRegistry();
         $context = $this->getFindQueryContext('HostedProject');
@@ -47,11 +48,56 @@ class KeyPathTest extends TestCase {
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $param2 = new KeyPath($param);
-        $resolve2 = $param2->resolve($registry, $context);
-
         $this->assertEquals('hostedProjectCreatorCompanyStorage.url', $resolve1);
-        $this->assertEquals($resolve1, $resolve2);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidContext () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getSaveQueryContext(new HostedProject());
+
+        (new KeyPath('creator.company.storage.url'))->resolve($registry, $context);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testFieldIsFieldNotEntity () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('HostedProject');
+
+        (new KeyPath('creator.name.company.storage.url'))->resolve($registry, $context);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testFieldNotFound () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('HostedProject');
+
+        (new KeyPath('creator.qweqwe'))->resolve($registry, $context);
+    }
+
+    /**
+     *
+     */
+    public function testResolveEntity () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('HostedProject');
+
+        $param = 'creator.company.storage';
+
+        $param1 = new KeyPath($param);
+        $resolve1 = $param1->resolve($registry, $context);
+
+        $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
     }
 
 } 

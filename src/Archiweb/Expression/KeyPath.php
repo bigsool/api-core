@@ -70,6 +70,8 @@ class KeyPath extends Value {
 
         }
 
+        return $alias;
+
     }
 
 }
