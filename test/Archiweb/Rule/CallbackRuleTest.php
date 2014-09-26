@@ -16,11 +16,13 @@ class CallbackRuleTest extends TestCase {
 
         $called = false;
 
-        new CallbackRule('isYourCompany', function () use (&$called) {
+        $rule = new CallbackRule('isYourCompany', function () use (&$called) {
 
             $called = true;
 
         }, $this->getCallable(), []);
+
+        $rule->shouldApply($this->getMockQueryContext());
 
         $this->assertTrue($called);
 

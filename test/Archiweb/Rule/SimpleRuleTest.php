@@ -15,11 +15,13 @@ class SimpleRuleTest extends TestCase {
 
         $called = false;
 
-        new SimpleRule('isYourCompany', function () use (&$called) {
+        $rule = new SimpleRule('isYourCompany', function () use (&$called) {
 
             $called = true;
 
         }, $this->getMockFilter());
+
+        $rule->shouldApply($this->getMockQueryContext());
 
         $this->assertTrue($called);
 
