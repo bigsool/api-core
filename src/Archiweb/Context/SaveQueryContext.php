@@ -16,6 +16,9 @@ class SaveQueryContext implements QueryContext {
      */
     protected $model;
 
+    /**
+     * @var string
+     */
     protected $entity;
 
     /**
@@ -29,8 +32,7 @@ class SaveQueryContext implements QueryContext {
         }
 
         $class = new \ReflectionClass($model);
-
-        if ($class->getNamespaceName() != '\Archiweb\Model') {
+        if ($class->getNamespaceName() != 'Archiweb\Model') {
             throw new \RuntimeException('invalid model class');
         }
 
