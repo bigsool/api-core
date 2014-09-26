@@ -5,7 +5,11 @@ namespace Archiweb\Filter;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\Value;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Operator\GreaterOrEqualOperator;
 use Archiweb\Operator\NotEqualOperator;
+use Archiweb\Operator\LowerOrEqualOperator;
+use Archiweb\Operator\LowerThanOperator;
+use Archiweb\Operator\GreaterThanOperator;
 
 class StringFilter extends Filter {
 
@@ -33,12 +37,27 @@ class StringFilter extends Filter {
             $strOperator = '!=';
             $operator = new NotEqualOperator();
         }
-        else {
-            if (strpos($expression, '=')) {
+        else if (strpos($expression, '>=')) {
+            $strOperator = '>=';
+            $operator = new GreaterOrEqualOperator();
+        }
+        else if (strpos($expression, '<=')) {
+            $strOperator = '<=';
+            $operator = new LowerOrEqualOperator();
+        }
+        else if (strpos($expression, '<')) {
+            $strOperator = '<';
+            $operator = new LowerThanOperator();
+        }
+        else if (strpos($expression, '>')) {
+            $strOperator = '>';
+            $operator = new GreaterThanOperator();
+        }
+        else if (strpos($expression, '=')) {
                 $strOperator = '=';
                 $operator = new EqualOperator();
-            }
         }
+
 
         $operandes = explode($strOperator, $expression);
 
