@@ -4,8 +4,6 @@
 namespace Archiweb;
 
 
-use Archiweb\Context\ApplicationContext;
-use Archiweb\Context\EntityManagerReceiver;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
@@ -13,7 +11,7 @@ use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 
-class Registry implements EntityManagerReceiver {
+class Registry {
 
     /**
      * @var EntityManager
@@ -21,17 +19,11 @@ class Registry implements EntityManagerReceiver {
     protected $entityManager;
 
     /**
-     * @var ApplicationContext
+     * @param EntityManager $entityManager
      */
-    protected $applicationContext;
+    public function __construct (EntityManager $entityManager) {
 
-    /**
-     * @param ApplicationContext $appCtx
-     */
-    public function __construct (ApplicationContext $appCtx) {
-
-        $this->applicationContext = $appCtx;
-        $appCtx->getEntityManager($this);
+        $this->entityManager = $entityManager;
 
     }
 
@@ -105,15 +97,6 @@ class Registry implements EntityManagerReceiver {
     }
 
     /**
-     * @param EntityManager $em
-     */
-    public function setEntityManager (EntityManager $em) {
-
-        $this->entityManager = $em;
-
-    }
-
-    /**
      * @param FindQueryContext $ctx
      * @param bool             $hydrateArray
      *
@@ -128,10 +111,17 @@ class Registry implements EntityManagerReceiver {
         $alias = lcfirst($entity);
         $qb->from($class, $alias);
 
-        $fields = $ctx->getFields();
+        $fields = $ctx->getFilters();
         if (empty($fields)) {
-            $qb->select($alias);
+            throw new \RuntimeException('fields are required');
         }
+
+        foreach ($fields as $field) {
+            if (is_a($field, '\Archiweb\StarField')) {
+                //TODO: s'il y a plusieurs entity comment préciser laquel on veut récupérer ?
+            }
+        }
+
 
         $expressions = [];
         foreach ($ctx->getFilters() as $filter) {

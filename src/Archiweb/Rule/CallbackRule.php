@@ -5,9 +5,10 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 
 
-class CallbackRule extends Rule {
+class CallbackRule implements Rule {
 
     /**
      * @var callable
@@ -20,17 +21,27 @@ class CallbackRule extends Rule {
     protected $childRules;
 
     /**
-     * @param string   $command
-     * @param string   $entity
-     * @param string   $name
+     * @var callable
+     */
+    protected $shouldApplyCb;
+
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @param          $name
+     * @param callable $shouldApplyCb
      * @param callable $callback
      * @param Rule[]   $childRuleList
      */
-    public function __construct ($command, $entity, $name, callable $callback, array $childRuleList) {
+    public function __construct ($name, callable $shouldApplyCb, callable $callback, array $childRuleList) {
 
-        parent::__construct($command, $entity, $name);
+        $this->name = $name;
         $this->callback = $callback;
         $this->childRules = $childRuleList;
+        $this->shouldApplyCb = $shouldApplyCb;
 
     }
 
@@ -58,6 +69,26 @@ class CallbackRule extends Rule {
     public function getCallback () {
 
         return $this->callback;
+
+    }
+
+    /**
+     * @param QueryContext $ctx
+     *
+     * @return bool
+     */
+    public function shouldApply (QueryContext $ctx) {
+
+        return call_user_func($this->shouldApplyCb, $ctx);
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
 
     }
 }

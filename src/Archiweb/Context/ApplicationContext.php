@@ -6,6 +6,7 @@ namespace Archiweb\Context;
 
 use Archiweb\Field;
 use Archiweb\Filter\Filter;
+use Archiweb\Registry;
 use Archiweb\Rule\Rule;
 use Archiweb\RuleManager;
 use Doctrine\ORM\EntityManager;
@@ -56,20 +57,31 @@ class ApplicationContext {
     }
 
     /**
-     * @param EntityManagerReceiver $class
-     */
-    public function getEntityManager (EntityManagerReceiver $class) {
-
-        $class->setEntityManager($this->entityManager);
-
-    }
-
-    /**
      * @param EntityManager $entityManager
      */
     public function setEntityManager (EntityManager $entityManager) {
 
         $this->entityManager = $entityManager;
+
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     */
+    public function getClassMetadata ($class) {
+
+        return $this->entityManager->getClassMetadata($class);
+
+    }
+
+    /**
+     * @return Registry
+     */
+    public function getNewRegistry () {
+
+        new Registry($this->entityManager);
 
     }
 

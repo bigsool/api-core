@@ -19,16 +19,15 @@ class Field {
     protected $name;
 
     /**
-     * @var Rule
+     * @var Rule[]
      */
-    protected $rule;
+    protected $rules = [];
 
     /**
      * @param string $entity
      * @param string $name
-     * @param Rule   $rule
      */
-    public function __construct ($entity, $name, Rule $rule = NULL) {
+    public function __construct ($entity, $name) {
 
         if (!is_string($entity) || !is_string($name)) {
             throw new \RuntimeException('invalid type');
@@ -36,7 +35,6 @@ class Field {
 
         $this->entity = $entity;
         $this->name = $name;
-        $this->rule = $rule;
 
     }
 
@@ -61,9 +59,15 @@ class Field {
     /**
      * @return void|Rule
      */
-    public function getRule () {
+    public function getRules () {
 
-        return $this->rule;
+        return $this->rules;
+
+    }
+
+    public function addRule (Rule $rule) {
+
+        $this->rules[] = $rule;
 
     }
 
