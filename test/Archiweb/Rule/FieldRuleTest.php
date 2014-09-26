@@ -5,6 +5,7 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Field;
+use Archiweb\Model\Company;
 use Archiweb\TestCase;
 
 class FieldRuleTest extends TestCase {
@@ -30,7 +31,7 @@ class FieldRuleTest extends TestCase {
     protected function getMockCompanyNameField () {
 
         $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('company');
+        $field->method('getEntity')->willReturn('Company');
         $field->method('getName')->willReturn('name');
 
         return $field;
@@ -43,26 +44,9 @@ class FieldRuleTest extends TestCase {
     protected function getMockCompanyRule () {
 
         $rule = $this->getMockRule();
-        $rule->method('getEntity')->willReturn('company');
+        $rule->method('getEntity')->willReturn('Company');
 
         return $rule;
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testIncompatibleRule () {
-
-        $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('a');
-        $field->method('getName')->willReturn('name');
-
-        $rule = $this->getMockRule();
-        $rule->method('getEntity')->willReturn('b');
-        $rule->method('getCommand')->willReturn('SELECT');
-
-        new FieldRule($field, $rule);
 
     }
 
@@ -103,8 +87,34 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $mockRule);
 
         $qryCtx = $this->getFindQueryContext('Company');
+        $qryCtx->addField($field);
 
         $this->assertTrue($rule->shouldApply($qryCtx));
+
+
+        $qryCtx = $this->getFindQueryContext('User');
+        $qryCtx->addField($field);
+
+        $this->assertFalse($rule->shouldApply($qryCtx));
+
+
+        $qryCtx = $this->getFindQueryContext('Company');
+        $qryCtx->addField($this->getMockField());
+
+        $this->assertFalse($rule->shouldApply($qryCtx));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidContextType () {
+
+        $field = $this->getMockCompanyNameField();
+        $mockRule = $this->getMockCompanyRule();
+        $rule = new FieldRule($field, $mockRule);
+
+        $rule->shouldApply($this->getSaveQueryContext(new Company()));
 
     }
 

@@ -53,13 +53,4 @@ class FieldTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testInvalidRuleType () {
-
-        new Field('entity', 'name', new \stdClass());
-
-    }
-
 } 
