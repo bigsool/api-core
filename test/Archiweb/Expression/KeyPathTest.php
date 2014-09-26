@@ -37,13 +37,6 @@ class KeyPathTest extends TestCase {
     /**
      *
      */
-    public function testGetFilters () {
-        // TODO: Implements the testGetFilters() method
-    }
-
-    /**
-     *
-     */
     public function testResolve () {
 
         $registry = $this->getMockRegistry();
