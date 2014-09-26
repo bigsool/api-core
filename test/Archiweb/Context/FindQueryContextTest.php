@@ -88,4 +88,22 @@ class FindQueryContextTest extends TestCase {
 
     }
 
+    /**
+     *
+     */
+    public function testParams () {
+
+        $ctx = $this->getFindQueryContext('Company');
+
+        $array = ['a', 'b' => 2, ['c']];
+
+        $ctx->setParams($array);
+
+        $this->assertSame($array, $ctx->getParams());
+        $this->assertSame($array[0], $ctx->getParam(0));
+        $this->assertSame($array['b'], $ctx->getParam('b'));
+        $this->assertSame(NULL, $ctx->getParam('qwe'));
+
+    }
+
 } 

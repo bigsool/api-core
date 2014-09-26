@@ -10,6 +10,11 @@ use Archiweb\Filter\Filter;
 class FindQueryContext implements QueryContext {
 
     /**
+     * @var array
+     */
+    protected $params = [];
+
+    /**
      * @var ApplicationContext
      */
     protected $applicationContext;
@@ -95,6 +100,35 @@ class FindQueryContext implements QueryContext {
     public function addFilter (Filter $filter) {
 
         $this->filters[] = $filter;
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams () {
+
+        return $this->params;
+
+    }
+
+    /**
+     * @param array $params
+     */
+    public function setParams (array $params) {
+
+        $this->params = $params;
+
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function getParam ($key) {
+
+        return isset($this->params[$key]) ? $this->params[$key] : NULL;
 
     }
 
