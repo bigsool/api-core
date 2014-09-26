@@ -10,6 +10,7 @@ use Archiweb\Context\EntityManagerReceiver;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
+use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\Expression;
 use Archiweb\Expression\ExpressionWithOperator;
 use Archiweb\Filter\Filter;
@@ -157,8 +158,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockExpressionWithOperator () {
 
         return $this->getMockBuilder('\Archiweb\Expression\ExpressionWithOperator')
-            ->disableOriginalConstructor()
-            ->getMock();
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 
@@ -233,6 +234,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
 
         return new FindQueryContext($this->getApplicationContext(), $entity, $fields, $filters);
+
+    }
+
+    /**
+     * @param $model
+     *
+     * @return SaveQueryContext
+     */
+    public function getSaveQueryContext ($model) {
+
+        return new SaveQueryContext($this->getApplicationContext(), $model);
 
     }
 

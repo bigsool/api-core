@@ -66,7 +66,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetNewRegistry() {
+    public function testGetNewRegistry () {
 
         $registry = $this->getApplicationContext()->getNewRegistry();
 
@@ -74,7 +74,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetClassMetadata() {
+    public function testGetClassMetadata () {
 
         $classMetadata = $this->getApplicationContext()->getClassMetadata('\Archiweb\Model\Company');
 

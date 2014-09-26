@@ -64,15 +64,23 @@ class FieldRule implements Rule {
      * @return bool
      */
     public function shouldApply (QueryContext $ctx) {
-        // TODO: Implement shouldApply() method.
-    }
 
-    /**
-     * @return string
-     */
-    public function getName () {
+        if (!($ctx instanceof FindQueryContext)) {
+            throw new \RuntimeException('invalid context');
+        }
 
-        return $this->getField()->getEntity() . ucfirst($this->getField()->getName()) . 'FieldRule';
+
+        if ($ctx->getEntity() != $this->getField()->getEntity()) {
+            return false;
+        }
+
+        foreach ($ctx->getFields() as $field) {
+            if ($field->getName() == $this->getField()->getName()) {
+                return true;
+            }
+        }
+
+        return false;
 
     }
 
@@ -82,6 +90,15 @@ class FieldRule implements Rule {
     public function getField () {
 
         return $this->field;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return lcfirst($this->getField()->getEntity()) . ucfirst($this->getField()->getName()) . 'FieldRule';
 
     }
 
