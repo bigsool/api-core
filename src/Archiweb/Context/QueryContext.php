@@ -4,8 +4,6 @@
 namespace Archiweb\Context;
 
 
-use Archiweb\Operation;
-
 interface QueryContext extends ApplicationContextProvider {
 
     /**

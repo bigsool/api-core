@@ -57,7 +57,7 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
         $aggregateFilter->addFilter($strFilter1);
         $expression = $aggregateFilter->getExpression();
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\LogicOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\LogicOperator', $operator);
 
     }
 
