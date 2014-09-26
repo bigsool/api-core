@@ -11,7 +11,10 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Expression\Expression;
+use Archiweb\Expression\ExpressionWithOperator;
 use Archiweb\Filter\Filter;
+use Archiweb\Operator\LogicOperator;
+use Archiweb\Parameter\Parameter;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
@@ -116,7 +119,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return RequestContext
+     * @return Parameter
      */
     public function getMockParameter () {
 
@@ -147,6 +150,30 @@ class TestCase extends \PHPUnit_Framework_TestCase {
                     ->getMock();
 
     }
+
+    /**
+     * @return LogicOperator
+     */
+    public function getMockLogicOperator () {
+
+        return $this->getMockBuilder('\Archiweb\Operator\LogicOperator')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return ExpressionWithOperator
+     */
+    public function getMockExpressionWithOperator () {
+
+        return $this->getMockBuilder('\Archiweb\Expression\ExpressionWithOperator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+    }
+
+
 
     /**
      * @return RequestContext
@@ -220,5 +247,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         return new Registry($this->getApplicationContext());
 
     }
+
 
 } 
