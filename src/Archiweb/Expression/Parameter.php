@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
 
@@ -32,7 +33,24 @@ class Parameter extends Value {
      * @return string
      */
     public function resolve (Registry $registry, QueryContext $context) {
-        // TODO: Implement the resolve() method
+
+        if (!($context instanceof FindQueryContext)) {
+            throw new \RuntimeException('invalid context');
+        }
+
+        $name = substr($this->getValue(), 1);
+        $value = $context->getParam($name);
+
+        if (is_null($value)) {
+            throw new \RuntimeException("parameter $name not found");
+        }
+
+        $uniqueName = uniqid($this->getValue() . '-');
+
+        $registry->setParameter($uniqueName, $value);
+
+        return $uniqueName;
+
     }
 
 } 

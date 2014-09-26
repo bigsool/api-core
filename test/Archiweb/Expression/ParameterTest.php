@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Model\Company;
 use Archiweb\TestCase;
 
 class ParameterTest extends TestCase {
@@ -39,8 +40,9 @@ class ParameterTest extends TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMockRegistry();
-        $context = $this->getMockQueryContext();
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('Company');
+        $context->setParams(['company' => new Company()]);
 
         $param = ':company';
 
