@@ -39,10 +39,10 @@ class KeyPathTest extends TestCase {
      */
     public function testResolve () {
 
-        $registry = $this->getMockRegistry();
-        $context = $this->getMockQueryContext();
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('HostedProject');
 
-        $param = 'company.storage.url';
+        $param = 'creator.company.storage.url';
 
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
@@ -50,7 +50,7 @@ class KeyPathTest extends TestCase {
         $param2 = new KeyPath($param);
         $resolve2 = $param2->resolve($registry, $context);
 
-        $this->assertEquals('companyStorage.url', $resolve1);
+        $this->assertEquals('hostedProjectCreatorCompanyStorage.url', $resolve1);
         $this->assertEquals($resolve1, $resolve2);
     }
 

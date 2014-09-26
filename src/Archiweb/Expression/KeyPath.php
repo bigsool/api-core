@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
 
@@ -32,7 +33,43 @@ class KeyPath extends Value {
      * @return string
      */
     public function resolve (Registry $registry, QueryContext $context) {
-        // TODO: Implement the resolve() method
+
+        if (!($context instanceof FindQueryContext)) {
+            throw new \RuntimeException('invalid context');
+        }
+
+
+        $exploded = explode('.', $this->getValue());
+        $entity = '\Archiweb\Model\\' . $context->getEntity();
+        $alias = lcfirst($context->getEntity());
+
+        for ($i = 0; $i < count($exploded); ++$i) {
+
+            $field = $exploded[$i];
+            $metadata = $context->getApplicationContext()->getClassMetadata($entity);
+
+            $fields = $metadata->getFieldNames();
+
+            if (in_array($field, $fields)) {
+                if ($i + 1 != count($exploded)) {
+                    throw new \RuntimeException("$field is a field, not an entity");
+                }
+
+                return $alias . '.' . $field;
+            }
+
+            $associations = $metadata->getAssociationNames();
+
+            if (in_array($field, $associations)) {
+                $alias = $registry->addJoin($context, $alias, $field);
+                $entity = $metadata->getAssociationMapping($field)['targetEntity'];
+            }
+            else {
+                throw new \RuntimeException("$field not found in $entity");
+            }
+
+        }
+
     }
 
 }

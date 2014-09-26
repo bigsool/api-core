@@ -10,6 +10,7 @@ use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 
 class Registry {
 
@@ -17,6 +18,16 @@ class Registry {
      * @var EntityManager
      */
     protected $entityManager;
+
+    /**
+     * @var QueryBuilder
+     */
+    protected $queryBuilder;
+
+    /**
+     * @var string[]
+     */
+    protected $joins = [];
 
     /**
      * @param EntityManager $entityManager
@@ -80,12 +91,40 @@ class Registry {
     }
 
     /**
-     * @param string $joinName
+     * @param $alias
+     * @param $field
      *
      * @return string
      */
-    public function addJoin ($joinName) {
-        // TODO: Implement addJoin() method
+    public function addJoin (FindQueryContext $ctx, $alias, $field) {
+
+        $join = $alias . '.' . $field;
+
+        if (!isset($this->joins[$join])) {
+
+            $newAlias = $alias . ucfirst($field);
+            $this->getQueryBuilder($ctx->getEntity())->innerJoin($join, $newAlias);
+
+            $this->joins[$join] = $newAlias;
+
+        }
+
+        return $this->joins[$join];
+
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    protected function getQueryBuilder ($entity) {
+
+        if (!isset($this->queryBuilder)) {
+            $this->queryBuilder = $this->entityManager->createQueryBuilder();
+            $this->queryBuilder->from($entity, lcfirst($entity));
+        }
+
+        return $this->queryBuilder;
+
     }
 
     /**
@@ -107,7 +146,7 @@ class Registry {
         $entity = $ctx->getEntity();
         $class = self::realModelClassName($entity);
 
-        $qb = $this->entityManager->createQueryBuilder();
+        $qb = $this->getQueryBuilder($ctx->getEntity());
         $alias = lcfirst($entity);
         $qb->from($class, $alias);
 
@@ -135,4 +174,5 @@ class Registry {
         return $qb->getQuery()->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
     }
+
 }
