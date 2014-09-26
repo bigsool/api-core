@@ -2,12 +2,13 @@
 
 namespace Archiweb\Filter;
 
+use Archiweb\TestCase;
 
-class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
+class AggregatedFilterTest extends TestCase {
 
     public function testGetEntity () {
 
-        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $entity = $aggregateFilter->getEntity();
         $this->assertEquals('project', $entity);
@@ -16,7 +17,7 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetName () {
 
-        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $name = $aggregateFilter->getName();
         $this->assertEquals('myProject', $name);
@@ -25,7 +26,7 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testAddFilter () {
 
-        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $strFilter = new FilterReference('project', 'myProject');
         $aggregateFilter->addFilter($strFilter);
@@ -35,7 +36,7 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetExpression () {
 
-        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
         $aggregateFilter->addFilter($strFilter1);
@@ -51,7 +52,7 @@ class AggregatedFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetOperator () {
 
-        $operator = $this->getMock('\Archiweb\Operator\LogicOperator');
+        $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
         $aggregateFilter->addFilter($strFilter1);

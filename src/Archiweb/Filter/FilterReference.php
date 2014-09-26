@@ -6,7 +6,7 @@ class FilterReference extends Filter {
 
     /**
      * @param string $entity
-     * @param        string name
+     * @param string name
      */
     function __construct ($entity, $name) {
 

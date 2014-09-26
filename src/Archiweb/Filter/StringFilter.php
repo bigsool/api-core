@@ -5,6 +5,7 @@ namespace Archiweb\Filter;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\Value;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Operator\NotEqualOperator;
 
 class StringFilter extends Filter {
 
