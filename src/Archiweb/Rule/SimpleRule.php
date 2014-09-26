@@ -33,7 +33,7 @@ class SimpleRule implements Rule {
     public function __construct ($name, callable $shouldApplyCb, Filter $filter) {
 
         $this->filter = $filter;
-        $this->name = name;
+        $this->name = $name;
         $this->shouldApplyCb = $shouldApplyCb;
 
     }
