@@ -15,7 +15,7 @@ class FieldRuleTest extends TestCase {
     public function testGetName () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
 
         $name = 'companyNameFieldRule';
         $rule = new FieldRule($field, $mockRule);
@@ -40,11 +40,10 @@ class FieldRuleTest extends TestCase {
     /**
      * @return Rule
      */
-    protected function getMockSelectCompanyRule () {
+    protected function getMockCompanyRule () {
 
         $rule = $this->getMockRule();
         $rule->method('getEntity')->willReturn('company');
-        $rule->method('getCommand')->willReturn('SELECT');
 
         return $rule;
 
@@ -67,38 +66,10 @@ class FieldRuleTest extends TestCase {
 
     }
 
-    /**
-     *
-     */
-    public function testGetEntity () {
-
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
-
-        $rule = new FieldRule($field, $mockRule);
-
-        $this->assertSame('company', $rule->getEntity());
-
-    }
-
-    /**
-     *
-     */
-    public function testGetCommand () {
-
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
-
-        $rule = new FieldRule($field, $mockRule);
-
-        $this->assertSame($mockRule->getCommand(), $rule->getCommand());
-
-    }
-
     public function testGetRule () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
         $this->assertSame($mockRule, $rule->getRule());
@@ -108,7 +79,7 @@ class FieldRuleTest extends TestCase {
     public function testGetField () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
         $this->assertSame($field, $rule->getField());
@@ -118,7 +89,7 @@ class FieldRuleTest extends TestCase {
     public function testListChildRule () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
         $this->assertSame([$mockRule], $rule->listChildRules());
@@ -128,7 +99,7 @@ class FieldRuleTest extends TestCase {
     public function testShouldApply () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
         $qryCtx = $this->getFindQueryContext('Company');
@@ -140,7 +111,7 @@ class FieldRuleTest extends TestCase {
     public function testApply () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockSelectCompanyRule();
+        $mockRule = $this->getMockCompanyRule();
 
         $called = false;
 
