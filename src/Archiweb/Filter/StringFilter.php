@@ -6,10 +6,10 @@ use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\Value;
 use Archiweb\Operator\EqualOperator;
 use Archiweb\Operator\GreaterOrEqualOperator;
-use Archiweb\Operator\NotEqualOperator;
+use Archiweb\Operator\GreaterThanOperator;
 use Archiweb\Operator\LowerOrEqualOperator;
 use Archiweb\Operator\LowerThanOperator;
-use Archiweb\Operator\GreaterThanOperator;
+use Archiweb\Operator\NotEqualOperator;
 
 class StringFilter extends Filter {
 
@@ -37,25 +37,25 @@ class StringFilter extends Filter {
             $strOperator = '!=';
             $operator = new NotEqualOperator();
         }
-        else if (strpos($expression, '>=')) {
+        elseif (strpos($expression, '>=')) {
             $strOperator = '>=';
             $operator = new GreaterOrEqualOperator();
         }
-        else if (strpos($expression, '<=')) {
+        elseif (strpos($expression, '<=')) {
             $strOperator = '<=';
             $operator = new LowerOrEqualOperator();
         }
-        else if (strpos($expression, '<')) {
+        elseif (strpos($expression, '<')) {
             $strOperator = '<';
             $operator = new LowerThanOperator();
         }
-        else if (strpos($expression, '>')) {
+        elseif (strpos($expression, '>')) {
             $strOperator = '>';
             $operator = new GreaterThanOperator();
         }
-        else if (strpos($expression, '=')) {
-                $strOperator = '=';
-                $operator = new EqualOperator();
+        elseif (strpos($expression, '=')) {
+            $strOperator = '=';
+            $operator = new EqualOperator();
         }
 
 
