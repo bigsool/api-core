@@ -66,4 +66,21 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testGetNewRegistry() {
+
+        $registry = $this->getApplicationContext()->getNewRegistry();
+
+        $this->assertInstanceOf('\Archiweb\Registry', $registry);
+
+    }
+
+    public function testGetClassMetadata() {
+
+        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Archiweb\Model\Company');
+
+        $this->assertInstanceOf('\Doctrine\ORM\Mapping\ClassMetadata', $classMetadata);
+        $this->assertSame('Archiweb\Model\Company', $classMetadata->getName());
+
+    }
+
 } 
