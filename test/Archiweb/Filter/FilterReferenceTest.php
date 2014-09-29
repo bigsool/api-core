@@ -2,11 +2,14 @@
 
 namespace Archiweb\Filter;
 
-class FilterReferenceTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\TestCase;
+
+class FilterReferenceTest extends TestCase {
 
     public function testGetEntity () {
 
-        $referenceFilter = new FilterReference('project', 'myProject');
+        $appCtx = $this->getMockApplicationContext();
+        $referenceFilter = new FilterReference($appCtx,'project', 'myProject');
         $entity = $referenceFilter->getEntity();
         $this->assertEquals('project', $entity);
 
@@ -14,10 +17,30 @@ class FilterReferenceTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetName () {
 
-        $referenceFilter = new FilterReference('project', 'myProject');
+        $appCtx = $this->getMockApplicationContext();
+        $referenceFilter = new FilterReference($appCtx,'project', 'myProject');
         $name = $referenceFilter->getName();
         $this->assertEquals('myProject', $name);
 
     }
+
+    public function testGetExpression () {
+
+        $appCtx = $this->getMockApplicationContext();
+        $filter = $this->getMockFilter();
+        $expression = $this->getMockExpression();
+        $filter->method('getExpression')->willReturn($expression);
+        $appCtx->method('getFilters')->willReturn(array($filter));
+        $appCtx->addFilter($filter);
+
+        $referenceFilter = new FilterReference($appCtx,'project', $filter->getName());
+        $expression = $referenceFilter->getExpression();
+        $this->assertSame($filter->getExpression(), $expression);
+
+        $referenceFilter = new FilterReference($appCtx,'project', 'badFilterName');
+        $referenceFilter->getExpression();
+
+    }
+
 
 }

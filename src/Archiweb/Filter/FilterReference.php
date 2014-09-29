@@ -2,21 +2,40 @@
 
 namespace Archiweb\Filter;
 
+use Archiweb\Context\ApplicationContext;
+
 class FilterReference extends Filter {
 
+    private $appCtx;
+
     /**
+     * @param ApplicationContext $appCtx
      * @param string $entity
      * @param string name
      */
-    function __construct ($entity, $name) {
+    function __construct (ApplicationContext $appCtx, $entity, $name) {
 
+        $this->appCtx = $appCtx;
         parent::__construct($entity, $name, NULL);
 
     }
 
+    /**
+     * @return Expression
+     */
     public function getExpression () {
 
-        // TODO
+        $filters = $this->appCtx->getFilters();
+
+        foreach ($filters as $filter) {
+
+            if ($filter->getName() == $this->getName()) {
+                return $filter->getExpression();
+            }
+
+        }
+
+        throw new \Exception('Reference a no existing filter !');
 
     }
 
