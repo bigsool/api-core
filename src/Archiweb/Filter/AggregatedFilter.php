@@ -50,6 +50,8 @@ class AggregatedFilter extends Filter {
      */
     public function getExpression () {
 
+        $expressions = [];
+
         if ($this->filters) {
 
             foreach ($this->filters as $filter) {

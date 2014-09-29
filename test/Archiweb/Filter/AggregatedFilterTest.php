@@ -52,6 +52,10 @@ class AggregatedFilterTest extends TestCase {
         $this->assertSame($filter1->getExpression(), $expressions[0]);
         $this->assertSame($filter2->getExpression(), $expressions[1]);
 
+        $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
+        $expression = $aggregateFilter->getExpression();
+        $this->assertInstanceOf('\Archiweb\Expression\NAryExpression',$expression);
+        
     }
 
 }
