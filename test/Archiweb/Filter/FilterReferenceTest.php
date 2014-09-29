@@ -37,6 +37,16 @@ class FilterReferenceTest extends TestCase {
         $expression = $referenceFilter->getExpression();
         $this->assertSame($filter->getExpression(), $expression);
 
+
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetExpressionWithoutFilter () {
+
+        $appCtx = $this->getMockApplicationContext();
         $referenceFilter = new FilterReference($appCtx,'project', 'badFilterName');
         $referenceFilter->getExpression();
 

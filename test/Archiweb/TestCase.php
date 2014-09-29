@@ -201,7 +201,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $conn = array(
             'driver' => 'pdo_sqlite',
-            'memory' => true,
+            'path'   => $tmpDB,
         );
         $em = EntityManager::create($conn, $config);
 

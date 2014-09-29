@@ -15,59 +15,78 @@ class RegistryTest extends TestCase {
     /**
      * @var ApplicationContext
      */
-    protected static $appCtx;
+    protected $appCtx;
 
-    public static function setUpBeforeClass() {
+    public function setUp () {
+
+        parent::setUp();
+
+        $this->appCtx = $this->getApplicationContext();
+        $this->appCtx->addField(new StarField('Produit'));
+
+    }
+
+    public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 
-        self::$appCtx = self::getApplicationContext();
-        self::$appCtx->addField(new StarField('Produit'));
-
-        self::resetDatabase(self::$appCtx);
+        self::resetDatabase(self::getApplicationContext());
 
     }
 
-    public function testSave () {
+    /**
+     * @expectedException \Exception
+     */
+    public function testSaveWithoutRequiredParams () {
 
         $product = new Product();
         $product->setName('produit 1');
-        $product->setBundleid('produit-1');
-        $product->setConsumable(false);
-        $product->setPrice(17);
-        $product->setWeight(0);
-        $product->setAvailable(true);
-        $product->setVat(.2);
 
-        $registry = self::$appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);
 
     }
-/*
+
+    public function testSaveWithRequiredParams () {
+
+        $product = new Product();
+        $product->setName('produit 1');
+        $product->setBundleid('the product bundle id');
+        $product->setConsumable(true);
+        $product->setPrice(12.5);
+        $product->setWeight(2);
+        $product->setAvailable(true);
+        $product->setVat(13.5);
+
+        $registry = $this->appCtx->getNewRegistry();
+        $registry->save($product);
+
+    }
+
     public function testSaveWithDependencies () {
 
         $company = new Company();
         $company->setName('company name');
-
         $user = new User();
         $user->setEmail('user@email.com');
+        $company->setOwner($user);
 
         $storage = new Storage();
 
         $company->addUser($user);
         $company->setStorage($storage);
 
-        $registry = self::$appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
         $registry->save($company);
 
     }
-*/
+
     /**
      * @expectedException \Exception
      */
     public function testSaveWrongClass () {
 
-        $registry = self::$appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
         $registry->save(new \stdClass());
 
     }
@@ -78,9 +97,9 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsArray () {
 
         $qryCtx = $this->getFindQueryContext('Produit');
-        $qryCtx->addField(self::$appCtx->getFieldByEntityAndName('Produit', '*'));
+        $qryCtx->addField($this->appCtx->getFieldByEntityAndName('Produit', '*'));
 
-        $registry = self::$appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
@@ -96,15 +115,16 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsObject () {
 
         $qryCtx = $this->getFindQueryContext('Produit');
-        $qryCtx->addField(self::$appCtx->getFieldByEntityAndName('Produit', '*'));
+        $qryCtx->addField($this->appCtx->getFieldByEntityAndName('Produit', '*'));
 
-        $registry = self::$appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $this->assertSame([], $result[0]);
         // TODO: improve test
+
 
     }
 
