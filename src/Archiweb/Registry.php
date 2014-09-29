@@ -45,32 +45,8 @@ class Registry {
      */
     public function save ($model) {
 
-        $entity = $qryCtx->getEntity();
-        $params = $qryCtx->getParams();
-        $class = self::realModelClassName($entity);
-
-        $obj = new $class;
-        $metadata = $qryCtx->getApplicationContext()->getEntityManager()->getClassMetadata($class);
-        $fieldNames = $metadata->getFieldNames();
-
-        foreach ($params as $key => $param) {
-            if (!in_array($key, $fieldNames)) {
-                throw new \RuntimeException("field {$key} not found in the model {$entity}");
-            }
-            if (!($param instanceof Parameter)) {
-                throw new \RuntimeException('invalid type');
-            }
-            if (!$param->isSafe()) {
-                throw new \RuntimeException("unsafe parameter currently not handled");
-            }
-            $methodName = 'set' . ucfirst($key);
-            if (!method_exists($obj, $methodName)) {
-                throw new \RuntimeException("method {$methodName} not found on the model {$entity}");
-            }
-            $obj->$methodName($param->getValue());
-        }
-
-        return $obj;
+        $this->entityManager->persist($model);
+        $this->entityManager->flush();
 
     }
 

@@ -139,4 +139,21 @@ class ApplicationContext {
 
     }
 
+    /**
+     * @param string $entity
+     * @return Field[]
+     */
+    public function getFieldsByEntity($entity) {
+        // TODO: Implement getFieldsByEntity() method
+    }
+
+    /**
+     * @param string $entity
+     * @param string $name
+     * @return Field
+     */
+    public function getFieldByEntityAndName($entity, $name) {
+        // TODO: Implement getFieldByEntityAndName() method
+    }
+
 } 
