@@ -28,10 +28,26 @@ class RegistryTest extends TestCase {
 
     }
 
-    public function testSave () {
+    public function testSaveWithoutRequiredParams () {
 
         $product = new Product();
         $product->setName('produit 1');
+
+        $registry = self::$appCtx->getNewRegistry();
+        $registry->save($product);
+
+    }
+
+    public function testSaveWithRequiredParams () {
+
+        $product = new Product();
+        $product->setName('produit 1');
+        $product->setBundleid('the product bundle id');
+        $product->setConsumable(true);
+        $product->setPrice(12.5);
+        $product->setWeight(2);
+        $product->setAvailable(true);
+        $product->setVat(13.5);
 
         $registry = self::$appCtx->getNewRegistry();
         $registry->save($product);
@@ -42,9 +58,9 @@ class RegistryTest extends TestCase {
 
         $company = new Company();
         $company->setName('company name');
-
         $user = new User();
         $user->setEmail('user@email.com');
+        $company->setOwner($user);
 
         $storage = new Storage();
 
@@ -78,7 +94,9 @@ class RegistryTest extends TestCase {
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
+        var_dump(json_encode($result));
         // TODO: improve test
+
 
     }
 
