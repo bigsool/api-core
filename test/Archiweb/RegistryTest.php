@@ -15,16 +15,16 @@ class RegistryTest extends TestCase {
     /**
      * @var ApplicationContext
      */
-    protected $appCtx;
+    protected static $appCtx;
 
-    public function setUp () {
+    public static function setUpBeforeClass() {
 
-        parent::setUp();
+        parent::setUpBeforeClass();
 
-        $this->appCtx = $this->getApplicationContext();
-        $this->appCtx->addField(new StarField('Produit'));
+        self::$appCtx = self::getApplicationContext();
+        self::$appCtx->addField(new StarField('Produit'));
 
-        // TODO: empty database
+        self::resetDatabase(self::$appCtx);
 
     }
 
@@ -33,7 +33,7 @@ class RegistryTest extends TestCase {
         $product = new Product();
         $product->setName('produit 1');
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = self::$appCtx->getNewRegistry();
         $registry->save($product);
 
     }
@@ -51,7 +51,7 @@ class RegistryTest extends TestCase {
         $company->addUser($user);
         $company->setStorage($storage);
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = self::$appCtx->getNewRegistry();
         $registry->save($company);
 
     }
@@ -61,7 +61,7 @@ class RegistryTest extends TestCase {
      */
     public function testSaveWrongClass () {
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = self::$appCtx->getNewRegistry();
         $registry->save(new \stdClass());
 
     }
@@ -72,9 +72,9 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilter () {
 
         $qryCtx = $this->getFindQueryContext('Produit');
-        $qryCtx->addField($this->appCtx->getFieldByEntityAndName('Produit', '*'));
+        $qryCtx->addField(self::$appCtx->getFieldByEntityAndName('Produit', '*'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = self::$appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);

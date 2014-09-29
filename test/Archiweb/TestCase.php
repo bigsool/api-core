@@ -18,6 +18,7 @@ use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
@@ -186,7 +187,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return ApplicationContext
      */
-    public function getApplicationContext () {
+    public static function getApplicationContext () {
 
         $config =
             Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
@@ -200,7 +201,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $conn = array(
             'driver' => 'pdo_sqlite',
-            'path'   => $tmpDB,
+            'memory' => true,
         );
         $em = EntityManager::create($conn, $config);
 
@@ -266,6 +267,25 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         return $this->getApplicationContext()->getNewRegistry();
 
+    }
+
+    /**
+     * @param ApplicationContext $appCtx
+     */
+    public static function resetDatabase (ApplicationContext $appCtx) {
+
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+
+        $em = $prop->getValue($appCtx);
+
+        $schemaTool = new SchemaTool($em);
+
+        $cmf = $em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
+
+        $schemaTool->dropDatabase();
+        $schemaTool->createSchema($classes);
     }
 
 } 
