@@ -28,37 +28,29 @@ class AggregatedFilterTest extends TestCase {
 
         $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
-        $strFilter = new FilterReference('project', 'myProject');
-        $aggregateFilter->addFilter($strFilter);
+        $filter = $this->getMockFilter();
+        $aggregateFilter->addFilter($filter);
         $filters = $aggregateFilter->getFilters();
-        $this->assertEquals($filters[0], $strFilter);
+        $this->assertEquals($filters[0], $filter);
     }
 
     public function testGetExpression () {
 
         $operator = $this->getMockLogicOperator();
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
-        $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
-        $aggregateFilter->addFilter($strFilter1);
-        $strFilter2 = new StringFilter('project', 'myProject', 'project.id = 2', 'select');
-        $aggregateFilter->addFilter($strFilter2);
+        $filter1 = $this->getMockFilter();
+        $expression1 = $this->getMockExpression();
+        $filter1->method('getExpression')->willReturn($expression1);
+        $aggregateFilter->addFilter($filter1);
+        $filter2 = $this->getMockFilter();
+        $expression2 = $this->getMockExpression();
+        $filter2->method('getExpression')->willReturn($expression2);
+        $aggregateFilter->addFilter($filter2);
         $expression = $aggregateFilter->getExpression();
 
         $expressions = $expression->getExpressions();
-        $this->assertSame($strFilter1->getExpression(), $expressions[0]);
-        $this->assertSame($strFilter2->getExpression(), $expressions[1]);
-
-    }
-
-    public function testGetOperator () {
-
-        $operator = $this->getMockLogicOperator();
-        $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
-        $strFilter1 = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
-        $aggregateFilter->addFilter($strFilter1);
-        $expression = $aggregateFilter->getExpression();
-        $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\LogicOperator', $operator);
+        $this->assertSame($filter1->getExpression(), $expressions[0]);
+        $this->assertSame($filter2->getExpression(), $expressions[1]);
 
     }
 

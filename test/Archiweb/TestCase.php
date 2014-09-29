@@ -164,6 +164,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return ApplicationContext
+     */
+    public function getMockApplicationContext () {
+
+        return $this->getMockBuilder('\Archiweb\Context\ApplicationContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @return RequestContext
      */
     public function getRequestContext () {

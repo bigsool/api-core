@@ -11,7 +11,7 @@ class AggregatedFilter extends Filter {
 
     private $operator;
 
-    private $filters;
+    private $filters = [];
 
     /**
      * @param string        $entity
@@ -37,11 +37,11 @@ class AggregatedFilter extends Filter {
     }
 
     /**
-     * @return Filter
+     * @return Filter[]
      */
     public function getFilters () {
 
-        return $this->filters ? $this->filters : NULL;
+        return $this->filters;
 
     }
 
@@ -50,12 +50,12 @@ class AggregatedFilter extends Filter {
      */
     public function getExpression () {
 
-        if (!$this->filters) {
-            return NULL;
-        }
+        if ($this->filters) {
 
-        foreach ($this->filters as $filter) {
-            $expressions[] = $filter->getExpression();
+            foreach ($this->filters as $filter) {
+                $expressions[] = $filter->getExpression();
+            }
+
         }
 
         return new NAryExpression($this->operator, $expressions);
