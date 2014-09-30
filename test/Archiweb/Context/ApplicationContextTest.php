@@ -83,4 +83,44 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testGetFieldsByEntity () {
+
+        $ctx = $this->getApplicationContext();
+
+        $this->assertEmpty($ctx->getFieldsByEntity('Company'));
+
+        $fields[] = $field = $this->getMockField();
+        $field->method('getEntity')->willReturn('Company');
+        $ctx->addField($field);
+        $this->assertSame($fields, $ctx->getFieldsByEntity('Company'));
+
+        $field = $this->getMockField();
+        $field->method('getEntity')->willReturn('Product');
+        $ctx->addField($field);
+        $this->assertSame($fields, $ctx->getFieldsByEntity('Company'));
+        $this->assertSame([$field], $ctx->getFieldsByEntity('Product'));
+
+    }
+
+    public function testGetFieldsByEntityAndName () {
+
+        $ctx = $this->getApplicationContext();
+
+        $fields[] = $field = $this->getMockField();
+        $field->method('getEntity')->willReturn('Company');
+        $field->method('getName')->willReturn('name');
+        $ctx->addField($field);
+        $this->assertSame($field, $ctx->getFieldByEntityAndName('Company', 'name'));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetFiendsNotFound() {
+
+        $this->getApplicationContext()->getFieldByEntityAndName('Company','name');
+
+    }
+
 } 

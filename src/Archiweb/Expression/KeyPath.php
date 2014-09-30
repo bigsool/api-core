@@ -121,7 +121,7 @@ class KeyPath extends Value {
     public function getField () {
 
         return $this->ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
-        
+
     }
 
 }
