@@ -12,14 +12,14 @@ use Archiweb\Model\Product;
 class RegistryTest extends TestCase {
 
     /**
-     * @var ApplicationContext
-     */
-    protected $appCtx;
-
-    /**
      * @var array
      */
     protected static $doctrineConnectionSettings;
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
 
     public function setUp () {
 
@@ -119,7 +119,16 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        //$this->assertSame([], $result[0]);
+        $this->assertSame(['id'         => 1,
+                           'duration'   => NULL,
+                           'bundleid'   => 'the product bundle id',
+                           'name'       => 'produit 1',
+                           'consumable' => true,
+                           'price'      => 12.5,
+                           'weight'     => 2,
+                           'available'  => true,
+                           'vat'        => 13.5
+                          ], $result[0]);
         // TODO: improve test
 
     }
@@ -137,7 +146,14 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        //$this->assertSame([], $result[0]);
+        $this->assertInstanceOf('\Archiweb\Model\Product', $result[0]);
+        $this->assertSame('the product bundle id', $result[0]->getBundleId());
+        $this->assertSame('produit 1', $result[0]->getName());
+        $this->assertSame(12.5, $result[0]->getPrice());
+        $this->assertSame(2, $result[0]->getWeight());
+        $this->assertSame(13.5, $result[0]->getVat());
+        $this->assertTrue($result[0]->getAvailable());
+        $this->assertTrue($result[0]->getConsumable());
         // TODO: improve test
 
 
