@@ -22,9 +22,9 @@ class KeyPath extends Value {
     protected $entity;
 
     /**
-     * @var FindQueryContext
+     * @var string[]
      */
-    protected $ctx;
+    protected $joinsToDo = [];
 
     /**
      * @param string $value
@@ -43,22 +43,34 @@ class KeyPath extends Value {
     }
 
     /**
-     * @param Registry     $registry
-     * @param QueryContext $context
-     *
-     * @return string
+     * @return string|void
      */
-    public function resolve (Registry $registry, QueryContext $context) {
+    public function resolve (Registry $registry, QueryContext $ctx) {
 
-        if (!($context instanceof FindQueryContext)) {
+        if (!($ctx instanceof FindQueryContext)) {
             throw new \RuntimeException('invalid context');
         }
 
-        $this->ctx = $context;
+        if (!$this->field) {
+            $this->process($ctx);
+        }
+
+        $alias = lcfirst($ctx->getEntity());
+        foreach ($this->joinsToDo as $joinToDo) {
+            $alias = $registry->addJoin($ctx, $alias, $joinToDo);
+        }
+
+        return $alias . ($this->field == '*' ? '' : ('.' . $this->field));
+
+    }
+
+    /**
+     * @param FindQueryContext $ctx
+     */
+    public function process (FindQueryContext $ctx) {
 
         $exploded = explode('.', $this->getValue());
-        $entity = '\Archiweb\Model\\' . $context->getEntity();
-        $alias = lcfirst($context->getEntity());
+        $entity = '\Archiweb\Model\\' . $ctx->getEntity();
 
         for ($i = 0; $i < count($exploded); ++$i) {
 
@@ -73,7 +85,7 @@ class KeyPath extends Value {
                 break;
             }
 
-            $metadata = $context->getApplicationContext()->getClassMetadata($entity);
+            $metadata = $ctx->getApplicationContext()->getClassMetadata($entity);
             $fields = $metadata->getFieldNames();
 
             if (in_array($field, $fields)) {
@@ -83,13 +95,13 @@ class KeyPath extends Value {
                 $this->entity = $this->getEntityForClass($entity);
                 $this->field = $field;
 
-                return $alias . '.' . $field;
+                return;
             }
 
             $associations = $metadata->getAssociationNames();
 
             if (in_array($field, $associations)) {
-                $alias = $registry->addJoin($context, $alias, $field);
+                $this->joinsToDo[] = $field;
                 $entity = $metadata->getAssociationMapping($field)['targetEntity'];
             }
             else {
@@ -100,8 +112,6 @@ class KeyPath extends Value {
 
         $this->entity = $this->getEntityForClass($entity);
         $this->field = '*';
-
-        return $alias;
 
     }
 
@@ -116,11 +126,17 @@ class KeyPath extends Value {
     }
 
     /**
+     * @param FindQueryContext $ctx
+     *
      * @return Field
      */
-    public function getField () {
+    public function getField (FindQueryContext $ctx) {
 
-        return $this->ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
+        if (!$this->field) {
+            $this->process($ctx);
+        }
+
+        return $ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
 
     }
 
