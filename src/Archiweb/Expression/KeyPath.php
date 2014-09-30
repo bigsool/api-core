@@ -6,9 +6,25 @@ namespace Archiweb\Expression;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
+use Archiweb\Field;
 use Archiweb\Registry;
 
 class KeyPath extends Value {
+
+    /**
+     * @var string
+     */
+    protected $field;
+
+    /**
+     * @var string
+     */
+    protected $entity;
+
+    /**
+     * @var string[]
+     */
+    protected $joinsToDo = [];
 
     /**
      * @param string $value
@@ -20,48 +36,72 @@ class KeyPath extends Value {
         if (!is_string($value)) {
             throw new \RuntimeException('invalid type');
         }
-        if (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*$/', $value)) {
+        if (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*(\.\*)?$/', $value) && $value != '*') {
             throw new \RuntimeException('invalid format');
         }
         parent::__construct($value);
     }
 
     /**
-     * @param Registry     $registry
-     * @param QueryContext $context
-     *
-     * @return string
+     * @return string|void
      */
-    public function resolve (Registry $registry, QueryContext $context) {
+    public function resolve (Registry $registry, QueryContext $ctx) {
 
-        if (!($context instanceof FindQueryContext)) {
+        if (!($ctx instanceof FindQueryContext)) {
             throw new \RuntimeException('invalid context');
         }
 
+        if (!$this->field) {
+            $this->process($ctx);
+        }
+
+        $alias = lcfirst($ctx->getEntity());
+        foreach ($this->joinsToDo as $joinToDo) {
+            $alias = $registry->addJoin($ctx, $alias, $joinToDo);
+        }
+
+        return $alias . ($this->field == '*' ? '' : ('.' . $this->field));
+
+    }
+
+    /**
+     * @param FindQueryContext $ctx
+     */
+    public function process (FindQueryContext $ctx) {
 
         $exploded = explode('.', $this->getValue());
-        $entity = '\Archiweb\Model\\' . $context->getEntity();
-        $alias = lcfirst($context->getEntity());
+        $entity = '\Archiweb\Model\\' . $ctx->getEntity();
 
         for ($i = 0; $i < count($exploded); ++$i) {
 
-            $field = $exploded[$i];
-            $metadata = $context->getApplicationContext()->getClassMetadata($entity);
+            $isLast = $i + 1 == count($exploded);
 
+            $field = $exploded[$i];
+
+            if ($field == '*') {
+                if (!$isLast) {
+                    throw new \RuntimeException("* must be at the end of a keyPath");
+                }
+                break;
+            }
+
+            $metadata = $ctx->getApplicationContext()->getClassMetadata($entity);
             $fields = $metadata->getFieldNames();
 
             if (in_array($field, $fields)) {
-                if ($i + 1 != count($exploded)) {
+                if (!$isLast) {
                     throw new \RuntimeException("$field is a field, not an entity");
                 }
+                $this->entity = $this->getEntityForClass($entity);
+                $this->field = $field;
 
-                return $alias . '.' . $field;
+                return;
             }
 
             $associations = $metadata->getAssociationNames();
 
             if (in_array($field, $associations)) {
-                $alias = $registry->addJoin($context, $alias, $field);
+                $this->joinsToDo[] = $field;
                 $entity = $metadata->getAssociationMapping($field)['targetEntity'];
             }
             else {
@@ -70,7 +110,33 @@ class KeyPath extends Value {
 
         }
 
-        return $alias;
+        $this->entity = $this->getEntityForClass($entity);
+        $this->field = '*';
+
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return string
+     */
+    protected function getEntityForClass ($class) {
+
+        return (new \ReflectionClass($class))->getShortName();
+    }
+
+    /**
+     * @param FindQueryContext $ctx
+     *
+     * @return Field
+     */
+    public function getField (FindQueryContext $ctx) {
+
+        if (!$this->field) {
+            $this->process($ctx);
+        }
+
+        return $ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
 
     }
 

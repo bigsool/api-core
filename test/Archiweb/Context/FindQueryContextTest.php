@@ -55,26 +55,26 @@ class FindQueryContextTest extends TestCase {
     /**
      *
      */
-    public function testFields () {
+    public function testKeyPaths () {
 
-        // empty rule list
+        // empty keyPath list
         $ctx = $this->getFindQueryContext('Company');
-        $this->assertSame([], $ctx->getFields());
+        $this->assertSame([], $ctx->getKeyPaths());
 
-        // only one rule
-        $field = $this->getMockField();
-        $ctx->addField($field);
-        $this->assertSame([$field], $ctx->getFields());
+        // only one keyPath
+        $keyPath = $this->getMockKeyPath();
+        $ctx->addKeyPath($keyPath);
+        $this->assertSame([$keyPath], $ctx->getKeyPaths());
 
-        // several rules
-        $fields = [$this->getMockField(), $this->getMockField()];
-        foreach ($fields as $f) {
-            $ctx->addField($f);
+        // several keyPaths
+        $keyPaths = [$this->getMockKeyPath(), $this->getMockKeyPath()];
+        foreach ($keyPaths as $k) {
+            $ctx->addKeyPath($k);
         }
-        $fields[] = $field;
-        $this->assertSameSize($fields, $ctx->getFields());
-        foreach ($fields as $f) {
-            $this->assertContains($f, $ctx->getFields());
+        $keyPaths[] = $keyPath;
+        $this->assertSameSize($keyPaths, $ctx->getKeyPaths());
+        foreach ($keyPaths as $f) {
+            $this->assertContains($f, $ctx->getKeyPaths());
         }
 
     }

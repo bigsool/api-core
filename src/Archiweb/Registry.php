@@ -5,6 +5,7 @@ namespace Archiweb;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
@@ -96,7 +97,7 @@ class Registry {
 
         if (!isset($this->queryBuilder)) {
             $this->queryBuilder = $this->entityManager->createQueryBuilder();
-            $this->queryBuilder->from($entity, lcfirst($entity));
+            $this->queryBuilder->from($this->realModelClassName($entity), lcfirst($entity));
         }
 
         return $this->queryBuilder;
@@ -124,16 +125,21 @@ class Registry {
 
         $qb = $this->getQueryBuilder($ctx->getEntity());
         $alias = lcfirst($entity);
-        $qb->from($class, $alias);
 
-        $fields = $ctx->getFilters();
-        if (empty($fields)) {
+        $keyPaths = $ctx->getKeyPaths();
+        if (empty($keyPaths)) {
             throw new \RuntimeException('fields are required');
         }
 
-        foreach ($fields as $field) {
-            if (is_a($field, '\Archiweb\StarField')) {
-                //TODO: s'il y a plusieurs entity comment préciser laquel on veut récupérer ?
+        foreach ($keyPaths as $keyPath) {
+            // TODO: apply rule
+            $keyPathAlias = $keyPath->resolve($this, $ctx);
+            $keyPathField = $keyPath->getField($ctx);
+            if (is_a($keyPathField, '\Archiweb\StarField')) {
+                $qb->addSelect($keyPathAlias);
+            }
+            else {
+                $qb->addSelect($keyPathAlias.'.'.$keyPathField->getName());
             }
         }
 
@@ -147,6 +153,7 @@ class Registry {
             $qb->andWhere($expression->resolve($this, $ctx));
         }
 
+        $query = $qb->getDQL();
         return $qb->getQuery()->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
     }

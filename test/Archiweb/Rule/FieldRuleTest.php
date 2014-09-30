@@ -4,6 +4,8 @@
 namespace Archiweb\Rule;
 
 
+use Archiweb\Context\FindQueryContext;
+use Archiweb\Expression\KeyPath;
 use Archiweb\Field;
 use Archiweb\Model\Company;
 use Archiweb\TestCase;
@@ -82,24 +84,28 @@ class FieldRuleTest extends TestCase {
 
     public function testShouldApply () {
 
-        $field = $this->getMockCompanyNameField();
+
+        $field = new Field('Company', 'name');
         $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
+        $appCtx = $this->getApplicationContext();
+        $appCtx->addField($field);
+        
 
-        $qryCtx = $this->getFindQueryContext('Company');
-        $qryCtx->addField($field);
+        $qryCtx = new FindQueryContext($appCtx, 'Company');
+        $qryCtx->addKeyPath(new KeyPath('name'));
 
         $this->assertTrue($rule->shouldApply($qryCtx));
 
 
-        $qryCtx = $this->getFindQueryContext('User');
-        $qryCtx->addField($field);
+        $qryCtx = new FindQueryContext($appCtx, 'User');
+        $qryCtx->addKeyPath(new KeyPath('name'));
 
         $this->assertFalse($rule->shouldApply($qryCtx));
 
 
-        $qryCtx = $this->getFindQueryContext('Company');
-        $qryCtx->addField($this->getMockField());
+        $qryCtx = new FindQueryContext($appCtx, 'Company');
+        $qryCtx->addKeyPath(new KeyPath('name'));
 
         $this->assertFalse($rule->shouldApply($qryCtx));
 
