@@ -31,6 +31,14 @@ class UnaryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return CompareOperator
+     */
+    public function getOperator () {
+
+        return $this->operator;
+    }
+
+    /**
      * @param Registry     $registry
      * @param QueryContext $context
      *
@@ -49,13 +57,5 @@ class UnaryExpression implements ExpressionWithOperator {
     public function getValue () {
 
         return $this->value;
-    }
-
-    /**
-     * @return CompareOperator
-     */
-    public function getOperator () {
-
-        return $this->operator;
     }
 }

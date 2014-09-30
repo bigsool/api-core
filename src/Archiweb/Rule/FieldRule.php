@@ -32,29 +32,29 @@ class FieldRule implements Rule {
     }
 
     /**
-     * @return Rule[]
-     */
-    public function listChildRules () {
-
-        return [$this->getRule()];
-
-    }
-
-    /**
-     * @return Rule
-     */
-    public function getRule () {
-
-        return $this->rule;
-
-    }
-
-    /**
      * @param FindQueryContext $ctx
      */
     public function apply (FindQueryContext $ctx) {
 
         $this->getRule()->apply($ctx);
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return lcfirst($this->getField()->getEntity()) . ucfirst($this->getField()->getName()) . 'FieldRule';
+
+    }
+
+    /**
+     * @return Rule[]
+     */
+    public function listChildRules () {
+
+        return [$this->getRule()];
 
     }
 
@@ -85,20 +85,20 @@ class FieldRule implements Rule {
     }
 
     /**
+     * @return Rule
+     */
+    public function getRule () {
+
+        return $this->rule;
+
+    }
+
+    /**
      * @return Field
      */
     public function getField () {
 
         return $this->field;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getName () {
-
-        return lcfirst($this->getField()->getEntity()) . ucfirst($this->getField()->getName()) . 'FieldRule';
 
     }
 

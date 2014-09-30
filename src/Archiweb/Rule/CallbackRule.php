@@ -46,15 +46,6 @@ class CallbackRule implements Rule {
     }
 
     /**
-     * @return Rule[]
-     */
-    public function listChildRules () {
-
-        return $this->childRules;
-
-    }
-
-    /**
      * @param FindQueryContext $ctx
      */
     public function apply (FindQueryContext $ctx) {
@@ -64,11 +55,20 @@ class CallbackRule implements Rule {
     }
 
     /**
-     * @return callable
+     * @return string
      */
-    public function getCallback () {
+    public function getName () {
 
-        return $this->callback;
+        return $this->name;
+
+    }
+
+    /**
+     * @return Rule[]
+     */
+    public function listChildRules () {
+
+        return $this->childRules;
 
     }
 
@@ -84,11 +84,11 @@ class CallbackRule implements Rule {
     }
 
     /**
-     * @return string
+     * @return callable
      */
-    public function getName () {
+    public function getCallback () {
 
-        return $this->name;
+        return $this->callback;
 
     }
 }

@@ -117,9 +117,9 @@ class ApplicationContextTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testGetFiendsNotFound() {
+    public function testGetFiendsNotFound () {
 
-        $this->getApplicationContext()->getFieldByEntityAndName('Company','name');
+        $this->getApplicationContext()->getFieldByEntityAndName('Company', 'name');
 
     }
 

@@ -31,6 +31,14 @@ class NAryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return Operator
+     */
+    public function getOperator () {
+
+        return $this->operator;
+    }
+
+    /**
      * @param Registry     $registry
      * @param QueryContext $context
      *
@@ -54,13 +62,5 @@ class NAryExpression implements ExpressionWithOperator {
     public function getExpressions () {
 
         return $this->expressions;
-    }
-
-    /**
-     * @return Operator
-     */
-    public function getOperator () {
-
-        return $this->operator;
     }
 }

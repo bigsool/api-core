@@ -27,37 +27,37 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\EqualOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\EqualOperator', $operator);
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner != 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\NotEqualOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\NotEqualOperator', $operator);
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner >= 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\GreaterOrEqualOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\GreaterOrEqualOperator', $operator);
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner <= 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\LowerOrEqualOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\LowerOrEqualOperator', $operator);
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner > 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\GreaterThanOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\GreaterThanOperator', $operator);
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner < 1', 'select');
         $expression = $strFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression',$expression);
+        $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
-        $this->assertInstanceOf('\Archiweb\Operator\LowerThanOperator',$operator);
+        $this->assertInstanceOf('\Archiweb\Operator\LowerThanOperator', $operator);
 
     }
 

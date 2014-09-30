@@ -5,10 +5,8 @@ namespace Archiweb;
 
 
 use Archiweb\Context\FindQueryContext;
-use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
-use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
@@ -52,22 +50,6 @@ class Registry {
     }
 
     /**
-     * @param string $entity
-     *
-     * @return string
-     */
-    private static function realModelClassName ($entity) {
-
-        $class = '\Archiweb\Model\\' . $entity;
-        if (!class_exists($class)) {
-            throw new \RuntimeException('entity not found');
-        }
-
-        return $class;
-
-    }
-
-    /**
      * @param $alias
      * @param $field
      *
@@ -101,6 +83,22 @@ class Registry {
         }
 
         return $this->queryBuilder;
+
+    }
+
+    /**
+     * @param string $entity
+     *
+     * @return string
+     */
+    private static function realModelClassName ($entity) {
+
+        $class = '\Archiweb\Model\\' . $entity;
+        if (!class_exists($class)) {
+            throw new \RuntimeException('entity not found');
+        }
+
+        return $class;
 
     }
 
@@ -139,7 +137,7 @@ class Registry {
                 $qb->addSelect($keyPathAlias);
             }
             else {
-                $qb->addSelect($keyPathAlias.'.'.$keyPathField->getName());
+                $qb->addSelect($keyPathAlias . '.' . $keyPathField->getName());
             }
         }
 
@@ -154,6 +152,7 @@ class Registry {
         }
 
         $query = $qb->getDQL();
+
         return $qb->getQuery()->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
     }

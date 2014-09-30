@@ -90,7 +90,7 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $mockRule);
         $appCtx = $this->getApplicationContext();
         $appCtx->addField($field);
-        
+
 
         $qryCtx = new FindQueryContext($appCtx, 'Company');
         $qryCtx->addKeyPath(new KeyPath('name'));

@@ -38,6 +38,14 @@ class BinaryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return Operator
+     */
+    public function getOperator () {
+
+        return $this->operator;
+    }
+
+    /**
      * @param Registry     $registry
      * @param QueryContext $context
      *
@@ -65,13 +73,5 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getRight () {
 
         return $this->right;
-    }
-
-    /**
-     * @return Operator
-     */
-    public function getOperator () {
-
-        return $this->operator;
     }
 }

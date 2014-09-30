@@ -54,8 +54,8 @@ class AggregatedFilterTest extends TestCase {
 
         $aggregateFilter = new AggregatedFilter('project', 'myProject', 'select', $operator);
         $expression = $aggregateFilter->getExpression();
-        $this->assertInstanceOf('\Archiweb\Expression\NAryExpression',$expression);
-        
+        $this->assertInstanceOf('\Archiweb\Expression\NAryExpression', $expression);
+
     }
 
 }

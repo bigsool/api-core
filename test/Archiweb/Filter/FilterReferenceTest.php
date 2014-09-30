@@ -9,7 +9,7 @@ class FilterReferenceTest extends TestCase {
     public function testGetEntity () {
 
         $appCtx = $this->getMockApplicationContext();
-        $referenceFilter = new FilterReference($appCtx,'project', 'myProject');
+        $referenceFilter = new FilterReference($appCtx, 'project', 'myProject');
         $entity = $referenceFilter->getEntity();
         $this->assertEquals('project', $entity);
 
@@ -18,7 +18,7 @@ class FilterReferenceTest extends TestCase {
     public function testGetName () {
 
         $appCtx = $this->getMockApplicationContext();
-        $referenceFilter = new FilterReference($appCtx,'project', 'myProject');
+        $referenceFilter = new FilterReference($appCtx, 'project', 'myProject');
         $name = $referenceFilter->getName();
         $this->assertEquals('myProject', $name);
 
@@ -33,11 +33,9 @@ class FilterReferenceTest extends TestCase {
         $appCtx->method('getFilters')->willReturn(array($filter));
         $appCtx->addFilter($filter);
 
-        $referenceFilter = new FilterReference($appCtx,'project', $filter->getName());
+        $referenceFilter = new FilterReference($appCtx, 'project', $filter->getName());
         $expression = $referenceFilter->getExpression();
         $this->assertSame($filter->getExpression(), $expression);
-
-
 
     }
 
@@ -47,10 +45,9 @@ class FilterReferenceTest extends TestCase {
     public function testGetExpressionWithoutFilter () {
 
         $appCtx = $this->getMockApplicationContext();
-        $referenceFilter = new FilterReference($appCtx,'project', 'badFilterName');
+        $referenceFilter = new FilterReference($appCtx, 'project', 'badFilterName');
         $referenceFilter->getExpression();
 
     }
-
 
 }

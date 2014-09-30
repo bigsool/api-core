@@ -39,15 +39,6 @@ class SimpleRule implements Rule {
     }
 
     /**
-     * @return Rule[]
-     */
-    public function listChildRules () {
-
-        return [];
-
-    }
-
-    /**
      * @param FindQueryContext $ctx
      */
     public function apply (FindQueryContext $ctx) {
@@ -57,11 +48,20 @@ class SimpleRule implements Rule {
     }
 
     /**
-     * @return Filter
+     * @return string
      */
-    public function getFilter () {
+    public function getName () {
 
-        return $this->filter;
+        return $this->name;
+
+    }
+
+    /**
+     * @return Rule[]
+     */
+    public function listChildRules () {
+
+        return [];
 
     }
 
@@ -77,11 +77,11 @@ class SimpleRule implements Rule {
     }
 
     /**
-     * @return string
+     * @return Filter
      */
-    public function getName () {
+    public function getFilter () {
 
-        return $this->name;
+        return $this->filter;
 
     }
 }
