@@ -4,6 +4,7 @@
 namespace Archiweb\Context;
 
 
+use Archiweb\Expression\KeyPath;
 use Archiweb\Field;
 use Archiweb\Filter\Filter;
 
@@ -25,9 +26,9 @@ class FindQueryContext implements QueryContext {
     protected $entity;
 
     /**
-     * @var Field[]
+     * @var KeyPath[]
      */
-    protected $fields;
+    protected $keyPaths;
 
     /**
      * @var Filter[]
@@ -36,15 +37,15 @@ class FindQueryContext implements QueryContext {
 
     /**
      * @param ApplicationContext $ctx
-     * @param                    $entity
-     * @param Field[]            $fields
+     * @param string             $entity
+     * @param Field[]            $keyPaths
      * @param Filter[]           $filters
      */
-    public function __construct (ApplicationContext $ctx, $entity, array $fields = [], array $filters = []) {
+    public function __construct (ApplicationContext $ctx, $entity, array $keyPaths = [], array $filters = []) {
 
         $this->applicationContext = $ctx;
         $this->entity = $entity;
-        $this->fields = $fields;
+        $this->keyPaths = $keyPaths;
         $this->filters = $filters;
 
     }
@@ -68,11 +69,11 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @return Field[]
+     * @return KeyPath[]
      */
-    public function getFields () {
+    public function getKeyPaths () {
 
-        return $this->fields;
+        return $this->keyPaths;
 
     }
 
@@ -86,11 +87,11 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param Field $field
+     * @param KeyPath $keyPath
      */
-    public function addField (Field $field) {
+    public function addKeyPath (KeyPath $keyPath) {
 
-        $this->fields[] = $field;
+        $this->keyPaths[] = $keyPath;
 
     }
 

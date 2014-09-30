@@ -74,7 +74,7 @@ class FieldRule implements Rule {
             return false;
         }
 
-        foreach ($ctx->getFields() as $field) {
+        foreach ($ctx->getKeyPaths() as $field) {
             if ($field->getName() == $this->getField()->getName()) {
                 return true;
             }

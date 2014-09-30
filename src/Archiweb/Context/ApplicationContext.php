@@ -113,15 +113,6 @@ class ApplicationContext {
     }
 
     /**
-     * @return Field[]
-     */
-    public function getFields () {
-
-        return $this->fields;
-
-    }
-
-    /**
      * @param Rule $rule
      */
     public function addRule (Rule $rule) {
@@ -141,19 +132,47 @@ class ApplicationContext {
 
     /**
      * @param string $entity
+     *
      * @return Field[]
      */
-    public function getFieldsByEntity($entity) {
-        // TODO: Implement getFieldsByEntity() method
+    public function getFieldsByEntity ($entity) {
+
+        $fields = [];
+        foreach ($this->getFields() as $field) {
+            if ($field->getEntity() == $entity) {
+                $fields[] = $field;
+            }
+        }
+
+        return $fields;
+
+    }
+
+    /**
+     * @return Field[]
+     */
+    public function getFields () {
+
+        return $this->fields;
+
     }
 
     /**
      * @param string $entity
      * @param string $name
+     *
      * @return Field
      */
-    public function getFieldByEntityAndName($entity, $name) {
-        // TODO: Implement getFieldByEntityAndName() method
+    public function getFieldByEntityAndName ($entity, $name) {
+
+        foreach ($this->getFields() as $field) {
+            if ($field->getEntity() == $entity && $field->getName() == $name) {
+                return $field;
+            }
+        }
+
+        throw new \RuntimeException('Field not found');
+
     }
 
 } 

@@ -5,10 +5,9 @@ namespace Archiweb;
 
 
 use Archiweb\Context\ApplicationContext;
-use Archiweb\Model\Company;
+use Archiweb\Context\FindQueryContext;
+use Archiweb\Expression\KeyPath;
 use Archiweb\Model\Product;
-use Archiweb\Model\Storage;
-use Archiweb\Model\User;
 
 class RegistryTest extends TestCase {
 
@@ -22,7 +21,7 @@ class RegistryTest extends TestCase {
         parent::setUp();
 
         $this->appCtx = $this->getApplicationContext();
-        $this->appCtx->addField(new StarField('Produit'));
+        $this->appCtx->addField(new StarField('Product'));
 
     }
 
@@ -61,26 +60,28 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);
 
-    }
-
-    public function testSaveWithDependencies () {
-
-        $company = new Company();
-        $company->setName('company name');
-        $user = new User();
-        $user->setEmail('user@email.com');
-        $company->setOwner($user);
-
-        $storage = new Storage();
-
-        $company->addUser($user);
-        $company->setStorage($storage);
-
-        $registry = $this->appCtx->getNewRegistry();
-        $registry->save($company);
+        $this->assertSame(1, $product->getId());
 
     }
+    /*
+        public function testSaveWithDependencies () {
 
+            $company = new Company();
+            $company->setName('company name');
+            $user = new User();
+            $user->setEmail('user@email.com');
+            $company->setOwner($user);
+
+            $storage = new Storage();
+
+            $company->addUser($user);
+            $company->setStorage($storage);
+
+            $registry = $this->appCtx->getNewRegistry();
+            $registry->save($company);
+
+        }
+    */
     /**
      * @expectedException \Exception
      */
@@ -92,12 +93,12 @@ class RegistryTest extends TestCase {
     }
 
     /**
-     * @depends testSave
+     * @depends testSaveWithRequiredParams
      */
     public function testFindWithoutFilterAsArray () {
 
-        $qryCtx = $this->getFindQueryContext('Produit');
-        $qryCtx->addField($this->appCtx->getFieldByEntityAndName('Produit', '*'));
+        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx->addKeyPath(new KeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -110,12 +111,12 @@ class RegistryTest extends TestCase {
     }
 
     /**
-     * @depends testSave
+     * @depends testSaveWithRequiredParams
      */
     public function testFindWithoutFilterAsObject () {
 
-        $qryCtx = $this->getFindQueryContext('Produit');
-        $qryCtx->addField($this->appCtx->getFieldByEntityAndName('Produit', '*'));
+        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx->addKeyPath(new KeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);

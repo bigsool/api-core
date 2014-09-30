@@ -82,24 +82,26 @@ class FieldRuleTest extends TestCase {
 
     public function testShouldApply () {
 
+        // TODO: fix test
+
         $field = $this->getMockCompanyNameField();
         $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
         $qryCtx = $this->getFindQueryContext('Company');
-        $qryCtx->addField($field);
+        //$qryCtx->addKeyPath($field);
 
         $this->assertTrue($rule->shouldApply($qryCtx));
 
 
         $qryCtx = $this->getFindQueryContext('User');
-        $qryCtx->addField($field);
+        //$qryCtx->addKeyPath($field);
 
         $this->assertFalse($rule->shouldApply($qryCtx));
 
 
         $qryCtx = $this->getFindQueryContext('Company');
-        $qryCtx->addField($this->getMockField());
+        //$qryCtx->addKeyPath($this->getMockField());
 
         $this->assertFalse($rule->shouldApply($qryCtx));
 

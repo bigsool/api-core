@@ -6,9 +6,25 @@ namespace Archiweb\Expression;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
+use Archiweb\Field;
 use Archiweb\Registry;
 
 class KeyPath extends Value {
+
+    /**
+     * @var string
+     */
+    protected $field;
+
+    /**
+     * @var string
+     */
+    protected $entity;
+
+    /**
+     * @var FindQueryContext
+     */
+    protected $ctx;
 
     /**
      * @param string $value
@@ -20,7 +36,7 @@ class KeyPath extends Value {
         if (!is_string($value)) {
             throw new \RuntimeException('invalid type');
         }
-        if (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*$/', $value)) {
+        if (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*(\.\*)?$/', $value) && $value != '*') {
             throw new \RuntimeException('invalid format');
         }
         parent::__construct($value);
@@ -38,6 +54,7 @@ class KeyPath extends Value {
             throw new \RuntimeException('invalid context');
         }
 
+        $this->ctx = $context;
 
         $exploded = explode('.', $this->getValue());
         $entity = '\Archiweb\Model\\' . $context->getEntity();
@@ -45,15 +62,26 @@ class KeyPath extends Value {
 
         for ($i = 0; $i < count($exploded); ++$i) {
 
-            $field = $exploded[$i];
-            $metadata = $context->getApplicationContext()->getClassMetadata($entity);
+            $isLast = $i + 1 == count($exploded);
 
+            $field = $exploded[$i];
+
+            if ($field == '*') {
+                if (!$isLast) {
+                    throw new \RuntimeException("* must be at the end of a keyPath");
+                }
+                break;
+            }
+
+            $metadata = $context->getApplicationContext()->getClassMetadata($entity);
             $fields = $metadata->getFieldNames();
 
             if (in_array($field, $fields)) {
-                if ($i + 1 != count($exploded)) {
+                if (!$isLast) {
                     throw new \RuntimeException("$field is a field, not an entity");
                 }
+                $this->entity = $this->getEntityForClass($entity);
+                $this->field = $field;
 
                 return $alias . '.' . $field;
             }
@@ -70,8 +98,30 @@ class KeyPath extends Value {
 
         }
 
+        $this->entity = $this->getEntityForClass($entity);
+        $this->field = '*';
+
         return $alias;
 
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return string
+     */
+    protected function getEntityForClass ($class) {
+
+        return (new \ReflectionClass($class))->getShortName();
+    }
+
+    /**
+     * @return Field
+     */
+    public function getField () {
+
+        return $this->ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
+        
     }
 
 }
