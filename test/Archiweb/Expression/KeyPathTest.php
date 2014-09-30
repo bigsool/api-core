@@ -49,6 +49,11 @@ class KeyPathTest extends TestCase {
         $resolve1 = $param1->resolve($registry, $context);
 
         $this->assertEquals('hostedProjectCreatorCompanyStorage.url', $resolve1);
+
+        $param1 = new KeyPath('name');
+        $resolve1 = $param1->resolve($registry, $context);
+
+        $this->assertEquals('hostedProject.name', $resolve1);
     }
 
     /**

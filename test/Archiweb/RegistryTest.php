@@ -27,6 +27,8 @@ class RegistryTest extends TestCase {
 
         $this->appCtx = $this->getApplicationContext(self::$doctrineConnectionSettings);
         $this->appCtx->addField(new StarField('Product'));
+        $this->appCtx->addField(new Field('Product', 'name'));
+        $this->appCtx->addField(new Field('Product', 'price'));
 
     }
 
@@ -128,6 +130,27 @@ class RegistryTest extends TestCase {
                            'weight'     => 2,
                            'available'  => true,
                            'vat'        => 13.5
+                          ], $result[0]);
+        // TODO: improve test
+
+    }
+
+    /**
+     * @depends testSaveWithRequiredParams
+     */
+    public function testFindFieldsWithoutFilter () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx->addKeyPath(new KeyPath('name'));
+        $qryCtx->addKeyPath(new KeyPath('price'));
+
+        $registry = $this->appCtx->getNewRegistry();
+        $result = $registry->find($qryCtx);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertSame(['name'  => 'produit 1',
+                           'price' => 12.5
                           ], $result[0]);
         // TODO: improve test
 

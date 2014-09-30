@@ -131,13 +131,13 @@ class Registry {
 
         foreach ($keyPaths as $keyPath) {
             // TODO: apply rule
-            $keyPathAlias = $keyPath->resolve($this, $ctx);
+            $field = $keyPath->resolve($this, $ctx);
             $keyPathField = $keyPath->getField($ctx);
             if (is_a($keyPathField, '\Archiweb\StarField')) {
-                $qb->addSelect($keyPathAlias);
+                $qb->addSelect($field);
             }
             else {
-                $qb->addSelect($keyPathAlias . '.' . $keyPathField->getName());
+                $qb->addSelect($field);
             }
         }
 
