@@ -25,6 +25,25 @@ use Doctrine\ORM\Tools\Setup;
 class TestCase extends \PHPUnit_Framework_TestCase {
 
     /**
+     * @param ApplicationContext $appCtx
+     */
+    public static function resetDatabase (ApplicationContext $appCtx) {
+
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+
+        $em = $prop->getValue($appCtx);
+
+        $schemaTool = new SchemaTool($em);
+
+        $cmf = $em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
+
+        $schemaTool->dropDatabase();
+        $schemaTool->createSchema($classes);
+    }
+
+    /**
      * @return QueryContext
      */
     public function getMockQueryContext () {
@@ -186,20 +205,12 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return KeyPath
-     */
-    public function getMockKeyPath() {
-
-        return $this->getMockBuilder('\Archiweb\Expression\KeyPath')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
+     * @param mixed $conn
+     *
      * @return ApplicationContext
+     * @throws \Doctrine\ORM\ORMException
      */
-    public static function getApplicationContext () {
+    public static function getApplicationContext ($conn = NULL) {
 
         $config =
             Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
@@ -211,13 +222,13 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             copy($originalDb, $tmpDB);
         }
 
-        $conn = array(
-            'driver' => 'pdo_sqlite',
-            'path'   => $tmpDB,
-        );
+        if ($conn == NULL) {
+            $conn = array(
+                'driver' => 'pdo_sqlite',
+                'path'   => $tmpDB,
+            );
+        }
         $em = EntityManager::create($conn, $config);
-
-        // this query activate the foreign key in sqlite
         $em->getConnection()->query('PRAGMA foreign_keys = ON');
 
         $ctx = new ApplicationContext();
@@ -226,6 +237,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $ctx->setEntityManager($em);
 
         return $ctx;
+
+    }
+
+    /**
+     * @return KeyPath
+     */
+    public function getMockKeyPath () {
+
+        return $this->getMockBuilder('\Archiweb\Expression\KeyPath')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 
@@ -279,25 +301,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         return $this->getApplicationContext()->getNewRegistry();
 
-    }
-
-    /**
-     * @param ApplicationContext $appCtx
-     */
-    public static function resetDatabase (ApplicationContext $appCtx) {
-
-        $prop = new \ReflectionProperty($appCtx, 'entityManager');
-        $prop->setAccessible(true);
-
-        $em = $prop->getValue($appCtx);
-
-        $schemaTool = new SchemaTool($em);
-
-        $cmf = $em->getMetadataFactory();
-        $classes = $cmf->getAllMetadata();
-
-        $schemaTool->dropDatabase();
-        $schemaTool->createSchema($classes);
     }
 
 } 
