@@ -65,10 +65,14 @@ class RegistryTest extends TestCase {
 
     public function testSaveWithDependencies () {
 
+        $registry = $this->appCtx->getNewRegistry();
+
         $company = new Company();
         $company->setName('company name');
         $user = new User();
         $user->setEmail('user@email.com');
+        $user->setCompany($company);
+        $user->setOwnedCompany($company);
         $company->setOwner($user);
 
         $storage = new Storage();
@@ -76,7 +80,6 @@ class RegistryTest extends TestCase {
         $company->addUser($user);
         $company->setStorage($storage);
 
-        $registry = $this->appCtx->getNewRegistry();
         $registry->save($company);
 
     }

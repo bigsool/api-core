@@ -73,6 +73,7 @@ Archiweb\Model\Company:
         owner:
             targetEntity: Archiweb\Model\User
             inversedBy: ownedCompany
+            cascade: ["persist"]
             joinColumns:
                 owner_id:
                     referencedColumnName: id
@@ -94,7 +95,6 @@ Archiweb\Model\Company:
         users:
             targetEntity: Archiweb\Model\User
             mappedBy: company
-            cascade: ["persist"]
         sharedReports:
             targetEntity: Archiweb\Model\SharedReport
             mappedBy: company
