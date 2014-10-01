@@ -91,8 +91,8 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $mockRule);
         $appCtx = $this->getApplicationContext();
         $appCtx->addField($field);
-        $appCtx->addField(new Field('Company','owner'));
-        $appCtx->addField(new Field('User','name'));
+        $appCtx->addField(new Field('Company', 'owner'));
+        $appCtx->addField(new Field('User', 'name'));
         $appCtx->addField(new StarField('Company'));
         $appCtx->addField(new StarField('User'));
 
