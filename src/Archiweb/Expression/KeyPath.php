@@ -33,13 +33,26 @@ class KeyPath extends Value {
      */
     public function __construct ($value) {
 
-        if (!is_string($value)) {
-            throw new \RuntimeException('invalid type');
+        if (!self::isValidKeyPath($value)) {
+            throw new \RuntimeException('invalid KeyPath');
         }
-        if (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*(\.\*)?$/', $value) && $value != '*') {
-            throw new \RuntimeException('invalid format');
-        }
+
         parent::__construct($value);
+
+    }
+
+    /**
+     * @param string $value
+     * return boolean
+     */
+    static public function isValidKeyPath($value) {
+
+        if (!is_string($value) || (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*(\.\*)?$/', $value) && $value != '*')) {
+            return false;
+        }
+
+        return true;
+
     }
 
     /**

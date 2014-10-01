@@ -33,7 +33,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('project.owner', $leftExpression->getValue());
         $rightExpression = $expression->getRight();
         $this->assertInstanceOf('\Archiweb\Expression\Value', $rightExpression);
-        $this->assertEquals('1', $leftExpression->getValue());
+        $this->assertEquals('1', $rightExpression->getValue());
 
         $strFilter = new StringFilter('project', 'myProject', ':number != project.owner', 'select');
         $expression = $strFilter->getExpression();
@@ -52,10 +52,10 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
         $this->assertInstanceOf('\Archiweb\Operator\GreaterOrEqualOperator', $operator);
-        $leftExpression = $expression->getRight();
+        $leftExpression = $expression->getLeft();
         $this->assertInstanceOf('\Archiweb\Expression\Value', $leftExpression);
         $this->assertEquals('1', $leftExpression->getValue());
-        $rightExpression = $expression->getLeft();
+        $rightExpression = $expression->getRight();
         $this->assertInstanceOf('\Archiweb\Expression\Parameter', $rightExpression);
         $this->assertSame(':number', $rightExpression->getValue());
 
@@ -69,7 +69,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('project.owner', $leftExpression->getValue());
         $rightExpression = $expression->getRight();
         $this->assertInstanceOf('\Archiweb\Expression\Value', $rightExpression);
-        $this->assertEquals('qwe', $leftExpression->getValue());
+        $this->assertEquals('qwe', $rightExpression->getValue());
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner > 1', 'select');
         $expression = $strFilter->getExpression();
@@ -81,7 +81,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('project.owner', $leftExpression->getValue());
         $rightExpression = $expression->getRight();
         $this->assertInstanceOf('\Archiweb\Expression\Value', $rightExpression);
-        $this->assertEquals('1', $leftExpression->getValue());
+        $this->assertEquals('1', $rightExpression->getValue());
 
         $strFilter = new StringFilter('project', 'myProject', 'project.owner < 1', 'select');
         $expression = $strFilter->getExpression();
@@ -93,7 +93,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('project.owner', $leftExpression->getValue());
         $rightExpression = $expression->getRight();
         $this->assertInstanceOf('\Archiweb\Expression\Value', $rightExpression);
-        $this->assertEquals('1', $leftExpression->getValue());
+        $this->assertEquals('1', $rightExpression->getValue());
 
     }
 
