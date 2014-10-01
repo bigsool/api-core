@@ -47,7 +47,7 @@ class KeyPath extends Value {
      */
     static public function isValidKeyPath($value) {
 
-        if (!is_string($value) || (!preg_match('/^[a-zA-Z_0-9]+(\.[a-zA-Z_0-9]+)*(\.\*)?$/', $value) && $value != '*')) {
+        if (!is_string($value) || (!preg_match('/^[a-zA-Z]+(\.[a-zA-Z]+)*(\.\*)?$/', $value) && $value != '*')) {
             return false;
         }
 
