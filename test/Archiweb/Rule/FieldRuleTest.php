@@ -8,6 +8,7 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Field;
 use Archiweb\Model\Company;
+use Archiweb\StarField;
 use Archiweb\TestCase;
 
 class FieldRuleTest extends TestCase {
@@ -90,6 +91,10 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $mockRule);
         $appCtx = $this->getApplicationContext();
         $appCtx->addField($field);
+        $appCtx->addField(new Field('Company','owner'));
+        $appCtx->addField(new Field('User','name'));
+        $appCtx->addField(new StarField('Company'));
+        $appCtx->addField(new StarField('User'));
 
 
         $qryCtx = new FindQueryContext($appCtx, 'Company');
@@ -105,9 +110,15 @@ class FieldRuleTest extends TestCase {
 
 
         $qryCtx = new FindQueryContext($appCtx, 'Company');
-        $qryCtx->addKeyPath(new KeyPath('name'));
+        $qryCtx->addKeyPath(new KeyPath('owner'));
 
         $this->assertFalse($rule->shouldApply($qryCtx));
+
+
+        $qryCtx = new FindQueryContext($appCtx, 'Company');
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        $this->assertTrue($rule->shouldApply($qryCtx));
 
     }
 

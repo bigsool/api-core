@@ -7,6 +7,7 @@ namespace Archiweb\Rule;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Field;
+use Archiweb\StarField;
 
 class FieldRule implements Rule {
 
@@ -75,7 +76,14 @@ class FieldRule implements Rule {
         }
 
         foreach ($ctx->getKeyPaths() as $keyPath) {
-            if ($keyPath->getField($ctx)->getName() == $this->getField()->getName()) {
+            $keyPathField = $keyPath->getField($ctx);
+            if ($keyPathField->getEntity() != $ctx->getEntity()) {
+                continue;
+            }
+            if ($keyPathField instanceof StarField) {
+                return true;
+            }
+            if ($keyPathField->getName() == $this->getField()->getName()) {
                 return true;
             }
         }

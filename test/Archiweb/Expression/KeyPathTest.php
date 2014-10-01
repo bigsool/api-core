@@ -90,6 +90,17 @@ class KeyPathTest extends TestCase {
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testStarFieldNotAtTheEnd () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('HostedProject');
+
+        (new KeyPath('creator.*.name'))->resolve($registry, $context);
+    }
+
+    /**
      *
      */
     public function testResolveEntity () {

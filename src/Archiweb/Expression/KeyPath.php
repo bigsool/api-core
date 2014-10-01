@@ -79,9 +79,6 @@ class KeyPath extends Value {
             $field = $exploded[$i];
 
             if ($field == '*') {
-                if (!$isLast) {
-                    throw new \RuntimeException("* must be at the end of a keyPath");
-                }
                 break;
             }
 
