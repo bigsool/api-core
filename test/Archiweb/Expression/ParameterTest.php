@@ -61,6 +61,38 @@ class ParameterTest extends TestCase {
     }
 
     /**
+     *
+     */
+    public function testGetRealName () {
+
+        $registry = $this->getRegistry();
+        $context = $this->getFindQueryContext('Company');
+        $context->setParams(['company' => new Company()]);
+
+        $param = ':company';
+
+        $param1 = new Parameter($param);
+        $resolve1 = $param1->resolve($registry, $context);
+        $this->assertSame($resolve1, $param1->getRealName());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetRealNameBeforeResolve () {
+
+        $context = $this->getFindQueryContext('Company');
+        $context->setParams(['company' => new Company()]);
+
+        $param = ':company';
+
+        $param1 = new Parameter($param);
+        $param1->getRealName();
+
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testInvalidContext () {

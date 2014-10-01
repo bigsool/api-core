@@ -29,6 +29,16 @@ class Registry {
     protected $joins = [];
 
     /**
+     * @var array
+     */
+    protected $params = [];
+
+    /**
+     * @var string
+     */
+    protected static $dql = '';
+
+    /**
      * @param EntityManager $entityManager
      */
     public function __construct (EntityManager $entityManager) {
@@ -73,6 +83,8 @@ class Registry {
     }
 
     /**
+     * @param string $entity
+     *
      * @return QueryBuilder
      */
     protected function getQueryBuilder ($entity) {
@@ -107,7 +119,9 @@ class Registry {
      * @param mixed  $value
      */
     public function setParameter ($parameter, $value) {
-        // TODO: Implement setParameter() method
+
+        $this->params[$parameter] = $value;
+
     }
 
     /**
@@ -151,9 +165,21 @@ class Registry {
             $qb->andWhere($expression->resolve($this, $ctx));
         }
 
-        $query = $qb->getDQL();
+        $qb->setParameters($this->params);
 
-        return $qb->getQuery()->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+        $query = $qb->getQuery();
+        self::$dql = $query->getDQL();
+
+        return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastExecutedQuery() {
+
+        return self::$dql;
 
     }
 

@@ -7,8 +7,14 @@ namespace Archiweb\Expression;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class Parameter extends Value {
+
+    /**
+     * @var string
+     */
+    protected $realName;
 
     /**
      * @param string $value
@@ -45,11 +51,21 @@ class Parameter extends Value {
             throw new \RuntimeException("parameter $name not found");
         }
 
-        $uniqueName = uniqid($this->getValue() . '-');
+        $this->realName = uniqid($this->getValue() . '_');
 
-        $registry->setParameter($uniqueName, $value);
+        $registry->setParameter($this->realName, $value);
 
-        return $uniqueName;
+        return $this->realName;
+
+    }
+
+    public function getRealName () {
+
+        if (!$this->realName) {
+            throw new RuntimeException('resolve must be called before getRealName');
+        }
+
+        return $this->realName;
 
     }
 
