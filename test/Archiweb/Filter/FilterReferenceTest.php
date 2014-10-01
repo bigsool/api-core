@@ -44,7 +44,7 @@ class FilterReferenceTest extends TestCase {
      */
     public function testGetExpressionWithoutFilter () {
 
-        $appCtx = $this->getMockApplicationContext();
+        $appCtx = $this->getApplicationContext();
         $referenceFilter = new FilterReference($appCtx, 'project', 'badFilterName');
         $referenceFilter->getExpression();
 

@@ -3,6 +3,7 @@
 namespace Archiweb\Filter;
 
 use Archiweb\Context\ApplicationContext;
+use Archiweb\Expression\Expression;
 
 class FilterReference extends Filter {
 
@@ -22,6 +23,7 @@ class FilterReference extends Filter {
 
     /**
      * @return Expression
+     * @throws \Exception
      */
     public function getExpression () {
 

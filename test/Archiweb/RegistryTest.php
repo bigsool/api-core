@@ -6,8 +6,13 @@ namespace Archiweb;
 
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
+use Archiweb\Expression\Parameter;
+use Archiweb\Expression\Value;
+use Archiweb\Filter\ExpressionFilter;
 use Archiweb\Model\Product;
+use Archiweb\Operator\EqualOperator;
 
 class RegistryTest extends TestCase {
 
@@ -181,8 +186,49 @@ class RegistryTest extends TestCase {
         $this->assertSame($this->product['vat'], $result[0]->getVat());
         $this->assertTrue($result[0]->getAvailable());
         $this->assertTrue($result[0]->getConsumable());
+        $this->assertSame('SELECT product FROM \Archiweb\Model\Product product', $registry->getLastExecutedQuery());
         // TODO: improve test
 
+    }
+
+    /**
+     * @depends testSaveWithRequiredParams
+     */
+    public function testFindWithFilters () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('price'), new Value(17));
+        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
+        $registry = $this->appCtx->getNewRegistry();
+        $result = $registry->find($qryCtx, false);
+        $dql = 'SELECT product ' .
+               'FROM \Archiweb\Model\Product product ' .
+               'WHERE product.price = 17';
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
+        $parameter = new Parameter(':price');
+        $expression = new BinaryExpression(new EqualOperator(), $parameter, new KeyPath('price'));
+        $qryCtx->setParams(['price' => 126]);
+        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
+        $registry = $this->appCtx->getNewRegistry();
+        $result = $registry->find($qryCtx, false);
+        $dql = 'SELECT product ' .
+               'FROM \Archiweb\Model\Product product ' .
+               'WHERE product.price = 17 ' .
+               'AND ' . $parameter->getRealName() . ' = product.price';
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testFindWithoutFields () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $this->appCtx->getNewRegistry()->find($qryCtx);
 
     }
 
