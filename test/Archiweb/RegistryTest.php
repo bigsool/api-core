@@ -22,6 +22,19 @@ class RegistryTest extends TestCase {
     protected static $doctrineConnectionSettings;
 
     /**
+     * @var array
+     */
+    private $product = ['id'         => 1,
+                        'duration'   => NULL,
+                        'bundleid'   => 'the product bundle id',
+                        'name'       => 'produit 1',
+                        'consumable' => true,
+                        'price'      => 12.5,
+                        'weight'     => 2,
+                        'available'  => true,
+                        'vat'        => 13.5];
+
+    /**
      * @var ApplicationContext
      */
     protected $appCtx;
@@ -70,13 +83,13 @@ class RegistryTest extends TestCase {
     public function testSaveWithRequiredParams () {
 
         $product = new Product();
-        $product->setName('produit 1');
-        $product->setBundleid('the product bundle id');
-        $product->setConsumable(true);
-        $product->setPrice(12.5);
-        $product->setWeight(2);
-        $product->setAvailable(true);
-        $product->setVat(13.5);
+        $product->setName($this->product['name']);
+        $product->setBundleid($this->product['bundleid']);
+        $product->setConsumable($this->product['consumable']);
+        $product->setPrice($this->product['price']);
+        $product->setWeight($this->product['weight']);
+        $product->setAvailable($this->product['available']);
+        $product->setVat($this->product['vat']);
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);
@@ -84,8 +97,8 @@ class RegistryTest extends TestCase {
         $this->assertEquals(1, $product->getId());
 
     }
-    /*
-        public function testSaveWithDependencies () {
+
+   /*     public function testSaveWithDependencies () {
 
             $company = new Company();
             $company->setName('company name');
@@ -102,7 +115,7 @@ class RegistryTest extends TestCase {
             $registry->save($company);
 
         }
-    */
+*/
     /**
      * @expectedException \Exception
      */
@@ -126,16 +139,7 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        $this->assertSame(['id'         => 1,
-                           'duration'   => NULL,
-                           'bundleid'   => 'the product bundle id',
-                           'name'       => 'produit 1',
-                           'consumable' => true,
-                           'price'      => 12.5,
-                           'weight'     => 2,
-                           'available'  => true,
-                           'vat'        => 13.5
-                          ], $result[0]);
+        $this->assertSame($this->product, $result[0]);
         // TODO: improve test
 
     }
@@ -154,8 +158,8 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        $this->assertSame(['name'  => 'produit 1',
-                           'price' => 12.5
+        $this->assertSame(['name'  => $this->product['name'],
+                           'price' => $this->product['price']
                           ], $result[0]);
         // TODO: improve test
 
@@ -175,11 +179,11 @@ class RegistryTest extends TestCase {
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $this->assertInstanceOf('\Archiweb\Model\Product', $result[0]);
-        $this->assertSame('the product bundle id', $result[0]->getBundleId());
-        $this->assertSame('produit 1', $result[0]->getName());
-        $this->assertSame(12.5, $result[0]->getPrice());
-        $this->assertSame(2, $result[0]->getWeight());
-        $this->assertSame(13.5, $result[0]->getVat());
+        $this->assertSame($this->product['bundleid'], $result[0]->getBundleId());
+        $this->assertSame($this->product['name'], $result[0]->getName());
+        $this->assertSame($this->product['price'], $result[0]->getPrice());
+        $this->assertSame($this->product['weight'], $result[0]->getWeight());
+        $this->assertSame($this->product['vat'], $result[0]->getVat());
         $this->assertTrue($result[0]->getAvailable());
         $this->assertTrue($result[0]->getConsumable());
         $this->assertSame('SELECT product FROM \Archiweb\Model\Product product', $registry->getLastExecutedQuery());
