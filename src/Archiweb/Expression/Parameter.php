@@ -23,13 +23,26 @@ class Parameter extends Value {
      */
     public function __construct ($value) {
 
-        if (!is_string($value)) {
-            throw new \RuntimeException('invalid type');
+        if (!self::isValidParameter($value)) {
+            throw new \RuntimeException('invalid parameter');
         }
-        if (!preg_match('/^:[a-zA-Z_0-9-]+$/', $value)) {
-            throw new \RuntimeException('invalid format');
-        }
+
         parent::__construct($value);
+
+    }
+
+    /**
+     * @param string $value
+     * return boolean
+     */
+    static public function isValidParameter($value) {
+
+        if (!is_string($value) || !preg_match('/^:[a-zA-Z_0-9-]+$/', $value)) {
+            return false;
+        }
+
+        return true;
+
     }
 
     /**

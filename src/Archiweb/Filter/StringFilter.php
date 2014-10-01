@@ -3,6 +3,8 @@
 namespace Archiweb\Filter;
 
 use Archiweb\Expression\BinaryExpression;
+use Archiweb\Expression\KeyPath;
+use Archiweb\Expression\Parameter;
 use Archiweb\Expression\Value;
 use Archiweb\Operator\EqualOperator;
 use Archiweb\Operator\GreaterOrEqualOperator;
@@ -25,6 +27,26 @@ class StringFilter extends Filter {
 
         parent::__construct($entity, $name, $this->stringToExpression($expression));
         $this->command = $command;
+
+    }
+
+    private function getExpressionFromString ($str) {
+
+        $expression = null;
+
+        if (Parameter::isValidParameter($str)) {
+            $expression = new Parameter($str);
+        }
+        elseif (KeyPath::isValidKeyPath($str)) {
+            $expression = new KeyPath($str);
+        }
+        else {
+            $str = trim($str,'"');
+            $str = trim($str,"'");
+            $expression = new Value($str);
+        }
+
+        return $expression;
 
     }
 
@@ -58,10 +80,9 @@ class StringFilter extends Filter {
             $operator = new EqualOperator();
         }
 
-
         $operandes = explode($strOperator, $expression);
 
-        $binaryExpression = new BinaryExpression($operator, new Value($operandes[0]), new Value($operandes[1]));
+        $binaryExpression = new BinaryExpression($operator, $this->getExpressionFromString(trim($operandes[0])), $this->getExpressionFromString(trim($operandes[1])));
 
         return $binaryExpression;
 
