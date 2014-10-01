@@ -8,7 +8,7 @@ use Archiweb\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
 use Archiweb\Rule\Rule;
-use Archiweb\RuleManager;
+use Archiweb\RuleProcessor;
 use Doctrine\ORM\EntityManager;
 
 class ApplicationContext {
@@ -19,7 +19,7 @@ class ApplicationContext {
     protected $entityManager;
 
     /**
-     * @var RuleManager
+     * @var RuleProcessor
      */
     protected $ruleManager;
 
@@ -39,7 +39,7 @@ class ApplicationContext {
     protected $rules = [];
 
     /**
-     * @return RuleManager
+     * @return RuleProcessor
      */
     public function getRuleManager () {
 
@@ -48,9 +48,9 @@ class ApplicationContext {
     }
 
     /**
-     * @param RuleManager $ruleManager
+     * @param RuleProcessor $ruleManager
      */
-    public function setRuleManager (RuleManager $ruleManager) {
+    public function setRuleManager (RuleProcessor $ruleManager) {
 
         $this->ruleManager = $ruleManager;
 

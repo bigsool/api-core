@@ -16,6 +16,8 @@ use Archiweb\Model\Product;
 use Archiweb\Model\Storage;
 use Archiweb\Model\User;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Rule\FieldRule;
+use Archiweb\Rule\SimpleRule;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 
@@ -53,6 +55,20 @@ class RegistryTest extends TestCase {
         $this->appCtx->addField(new StarField('Product'));
         $this->appCtx->addField(new Field('Product', 'name'));
         $this->appCtx->addField(new Field('Product', 'price'));
+
+        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('consumable'), new Value(1));
+        $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', 'SELECT', $expression);
+        $this->appCtx->addFilter($funcConsumableFilter);
+
+        $funcConsumableRule = new SimpleRule('funcConsumableRule', function () {
+
+            return false;
+
+        }, $funcConsumableFilter);
+
+        $funcStarField = new StarField('Functionality');
+        $this->appCtx->addField($funcStarField);
+        $this->appCtx->addRule(new FieldRule($funcStarField, $funcConsumableRule));
 
     }
 
@@ -261,7 +277,6 @@ class RegistryTest extends TestCase {
         $this->assertTrue($result[0]->getAvailable());
         $this->assertTrue($result[0]->getConsumable());
         $this->assertSame('SELECT product FROM \Archiweb\Model\Product product', $registry->getLastExecutedQuery());
-        // TODO: improve test
 
     }
 
@@ -292,6 +307,24 @@ class RegistryTest extends TestCase {
                'FROM \Archiweb\Model\Product product ' .
                'WHERE product.price = 17 ' .
                'AND ' . $parameter->getRealName() . ' = product.price';
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
+    }
+
+    /**
+     *
+     */
+    public function testFindRuleOnFields () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'Functionality');
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        $registry = $this->appCtx->getNewRegistry();
+        $result = $registry->find($qryCtx, false);
+
+        $dql = 'SELECT functionality ' .
+               'FROM \Archiweb\Model\Functionality functionality ' .
+               'WHERE functionality.consumable = 1';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }

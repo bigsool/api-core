@@ -111,11 +111,11 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return RuleManager
+     * @return RuleProcessor
      */
-    public function getMockRuleManager () {
+    public function getMockRuleProcessor () {
 
-        return $this->getMock('\Archiweb\RuleManager');
+        return $this->getMock('\Archiweb\RuleProcessor');
 
     }
 
@@ -234,7 +234,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $em->getConnection()->query('PRAGMA foreign_keys = ON');
 
         $ctx = new ApplicationContext();
-        $ruleMgr = new RuleManager();
+        $ruleMgr = new RuleProcessor();
         $ctx->setRuleManager($ruleMgr);
         $ctx->setEntityManager($em);
 

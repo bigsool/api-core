@@ -152,8 +152,10 @@ class Registry {
             throw new \RuntimeException('fields are required');
         }
 
+        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor->apply($ctx);
+
         foreach ($keyPaths as $keyPath) {
-            // TODO: apply rule
             $field = $keyPath->resolve($this, $ctx);
             $keyPathField = $keyPath->getField($ctx);
             if (is_a($keyPathField, '\Archiweb\StarField')) {

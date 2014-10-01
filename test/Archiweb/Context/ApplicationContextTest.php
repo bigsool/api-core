@@ -11,7 +11,7 @@ class ApplicationContextTest extends TestCase {
     public function testRuleManager () {
 
         $ctx = new ApplicationContext();
-        $ruleMgr = $this->getMockRuleManager();
+        $ruleMgr = $this->getMockRuleProcessor();
 
         $ctx->setRuleManager($ruleMgr);
         $this->assertSame($ruleMgr, $ctx->getRuleManager());
