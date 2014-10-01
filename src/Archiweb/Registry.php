@@ -14,6 +14,11 @@ use Doctrine\ORM\QueryBuilder;
 class Registry {
 
     /**
+     * @var string
+     */
+    protected static $dql = '';
+
+    /**
      * @var EntityManager
      */
     protected $entityManager;
@@ -34,16 +39,20 @@ class Registry {
     protected $params = [];
 
     /**
-     * @var string
-     */
-    protected static $dql = '';
-
-    /**
      * @param EntityManager $entityManager
      */
     public function __construct (EntityManager $entityManager) {
 
         $this->entityManager = $entityManager;
+
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastExecutedQuery () {
+
+        return self::$dql;
 
     }
 
@@ -171,15 +180,6 @@ class Registry {
         self::$dql = $query->getDQL();
 
         return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
-
-    }
-
-    /**
-     * @return string
-     */
-    public static function getLastExecutedQuery() {
-
-        return self::$dql;
 
     }
 

@@ -94,7 +94,7 @@ Archiweb\Model\User:
             joinColumns:
                 company_id:
                     referencedColumnName: id
-                    nullable: false
+                    nullable: true
     oneToMany:
         hostedProjects:
             targetEntity: Archiweb\Model\HostedProject

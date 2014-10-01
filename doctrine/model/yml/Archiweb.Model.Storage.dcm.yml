@@ -60,4 +60,4 @@ Archiweb\Model\Storage:
             joinColumns:
                 company_id:
                     referencedColumnName: id
-                    nullable: false
+                    nullable: true

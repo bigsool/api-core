@@ -18,6 +18,7 @@ use Archiweb\Filter\Filter;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Rule\Rule;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
@@ -215,6 +216,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $config =
             Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
                                                    __DIR__ . '/../../src/');
+        $config->setSQLLogger(new DebugStack());
         $tmpDir = sys_get_temp_dir();
         $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
         $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');

@@ -11,15 +11,25 @@ use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
 use Archiweb\Expression\Value;
 use Archiweb\Filter\ExpressionFilter;
+use Archiweb\Model\Company;
 use Archiweb\Model\Product;
+use Archiweb\Model\Storage;
+use Archiweb\Model\User;
 use Archiweb\Operator\EqualOperator;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManager;
 
 class RegistryTest extends TestCase {
 
     /**
-     * @var array
+     * @var Connection
      */
     protected static $doctrineConnectionSettings;
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
 
     /**
      * @var array
@@ -32,12 +42,8 @@ class RegistryTest extends TestCase {
                         'price'      => 12.5,
                         'weight'     => 2,
                         'available'  => true,
-                        'vat'        => 13.5];
-
-    /**
-     * @var ApplicationContext
-     */
-    protected $appCtx;
+                        'vat'        => 13.5
+    ];
 
     public function setUp () {
 
@@ -64,6 +70,22 @@ class RegistryTest extends TestCase {
 
         self::$doctrineConnectionSettings = $em->getConnection();
         self::resetDatabase($ctx);
+
+    }
+
+    public function tearDown () {
+
+        parent::setUp();
+
+        $prop = new \ReflectionProperty($this->appCtx, 'entityManager');
+        $prop->setAccessible(true);
+
+        $em = $prop->getValue($this->appCtx);
+        $queries = $em->getConfiguration()->getSQLLogger()->queries;
+
+        if ($queries) {
+            var_dump($em->getConfiguration()->getSQLLogger()->queries);
+        }
 
     }
 
@@ -98,24 +120,76 @@ class RegistryTest extends TestCase {
 
     }
 
-   /*     public function testSaveWithDependencies () {
+    public function testSaveWithDependencies () {
 
-            $company = new Company();
-            $company->setName('company name');
-            $user = new User();
-            $user->setEmail('user@email.com');
-            $company->setOwner($user);
+        $company = new Company();
+        $company->setName('company name');
+        $user = new User();
+        $user->setEmail('user@email.com');
+        $user->setPassword('qwe');
+        $user->setRegisterDate(new \DateTime());
+        $company->setOwner($user);
+        $user->setOwnedCompany($company);
 
-            $storage = new Storage();
+        $storage = new Storage();
+        $storage->setUrl('url');
+        $storage->setLogin('login');
+        $storage->setPassword('qwe');
+        $storage->setUsedspace(0);
+        $storage->setLastusedspaceupdate(new \DateTime());
+        $storage->setIsoutofquota(false);
+        $storage->setCompany($company);
 
-            $company->addUser($user);
-            $company->setStorage($storage);
+        $company->addUser($user);
+        $company->setStorage($storage);
+        $user->setCompany($company);
 
-            $registry = $this->appCtx->getNewRegistry();
-            $registry->save($company);
+        $registry = $this->appCtx->getNewRegistry();
 
+        $registry->save($company);
+
+        $em = $this->getEntityManager(self::$doctrineConnectionSettings);
+        $result =
+            $em->createQuery('SELECT c, s, o FROM \Archiweb\Model\Company c INNER JOIN c.storage s INNER JOIN c.owner o')
+               ->getArrayResult();
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $excepted =
+            ['id'      => 1,
+             'name'    => 'company name',
+             'storage' => ['id' => 1, 'url' => 'url', 'login' => 'login', 'password' => 'qwe'],
+             'owner'   => ['id' => 1, 'email' => 'user@email.com', 'password' => 'qwe']
+            ];
+        foreach ($excepted as $key => $value) {
+            $this->assertArrayHasKey($key, $result[0]);
+            if (!is_array($value)) {
+                $this->assertSame($value, $result[0][$key]);
+            }
+            else {
+                foreach ($value as $_key => $_value) {
+                    $this->assertArrayHasKey($_key, $result[0][$key]);
+                    $this->assertSame($_value, $result[0][$key][$_key]);
+                }
+            }
         }
-*/
+    }
+
+    /**
+     * @param Connection $conn
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager (Connection $conn) {
+
+        $ctx = $this->getApplicationContext($conn);
+        $prop = new \ReflectionProperty($ctx, 'entityManager');
+        $prop->setAccessible(true);
+
+        return $prop->getValue($ctx);
+
+    }
+
     /**
      * @expectedException \Exception
      */
