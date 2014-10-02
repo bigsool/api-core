@@ -42,16 +42,11 @@ class RuleProcessorTest extends TestCase {
                 $realChildren[] = $rules[$child];
             }
             $rules[$name] =
-                new CallbackRule($name, $this->getCb($apply),
-                                 call_user_func(function () use (&$rules, $name, &$appliedRules) {
+                new CallbackRule($name, $this->getCb($apply), function () use (&$rules, $name, &$appliedRules) {
 
-                                     return function () use (&$rules, $name, &$appliedRules) {
+                    $appliedRules[] = $rules[$name];
 
-                                         $appliedRules[] = $rules[$name];
-
-                                     };
-
-                                 }), $realChildren);
+                }, $realChildren);
             if ($applied) {
                 $rulesWhichMustBeApplied[] = $rules[$name];
             }
