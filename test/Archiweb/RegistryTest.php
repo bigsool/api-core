@@ -339,4 +339,14 @@ class RegistryTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testFindWithBadEntity () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'Qwe');
+        $this->appCtx->getNewRegistry()->find($qryCtx);
+
+    }
+
 }
