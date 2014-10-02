@@ -4,13 +4,13 @@
 namespace Archiweb;
 
 
-use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\Query;
 
 class RuleProcessor {
 
-    public function apply (FindQueryContext $ctx) {
+    public function apply (QueryContext $ctx) {
 
         $appCtx = $ctx->getApplicationContext();
 
@@ -40,7 +40,7 @@ class RuleProcessor {
 
     }
 
-    protected function flatten (Rule $rule, FindQueryContext $context) {
+    protected function flatten (Rule $rule, QueryContext $context) {
 
         $result = [];
         if ($rule->shouldApply($context)) {

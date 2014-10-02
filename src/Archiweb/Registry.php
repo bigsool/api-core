@@ -4,6 +4,8 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\ApplicationContext;
+use Archiweb\Rule\FieldRule;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
@@ -71,14 +73,10 @@ class Registry {
      */
     public function save ($model) {
 
-        //$saveQueryContext = new SaveQueryContext($this->appCtx, $model);
+        $saveQueryContext = new SaveQueryContext($this->appCtx, $model);
 
-        foreach ($this->appCtx->getRules() as $rule) {
-            if ($rule->shouldApply($model)) {
-                $rule->apply();
-            }
-        }
-
+        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor->apply($saveQueryContext);
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();

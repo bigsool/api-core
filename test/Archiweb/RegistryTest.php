@@ -6,6 +6,7 @@ namespace Archiweb;
 
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
@@ -219,21 +220,18 @@ class RegistryTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testSaveWithRule () {
 
-        $callbackRule = new CallbackRule('blabla',function($ctx) {
+        $callbackRule = new CallbackRule('blabla',function(QueryContext $ctx) {
             if ($ctx->getEntity() == "Product") return true;
             return false;
-        },function(){throw new \RuntimeException('rule !');},array());
+        },function(QueryContext $ctx){throw new \RuntimeException('forbidden save !',2014);},array());
 
         $this->appCtx->addRule($callbackRule);
 
         $product = new Product();
-        $product->setName($this->product['name']);
-        $product->setBundleid($this->product['bundleid']);
+        $product->setName('the new product');
+        $product->setBundleid('the new product bundle id');
         $product->setConsumable($this->product['consumable']);
         $product->setPrice($this->product['price']);
         $product->setWeight($this->product['weight']);
@@ -241,7 +239,18 @@ class RegistryTest extends TestCase {
         $product->setVat($this->product['vat']);
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->save($product);
+        $exceptionThrow = false;
+        try {
+            $registry->save($product);
+        }
+        catch (\RuntimeException $e) {
+            $this->assertEquals($e->getCode(),2014);
+            $exceptionThrow = true;
+        }
+        $this->assertTrue($exceptionThrow);
+        $em = $this->getEntityManager(self::$doctrineConnectionSettings);
+        $result = $em->createQuery('SELECT p FROM \Archiweb\Model\Product p WHERE p.name = \'the new product\'')->getArrayResult();
+        $this->assertCount(0, $result);
 
     }
 
