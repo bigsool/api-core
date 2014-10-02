@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Archiweb;
+namespace Archiweb\Field;
 
 
 use Archiweb\Rule\Rule;

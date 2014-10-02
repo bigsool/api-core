@@ -6,13 +6,13 @@ namespace Archiweb\Rule;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
-use Archiweb\Field;
-use Archiweb\StarField;
+use Archiweb\Field\Field;
+use Archiweb\Field\StarField;
 
 class FieldRule implements Rule {
 
     /**
-     * @var Field
+     * @var \Archiweb\Field\Field
      */
     protected $field;
 
@@ -102,7 +102,7 @@ class FieldRule implements Rule {
     }
 
     /**
-     * @return Field
+     * @return \Archiweb\Field\Field
      */
     public function getField () {
 

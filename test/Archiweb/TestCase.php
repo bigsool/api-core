@@ -14,6 +14,7 @@ use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\Expression;
 use Archiweb\Expression\ExpressionWithOperator;
 use Archiweb\Expression\KeyPath;
+use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
@@ -104,7 +105,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getMockField () {
 
-        return $this->getMockBuilder('\Archiweb\Field')
+        return $this->getMockBuilder('\Archiweb\Field\Field')
                     ->disableOriginalConstructor()
                     ->getMock();
 

@@ -10,6 +10,8 @@ use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
 use Archiweb\Expression\Value;
+use Archiweb\Field\Field;
+use Archiweb\Field\StarField;
 use Archiweb\Filter\ExpressionFilter;
 use Archiweb\Model\Company;
 use Archiweb\Model\Product;

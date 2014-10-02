@@ -1,8 +1,10 @@
 <?php
 
 
-namespace Archiweb;
+namespace Archiweb\Field;
 
+
+use Archiweb\TestCase;
 
 class FieldTest extends TestCase {
 

@@ -6,7 +6,7 @@ namespace Archiweb\Expression;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
-use Archiweb\Field;
+use Archiweb\Field\Field;
 use Archiweb\Registry;
 
 class KeyPath extends Value {
@@ -138,7 +138,7 @@ class KeyPath extends Value {
     /**
      * @param FindQueryContext $ctx
      *
-     * @return Field
+     * @return \Archiweb\Field\Field
      */
     public function getField (FindQueryContext $ctx) {
 
