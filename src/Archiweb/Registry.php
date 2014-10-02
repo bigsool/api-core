@@ -173,7 +173,7 @@ class Registry {
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
             $keyPathField = $keyPath->getField($ctx);
-            if (is_a($keyPathField, '\Archiweb\StarField')) {
+            if (is_a($keyPathField, '\Archiweb\Field\StarField')) {
                 $qb->addSelect($field);
             }
             else {

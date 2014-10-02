@@ -4,7 +4,7 @@
 namespace Archiweb\Context;
 
 
-use Archiweb\Field;
+use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
 use Archiweb\Rule\Rule;
@@ -104,7 +104,7 @@ class ApplicationContext {
     }
 
     /**
-     * @param Field $field
+     * @param \Archiweb\Field\Field $field
      */
     public function addField (Field $field) {
 
@@ -133,7 +133,7 @@ class ApplicationContext {
     /**
      * @param string $entity
      *
-     * @return Field[]
+     * @return \Archiweb\Field\Field[]
      */
     public function getFieldsByEntity ($entity) {
 
@@ -149,7 +149,7 @@ class ApplicationContext {
     }
 
     /**
-     * @return Field[]
+     * @return \Archiweb\Field\Field[]
      */
     public function getFields () {
 
@@ -161,7 +161,7 @@ class ApplicationContext {
      * @param string $entity
      * @param string $name
      *
-     * @return Field
+     * @return \Archiweb\Field\Field
      */
     public function getFieldByEntityAndName ($entity, $name) {
 

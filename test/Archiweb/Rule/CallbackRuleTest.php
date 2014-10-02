@@ -83,4 +83,13 @@ class CallbackRuleTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidChildList () {
+
+        new CallbackRule('name', $this->getCallable(), $this->getCallable(), ['qwe']);
+
+    }
+
 }

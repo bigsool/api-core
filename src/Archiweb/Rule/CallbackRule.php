@@ -38,6 +38,12 @@ class CallbackRule implements Rule {
      */
     public function __construct ($name, callable $shouldApplyCb, callable $callback, array $childRuleList) {
 
+        foreach ($childRuleList as $childRule) {
+            if (!($childRule instanceof Rule)) {
+                throw new \RuntimeException('invalid child rule type');
+            }
+        }
+
         $this->name = $name;
         $this->callback = $callback;
         $this->childRules = $childRuleList;

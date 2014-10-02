@@ -6,9 +6,9 @@ namespace Archiweb\Rule;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\KeyPath;
-use Archiweb\Field;
+use Archiweb\Field\Field;
+use Archiweb\Field\StarField;
 use Archiweb\Model\Company;
-use Archiweb\StarField;
 use Archiweb\TestCase;
 
 class FieldRuleTest extends TestCase {

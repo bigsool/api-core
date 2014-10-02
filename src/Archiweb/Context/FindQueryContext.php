@@ -5,7 +5,7 @@ namespace Archiweb\Context;
 
 
 use Archiweb\Expression\KeyPath;
-use Archiweb\Field;
+use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 
 class FindQueryContext implements QueryContext {
