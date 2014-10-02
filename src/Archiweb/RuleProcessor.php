@@ -6,6 +6,7 @@ namespace Archiweb;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Rule\Rule;
+use Doctrine\ORM\Query;
 
 class RuleProcessor {
 
@@ -13,36 +14,50 @@ class RuleProcessor {
 
         $appCtx = $ctx->getApplicationContext();
 
-        $rules = [];
+        $rulesAndFlatten = [];
 
         foreach ($appCtx->getRules() as $rule) {
-            if ($rule->shouldApply($ctx)) {
-                $rules[] = $rule;
-            }
+            $rulesAndFlatten[] = [$rule, $this->flatten($rule, $ctx)];
         }
 
-        $isRuleInRules = function (Rule $thisRule, array $rules) use (&$isRuleInRules) {
-
-            foreach ($rules as $rule) {
-                if ($isRuleInRules($thisRule, $rule->listChildRules())) {
-                    return true;
+        $rules = [];
+        foreach ($rulesAndFlatten as $key => $flatten) {
+            list($rule, $flattenRules) = $flatten;
+            if (empty($flattenRules)) {
+                continue;
+            }
+            for ($i = $key + 1; $i < count($rulesAndFlatten); ++$i) {
+                if (in_array($rule, $rulesAndFlatten[$i][1], true)) {
+                    continue 2; // the rule is a child of another rule, so pass to the next rule (foreach)
                 }
             }
-
-            return false;
-        };
-
-        $rulesToApply = [];
-        foreach ($rules as $rule) {
-            if (!$isRuleInRules($rule, $rules)) {
-                $rulesToApply[] = $rule;
-            }
+            $rules[] = $rule;
         }
 
-        foreach ($rulesToApply as $rule) {
+        foreach ($rules as $rule) {
             $rule->apply($ctx);
         }
 
+    }
+
+    protected function flatten (Rule $rule, FindQueryContext $context) {
+
+        $result = [];
+        if ($rule->shouldApply($context)) {
+            $this->flattenRec($result, $rule);
+        }
+
+        return $result;
+    }
+
+    protected function flattenRec (array &$accumulator, Rule $rule) {
+
+        if (!in_array($rule, $accumulator)) {
+            $accumulator[] = $rule;
+        }
+        foreach ($rule->listChildRules() as $childRule) {
+            $this->flattenRec($accumulator, $childRule);
+        }
     }
 
 } 
