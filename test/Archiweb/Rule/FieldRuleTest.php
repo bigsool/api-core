@@ -122,17 +122,14 @@ class FieldRuleTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testInvalidContextType () {
 
         $field = $this->getMockCompanyNameField();
         $mockRule = $this->getMockCompanyRule();
         $rule = new FieldRule($field, $mockRule);
 
-        $rule->shouldApply($this->getSaveQueryContext(new Company()));
-
+        $result = $rule->shouldApply($this->getSaveQueryContext(new Company()));
+        $this->assertFalse($result);
     }
 
     public function testApply () {

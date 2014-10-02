@@ -67,7 +67,7 @@ class FieldRule implements Rule {
     public function shouldApply (QueryContext $ctx) {
 
         if (!($ctx instanceof FindQueryContext)) {
-            throw new \RuntimeException('invalid context');
+            return false;
         }
 
 

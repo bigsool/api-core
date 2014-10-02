@@ -6,6 +6,7 @@ namespace Archiweb;
 
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
@@ -18,10 +19,13 @@ use Archiweb\Model\Product;
 use Archiweb\Model\Storage;
 use Archiweb\Model\User;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Rule\CallbackRule;
 use Archiweb\Rule\FieldRule;
 use Archiweb\Rule\SimpleRule;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use SebastianBergmann\Comparator\ExceptionComparatorTest;
+use SebastianBergmann\Exporter\Exception;
 
 class RegistryTest extends TestCase {
 
@@ -215,6 +219,40 @@ class RegistryTest extends TestCase {
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save(new \stdClass());
+
+    }
+
+    public function testSaveWithRule () {
+
+        $callbackRule = new CallbackRule('blabla',function(QueryContext $ctx) {
+            if ($ctx->getEntity() == "Product") return true;
+            return false;
+        },function(QueryContext $ctx){throw new \RuntimeException('forbidden save !',2014);},array());
+
+        $this->appCtx->addRule($callbackRule);
+
+        $product = new Product();
+        $product->setName('the new product');
+        $product->setBundleid('the new product bundle id');
+        $product->setConsumable($this->product['consumable']);
+        $product->setPrice($this->product['price']);
+        $product->setWeight($this->product['weight']);
+        $product->setAvailable($this->product['available']);
+        $product->setVat($this->product['vat']);
+
+        $registry = $this->appCtx->getNewRegistry();
+        $exceptionThrow = false;
+        try {
+            $registry->save($product);
+        }
+        catch (\RuntimeException $e) {
+            $this->assertEquals($e->getCode(),2014);
+            $exceptionThrow = true;
+        }
+        $this->assertTrue($exceptionThrow);
+        $em = $this->getEntityManager(self::$doctrineConnectionSettings);
+        $result = $em->createQuery('SELECT p FROM \Archiweb\Model\Product p WHERE p.name = \'the new product\'')->getArrayResult();
+        $this->assertCount(0, $result);
 
     }
 

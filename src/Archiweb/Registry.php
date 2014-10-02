@@ -4,7 +4,10 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\ApplicationContext;
+use Archiweb\Rule\FieldRule;
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Doctrine\ORM\EntityManager;
@@ -24,6 +27,11 @@ class Registry {
     protected $entityManager;
 
     /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
+
+    /**
      * @var QueryBuilder
      */
     protected $queryBuilder;
@@ -40,10 +48,12 @@ class Registry {
 
     /**
      * @param EntityManager $entityManager
+     * @param ApplicationContext $ctx
      */
-    public function __construct (EntityManager $entityManager) {
+    public function __construct (EntityManager $entityManager, ApplicationContext $ctx) {
 
         $this->entityManager = $entityManager;
+        $this->appCtx = $ctx;
 
     }
 
@@ -62,6 +72,11 @@ class Registry {
      * @return mixed
      */
     public function save ($model) {
+
+        $saveQueryContext = new SaveQueryContext($this->appCtx, $model);
+
+        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor->apply($saveQueryContext);
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();
