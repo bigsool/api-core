@@ -39,9 +39,9 @@ class SimpleRule implements Rule {
     }
 
     /**
-     * @param FindQueryContext $ctx
+     * @param QueryContext $ctx
      */
-    public function apply (FindQueryContext $ctx) {
+    public function apply (QueryContext $ctx) {
 
         $ctx->addFilter($this->getFilter());
 

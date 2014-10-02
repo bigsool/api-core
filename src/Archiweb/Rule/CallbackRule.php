@@ -46,9 +46,9 @@ class CallbackRule implements Rule {
     }
 
     /**
-     * @param FindQueryContext $ctx
+     * @param QueryContext $ctx
      */
-    public function apply (FindQueryContext $ctx) {
+    public function apply (QueryContext $ctx) {
 
         call_user_func($this->getCallback(), $ctx);
 
