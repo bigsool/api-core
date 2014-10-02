@@ -2,38 +2,55 @@
 
 namespace Archiweb\Filter;
 
-class CallbackFilterTest extends \PHPUnit_Framework_TestCase {
+use Archiweb\TestCase;
+
+class CallbackFilterTest extends TestCase {
 
     public function testGetEntity () {
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+        $expression = $this->getMockExpression();
 
-            return 'project.owner = 1';
+        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+
+            return $expression;
+
         });
+
         $entity = $callBackFilter->getEntity();
+
         $this->assertEquals('project', $entity);
 
     }
 
     public function testGetName () {
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+        $expression = $this->getMockExpression();
 
-            return 'project.owner = 1';
+        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+
+            return $expression;
+
         });
+
         $name = $callBackFilter->getName();
+
         $this->assertEquals('myProject', $name);
 
     }
 
     public function testGetExpression () {
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () {
+        $expression = $this->getMockExpression();
 
-            return 'project.owner = 1';
+        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+
+            return $expression;
+
         });
-        $expression = $callBackFilter->getExpression();
-        $this->assertEquals('project.owner = 1', $expression);
+
+        $expressionReceived = $callBackFilter->getExpression();
+
+        $this->assertEquals($expression,$expressionReceived);
 
     }
 
