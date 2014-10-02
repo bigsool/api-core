@@ -22,11 +22,11 @@ interface Rule {
     public function listChildRules ();
 
     /**
-     * @param FindQueryContext $ctx
+     * @param QueryContext $ctx
      *
      * @return
      */
-    public function apply (FindQueryContext $ctx);
+    public function apply (QueryContext $ctx);
 
     /**
      * @return string
