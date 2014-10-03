@@ -104,6 +104,24 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $entity
+     * @param string $name
+     *
+     * @return Filter
+     */
+    public function getFilterByEntityAndName ($entity, $name) {
+
+        foreach ($this->getFilters() as $filter) {
+            if ($filter->getEntity() == $entity && $filter->getName() == $name) {
+                return $filter;
+            }
+        }
+
+        throw new \RuntimeException('Filter not found');
+
+    }
+
+    /**
      * @param \Archiweb\Field\Field $field
      */
     public function addField (Field $field) {
