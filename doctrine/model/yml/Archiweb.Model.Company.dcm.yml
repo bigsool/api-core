@@ -95,6 +95,7 @@ Archiweb\Model\Company:
         users:
             targetEntity: Archiweb\Model\User
             mappedBy: company
+            cascade: ["persist"]
         sharedReports:
             targetEntity: Archiweb\Model\SharedReport
             mappedBy: company

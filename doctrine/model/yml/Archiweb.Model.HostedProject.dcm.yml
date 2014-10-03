@@ -81,6 +81,7 @@ Archiweb\Model\HostedProject:
                 creator:
                     referencedColumnName: id
                     nullable: false
+            cascade: ["persist"]
     oneToMany:
         userProjectRoles:
             targetEntity: Archiweb\Model\UserProjectRole
@@ -88,3 +89,4 @@ Archiweb\Model\HostedProject:
         sharedHostedProjects:
             targetEntity: Archiweb\Model\SharedHostedProject
             mappedBy: hostedProject
+            cascade: ["persist"]

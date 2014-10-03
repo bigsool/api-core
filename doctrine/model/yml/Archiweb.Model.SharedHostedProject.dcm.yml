@@ -20,6 +20,7 @@ Archiweb\Model\SharedHostedProject:
                 participantId:
                     referencedColumnName: id
                     nullable: false
+            cascade: ["persist"]
         hostedProject:
             targetEntity: Archiweb\Model\HostedProject
             inversedBy: sharedHostedProjects
@@ -27,3 +28,4 @@ Archiweb\Model\SharedHostedProject:
                 hostedProjectId:
                     referencedColumnName: id
                     nullable: false
+            cascade: ["persist"]
