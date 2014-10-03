@@ -33,7 +33,7 @@ class ValueTest extends TestCase {
 
         $value = new Value($v);
         $this->assertEquals($v, $value->getValue());
-        $this->assertEquals('"' . $v . '"', $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
+        $this->assertEquals("'$v'", $value->resolve($this->getMockRegistry(), $this->getMockQueryContext()));
 
     }
 

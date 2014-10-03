@@ -36,10 +36,10 @@ class Value implements Expression {
 
         $v = $this->getValue();
         if (is_string($v)) {
-            return '"' . $v . '"';
+            return "'$v'";
         }
 
-        return $v . '';   // cast to string
+        return (string)$v;
     }
 
     /**

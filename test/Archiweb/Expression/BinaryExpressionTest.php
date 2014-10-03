@@ -95,7 +95,7 @@ class BinaryExpressionTest extends TestCase {
 
         $exp = new BinaryExpression($operator, $left, $right);
 
-        $this->assertEquals('"Qwe" = 1', $exp->resolve($registry, $context));
+        $this->assertEquals("'Qwe' = 1", $exp->resolve($registry, $context));
     }
 
 } 
