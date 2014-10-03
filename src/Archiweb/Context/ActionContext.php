@@ -53,7 +53,7 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     /**
      * @param mixed $key
      *
-     * @return mixed
+     * @return Parameter
      */
     public function getParam ($key) {
 
