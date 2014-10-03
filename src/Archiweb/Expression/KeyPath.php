@@ -6,7 +6,6 @@ namespace Archiweb\Expression;
 
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
-use Archiweb\Field\Field;
 use Archiweb\Registry;
 
 class KeyPath extends Value {
@@ -45,7 +44,7 @@ class KeyPath extends Value {
      * @param string $value
      * return boolean
      */
-    static public function isValidKeyPath($value) {
+    static public function isValidKeyPath ($value) {
 
         if (!is_string($value) || (!preg_match('/^[a-zA-Z]+(\.[a-zA-Z]+)*(\.\*)?$/', $value) && $value != '*')) {
             return false;

@@ -35,7 +35,7 @@ class Parameter extends Value {
      * @param string $value
      * return boolean
      */
-    static public function isValidParameter($value) {
+    static public function isValidParameter ($value) {
 
         if (!is_string($value) || !preg_match('/^:[a-zA-Z_0-9-]+$/', $value)) {
             return false;

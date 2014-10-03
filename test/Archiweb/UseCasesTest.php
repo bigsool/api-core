@@ -54,7 +54,7 @@ class UseCasesTest extends TestCase {
 
     }
 
-    protected function createUserWithCompanyAction(ActionContext $actCtx) {
+    protected function createUserWithCompanyAction (ActionContext $actCtx) {
 
         $actCtxCompany = clone $actCtx;
         $params = [];
@@ -84,7 +84,7 @@ class UseCasesTest extends TestCase {
 
     }
 
-    protected function createCompanyAction(ActionContext $actCtx) {
+    protected function createCompanyAction (ActionContext $actCtx) {
 
         $params = [];
         foreach ($actCtx->getParams() as $key => $value) {
@@ -101,20 +101,7 @@ class UseCasesTest extends TestCase {
 
     }
 
-    protected function createUserAction(ActionContext $actCtx) {
-
-        $params = [];
-        foreach ($actCtx->getParams() as $key => $value) {
-            $this->assertFalse($value->isSafe());
-            $params[$key] = new SafeParameter($value->getValue());
-        }
-        $actCtx->setParams($params);
-
-        $this->userHelper($actCtx);
-
-    }
-
-    protected function companyHelper(ActionContext $actCtx) {
+    protected function companyHelper (ActionContext $actCtx) {
 
         $registry = $actCtx->getApplicationContext()->getNewRegistry();
         $params = $actCtx->getParams();
@@ -139,7 +126,38 @@ class UseCasesTest extends TestCase {
 
     }
 
-    protected function userHelper(ActionContext $actCtx) {
+    protected function storageHelper (ActionContext $actCtx, $prefix) {
+
+        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+
+        $storage = new Storage();
+        $storage->setUrl(uniqid($prefix));
+        $storage->setLogin('IAM LOGIN');
+        $storage->setPassword('IAM PASSWORD');
+        $storage->setUsedspace(0);
+        $storage->setIsoutofquota(false);
+        $storage->setLastusedspaceupdate(new \DateTime());
+
+        $registry->save($storage);
+
+        $actCtx['storage'] = $storage;
+
+    }
+
+    protected function createUserAction (ActionContext $actCtx) {
+
+        $params = [];
+        foreach ($actCtx->getParams() as $key => $value) {
+            $this->assertFalse($value->isSafe());
+            $params[$key] = new SafeParameter($value->getValue());
+        }
+        $actCtx->setParams($params);
+
+        $this->userHelper($actCtx);
+
+    }
+
+    protected function userHelper (ActionContext $actCtx) {
 
         $registry = $actCtx->getApplicationContext()->getNewRegistry();
         $params = $actCtx->getParams();
@@ -162,24 +180,6 @@ class UseCasesTest extends TestCase {
         $registry->save($user);
 
         $actCtx['user'] = $user;
-
-    }
-
-    protected function storageHelper(ActionContext $actCtx, $prefix) {
-
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
-
-        $storage = new Storage();
-        $storage->setUrl(uniqid($prefix));
-        $storage->setLogin('IAM LOGIN');
-        $storage->setPassword('IAM PASSWORD');
-        $storage->setUsedspace(0);
-        $storage->setIsoutofquota(false);
-        $storage->setLastusedspaceupdate(new \DateTime());
-
-        $registry->save($storage);
-
-        $actCtx['storage'] = $storage;
 
     }
 

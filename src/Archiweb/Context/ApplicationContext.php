@@ -81,7 +81,7 @@ class ApplicationContext {
      */
     public function getNewRegistry () {
 
-        return new Registry($this->entityManager,$this);
+        return new Registry($this->entityManager, $this);
 
     }
 

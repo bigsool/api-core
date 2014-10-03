@@ -50,7 +50,7 @@ class CallbackFilterTest extends TestCase {
 
         $expressionReceived = $callBackFilter->getExpression();
 
-        $this->assertEquals($expression,$expressionReceived);
+        $this->assertEquals($expression, $expressionReceived);
 
     }
 

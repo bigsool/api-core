@@ -24,8 +24,6 @@ use Archiweb\Rule\FieldRule;
 use Archiweb\Rule\SimpleRule;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
-use SebastianBergmann\Comparator\ExceptionComparatorTest;
-use SebastianBergmann\Exporter\Exception;
 
 class RegistryTest extends TestCase {
 
@@ -224,10 +222,17 @@ class RegistryTest extends TestCase {
 
     public function testSaveWithRule () {
 
-        $callbackRule = new CallbackRule('blabla',function(QueryContext $ctx) {
-            if ($ctx->getEntity() == "Product") return true;
+        $callbackRule = new CallbackRule('blabla', function (QueryContext $ctx) {
+
+            if ($ctx->getEntity() == "Product") {
+                return true;
+            }
+
             return false;
-        },function(QueryContext $ctx){throw new \RuntimeException('forbidden save !',2014);},array());
+        }, function (QueryContext $ctx) {
+
+            throw new \RuntimeException('forbidden save !', 2014);
+        }, array());
 
         $this->appCtx->addRule($callbackRule);
 
@@ -246,12 +251,14 @@ class RegistryTest extends TestCase {
             $registry->save($product);
         }
         catch (\RuntimeException $e) {
-            $this->assertEquals($e->getCode(),2014);
+            $this->assertEquals($e->getCode(), 2014);
             $exceptionThrow = true;
         }
         $this->assertTrue($exceptionThrow);
         $em = $this->getEntityManager(self::$doctrineConnectionSettings);
-        $result = $em->createQuery('SELECT p FROM \Archiweb\Model\Product p WHERE p.name = \'the new product\'')->getArrayResult();
+        $result =
+            $em->createQuery('SELECT p FROM \Archiweb\Model\Product p WHERE p.name = \'the new product\'')
+               ->getArrayResult();
         $this->assertCount(0, $result);
 
     }

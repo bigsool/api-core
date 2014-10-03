@@ -5,7 +5,6 @@ namespace Archiweb;
 
 
 use Archiweb\Context\ApplicationContext;
-use Archiweb\Rule\FieldRule;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
@@ -47,7 +46,7 @@ class Registry {
     protected $params = [];
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager      $entityManager
      * @param ApplicationContext $ctx
      */
     public function __construct (EntityManager $entityManager, ApplicationContext $ctx) {

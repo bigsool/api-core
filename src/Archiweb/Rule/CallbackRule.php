@@ -4,7 +4,6 @@
 namespace Archiweb\Rule;
 
 
-use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 
 

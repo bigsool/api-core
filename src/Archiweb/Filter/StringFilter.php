@@ -30,26 +30,6 @@ class StringFilter extends Filter {
 
     }
 
-    private function getExpressionFromString ($str) {
-
-        $expression = null;
-
-        if (Parameter::isValidParameter($str)) {
-            $expression = new Parameter($str);
-        }
-        elseif (KeyPath::isValidKeyPath($str)) {
-            $expression = new KeyPath($str);
-        }
-        else {
-            $str = trim($str,'"');
-            $str = trim($str,"'");
-            $expression = new Value($str);
-        }
-
-        return $expression;
-
-    }
-
     function stringToExpression ($expression) {
 
         $operator = NULL;
@@ -82,9 +62,31 @@ class StringFilter extends Filter {
 
         $operandes = explode($strOperator, $expression);
 
-        $binaryExpression = new BinaryExpression($operator, $this->getExpressionFromString(trim($operandes[0])), $this->getExpressionFromString(trim($operandes[1])));
+        $binaryExpression =
+            new BinaryExpression($operator, $this->getExpressionFromString(trim($operandes[0])),
+                                 $this->getExpressionFromString(trim($operandes[1])));
 
         return $binaryExpression;
+
+    }
+
+    private function getExpressionFromString ($str) {
+
+        $expression = NULL;
+
+        if (Parameter::isValidParameter($str)) {
+            $expression = new Parameter($str);
+        }
+        elseif (KeyPath::isValidKeyPath($str)) {
+            $expression = new KeyPath($str);
+        }
+        else {
+            $str = trim($str, '"');
+            $str = trim($str, "'");
+            $expression = new Value($str);
+        }
+
+        return $expression;
 
     }
 
