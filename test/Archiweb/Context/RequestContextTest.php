@@ -49,10 +49,14 @@ class RequestContextTest extends TestCase {
         $ctx->setParams($params);
         $actionContext = $ctx->getNewActionContext();
 
-        $expected = new ActionContext($ctx);
-        $expected->setParams($expectedParams);
-
-        $this->assertEquals($expected, $actionContext);
+        $this->assertCount(count($expectedParams), $actionContext->getParams());
+        foreach ($expectedParams as $key => $value) {
+            $this->assertArrayHasKey($key, $actionContext->getParams());
+            $this->assertSame($actionContext->getParams()[$key], $actionContext->getParam($key));
+            $this->assertInstanceOf('\Archiweb\Parameter\UnsafeParameter', $actionContext->getParam($key));
+            $this->assertFalse($actionContext->getParam($key)->isSafe());
+            $this->assertSame($value->getValue(), $actionContext->getParam($key)->getValue());
+        }
 
     }
 

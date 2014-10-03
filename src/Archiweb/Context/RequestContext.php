@@ -36,7 +36,7 @@ class RequestContext implements ApplicationContextProvider {
 
         $params = [];
         foreach ($this->getParams() as $key => $param) {
-            $params[] = new UnsafeParameter($param);
+            $params[$key] = new UnsafeParameter($param);
         }
 
         $actonContext->setParams($params);
