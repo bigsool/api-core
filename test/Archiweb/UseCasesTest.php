@@ -235,12 +235,10 @@ class UseCasesTest extends TestCase {
 
         $qryCtx = new FindQueryContext(self::$appCtx, 'HostedProject');
         $qryCtx->addKeyPath(new KeyPath('*'));
-        $qryCtx->setParams(['authUser'=>$actCtx['authUser']]);
+        $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
 
         $registry = self::$appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
-
-
 
     }
 

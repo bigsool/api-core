@@ -95,15 +95,6 @@ class ApplicationContext {
     }
 
     /**
-     * @return Filter[]
-     */
-    public function getFilters () {
-
-        return $this->filters;
-
-    }
-
-    /**
      * @param string $entity
      * @param string $name
      *
@@ -118,6 +109,15 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException('Filter not found');
+
+    }
+
+    /**
+     * @return Filter[]
+     */
+    public function getFilters () {
+
+        return $this->filters;
 
     }
 
