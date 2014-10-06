@@ -113,7 +113,7 @@ class KeyPathTest extends TestCase {
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
+        $this->assertEquals('hostedProjectCreatorCompany.storage', $resolve1);
     }
 
 } 

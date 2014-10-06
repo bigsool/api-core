@@ -51,7 +51,7 @@ class UseCasesTest extends TestCase {
 
             if ($context instanceof FindQueryContext) {
 
-                // TODO: il faut aussi gérer dans le cas ou HostedProject fasse partie des joins
+                // TODO: il faut aussi gérer dans le cas où HostedProject fait partie des joins
                 return $context->getEntity() == 'HostedProject';
 
             }

@@ -42,9 +42,10 @@ class KeyPath extends Value {
 
     /**
      * @param string $value
-     * return boolean
+     *
+     * @return boolean
      */
-    static public function isValidKeyPath ($value) {
+    public static function isValidKeyPath ($value) {
 
         if (!is_string($value) || (!preg_match('/^[a-zA-Z]+(\.[a-zA-Z]+)*(\.\*)?$/', $value) && $value != '*')) {
             return false;
@@ -68,8 +69,14 @@ class KeyPath extends Value {
         }
 
         $alias = lcfirst($ctx->getEntity());
+        $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
+            $prevAlias = $alias;
             $alias = $registry->addJoin($ctx, $alias, $joinToDo);
+        }
+
+        if (isset($prevAlias) && $this->field == '*') {
+            return $prevAlias . '.' . $joinToDo;
         }
 
         return $alias . ($this->field == '*' ? '' : ('.' . $this->field));
