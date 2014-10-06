@@ -21,22 +21,28 @@ class KeyPath extends Value {
     protected $entity;
 
     /**
+     * @var bool
+     */
+    protected $useLeftJoin;
+
+    /**
      * @var string[]
      */
     protected $joinsToDo = [];
 
     /**
-     * @param string $value
-     *
-     * @throws \RuntimeException
+     * @param mixed $value
+     * @param bool  $useLeftJoin
      */
-    public function __construct ($value) {
+    public function __construct ($value, $useLeftJoin = false) {
 
         if (!self::isValidKeyPath($value)) {
             throw new \RuntimeException('invalid KeyPath');
         }
 
         parent::__construct($value);
+
+        $this->useLeftJoin = $useLeftJoin;
 
     }
 
@@ -56,7 +62,10 @@ class KeyPath extends Value {
     }
 
     /**
-     * @return string|void
+     * @param Registry     $registry
+     * @param QueryContext $ctx
+     *
+     * @return string
      */
     public function resolve (Registry $registry, QueryContext $ctx) {
 
@@ -72,7 +81,7 @@ class KeyPath extends Value {
         $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
             $prevAlias = $alias;
-            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $joinToDo['entity']);
+            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $joinToDo['entity'], $this->useLeftJoin);
         }
 
         if (isset($prevAlias) && $this->field == '*') {
@@ -118,7 +127,7 @@ class KeyPath extends Value {
 
             if (in_array($field, $associations)) {
                 $entity = $metadata->getAssociationMapping($field)['targetEntity'];
-                $this->joinsToDo[] = ['field'=>$field,'entity'=>$entity];
+                $this->joinsToDo[] = ['field' => $field, 'entity' => $entity];
             }
             else {
                 throw new \RuntimeException("$field not found in $entity");

@@ -19,7 +19,9 @@ use Archiweb\Model\HostedProject;
 use Archiweb\Model\SharedHostedProject;
 use Archiweb\Model\Storage;
 use Archiweb\Model\User;
+use Archiweb\Operator\EqualOperator;
 use Archiweb\Operator\MemberOf;
+use Archiweb\Operator\OrOperator;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\Rule\SimpleRule;
@@ -47,7 +49,13 @@ class UseCasesTest extends TestCase {
         $binary =
             new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('creator.company.users'));
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'fromMyCompany', 'SELECT', $binary));
-        self::$appCtx->addRule(new SimpleRule('fromMyCompanyRule', function (QueryContext $context) {
+
+        $binary = new BinaryExpression(new OrOperator(),
+            new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('creator.company.users', true)),
+            new BinaryExpression(new EqualOperator(), new Parameter(':authUser'), new KeyPath('sharedHostedProjects.participant', true)));
+        self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', 'SELECT', $binary));
+
+        self::$appCtx->addRule(new SimpleRule('accessibleProjectRule', function (QueryContext $context) {
 
             if ($context instanceof FindQueryContext) {
 
@@ -58,7 +66,7 @@ class UseCasesTest extends TestCase {
 
             return false;
 
-        }, self::$appCtx->getFilterByEntityAndName('HostedProject', 'fromMyCompany')));
+        }, self::$appCtx->getFilterByEntityAndName('HostedProject', 'accessibleProject')));
 
     }
 
