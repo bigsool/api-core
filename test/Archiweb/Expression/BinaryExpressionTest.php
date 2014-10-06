@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Operator\AndOperator;
 use Archiweb\Operator\EqualOperator;
 use Archiweb\TestCase;
 
@@ -96,6 +97,22 @@ class BinaryExpressionTest extends TestCase {
         $exp = new BinaryExpression($operator, $left, $right);
 
         $this->assertEquals("'Qwe' = 1", $exp->resolve($registry, $context));
+    }
+
+    public function testResolveAAndB () {
+
+        $registry = $this->getMockRegistry();
+        $context = $this->getMockQueryContext();
+
+
+        $operator = new AndOperator();
+
+        $left = new Value("A");
+        $right = new Value("B");
+
+        $exp = new BinaryExpression($operator, $left, $right);
+
+        $this->assertEquals("'A' AND 'B'", $exp->resolve($registry, $context));
     }
 
 } 
