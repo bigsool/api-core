@@ -106,4 +106,16 @@ class FindQueryContextTest extends TestCase {
 
     }
 
+    public function testAddJoinedEntities () {
+
+        $ctx = $this->getFindQueryContext('Company');
+        $joinedEntity = 'qwe';
+        $ctx->addJoinedEntity($joinedEntity);
+
+        $this->assertInternalType('array', $ctx->getJoinedEntities());
+        $this->assertCount(1, $ctx->getJoinedEntities());
+        $this->assertSame($joinedEntity, $ctx->getJoinedEntities()[0]);
+
+    }
+
 } 

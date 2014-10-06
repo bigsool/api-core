@@ -86,7 +86,7 @@ class RuleProcessor {
         foreach ($rule->listChildRules() as $childRule) {
             $this->flattenRec($accumulator, $childRule);
         }
-        
+
     }
 
 } 
