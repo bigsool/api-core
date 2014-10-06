@@ -148,7 +148,7 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      */
     public function addJoinedEntity($entity) {
 
