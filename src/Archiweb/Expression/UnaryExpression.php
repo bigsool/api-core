@@ -60,6 +60,6 @@ class UnaryExpression implements ExpressionWithOperator {
     public function getValue () {
 
         return $this->value;
-        
+
     }
 }

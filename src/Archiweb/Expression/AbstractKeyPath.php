@@ -81,7 +81,9 @@ abstract class AbstractKeyPath extends Value {
         $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
             $prevAlias = $alias;
-            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $this->getEntityForClass($joinToDo['entity']), $this->useLeftJoin);
+            $alias =
+                $registry->addJoin($ctx, $alias, $joinToDo['field'], $this->getEntityForClass($joinToDo['entity']),
+                                   $this->useLeftJoin);
         }
 
         if ($this->isUsedInExpression() && isset($prevAlias) && $this->field == '*') {
@@ -152,6 +154,11 @@ abstract class AbstractKeyPath extends Value {
     }
 
     /**
+     * @return bool
+     */
+    protected abstract function isUsedInExpression ();
+
+    /**
      * @param FindQueryContext $ctx
      *
      * @return \Archiweb\Field\Field
@@ -165,10 +172,5 @@ abstract class AbstractKeyPath extends Value {
         return $ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
 
     }
-
-    /**
-     * @return bool
-     */
-    protected abstract  function isUsedInExpression();
 
 }
