@@ -72,7 +72,7 @@ class KeyPath extends Value {
         $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
             $prevAlias = $alias;
-            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $joinToDo['entity']);
+            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $this->getEntityForClass($joinToDo['entity']));
         }
 
         if (isset($prevAlias) && $this->field == '*') {

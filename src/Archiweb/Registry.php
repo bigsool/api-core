@@ -169,8 +169,7 @@ class Registry {
             throw new \RuntimeException('fields are required');
         }
 
-        $ruleProcessor = new RuleProcessor();
-        $ruleProcessor->apply($ctx);
+
 
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
@@ -183,6 +182,8 @@ class Registry {
             }
         }
 
+        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor->apply($ctx);
 
         $expressions = [];
         foreach ($ctx->getFilters() as $filter) {
@@ -197,6 +198,8 @@ class Registry {
 
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
+
+        var_dump($qb->getDql());
 
         return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
