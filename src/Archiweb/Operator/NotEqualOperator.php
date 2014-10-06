@@ -19,6 +19,7 @@ class NotEqualOperator implements CompareOperator {
         }
 
         return "!= $value";
+
     }
 
 }

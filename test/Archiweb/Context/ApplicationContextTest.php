@@ -102,7 +102,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetFieldsByEntityAndName () {
+    public function testGetFieldByEntityAndName () {
 
         $ctx = $this->getApplicationContext();
 
@@ -114,12 +114,33 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testGetFilterByEntityAndName () {
+
+        $ctx = $this->getApplicationContext();
+
+        $filters[] = $filter = $this->getMockFilter();
+        $filter->method('getEntity')->willReturn('Company');
+        $filter->method('getName')->willReturn('name');
+        $ctx->addFilter($filter);
+        $this->assertSame($filter, $ctx->getFilterByEntityAndName('Company', 'name'));
+
+    }
+
     /**
      * @expectedException \Exception
      */
-    public function testGetFiendsNotFound () {
+    public function testGetFieldByEntityAndNameNotFound () {
 
         $this->getApplicationContext()->getFieldByEntityAndName('Company', 'name');
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetFilterByEntityAndNameNotFound () {
+
+        $this->getApplicationContext()->getFilterByEntityAndName('Company', 'name');
 
     }
 

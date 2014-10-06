@@ -5,6 +5,7 @@ namespace Archiweb\Expression;
 
 
 use Archiweb\Context\QueryContext;
+use Archiweb\Operator\CompareOperator;
 use Archiweb\Operator\Operator;
 use Archiweb\Registry;
 
@@ -35,6 +36,7 @@ class BinaryExpression implements ExpressionWithOperator {
         $this->operator = $operator;
         $this->left = $left;
         $this->right = $right;
+
     }
 
     /**
@@ -43,6 +45,7 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getOperator () {
 
         return $this->operator;
+
     }
 
     /**
@@ -56,7 +59,16 @@ class BinaryExpression implements ExpressionWithOperator {
         $leftStr = $this->getLeft()->resolve($registry, $context);
         $rightStr = $this->getRight()->resolve($registry, $context);
 
-        return $leftStr . ' ' . $this->getOperator()->toDQL($rightStr);
+        if ($this->getOperator() instanceof CompareOperator) {
+
+            return $leftStr . ' ' . $this->getOperator()->toDQL($rightStr);
+
+        }
+        else {
+
+            return $leftStr . ' ' . $this->getOperator()->toDQL() . ' ' . $rightStr;
+
+        }
     }
 
     /**
@@ -65,6 +77,7 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getLeft () {
 
         return $this->left;
+
     }
 
     /**
@@ -73,5 +86,6 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getRight () {
 
         return $this->right;
+
     }
 }

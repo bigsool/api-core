@@ -13,6 +13,7 @@ class GreaterOrEqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
         $operator = new GreaterOrEqualOperator();
         $this->assertEquals('>= qwe', $operator->toDQL('qwe'));
+
     }
 
     /**
@@ -22,6 +23,7 @@ class GreaterOrEqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
         $operator = new GreaterOrEqualOperator();
         $operator->toDQL();
+
     }
 
 } 

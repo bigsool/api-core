@@ -12,6 +12,7 @@ class OrOperator implements LogicOperator {
     public function toDQL () {
 
         return 'OR';
+
     }
 
 }

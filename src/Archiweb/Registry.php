@@ -87,10 +87,11 @@ class Registry {
      * @param string           $alias
      * @param string           $field
      * @param string           $entity
+     * @param bool             $useLeftJoin
      *
      * @return string
      */
-    public function addJoin (FindQueryContext $ctx, $alias, $field, $entity) {
+    public function addJoin (FindQueryContext $ctx, $alias, $field, $entity, $useLeftJoin = false) {
 
         $join = $alias . '.' . $field;
 
@@ -98,7 +99,10 @@ class Registry {
 
             $newAlias = $alias . ucfirst($field);
             $ctx->addJoinedEntity($entity);
-            $this->getQueryBuilder($ctx->getEntity())->innerJoin($join, $newAlias);
+            $joinMethod = $useLeftJoin ? 'leftJoin' : 'innerJoin';
+            $this->getQueryBuilder($ctx->getEntity())->$joinMethod($join, $newAlias);
+
+            // TODO: if a LeftJoin was introduce and now we wanna do a innerJoin we should add a condition (IS NOT NULL)
 
             $this->joins[$join] = $newAlias;
 
@@ -198,8 +202,6 @@ class Registry {
 
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
-
-        var_dump($qb->getDql());
 
         return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 

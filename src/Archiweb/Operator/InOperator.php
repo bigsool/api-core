@@ -19,6 +19,7 @@ class InOperator implements CompareOperator {
         }
 
         return "IN ($value)";
+
     }
 
 }

@@ -19,6 +19,7 @@ class GreaterOrEqualOperator implements CompareOperator {
         }
 
         return ">= $value";
+
     }
 
 }

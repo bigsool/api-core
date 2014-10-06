@@ -62,12 +62,12 @@ class FindQueryContextTest extends TestCase {
         $this->assertSame([], $ctx->getKeyPaths());
 
         // only one keyPath
-        $keyPath = $this->getMockKeyPath();
+        $keyPath = $this->getMockFieldKeyPath();
         $ctx->addKeyPath($keyPath);
         $this->assertSame([$keyPath], $ctx->getKeyPaths());
 
         // several keyPaths
-        $keyPaths = [$this->getMockKeyPath(), $this->getMockKeyPath()];
+        $keyPaths = [$this->getMockFieldKeyPath(), $this->getMockFieldKeyPath()];
         foreach ($keyPaths as $k) {
             $ctx->addKeyPath($k);
         }
@@ -103,6 +103,18 @@ class FindQueryContextTest extends TestCase {
         $this->assertSame($array[0], $ctx->getParam(0));
         $this->assertSame($array['b'], $ctx->getParam('b'));
         $this->assertSame(NULL, $ctx->getParam('qwe'));
+
+    }
+
+    public function testAddJoinedEntities () {
+
+        $ctx = $this->getFindQueryContext('Company');
+        $joinedEntity = 'qwe';
+        $ctx->addJoinedEntity($joinedEntity);
+
+        $this->assertInternalType('array', $ctx->getJoinedEntities());
+        $this->assertCount(1, $ctx->getJoinedEntities());
+        $this->assertSame($joinedEntity, $ctx->getJoinedEntities()[0]);
 
     }
 

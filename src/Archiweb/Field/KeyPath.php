@@ -1,8 +1,10 @@
 <?php
 
 
-namespace Archiweb\Expression;
+namespace Archiweb\Field;
 
+
+use Archiweb\Expression\AbstractKeyPath;
 
 class KeyPath extends AbstractKeyPath {
 
@@ -11,8 +13,7 @@ class KeyPath extends AbstractKeyPath {
      */
     protected function isUsedInExpression () {
 
-        return true;
+        return false;
 
     }
-
 }

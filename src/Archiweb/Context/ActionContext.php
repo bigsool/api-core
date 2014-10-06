@@ -48,6 +48,7 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
         }
 
         $this->params = $params;
+
     }
 
     /**

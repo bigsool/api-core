@@ -8,10 +8,11 @@ use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Expression\BinaryExpression;
-use Archiweb\Expression\KeyPath;
+use Archiweb\Expression\KeyPath as ExpressionKeyPath;
 use Archiweb\Expression\Parameter;
 use Archiweb\Expression\Value;
 use Archiweb\Field\Field;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Field\StarField;
 use Archiweb\Filter\ExpressionFilter;
 use Archiweb\Model\Company;
@@ -60,7 +61,7 @@ class RegistryTest extends TestCase {
         $this->appCtx->addField(new Field('Product', 'name'));
         $this->appCtx->addField(new Field('Product', 'price'));
 
-        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('consumable'), new Value(1));
+        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('consumable'), new Value(1));
         $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', 'SELECT', $expression);
         $this->appCtx->addFilter($funcConsumableFilter);
 
@@ -269,7 +270,7 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsArray () {
 
         $qryCtx = new FindQueryContext($this->appCtx, 'Product');
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -287,8 +288,8 @@ class RegistryTest extends TestCase {
     public function testFindFieldsWithoutFilter () {
 
         $qryCtx = new FindQueryContext($this->appCtx, 'Product');
-        $qryCtx->addKeyPath(new KeyPath('name'));
-        $qryCtx->addKeyPath(new KeyPath('price'));
+        $qryCtx->addKeyPath(new FieldKeyPath('name'));
+        $qryCtx->addKeyPath(new FieldKeyPath('price'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -308,7 +309,7 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsObject () {
 
         $qryCtx = new FindQueryContext($this->appCtx, 'Product');
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
@@ -333,9 +334,9 @@ class RegistryTest extends TestCase {
     public function testFindWithFilters () {
 
         $qryCtx = new FindQueryContext($this->appCtx, 'Product');
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
-        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('price'), new Value(17));
+        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('price'), new Value(17));
         $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
@@ -345,7 +346,7 @@ class RegistryTest extends TestCase {
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
         $parameter = new Parameter(':price');
-        $expression = new BinaryExpression(new EqualOperator(), $parameter, new KeyPath('price'));
+        $expression = new BinaryExpression(new EqualOperator(), $parameter, new ExpressionKeyPath('price'));
         $qryCtx->setParams(['price' => 126]);
         $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
         $registry = $this->appCtx->getNewRegistry();
@@ -364,7 +365,7 @@ class RegistryTest extends TestCase {
     public function testFindRuleOnFields () {
 
         $qryCtx = new FindQueryContext($this->appCtx, 'Functionality');
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);

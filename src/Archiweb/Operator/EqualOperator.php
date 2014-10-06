@@ -19,6 +19,7 @@ class EqualOperator implements CompareOperator {
         }
 
         return "= $value";
+
     }
 
 }
