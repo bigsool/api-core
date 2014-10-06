@@ -9,9 +9,10 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Expression\BinaryExpression;
-use Archiweb\Expression\KeyPath;
+use Archiweb\Expression\KeyPath as ExprKeyPath;
 use Archiweb\Expression\Parameter;
 use Archiweb\Field\StarField;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\ExpressionFilter;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Model\Company;
@@ -47,14 +48,14 @@ class UseCasesTest extends TestCase {
                                                   'self.sharedHostedProjects.participant = :authUser', 'SELECT'));
 
         $binary =
-            new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('creator.company.users'));
+            new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new ExprKeyPath('creator.company.users'));
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'fromMyCompany', 'SELECT', $binary));
 
         $binary = new BinaryExpression(new OrOperator(),
                                        new BinaryExpression(new MemberOf(), new Parameter(':authUser'),
-                                                            new KeyPath('creator.company.users', true)),
+                                                            new ExprKeyPath('creator.company.users', true)),
                                        new BinaryExpression(new EqualOperator(), new Parameter(':authUser'),
-                                                            new KeyPath('sharedHostedProjects.participant', true)));
+                                                            new ExprKeyPath('sharedHostedProjects.participant', true)));
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', 'SELECT', $binary));
 
         self::$appCtx->addRule(new SimpleRule('accessibleProjectRule', function (QueryContext $context) {
@@ -244,7 +245,7 @@ class UseCasesTest extends TestCase {
         $this->assertSame('User 1', $actCtx['authUser']->getName());
 
         $qryCtx = new FindQueryContext(self::$appCtx, 'HostedProject');
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
         $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
 
         $registry = self::$appCtx->getNewRegistry();
@@ -394,7 +395,7 @@ class UseCasesTest extends TestCase {
 
         $findCtx = new FindQueryContext(self::$appCtx, 'User');
         $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
-        $findCtx->addKeyPath(new KeyPath('*'));
+        $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = self::$appCtx->getNewRegistry()->find($findCtx, false);
 
         return $user;

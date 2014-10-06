@@ -5,8 +5,8 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
-use Archiweb\Expression\KeyPath;
 use Archiweb\Field\Field;
+use Archiweb\Field\KeyPath;
 use Archiweb\Field\StarField;
 use Archiweb\Model\Company;
 use Archiweb\TestCase;

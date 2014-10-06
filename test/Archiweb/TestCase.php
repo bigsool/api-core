@@ -13,8 +13,9 @@ use Archiweb\Context\RequestContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\Expression;
 use Archiweb\Expression\ExpressionWithOperator;
-use Archiweb\Expression\KeyPath;
+use Archiweb\Expression\KeyPath as ExpressionKeyPath;
 use Archiweb\Field\Field;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\Filter;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
@@ -244,11 +245,22 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return KeyPath
+     * @return ExpressionKeyPath
      */
-    public function getMockKeyPath () {
+    public function getMockExpressionKeyPath () {
 
         return $this->getMockBuilder('\Archiweb\Expression\KeyPath')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return FieldKeyPath
+     */
+    public function getMockFieldKeyPath () {
+
+        return $this->getMockBuilder('\Archiweb\Field\KeyPath')
                     ->disableOriginalConstructor()
                     ->getMock();
 

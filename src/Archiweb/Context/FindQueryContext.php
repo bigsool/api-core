@@ -4,8 +4,7 @@
 namespace Archiweb\Context;
 
 
-use Archiweb\Expression\KeyPath;
-use Archiweb\Field\Field;
+use Archiweb\Field\KeyPath;
 use Archiweb\Filter\Filter;
 
 class FindQueryContext implements QueryContext {
@@ -33,25 +32,21 @@ class FindQueryContext implements QueryContext {
     /**
      * @var KeyPath[]
      */
-    protected $keyPaths;
+    protected $keyPaths = [];
 
     /**
      * @var Filter[]
      */
-    protected $filters;
+    protected $filters = [];
 
     /**
      * @param ApplicationContext $ctx
-     * @param string             $entity
-     * @param Field[]            $keyPaths
-     * @param Filter[]           $filters
+     * @param                    $entity
      */
-    public function __construct (ApplicationContext $ctx, $entity, array $keyPaths = [], array $filters = []) {
+    public function __construct (ApplicationContext $ctx, $entity) {
 
         $this->applicationContext = $ctx;
         $this->entity = $entity;
-        $this->keyPaths = $keyPaths;
-        $this->filters = $filters;
 
     }
 

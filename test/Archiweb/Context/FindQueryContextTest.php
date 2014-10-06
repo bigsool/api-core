@@ -62,12 +62,12 @@ class FindQueryContextTest extends TestCase {
         $this->assertSame([], $ctx->getKeyPaths());
 
         // only one keyPath
-        $keyPath = $this->getMockKeyPath();
+        $keyPath = $this->getMockFieldKeyPath();
         $ctx->addKeyPath($keyPath);
         $this->assertSame([$keyPath], $ctx->getKeyPaths());
 
         // several keyPaths
-        $keyPaths = [$this->getMockKeyPath(), $this->getMockKeyPath()];
+        $keyPaths = [$this->getMockFieldKeyPath(), $this->getMockFieldKeyPath()];
         foreach ($keyPaths as $k) {
             $ctx->addKeyPath($k);
         }
