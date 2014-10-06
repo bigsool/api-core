@@ -88,4 +88,13 @@ class BinaryExpression implements ExpressionWithOperator {
         return $this->right;
 
     }
+
+    /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return [$this->getLeft(),$this->getRight()];
+
+    }
 }

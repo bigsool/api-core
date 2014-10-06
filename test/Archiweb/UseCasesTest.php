@@ -43,9 +43,12 @@ class UseCasesTest extends TestCase {
 
         self::$appCtx->addField(new StarField('User'));
         self::$appCtx->addField(new StarField('HostedProject'));
+        self::$appCtx->addField(new StarField('Storage'));
+
+        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0', 'SELECT'));
 
         self::$appCtx->addFilter(new StringFilter('HostedProject', 'withSharedProject',
-                                                  'self.sharedHostedProjects.participant = :authUser', 'SELECT'));
+                                                  'sharedHostedProjects.participant = :authUser', 'SELECT'));
 
         $binary =
             new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new ExprKeyPath('creator.company.users'));
@@ -246,10 +249,30 @@ class UseCasesTest extends TestCase {
 
         $qryCtx = new FindQueryContext(self::$appCtx, 'HostedProject');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $qryCtx->addKeyPath(new FieldKeyPath('creator.company.storage'));
         $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
+        $qryCtx->addFilter(self::$appCtx->getFilterByEntityAndName('Storage', 'notOutOfQuota'));
 
         $registry = self::$appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
+        $dql = $registry->getLastExecutedQuery();
+
+        $exceptedQry = '/^' .
+                       'SELECT hostedProject, hostedProjectCreatorCompanyStorage ' .
+                       'FROM \\\\Archiweb\\\\Model\\\\HostedProject hostedProject ' .
+                       'INNER JOIN hostedProject\.creator hostedProjectCreator ' .
+                       'INNER JOIN hostedProjectCreator\.company hostedProjectCreatorCompany ' .
+                       'INNER JOIN hostedProjectCreatorCompany\.storage hostedProjectCreatorCompanyStorage ' .
+                       'LEFT JOIN hostedProjectCreatorCompany\.users hostedProjectCreatorCompanyUsers ' .
+                       'LEFT JOIN hostedProject\.sharedHostedProjects hostedProjectSharedHostedProjects ' .
+                       'LEFT JOIN hostedProjectSharedHostedProjects\.participant hostedProjectSharedHostedProjectsParticipant '
+                       .
+                       'WHERE :authUser_[0-9a-z]+ MEMBER OF hostedProjectCreatorCompany\.users ' .
+                       'OR :authUser_[0-9a-z]+ = hostedProjectSharedHostedProjects\.participant' .
+                       '$/';
+
+        $this->assertRegExp($exceptedQry, $dql);
+        $this->assertCount(3, $result);
 
     }
 

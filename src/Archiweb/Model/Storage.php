@@ -32,17 +32,17 @@ class Storage {
     /**
      * @var integer
      */
-    private $usedspace;
+    private $usedSpace;
 
     /**
      * @var \DateTime
      */
-    private $lastusedspaceupdate;
+    private $lastUsedSpaceUpdate;
 
     /**
      * @var boolean
      */
-    private $isoutofquota;
+    private $isOutOfQuota;
 
     /**
      * @var \Archiweb\Model\Company
@@ -132,73 +132,73 @@ class Storage {
     }
 
     /**
-     * Get usedspace
+     * Get usedSpace
      *
      * @return integer
      */
-    public function getUsedspace () {
+    public function getUsedSpace () {
 
-        return $this->usedspace;
+        return $this->usedSpace;
     }
 
     /**
-     * Set usedspace
+     * Set usedSpace
      *
-     * @param integer $usedspace
+     * @param integer $usedSpace
      *
      * @return Storage
      */
-    public function setUsedspace ($usedspace) {
+    public function setUsedSpace ($usedSpace) {
 
-        $this->usedspace = $usedspace;
+        $this->usedSpace = $usedSpace;
 
         return $this;
     }
 
     /**
-     * Get lastusedspaceupdate
+     * Get lastUsedSpaceUpdate
      *
      * @return \DateTime
      */
-    public function getLastusedspaceupdate () {
+    public function getLastUsedSpaceUpdate () {
 
-        return $this->lastusedspaceupdate;
+        return $this->lastUsedSpaceUpdate;
     }
 
     /**
-     * Set lastusedspaceupdate
+     * Set lastUsedSpaceUpdate
      *
-     * @param \DateTime $lastusedspaceupdate
+     * @param \DateTime $lastUsedSpaceUpdate
      *
      * @return Storage
      */
-    public function setLastusedspaceupdate ($lastusedspaceupdate) {
+    public function setLastUsedSpaceUpdate ($lastUsedSpaceUpdate) {
 
-        $this->lastusedspaceupdate = $lastusedspaceupdate;
+        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
 
         return $this;
     }
 
     /**
-     * Get isoutofquota
+     * Get isOutOfQuota
      *
      * @return boolean
      */
-    public function getIsoutofquota () {
+    public function getIsOutOfQuota () {
 
-        return $this->isoutofquota;
+        return $this->isOutOfQuota;
     }
 
     /**
-     * Set isoutofquota
+     * Set isOutOfQuota
      *
-     * @param boolean $isoutofquota
+     * @param boolean $isOutOfQuota
      *
      * @return Storage
      */
-    public function setIsoutofquota ($isoutofquota) {
+    public function setIsOutOfQuota ($isOutOfQuota) {
 
-        $this->isoutofquota = $isoutofquota;
+        $this->isOutOfQuota = $isOutOfQuota;
 
         return $this;
     }
@@ -220,7 +220,7 @@ class Storage {
      *
      * @return Storage
      */
-    public function setCompany (\Archiweb\Model\Company $company) {
+    public function setCompany (\Archiweb\Model\Company $company = NULL) {
 
         $this->company = $company;
 

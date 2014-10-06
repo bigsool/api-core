@@ -33,7 +33,7 @@ Archiweb\Model\Storage:
             length: 255
             fixed: false
             comment: ''
-        usedspace:
+        usedSpace:
             type: bigint
             nullable: false
             unsigned: true
@@ -41,12 +41,12 @@ Archiweb\Model\Storage:
             options:
                 default: '0'
             column: usedSpace
-        lastusedspaceupdate:
+        lastUsedSpaceUpdate:
             type: datetime
             nullable: false
             comment: ''
             column: lastUsedSpaceUpdate
-        isoutofquota:
+        isOutOfQuota:
             type: boolean
             nullable: false
             comment: ''

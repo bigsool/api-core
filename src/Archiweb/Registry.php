@@ -41,6 +41,11 @@ class Registry {
     protected $joins = [];
 
     /**
+     * @var string[][]
+     */
+    protected $aliasForEntity = [];
+
+    /**
      * @var array
      */
     protected $params = [];
@@ -105,6 +110,7 @@ class Registry {
             // TODO: if a LeftJoin was introduce and now we wanna do a innerJoin we should add a condition (IS NOT NULL)
 
             $this->joins[$join] = $newAlias;
+            $this->addAliasForEntity($entity, $newAlias);
 
         }
 
@@ -121,7 +127,9 @@ class Registry {
 
         if (!isset($this->queryBuilder)) {
             $this->queryBuilder = $this->entityManager->createQueryBuilder();
-            $this->queryBuilder->from($this->realModelClassName($entity), lcfirst($entity));
+            $alias = lcfirst($entity);
+            $this->queryBuilder->from($this->realModelClassName($entity), $alias);
+            $this->addAliasForEntity($entity, $alias);
         }
 
         return $this->queryBuilder;
@@ -141,6 +149,21 @@ class Registry {
         }
 
         return $class;
+
+    }
+
+    /**
+     * @param string $entity
+     * @param string $alias
+     */
+    protected function addAliasForEntity ($entity, $alias) {
+
+        if (!isset($this->aliasForEntity[$entity])) {
+            $this->aliasForEntity[$entity] = [];
+        }
+        if (!in_array($alias, $this->aliasForEntity[$entity])) {
+            $this->aliasForEntity[$entity][] = $alias;
+        }
 
     }
 
@@ -203,6 +226,17 @@ class Registry {
         self::$dql = $query->getDQL();
 
         return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+
+    }
+
+    /**
+     * @param string $entity
+     *
+     * @return string[]
+     */
+    public function findAliasForEntity ($entity) {
+
+        return isset($this->aliasForEntity[$entity]) ? $this->aliasForEntity[$entity] : [];
 
     }
 

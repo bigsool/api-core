@@ -62,4 +62,13 @@ class UnaryExpression implements ExpressionWithOperator {
         return $this->value;
 
     }
+
+    /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return $this->getValue();
+
+    }
 }

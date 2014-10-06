@@ -801,7 +801,7 @@ class User {
      *
      * @return User
      */
-    public function setCompany (\Archiweb\Model\Company $company) {
+    public function setCompany (\Archiweb\Model\Company $company = NULL) {
 
         $this->company = $company;
 

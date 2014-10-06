@@ -384,7 +384,7 @@ class Company {
      *
      * @return Company
      */
-    public function setOwner (\Archiweb\Model\User $owner) {
+    public function setOwner (\Archiweb\Model\User $owner = NULL) {
 
         $this->owner = $owner;
 

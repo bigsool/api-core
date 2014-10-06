@@ -13,7 +13,7 @@ class KeyPathTest extends TestCase {
      */
     public function testResolveEntity () {
 
-        $registry = $this->getRegistry();
+        $registry = $this->getRegistry('HostedProject');
         $context = $this->getFindQueryContext('HostedProject');
 
         $param = 'creator.company.storage';

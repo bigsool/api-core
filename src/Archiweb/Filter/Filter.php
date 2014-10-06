@@ -2,6 +2,7 @@
 
 namespace Archiweb\Filter;
 
+use Archiweb\Expression\AbstractKeyPath;
 use Archiweb\Expression\Expression;
 
 abstract class Filter {
@@ -22,6 +23,10 @@ abstract class Filter {
         $this->expression = $expression;
         $this->name = $name;
         $this->entity = $entity;
+
+        if ($expression) {
+            $this->setRootEntityToKeyPaths([$expression]);
+        }
 
     }
 
@@ -49,6 +54,23 @@ abstract class Filter {
     public function getEntity () {
 
         return $this->entity;
+
+    }
+
+    /**
+     * @param Expression[] $expressions
+     */
+    protected function setRootEntityToKeyPaths(array $expressions) {
+
+        foreach ($expressions as $expression) {
+
+            if ($expression instanceof AbstractKeyPath) {
+                $expression->setRootEntity($this->getEntity());
+            }
+
+            $this->setRootEntityToKeyPaths($expression->getExpressions());
+
+        }
 
     }
 

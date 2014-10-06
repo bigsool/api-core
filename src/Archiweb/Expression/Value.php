@@ -52,4 +52,13 @@ class Value implements Expression {
         return $this->value;
 
     }
+
+    /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return [];
+
+    }
 }

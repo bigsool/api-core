@@ -181,9 +181,13 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getMockExpressionWithOperator () {
 
-        return $this->getMockBuilder('\Archiweb\Expression\ExpressionWithOperator')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+        $expression = $this->getMockBuilder('\Archiweb\Expression\ExpressionWithOperator')
+                           ->disableOriginalConstructor()
+                           ->getMock();
+        // if we need to return something else for getExpressions, improve this part
+        $expression->method('getExpressions')->willReturn([]);
+
+        return $expression;
 
     }
 
@@ -312,9 +316,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return Registry
      */
-    public function getRegistry () {
+    public function getRegistry ($entity = null) {
 
-        return $this->getApplicationContext()->getNewRegistry();
+        $registry = $this->getApplicationContext()->getNewRegistry();
+
+        if (isset($entity)) {
+            $meth = new \ReflectionMethod($registry, 'addAliasForEntity');
+            $meth->setAccessible(true);
+            $meth->invokeArgs($registry, [$entity, lcfirst($entity)]);
+        }
+
+        return $registry;
 
     }
 

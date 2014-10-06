@@ -16,4 +16,9 @@ interface Expression {
      */
     public function resolve (Registry $registry, QueryContext $context);
 
+    /**
+     * @return Expression[]
+     */
+    public function getExpressions();
+
 } 

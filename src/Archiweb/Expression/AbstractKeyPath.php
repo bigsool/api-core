@@ -7,6 +7,7 @@ namespace Archiweb\Expression;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
+use Doctrine\ORM\Query;
 
 abstract class AbstractKeyPath extends Value {
 
@@ -19,6 +20,11 @@ abstract class AbstractKeyPath extends Value {
      * @var string
      */
     protected $entity;
+
+    /**
+     * @var string
+     */
+    protected $rootEntity;
 
     /**
      * @var bool
@@ -77,7 +83,15 @@ abstract class AbstractKeyPath extends Value {
             $this->process($ctx);
         }
 
-        $alias = lcfirst($ctx->getEntity());
+        $aliasForEntity = $registry->findAliasForEntity($this->getEntity($ctx));
+        if (count($aliasForEntity) == 0) {
+            throw new \RuntimeException('alias for entity ' . $this->getEntity($ctx) . ' not found');
+        }
+        elseif (count($aliasForEntity) > 1) {
+            throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
+        }
+
+        $alias = $aliasForEntity[0];
         $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
             $prevAlias = $alias;
@@ -100,7 +114,8 @@ abstract class AbstractKeyPath extends Value {
     public function process (FindQueryContext $ctx) {
 
         $exploded = explode('.', $this->getValue());
-        $entity = '\Archiweb\Model\\' . $ctx->getEntity();
+
+        $entity = '\Archiweb\Model\\' . $this->getEntity($ctx);
 
         for ($i = 0; $i < count($exploded); ++$i) {
 
@@ -143,6 +158,17 @@ abstract class AbstractKeyPath extends Value {
     }
 
     /**
+     * @param QueryContext $ctx
+     *
+     * @return string
+     */
+    protected function getEntity (QueryContext $ctx) {
+
+        return isset($this->rootEntity) ? $this->rootEntity : $ctx->getEntity();
+
+    }
+
+    /**
      * @param string $class
      *
      * @return string
@@ -170,6 +196,15 @@ abstract class AbstractKeyPath extends Value {
         }
 
         return $ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
+
+    }
+
+    /**
+     * @param string $entity
+     */
+    public function setRootEntity ($entity) {
+
+        $this->rootEntity = $entity;
 
     }
 
