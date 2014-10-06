@@ -10,7 +10,36 @@ use Doctrine\ORM\Query;
 
 class RuleProcessor {
 
+    /**
+     * @param QueryContext $ctx
+     */
     public function apply (QueryContext $ctx) {
+
+        $appliedRules = [];
+        while (true) {
+            $rules = $this->findRules($ctx);
+
+            if ($rules === $appliedRules) {
+                break;
+            }
+
+            foreach ($rules as $rule) {
+                if (!in_array($rule, $appliedRules)) {
+                    $rule->apply($ctx);
+                }
+            }
+
+            $appliedRules = $rules;
+
+        }
+    }
+
+    /**
+     * @param QueryContext $ctx
+     *
+     * @return array
+     */
+    public function findRules (QueryContext $ctx) {
 
         $appCtx = $ctx->getApplicationContext();
 
@@ -34,10 +63,7 @@ class RuleProcessor {
             $rules[] = $rule;
         }
 
-        foreach ($rules as $rule) {
-            $rule->apply($ctx);
-        }
-
+        return $rules;
     }
 
     protected function flatten (Rule $rule, QueryContext $context) {
