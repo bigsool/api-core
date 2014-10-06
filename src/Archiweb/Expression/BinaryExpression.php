@@ -40,6 +40,15 @@ class BinaryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return [$this->getLeft(), $this->getRight()];
+
+    }
+
+    /**
      * @return Operator
      */
     public function getOperator () {
@@ -61,12 +70,12 @@ class BinaryExpression implements ExpressionWithOperator {
 
         if ($this->getOperator() instanceof CompareOperator) {
 
-            return $leftStr . ' ' . $this->getOperator()->toDQL($rightStr);
+            return '(' . $leftStr . ' ' . $this->getOperator()->toDQL($rightStr) . ')';
 
         }
         else {
 
-            return $leftStr . ' ' . $this->getOperator()->toDQL() . ' ' . $rightStr;
+            return '(' . $leftStr . ' ' . $this->getOperator()->toDQL() . ' ' . $rightStr . ')';
 
         }
     }
@@ -86,15 +95,6 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getRight () {
 
         return $this->right;
-
-    }
-
-    /**
-     * @return Expression[]
-     */
-    public function getExpressions () {
-
-        return [$this->getLeft(),$this->getRight()];
 
     }
 }

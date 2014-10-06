@@ -32,6 +32,15 @@ class NAryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return $this->expressions;
+
+    }
+
+    /**
      * @return Operator
      */
     public function getOperator () {
@@ -48,23 +57,15 @@ class NAryExpression implements ExpressionWithOperator {
      */
     public function resolve (Registry $registry, QueryContext $context) {
 
-        return array_reduce($this->getExpressions(), function ($prev, Expression $expr) use ($registry, $context) {
+        return
+            '(' . array_reduce($this->getExpressions(), function ($prev, Expression $expr) use ($registry, $context) {
 
-            if ($prev) {
-                $prev = $prev . ' ' . $this->getOperator()->toDQL() . ' ';
-            }
+                if ($prev) {
+                    $prev = $prev . ' ' . $this->getOperator()->toDQL() . ' ';
+                }
 
-            return $prev . $expr->resolve($registry, $context);
-        });
-
-    }
-
-    /**
-     * @return Expression[]
-     */
-    public function getExpressions () {
-
-        return $this->expressions;
+                return $prev . $expr->resolve($registry, $context);
+            }) . ')';
 
     }
 }

@@ -28,6 +28,15 @@ class Value implements Expression {
     }
 
     /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return [];
+
+    }
+
+    /**
      * @param Registry     $registry
      * @param QueryContext $context
      *
@@ -50,15 +59,6 @@ class Value implements Expression {
     public function getValue () {
 
         return $this->value;
-
-    }
-
-    /**
-     * @return Expression[]
-     */
-    public function getExpressions () {
-
-        return [];
 
     }
 }

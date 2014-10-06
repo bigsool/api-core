@@ -52,7 +52,7 @@ class UnaryExpressionTest extends TestCase {
 
         $exp = new UnaryExpression($operator, $value);
 
-        $this->assertEquals('I\'m the value IS NULL', $exp->resolve($registry, $context));
+        $this->assertEquals('(I\'m the value IS NULL)', $exp->resolve($registry, $context));
     }
 
 } 

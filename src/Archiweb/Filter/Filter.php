@@ -31,6 +31,32 @@ abstract class Filter {
     }
 
     /**
+     * @param Expression[] $expressions
+     */
+    protected function setRootEntityToKeyPaths (array $expressions) {
+
+        foreach ($expressions as $expression) {
+
+            if ($expression instanceof AbstractKeyPath) {
+                $expression->setRootEntity($this->getEntity());
+            }
+
+            $this->setRootEntityToKeyPaths($expression->getExpressions());
+
+        }
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntity () {
+
+        return $this->entity;
+
+    }
+
+    /**
      * @return Expression
      */
     public function getExpression () {
@@ -45,32 +71,6 @@ abstract class Filter {
     public function getName () {
 
         return $this->name;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getEntity () {
-
-        return $this->entity;
-
-    }
-
-    /**
-     * @param Expression[] $expressions
-     */
-    protected function setRootEntityToKeyPaths(array $expressions) {
-
-        foreach ($expressions as $expression) {
-
-            if ($expression instanceof AbstractKeyPath) {
-                $expression->setRootEntity($this->getEntity());
-            }
-
-            $this->setRootEntityToKeyPaths($expression->getExpressions());
-
-        }
 
     }
 

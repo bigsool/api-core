@@ -45,7 +45,7 @@ class UseCasesTest extends TestCase {
         self::$appCtx->addField(new StarField('HostedProject'));
         self::$appCtx->addField(new StarField('Storage'));
 
-        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0', 'SELECT'));
+        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'login = "IAM LOGIN"', 'SELECT'));
 
         self::$appCtx->addFilter(new StringFilter('HostedProject', 'withSharedProject',
                                                   'sharedHostedProjects.participant = :authUser', 'SELECT'));
@@ -257,19 +257,20 @@ class UseCasesTest extends TestCase {
         $result = $registry->find($qryCtx);
         $dql = $registry->getLastExecutedQuery();
 
-        $exceptedQry = '/^' .
-                       'SELECT hostedProject, hostedProjectCreatorCompanyStorage ' .
-                       'FROM \\\\Archiweb\\\\Model\\\\HostedProject hostedProject ' .
-                       'INNER JOIN hostedProject\.creator hostedProjectCreator ' .
-                       'INNER JOIN hostedProjectCreator\.company hostedProjectCreatorCompany ' .
-                       'INNER JOIN hostedProjectCreatorCompany\.storage hostedProjectCreatorCompanyStorage ' .
-                       'LEFT JOIN hostedProjectCreatorCompany\.users hostedProjectCreatorCompanyUsers ' .
-                       'LEFT JOIN hostedProject\.sharedHostedProjects hostedProjectSharedHostedProjects ' .
-                       'LEFT JOIN hostedProjectSharedHostedProjects\.participant hostedProjectSharedHostedProjectsParticipant '
-                       .
-                       'WHERE :authUser_[0-9a-z]+ MEMBER OF hostedProjectCreatorCompany\.users ' .
-                       'OR :authUser_[0-9a-z]+ = hostedProjectSharedHostedProjects\.participant' .
-                       '$/';
+        $exceptedQry =
+            '/^' .
+            'SELECT hostedProject, hostedProjectCreatorCompanyStorage ' .
+            'FROM \\\\Archiweb\\\\Model\\\\HostedProject hostedProject ' .
+            'INNER JOIN hostedProject\\.creator hostedProjectCreator ' .
+            'INNER JOIN hostedProjectCreator\\.company hostedProjectCreatorCompany ' .
+            'INNER JOIN hostedProjectCreatorCompany\\.storage hostedProjectCreatorCompanyStorage ' .
+            'LEFT JOIN hostedProjectCreatorCompany\\.users hostedProjectCreatorCompanyUsers ' .
+            'LEFT JOIN hostedProject\\.sharedHostedProjects hostedProjectSharedHostedProjects ' .
+            'LEFT JOIN hostedProjectSharedHostedProjects\\.participant hostedProjectSharedHostedProjectsParticipant ' .
+            'WHERE \\(\\(hostedProjectCreatorCompanyStorage\\.isOutOfQuota = \'0\'\\) ' .
+            'AND \\(\\(:authUser_[0-9a-z]+ MEMBER OF hostedProjectCreatorCompany\\.users\\) ' .
+            'OR \\(:authUser_[0-9a-z]+ = hostedProjectSharedHostedProjects\\.participant\\)\\)\\)' .
+            '$/';
 
         $this->assertRegExp($exceptedQry, $dql);
         $this->assertCount(3, $result);

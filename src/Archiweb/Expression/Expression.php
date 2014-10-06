@@ -19,6 +19,6 @@ interface Expression {
     /**
      * @return Expression[]
      */
-    public function getExpressions();
+    public function getExpressions ();
 
 } 

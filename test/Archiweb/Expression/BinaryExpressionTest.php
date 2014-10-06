@@ -80,7 +80,7 @@ class BinaryExpressionTest extends TestCase {
 
         $exp = new BinaryExpression($operator, $left, $right);
 
-        $this->assertEquals("I'm left = I'm right", $exp->resolve($registry, $context));
+        $this->assertEquals("(I'm left = I'm right)", $exp->resolve($registry, $context));
     }
 
     public function testResolveQweEquals1 () {
@@ -96,7 +96,7 @@ class BinaryExpressionTest extends TestCase {
 
         $exp = new BinaryExpression($operator, $left, $right);
 
-        $this->assertEquals("'Qwe' = 1", $exp->resolve($registry, $context));
+        $this->assertEquals("('Qwe' = 1)", $exp->resolve($registry, $context));
     }
 
     public function testResolveAAndB () {
@@ -112,7 +112,7 @@ class BinaryExpressionTest extends TestCase {
 
         $exp = new BinaryExpression($operator, $left, $right);
 
-        $this->assertEquals("'A' AND 'B'", $exp->resolve($registry, $context));
+        $this->assertEquals("('A' AND 'B')", $exp->resolve($registry, $context));
     }
 
 } 

@@ -32,6 +32,15 @@ class UnaryExpression implements ExpressionWithOperator {
     }
 
     /**
+     * @return Expression[]
+     */
+    public function getExpressions () {
+
+        return $this->getValue();
+
+    }
+
+    /**
      * @return CompareOperator
      */
     public function getOperator () {
@@ -50,7 +59,7 @@ class UnaryExpression implements ExpressionWithOperator {
 
         $valueStr = $this->getValue()->resolve($registry, $context);
 
-        return $valueStr . ' ' . $this->getOperator()->toDQL();
+        return '(' . $valueStr . ' ' . $this->getOperator()->toDQL() . ')';
 
     }
 
@@ -60,15 +69,6 @@ class UnaryExpression implements ExpressionWithOperator {
     public function getValue () {
 
         return $this->value;
-
-    }
-
-    /**
-     * @return Expression[]
-     */
-    public function getExpressions () {
-
-        return $this->getValue();
 
     }
 }

@@ -316,7 +316,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return Registry
      */
-    public function getRegistry ($entity = null) {
+    public function getRegistry ($entity = NULL) {
 
         $registry = $this->getApplicationContext()->getNewRegistry();
 

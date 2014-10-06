@@ -65,13 +65,13 @@ class NAryExpressionTest extends TestCase {
         $expr3->method('resolve')->willReturn('Expr. 3');
 
         $expr = new NAryExpression($operator, []);
-        $this->assertEquals('', $expr->resolve($registry, $context));
+        $this->assertEquals('()', $expr->resolve($registry, $context));
 
         $expr = new NAryExpression($operator, [$expr1]);
-        $this->assertEquals('Expr. 1', $expr->resolve($registry, $context));
+        $this->assertEquals('(Expr. 1)', $expr->resolve($registry, $context));
 
         $expr = new NAryExpression($operator, [$expr1, $expr2, $expr3]);
-        $this->assertEquals('Expr. 1 AND Expr. 2 AND Expr. 3', $expr->resolve($registry, $context));
+        $this->assertEquals('(Expr. 1 AND Expr. 2 AND Expr. 3)', $expr->resolve($registry, $context));
     }
 
 } 

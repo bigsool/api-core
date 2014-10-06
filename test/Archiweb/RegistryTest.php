@@ -342,7 +342,7 @@ class RegistryTest extends TestCase {
         $result = $registry->find($qryCtx, false);
         $dql = 'SELECT product ' .
                'FROM \Archiweb\Model\Product product ' .
-               'WHERE product.price = 17';
+               'WHERE ((product.price = 17))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
         $parameter = new Parameter(':price');
@@ -353,8 +353,8 @@ class RegistryTest extends TestCase {
         $result = $registry->find($qryCtx, false);
         $dql = 'SELECT product ' .
                'FROM \Archiweb\Model\Product product ' .
-               'WHERE product.price = 17 ' .
-               'AND ' . $parameter->getRealName() . ' = product.price';
+               'WHERE ((product.price = 17) ' .
+               'AND (' . $parameter->getRealName() . ' = product.price))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -372,7 +372,7 @@ class RegistryTest extends TestCase {
 
         $dql = 'SELECT functionality ' .
                'FROM \Archiweb\Model\Functionality functionality ' .
-               'WHERE functionality.consumable = 1';
+               'WHERE ((functionality.consumable = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
