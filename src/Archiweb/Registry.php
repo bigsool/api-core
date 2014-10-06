@@ -83,18 +83,21 @@ class Registry {
     }
 
     /**
-     * @param $alias
-     * @param $field
+     * @param FindQueryContext $ctx
+     * @param string           $alias
+     * @param string           $field
+     * @param string           $entity
      *
      * @return string
      */
-    public function addJoin (FindQueryContext $ctx, $alias, $field) {
+    public function addJoin (FindQueryContext $ctx, $alias, $field, $entity) {
 
         $join = $alias . '.' . $field;
 
         if (!isset($this->joins[$join])) {
 
             $newAlias = $alias . ucfirst($field);
+            $ctx->addJoinedEntity($entity);
             $this->getQueryBuilder($ctx->getEntity())->innerJoin($join, $newAlias);
 
             $this->joins[$join] = $newAlias;

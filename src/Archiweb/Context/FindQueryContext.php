@@ -26,6 +26,11 @@ class FindQueryContext implements QueryContext {
     protected $entity;
 
     /**
+     * @var string[]
+     */
+    protected $joinedEntities = [];
+
+    /**
      * @var KeyPath[]
      */
     protected $keyPaths;
@@ -65,6 +70,15 @@ class FindQueryContext implements QueryContext {
     public function getEntity () {
 
         return $this->entity;
+
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getJoinedEntities() {
+
+        return $this->joinedEntities;
 
     }
 
@@ -130,6 +144,15 @@ class FindQueryContext implements QueryContext {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
+    }
+
+    /**
+     * @param $entity
+     */
+    public function addJoinedEntity($entity) {
+
+        $this->joinedEntities[] = $entity;
 
     }
 

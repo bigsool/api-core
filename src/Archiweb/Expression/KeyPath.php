@@ -72,11 +72,11 @@ class KeyPath extends Value {
         $prevAlias = NULL;
         foreach ($this->joinsToDo as $joinToDo) {
             $prevAlias = $alias;
-            $alias = $registry->addJoin($ctx, $alias, $joinToDo);
+            $alias = $registry->addJoin($ctx, $alias, $joinToDo['field'], $joinToDo['entity']);
         }
 
         if (isset($prevAlias) && $this->field == '*') {
-            return $prevAlias . '.' . $joinToDo;
+            return $prevAlias . '.' . $joinToDo['field'];
         }
 
         return $alias . ($this->field == '*' ? '' : ('.' . $this->field));
@@ -117,8 +117,8 @@ class KeyPath extends Value {
             $associations = $metadata->getAssociationNames();
 
             if (in_array($field, $associations)) {
-                $this->joinsToDo[] = $field;
                 $entity = $metadata->getAssociationMapping($field)['targetEntity'];
+                $this->joinsToDo[] = ['field'=>$field,'entity'=>$entity];
             }
             else {
                 throw new \RuntimeException("$field not found in $entity");
