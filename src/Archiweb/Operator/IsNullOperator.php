@@ -14,5 +14,6 @@ class IsNullOperator implements CompareOperator {
     public function toDQL ($value = NULL) {
 
         return 'IS NULL';
+
     }
 }

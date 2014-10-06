@@ -24,6 +24,7 @@ class Value implements Expression {
         }
 
         $this->value = $value;
+
     }
 
     /**
@@ -40,6 +41,7 @@ class Value implements Expression {
         }
 
         return (string)$v;
+
     }
 
     /**
@@ -48,5 +50,6 @@ class Value implements Expression {
     public function getValue () {
 
         return $this->value;
+
     }
 }

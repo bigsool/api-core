@@ -36,6 +36,7 @@ class BinaryExpression implements ExpressionWithOperator {
         $this->operator = $operator;
         $this->left = $left;
         $this->right = $right;
+
     }
 
     /**
@@ -44,6 +45,7 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getOperator () {
 
         return $this->operator;
+
     }
 
     /**
@@ -75,6 +77,7 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getLeft () {
 
         return $this->left;
+
     }
 
     /**
@@ -83,5 +86,6 @@ class BinaryExpression implements ExpressionWithOperator {
     public function getRight () {
 
         return $this->right;
+
     }
 }

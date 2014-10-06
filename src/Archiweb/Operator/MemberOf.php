@@ -19,6 +19,7 @@ class MemberOf implements CompareOperator {
         }
 
         return "MEMBER OF $value";
+
     }
 
 } 

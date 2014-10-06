@@ -51,8 +51,10 @@ class UseCasesTest extends TestCase {
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'fromMyCompany', 'SELECT', $binary));
 
         $binary = new BinaryExpression(new OrOperator(),
-            new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('creator.company.users', true)),
-            new BinaryExpression(new EqualOperator(), new Parameter(':authUser'), new KeyPath('sharedHostedProjects.participant', true)));
+                                       new BinaryExpression(new MemberOf(), new Parameter(':authUser'),
+                                                            new KeyPath('creator.company.users', true)),
+                                       new BinaryExpression(new EqualOperator(), new Parameter(':authUser'),
+                                                            new KeyPath('sharedHostedProjects.participant', true)));
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', 'SELECT', $binary));
 
         self::$appCtx->addRule(new SimpleRule('accessibleProjectRule', function (QueryContext $context) {

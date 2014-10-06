@@ -148,6 +148,7 @@ class KeyPath extends Value {
     protected function getEntityForClass ($class) {
 
         return (new \ReflectionClass($class))->getShortName();
+
     }
 
     /**

@@ -64,6 +64,7 @@ class RuleProcessor {
         }
 
         return $rules;
+
     }
 
     protected function flatten (Rule $rule, QueryContext $context) {
@@ -74,6 +75,7 @@ class RuleProcessor {
         }
 
         return $result;
+
     }
 
     protected function flattenRec (array &$accumulator, Rule $rule) {
@@ -84,6 +86,7 @@ class RuleProcessor {
         foreach ($rule->listChildRules() as $childRule) {
             $this->flattenRec($accumulator, $childRule);
         }
+        
     }
 
 } 

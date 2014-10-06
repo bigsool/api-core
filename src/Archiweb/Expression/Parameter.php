@@ -32,8 +32,9 @@ class Parameter extends Value {
     }
 
     /**
-     * @param string $value
-     * return boolean
+     * @param mixed $value
+     *
+     * @return bool
      */
     static public function isValidParameter ($value) {
 

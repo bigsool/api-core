@@ -28,6 +28,7 @@ class NAryExpression implements ExpressionWithOperator {
 
         $this->operator = $operator;
         $this->expressions = $expressions;
+
     }
 
     /**
@@ -36,6 +37,7 @@ class NAryExpression implements ExpressionWithOperator {
     public function getOperator () {
 
         return $this->operator;
+
     }
 
     /**
@@ -54,6 +56,7 @@ class NAryExpression implements ExpressionWithOperator {
 
             return $prev . $expr->resolve($registry, $context);
         });
+
     }
 
     /**
@@ -62,5 +65,6 @@ class NAryExpression implements ExpressionWithOperator {
     public function getExpressions () {
 
         return $this->expressions;
+
     }
 }

@@ -19,6 +19,7 @@ class LowerOrEqualOperator implements CompareOperator {
         }
 
         return "<= $value";
+
     }
 
 }

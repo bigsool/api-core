@@ -28,6 +28,7 @@ class UnaryExpression implements ExpressionWithOperator {
 
         $this->operator = $compareOperator;
         $this->value = $value;
+
     }
 
     /**
@@ -36,6 +37,7 @@ class UnaryExpression implements ExpressionWithOperator {
     public function getOperator () {
 
         return $this->operator;
+
     }
 
     /**
@@ -49,6 +51,7 @@ class UnaryExpression implements ExpressionWithOperator {
         $valueStr = $this->getValue()->resolve($registry, $context);
 
         return $valueStr . ' ' . $this->getOperator()->toDQL();
+
     }
 
     /**
@@ -57,5 +60,6 @@ class UnaryExpression implements ExpressionWithOperator {
     public function getValue () {
 
         return $this->value;
+        
     }
 }

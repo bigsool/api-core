@@ -13,6 +13,7 @@ class AndOperatorTest extends \PHPUnit_Framework_TestCase {
 
         $operator = new AndOperator();
         $this->assertEquals('AND', $operator->toDQL());
+
     }
 
 } 

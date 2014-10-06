@@ -12,5 +12,6 @@ class AndOperator implements LogicOperator {
     public function toDQL () {
 
         return 'AND';
+
     }
 }

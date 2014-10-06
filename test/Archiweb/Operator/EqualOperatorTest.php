@@ -13,6 +13,7 @@ class EqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
         $operator = new EqualOperator();
         $this->assertEquals('= qwe', $operator->toDQL('qwe'));
+
     }
 
     /**
@@ -22,6 +23,7 @@ class EqualOperatorTest extends \PHPUnit_Framework_TestCase {
 
         $operator = new EqualOperator();
         $operator->toDQL();
+
     }
 
 } 

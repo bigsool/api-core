@@ -76,7 +76,7 @@ class FindQueryContext implements QueryContext {
     /**
      * @return string[]
      */
-    public function getJoinedEntities() {
+    public function getJoinedEntities () {
 
         return $this->joinedEntities;
 
@@ -150,7 +150,7 @@ class FindQueryContext implements QueryContext {
     /**
      * @param string $entity
      */
-    public function addJoinedEntity($entity) {
+    public function addJoinedEntity ($entity) {
 
         $this->joinedEntities[] = $entity;
 
