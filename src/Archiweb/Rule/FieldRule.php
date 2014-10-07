@@ -71,13 +71,17 @@ class FieldRule implements Rule {
         }
 
 
-        if ($ctx->getEntity() != $this->getField()->getEntity() && !in_array( $this->getField()->getEntity() ,$ctx->getJoinedEntities())) {
+        if ($ctx->getEntity() != $this->getField()->getEntity()
+            && !in_array($this->getField()->getEntity(), $ctx->getJoinedEntities())
+        ) {
             return false;
         }
 
         foreach ($ctx->getKeyPaths() as $keyPath) {
             $keyPathField = $keyPath->getField($ctx);
-            if ($keyPathField->getEntity() != $ctx->getEntity() && !in_array($keyPathField->getEntity() ,$ctx->getJoinedEntities())) {
+            if ($keyPathField->getEntity() != $ctx->getEntity()
+                && !in_array($keyPathField->getEntity(), $ctx->getJoinedEntities())
+            ) {
                 continue;
             }
             if ($keyPathField instanceof StarField) {
