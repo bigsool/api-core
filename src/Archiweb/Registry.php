@@ -196,16 +196,12 @@ class Registry {
             throw new \RuntimeException('fields are required');
         }
 
-
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
-            $keyPathField = $keyPath->getField($ctx);
-            if (is_a($keyPathField, '\Archiweb\Field\StarField')) {
-                $qb->addSelect($field);
+            if ($keyPath->getAlias()) {
+                $field .= ' AS ' . $keyPath->getAlias();
             }
-            else {
-                $qb->addSelect($field);
-            }
+            $qb->addSelect($field);
         }
 
         $ruleProcessor = new RuleProcessor();

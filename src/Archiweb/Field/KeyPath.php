@@ -31,16 +31,9 @@ class KeyPath extends AbstractKeyPath {
     }
 
     /**
-     * @param Registry     $registry
-     * @param QueryContext $context
-     *
      * @return string
      */
-    public function resolve (Registry $registry, QueryContext $context) {
-
-        $alias = parent::resolve($registry, $context);
-
-        return isset($this->alias) ? $this->alias : $alias;
-
+    public function getAlias () {
+        return $this->alias;
     }
 }
