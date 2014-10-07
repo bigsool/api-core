@@ -378,6 +378,26 @@ class RegistryTest extends TestCase {
     }
 
     /**
+     *
+     */
+    public function testFindWithAlias () {
+
+        $qryCtx = new FindQueryContext($this->appCtx, 'User');
+        $qryCtx->addKeyPath(new FieldKeyPath('email'));
+        $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
+        $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
+
+        $registry = $this->appCtx->getNewRegistry();
+        $registry->find($qryCtx, false);
+
+        $dql = 'SELECT user.email, user.name AS userName, userCompany.name AS companyName ' .
+               'FROM \Archiweb\Model\User user ' .
+               'INNER JOIN user.company userCompany';
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testFindWithoutFields () {
