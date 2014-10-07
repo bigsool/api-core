@@ -4,13 +4,23 @@
 namespace Archiweb\Field;
 
 
-use Archiweb\Context\QueryContext;
 use Archiweb\Expression\AbstractKeyPath;
-use Archiweb\Registry;
 
 class KeyPath extends AbstractKeyPath {
 
+    /**
+     * @var string|void
+     */
     protected $alias;
+
+    /**
+     * @return string|void
+     */
+    public function getAlias () {
+
+        return $this->alias;
+
+    }
 
     /**
      * @param string $alias
@@ -28,12 +38,5 @@ class KeyPath extends AbstractKeyPath {
 
         return false;
 
-    }
-
-    /**
-     * @return string
-     */
-    public function getAlias () {
-        return $this->alias;
     }
 }
