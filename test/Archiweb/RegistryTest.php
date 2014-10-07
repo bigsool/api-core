@@ -67,7 +67,7 @@ class RegistryTest extends TestCase {
 
         $funcConsumableRule = new SimpleRule('funcConsumableRule', function () {
 
-            return false;
+            return true;
 
         }, $funcConsumableFilter);
 

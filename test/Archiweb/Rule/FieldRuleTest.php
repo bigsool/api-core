@@ -85,13 +85,20 @@ class FieldRuleTest extends TestCase {
 
     public function testShouldApply () {
 
+        $appCtx = $this->getApplicationContext();
 
         $field = new Field('Company', 'name');
         $mockRule = $this->getMockCompanyRule();
         $mockRule->method('shouldApply')->willReturn(true);
-        $rule = new FieldRule($field, $mockRule);
-        $appCtx = $this->getApplicationContext();
+        $rule1 = new FieldRule($field, $mockRule);
         $appCtx->addField($field);
+
+        $field = new Field('User', 'email');
+        $mockRule = $this->getMockCompanyRule();
+        $mockRule->method('shouldApply')->willReturn(false);
+        $rule2 = new FieldRule($field, $mockRule);
+        $appCtx->addField($field);
+
         $appCtx->addField(new Field('Company', 'owner'));
         $appCtx->addField(new Field('User', 'name'));
         $appCtx->addField(new StarField('Company'));
@@ -101,25 +108,31 @@ class FieldRuleTest extends TestCase {
         $qryCtx = new FindQueryContext($appCtx, 'Company');
         $qryCtx->addKeyPath(new KeyPath('name'));
 
-        $this->assertTrue($rule->shouldApply($qryCtx));
+        $this->assertTrue($rule1->shouldApply($qryCtx));
 
 
         $qryCtx = new FindQueryContext($appCtx, 'User');
         $qryCtx->addKeyPath(new KeyPath('name'));
 
-        $this->assertFalse($rule->shouldApply($qryCtx));
+        $this->assertFalse($rule1->shouldApply($qryCtx));
+
+
+        $qryCtx = new FindQueryContext($appCtx, 'User');
+        $qryCtx->addKeyPath(new KeyPath('email'));
+
+        $this->assertFalse($rule1->shouldApply($qryCtx));
 
 
         $qryCtx = new FindQueryContext($appCtx, 'Company');
         $qryCtx->addKeyPath(new KeyPath('owner'));
 
-        $this->assertFalse($rule->shouldApply($qryCtx));
+        $this->assertFalse($rule1->shouldApply($qryCtx));
 
 
         $qryCtx = new FindQueryContext($appCtx, 'Company');
         $qryCtx->addKeyPath(new KeyPath('*'));
 
-        $this->assertTrue($rule->shouldApply($qryCtx));
+        $this->assertTrue($rule1->shouldApply($qryCtx));
 
     }
 
