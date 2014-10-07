@@ -77,6 +77,16 @@ class FindQueryContextTest extends TestCase {
             $this->assertContains($f, $ctx->getKeyPaths());
         }
 
+        // keyPath with alias
+        $keyPath = $this->getMockFieldKeyPath();
+        $setAliasCalled = false;
+        $alias = 'qwe';
+        $keyPath->method('setAlias')->will($this->returnCallback(function($alias2)use(&$setAliasCalled,&$alias){
+            $setAliasCalled = $alias === $alias2;
+        }));
+        $ctx->addKeyPath($keyPath, $alias);
+        $this->assertTrue($setAliasCalled);
+
     }
 
     public function testGetApplicationContext () {

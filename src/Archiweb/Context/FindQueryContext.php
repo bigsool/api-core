@@ -97,8 +97,11 @@ class FindQueryContext implements QueryContext {
 
     /**
      * @param KeyPath $keyPath
+     * @param string  $alias
      */
-    public function addKeyPath (KeyPath $keyPath) {
+    public function addKeyPath (KeyPath $keyPath, $alias = NULL) {
+
+        $keyPath->setAlias($alias);
 
         $this->keyPaths[] = $keyPath;
 

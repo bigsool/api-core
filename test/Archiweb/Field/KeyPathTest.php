@@ -24,4 +24,19 @@ class KeyPathTest extends TestCase {
         $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
     }
 
+    public function testAlias() {
+
+        $registry = $this->getRegistry('HostedProject');
+        $context = $this->getFindQueryContext('HostedProject');
+
+        $alias = 'qwe';
+
+        $param = new KeyPath('creator.company.storage');
+        $param->setAlias($alias);
+        $resolve = $param->resolve($registry, $context);
+
+        $this->assertEquals($alias, $resolve);
+
+    }
+
 } 
