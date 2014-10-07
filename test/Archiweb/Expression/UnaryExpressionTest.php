@@ -55,4 +55,18 @@ class UnaryExpressionTest extends TestCase {
         $this->assertEquals('(I\'m the value IS NULL)', $exp->resolve($registry, $context));
     }
 
+    /**
+     *
+     */
+    public function testGetExpressions () {
+
+        $operator = $this->getMockCompareOperator();
+        $value = $this->getMockValue();
+
+        $exp = new UnaryExpression($operator, $value);
+
+        $this->assertSame([$value], $exp->getExpressions());
+
+    }
+
 } 

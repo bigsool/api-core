@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Field\KeyPath;
 use Archiweb\Model\HostedProject;
 use Archiweb\TestCase;
 
@@ -113,7 +114,38 @@ class KeyPathTest extends TestCase {
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $this->assertEquals('hostedProjectCreatorCompany.storage', $resolve1);
+        $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAliasNotFound () {
+
+        $registry = $this->getRegistry('HostedProject');
+        $context = $this->getFindQueryContext('Product');
+
+        $param = '*';
+
+        (new KeyPath($param))->resolve($registry, $context);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testMoreThanOneAliasFound () {
+
+        $registry = $this->getRegistry('HostedProject');
+        $context = $this->getFindQueryContext('HostedProject');
+
+        (new KeyPath('creator'))->resolve($registry, $context);
+        (new KeyPath('sharedHostedProjects.participant'))->resolve($registry, $context);
+
+        $keyPath = new KeyPath('name');
+        $keyPath->setRootEntity('User');
+        $keyPath->resolve($registry,$context);
+
     }
 
 } 

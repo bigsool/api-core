@@ -14,9 +14,11 @@ use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\Expression;
 use Archiweb\Expression\ExpressionWithOperator;
 use Archiweb\Expression\KeyPath as ExpressionKeyPath;
+use Archiweb\Expression\Value;
 use Archiweb\Field\Field;
 use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\Filter;
+use Archiweb\Operator\CompareOperator;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Rule\Rule;
@@ -171,6 +173,28 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockLogicOperator () {
 
         return $this->getMockBuilder('\Archiweb\Operator\LogicOperator')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return CompareOperator
+     */
+    public function getMockCompareOperator () {
+
+        return $this->getMockBuilder('\Archiweb\Operator\CompareOperator')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Value
+     */
+    public function getMockValue () {
+
+        return $this->getMockBuilder('\Archiweb\Expression\Value')
                     ->disableOriginalConstructor()
                     ->getMock();
 

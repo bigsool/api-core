@@ -36,7 +36,7 @@ class UnaryExpression implements ExpressionWithOperator {
      */
     public function getExpressions () {
 
-        return $this->getValue();
+        return [$this->getValue()];
 
     }
 
