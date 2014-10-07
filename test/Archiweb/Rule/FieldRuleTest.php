@@ -88,6 +88,7 @@ class FieldRuleTest extends TestCase {
 
         $field = new Field('Company', 'name');
         $mockRule = $this->getMockCompanyRule();
+        $mockRule->method('shouldApply')->willReturn(true);
         $rule = new FieldRule($field, $mockRule);
         $appCtx = $this->getApplicationContext();
         $appCtx->addField($field);
