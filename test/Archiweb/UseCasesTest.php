@@ -45,7 +45,7 @@ class UseCasesTest extends TestCase {
         self::$appCtx->addField(new StarField('HostedProject'));
         self::$appCtx->addField(new StarField('Storage'));
 
-        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'login = "IAM LOGIN"', 'SELECT'));
+        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0', 'SELECT'));
 
         self::$appCtx->addFilter(new StringFilter('HostedProject', 'withSharedProject',
                                                   'sharedHostedProjects.participant = :authUser', 'SELECT'));
@@ -281,11 +281,13 @@ class UseCasesTest extends TestCase {
 
         $user1 = $this->createUser(['name' => 'User 1']);
         $company1 = $this->createCompany(['name' => 'Company 1']);
-        $this->setUserToCompany($user1, $company1);
+        $storage1 = $this->createStorage(['login' => 'Storage 1', 'url' => 'URL']);
+        $this->setUserToCompany($user1, $company1, $storage1);
 
         $user2 = $this->createUser(['name' => 'User 2']);
-        $company1 = $this->createCompany(['name' => 'Company 2']);
-        $this->setUserToCompany($user2, $company1);
+        $company2 = $this->createCompany(['name' => 'Company 2']);
+        $storage2 = $this->createStorage(['login' => 'Storage 2', 'url' => 'URL']);
+        $this->setUserToCompany($user2, $company2, $storage2);
 
         $this->createProject('Projet de 1', $user1);
         $this->createProject('Projet de 1 partagé avec 2', $user1, [$user2]);
@@ -335,7 +337,7 @@ class UseCasesTest extends TestCase {
     /**
      * @param array $params
      *
-     * @return User
+     * @return Company
      */
     protected function createCompany (array $params = []) {
 
@@ -357,15 +359,39 @@ class UseCasesTest extends TestCase {
     }
 
     /**
+     * @param array $params
+     *
+     * @return Storage
+     */
+    protected function createStorage (array $params = []) {
+
+        $storage = new Storage();
+        $storage->setUrl($this->d($params, 'url'));
+        $storage->setLogin($this->d($params, 'login'));
+        $storage->setPassword($this->d($params, 'password'));
+        $storage->setUsedspace($this->d($params, 'usedSpace', 0));
+        $storage->setIsoutofquota($this->d($params, 'isOutOfQuota', 0));
+        $storage->setLastusedspaceupdate(new \DateTime());
+
+        self::$appCtx->getNewRegistry()->save($storage);
+
+        return $storage;
+
+    }
+
+    /**
      * @param User    $user
      * @param Company $company
+     * @param Storage $storage
      */
-    protected function setUserToCompany (User &$user, Company &$company) {
+    protected function setUserToCompany (User &$user, Company &$company, Storage &$storage) {
 
         $user->setCompany($company);
         $user->setOwnedCompany($company);
         $company->setOwner($user);
         $company->addUser($user);
+        $company->setStorage($storage);
+        $storage->setCompany($company);
 
         self::$appCtx->getNewRegistry()->save($user);
 
