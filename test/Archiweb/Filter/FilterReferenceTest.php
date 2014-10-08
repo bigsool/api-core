@@ -28,14 +28,19 @@ class FilterReferenceTest extends TestCase {
 
         $appCtx = $this->getMockApplicationContext();
         $filter = $this->getMockFilter();
+        $filter2 = $this->getMockFilter();
         $expression = $this->getMockExpression();
-        $filter->method('getExpression')->willReturn($expression);
-        $filter->method('getName')->willReturn('JeSuisUnFiltre');
-        $appCtx->method('getFilters')->willReturn(array($filter));
+        $filter->method('getExpression')->willReturn($this->getMockExpression());
+        $filter->method('getName')->willReturn('IAmAFilter');
+        $filter->method('getEntity')->willReturn('OfThisEntity');
+        $filter2->method('getExpression')->willReturn($expression);
+        $filter2->method('getName')->willReturn('IAmAFilter');
+        $filter2->method('getEntity')->willReturn('OfThisOtherEntity');
+        $appCtx->method('getFilters')->willReturn(array($filter,$filter2));
 
-        $referenceFilter = new FilterReference($appCtx, 'project', $filter->getName());
+        $referenceFilter = new FilterReference($appCtx, $filter2->getEntity(), $filter2->getName());
         $expression = $referenceFilter->getExpression();
-        $this->assertSame($filter->getExpression(), $expression);
+        $this->assertSame($filter2->getExpression(), $expression);
 
     }
 
