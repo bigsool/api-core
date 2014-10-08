@@ -30,8 +30,8 @@ class FilterReferenceTest extends TestCase {
         $filter = $this->getMockFilter();
         $expression = $this->getMockExpression();
         $filter->method('getExpression')->willReturn($expression);
+        $filter->method('getName')->willReturn('JeSuisUnFiltre');
         $appCtx->method('getFilters')->willReturn(array($filter));
-        $appCtx->addFilter($filter);
 
         $referenceFilter = new FilterReference($appCtx, 'project', $filter->getName());
         $expression = $referenceFilter->getExpression();

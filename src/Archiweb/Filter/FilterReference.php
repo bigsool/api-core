@@ -12,7 +12,7 @@ class FilterReference extends Filter {
     /**
      * @param ApplicationContext $appCtx
      * @param string             $entity
-     * @param                    string name
+     * @param string             $name
      */
     function __construct (ApplicationContext $appCtx, $entity, $name) {
 
