@@ -31,7 +31,7 @@ class FilterReference extends Filter {
 
         foreach ($filters as $filter) {
 
-            if ($filter->getName() == $this->getName()) {
+            if ($filter->getEntity() == $this->getEntity() && $filter->getName() == $this->getName()) {
                 return $filter->getExpression();
             }
 
