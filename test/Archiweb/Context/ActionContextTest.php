@@ -40,6 +40,15 @@ class ActionContextTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidContext () {
+
+        new ActionContext(new ApplicationContext());
+
+    }
+
     public function testParams () {
 
         $array = [$this->getMockParameter('a'), 'b' => $this->getMockParameter(2), $this->getMockParameter(['c'])];
@@ -62,6 +71,7 @@ class ActionContextTest extends TestCase {
     public function testParamInvalidType () {
 
         $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams(['qwe']);
 
