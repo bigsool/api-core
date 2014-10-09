@@ -144,7 +144,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testAction() {
+    public function testAction () {
 
         $appCtx = $this->getApplicationContext();
         $this->assertInternalType('array', $appCtx->getActions());

@@ -38,7 +38,7 @@ class ExpressionFilterTest extends TestCase {
      */
     public function testGetExpressionWithoutExpression () {
 
-        (new ExpressionFilter('project', 'myProject', 'select', null))->getExpression();
+        (new ExpressionFilter('project', 'myProject', 'select', NULL))->getExpression();
 
     }
 

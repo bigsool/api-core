@@ -144,7 +144,7 @@ class KeyPathTest extends TestCase {
 
         $keyPath = new KeyPath('name');
         $keyPath->setRootEntity('User');
-        $keyPath->resolve($registry,$context);
+        $keyPath->resolve($registry, $context);
 
     }
 

@@ -248,17 +248,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return Action
-     */
-    public function getMockAction() {
-
-        return $this->getMockBuilder('\Archiweb\Action\Action')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
      * @param mixed $conn
      *
      * @return ApplicationContext
@@ -292,6 +281,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $ctx->setEntityManager($em);
 
         return $ctx;
+
+    }
+
+    /**
+     * @return Action
+     */
+    public function getMockAction () {
+
+        return $this->getMockBuilder('\Archiweb\Action\Action')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 

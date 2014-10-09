@@ -36,7 +36,7 @@ class FilterReferenceTest extends TestCase {
         $filter2->method('getExpression')->willReturn($expression);
         $filter2->method('getName')->willReturn('IAmAFilter');
         $filter2->method('getEntity')->willReturn('OfThisOtherEntity');
-        $appCtx->method('getFilters')->willReturn(array($filter,$filter2));
+        $appCtx->method('getFilters')->willReturn(array($filter, $filter2));
 
         $referenceFilter = new FilterReference($appCtx, $filter2->getEntity(), $filter2->getName());
         $expression = $referenceFilter->getExpression();
