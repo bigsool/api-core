@@ -4,6 +4,7 @@
 namespace Archiweb\Context;
 
 use Archiweb\Parameter\Parameter;
+use Archiweb\Parameter\UnsafeParameter;
 
 class ActionContext extends \ArrayObject implements ApplicationContextProvider {
 
@@ -13,18 +14,32 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     protected $params;
 
     /**
-     * @var RequestContext
+     * @var RequestContext|ActionContext
      */
-    protected $requestContext;
+    protected $parentContext;
 
     /**
-     * @param RequestContext $requestContext
+     * @param RequestContext|ActionContext $context
      */
-    public function __construct (RequestContext $requestContext) {
+    public function __construct ($context) {
 
         parent::__construct();
 
-        $this->requestContext = $requestContext;
+        $params = [];
+        if ($context instanceof RequestContext) {
+            foreach ($context->getParams() as $key => $value) {
+                $params[$key] = new UnsafeParameter($value);
+            }
+        }
+        elseif ($context instanceof ActionContext) {
+            $params = $context->getParams();
+        }
+        else {
+            throw new \RuntimeException('invalid context');
+        }
+
+        $this->parentContext = $context;
+        $this->setParams($params);
 
     }
 
@@ -67,16 +82,16 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
      */
     public function getApplicationContext () {
 
-        return $this->getRequestContext()->getApplicationContext();
+        return $this->getParentContext()->getApplicationContext();
 
     }
 
     /**
      * @return RequestContext
      */
-    public function getRequestContext () {
+    public function getParentContext () {
 
-        return $this->requestContext;
+        return $this->parentContext;
 
     }
 
