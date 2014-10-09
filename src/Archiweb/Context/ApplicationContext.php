@@ -4,6 +4,7 @@
 namespace Archiweb\Context;
 
 
+use Archiweb\Action\Action;
 use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
@@ -37,6 +38,11 @@ class ApplicationContext {
      * @var Rule[]
      */
     protected $rules = [];
+
+    /**
+     * @var \Archiweb\Action\Action[]
+     */
+    protected $actions = [];
 
     /**
      * @return RuleProcessor
@@ -190,6 +196,26 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException('Field not found');
+
+    }
+
+    /**
+     * @param Action $action
+     */
+    public function addAction (Action $action) {
+
+        if (!in_array($action, $this->getActions(), true)) {
+            $this->actions[] = $action;
+        }
+
+    }
+
+    /**
+     * @return Action[]
+     */
+    public function getActions () {
+
+        return $this->actions;
 
     }
 

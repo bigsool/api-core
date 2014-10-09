@@ -4,6 +4,7 @@
 namespace Archiweb;
 
 
+use Archiweb\Action\Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\EntityManagerReceiver;
@@ -232,6 +233,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getRequestContext () {
 
         return new RequestContext($this->getApplicationContext());
+
+    }
+
+    /**
+     * @return Action
+     */
+    public function getMockAction() {
+
+        return $this->getMockBuilder('\Archiweb\Action\Action')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 
