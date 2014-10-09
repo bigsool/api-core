@@ -18,6 +18,7 @@ use Archiweb\Expression\Value;
 use Archiweb\Field\Field;
 use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\Filter;
+use Archiweb\Error\Error;
 use Archiweb\Operator\CompareOperator;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
@@ -221,6 +222,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockApplicationContext () {
 
         return $this->getMockBuilder('\Archiweb\Context\ApplicationContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return Error
+     */
+    public function getMockError () {
+
+        return $this->getMockBuilder('\Archiweb\Error\Error')
                     ->disableOriginalConstructor()
                     ->getMock();
 
