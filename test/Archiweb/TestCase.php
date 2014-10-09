@@ -4,6 +4,7 @@
 namespace Archiweb;
 
 
+use Archiweb\Action\Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\EntityManagerReceiver;
@@ -147,6 +148,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return RequestContext
+     */
+    public function getMockActionContext () {
+
+        return $this->getMockBuilder('\Archiweb\Context\ActionContext')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @return Parameter
      */
     public function getMockParameter () {
@@ -281,6 +293,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $ctx->setEntityManager($em);
 
         return $ctx;
+
+    }
+
+    /**
+     * @return Action
+     */
+    public function getMockAction () {
+
+        return $this->getMockBuilder('\Archiweb\Action\Action')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
     }
 

@@ -81,8 +81,10 @@ class FindQueryContextTest extends TestCase {
         $keyPath = $this->getMockFieldKeyPath();
         $setAliasCalled = false;
         $alias = 'qwe';
-        $keyPath->method('setAlias')->will($this->returnCallback(function($alias2)use(&$setAliasCalled,&$alias){
+        $keyPath->method('setAlias')->will($this->returnCallback(function ($alias2) use (&$setAliasCalled, &$alias) {
+
             $setAliasCalled = $alias === $alias2;
+
         }));
         $ctx->addKeyPath($keyPath, $alias);
         $this->assertTrue($setAliasCalled);

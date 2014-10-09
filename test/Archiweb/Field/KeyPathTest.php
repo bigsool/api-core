@@ -24,7 +24,7 @@ class KeyPathTest extends TestCase {
         $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
     }
 
-    public function testAlias() {
+    public function testAlias () {
 
         $alias = 'qwe';
 

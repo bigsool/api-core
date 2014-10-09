@@ -33,4 +33,13 @@ class ExpressionFilterTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetExpressionWithoutExpression () {
+
+        (new ExpressionFilter('project', 'myProject', 'select', NULL))->getExpression();
+
+    }
+
 }

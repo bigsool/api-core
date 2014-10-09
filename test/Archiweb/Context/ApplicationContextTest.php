@@ -144,4 +144,25 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testAction () {
+
+        $appCtx = $this->getApplicationContext();
+        $this->assertInternalType('array', $appCtx->getActions());
+        $this->assertCount(0, $appCtx->getActions());
+
+        $mockAction = $this->getMockAction();
+        $appCtx->addAction($mockAction);
+        $this->assertCount(1, $appCtx->getActions());
+        $this->assertSame($mockAction, $appCtx->getActions()[0]);
+
+        $mockAction2 = $this->getMockAction();
+        $appCtx->addAction($mockAction2);
+        $this->assertCount(2, $appCtx->getActions());
+        $this->assertSame($mockAction2, $appCtx->getActions()[1]);
+
+        $appCtx->addAction($mockAction2);
+        $this->assertCount(2, $appCtx->getActions());
+
+    }
+
 } 
