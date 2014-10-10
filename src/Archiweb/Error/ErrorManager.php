@@ -16,17 +16,13 @@ class ErrorManager {
      */
     protected $errors = array();
 
-    /**
-     * @var string
-     */
-    protected $lang;
 
     /**
      * @param string  $lang
      */
     public function __construct ($lang) {
 
-        $this->lang = $lang;
+        FormattedError::setLang($lang);
 
     }
 
@@ -71,8 +67,11 @@ class ErrorManager {
      */
     public function getFormattedError (Error $error = null) {
 
+        if ($error) {
+            return new FormattedError($error);
+        }
 
-
+        // TOCONTINUE
 
     }
 

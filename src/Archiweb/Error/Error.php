@@ -85,7 +85,7 @@ class Error {
     }
 
     /**
-     * @return array
+     * @return int
      */
     public function getParentCode () {
 
