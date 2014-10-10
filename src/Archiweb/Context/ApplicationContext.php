@@ -24,7 +24,7 @@ class ApplicationContext {
     /**
      * @var RuleProcessor
      */
-    protected $ruleManager;
+    protected $ruleProcessor;
 
     /**
      * @var Field[]
@@ -51,6 +51,11 @@ class ApplicationContext {
      */
     protected $routes;
 
+    /**
+     * @var object[]
+     */
+    protected $helpers = [];
+
     public function __construct () {
 
         $this->routes = new RouteCollection();
@@ -60,18 +65,18 @@ class ApplicationContext {
     /**
      * @return RuleProcessor
      */
-    public function getRuleManager () {
+    public function getRuleProcessor () {
 
-        return $this->ruleManager;
+        return $this->ruleProcessor;
 
     }
 
     /**
-     * @param RuleProcessor $ruleManager
+     * @param RuleProcessor $ruleProcessor
      */
-    public function setRuleManager (RuleProcessor $ruleManager) {
+    public function setRuleProcessor (RuleProcessor $ruleProcessor) {
 
-        $this->ruleManager = $ruleManager;
+        $this->ruleProcessor = $ruleProcessor;
 
     }
 
@@ -247,6 +252,42 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException('Action not found');
+
+    }
+
+    /**
+     * @param string $name
+     * @param object $helper
+     */
+    public function addHelper ($name, $helper) {
+
+        if (!isset($this->helpers[$name])) {
+            $this->helpers[$name] = $helper;
+        }
+
+    }
+
+    /**
+     * @return object[]
+     */
+    public function getHelpers () {
+
+        return $this->helpers;
+
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return object
+     */
+    public function getHelper ($name) {
+
+        if (isset($this->helpers[$name])) {
+            return $this->helpers[$name];
+        }
+
+        throw new \RuntimeException('Helper not found');
 
     }
 

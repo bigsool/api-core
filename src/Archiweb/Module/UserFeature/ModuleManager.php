@@ -34,7 +34,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }, function (ActionContext $context) {
 
-            return 'qwe';
+            return ['user'=>'qwe'];
 
         }));
 
@@ -81,6 +81,15 @@ class ModuleManager extends AbstractModuleManager {
             return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
 
         }, new FilterReference($context, 'User', 'mine')));
+
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadHelpers(ApplicationContext &$context) {
+
+        $context->addHelper('UserFeatureHelper', new Helper());
 
     }
 

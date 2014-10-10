@@ -289,7 +289,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $ctx = new ApplicationContext();
         $ruleMgr = new RuleProcessor();
-        $ctx->setRuleManager($ruleMgr);
+        $ctx->setRuleProcessor($ruleMgr);
         $ctx->setEntityManager($em);
 
         return $ctx;
