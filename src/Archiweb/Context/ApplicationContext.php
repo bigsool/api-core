@@ -11,6 +11,8 @@ use Archiweb\Registry;
 use Archiweb\Rule\Rule;
 use Archiweb\RuleProcessor;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 class ApplicationContext {
 
@@ -43,6 +45,17 @@ class ApplicationContext {
      * @var \Archiweb\Action\Action[]
      */
     protected $actions = [];
+
+    /**
+     * @var RouteCollection
+     */
+    protected $routes;
+
+    public function __construct () {
+
+        $this->routes = new RouteCollection();
+
+    }
 
     /**
      * @return RuleProcessor
@@ -216,6 +229,43 @@ class ApplicationContext {
     public function getActions () {
 
         return $this->actions;
+
+    }
+
+    /**
+     * @param $module
+     * @param $name
+     *
+     * @return Action
+     */
+    public function getAction ($module, $name) {
+
+        foreach ($this->getActions() as $action) {
+            if ($action->getModule() == $module && $action->getName() == $name) {
+                return $action;
+            }
+        }
+
+        throw new \RuntimeException('Action not found');
+
+    }
+
+    /**
+     * @param string $name
+     * @param Route  $route
+     */
+    public function addRoute ($name, Route $route) {
+
+        $this->routes->add($name, $route);
+
+    }
+
+    /**
+     * @return RouteCollection
+     */
+    public function getRoutes () {
+
+        return $this->routes;
 
     }
 

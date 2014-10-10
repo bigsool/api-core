@@ -2,7 +2,9 @@
     "require": {
         "phpunit/phpunit": "~4.2.2",
         "sami/sami": "~2.0",
-        "doctrine/orm": "~2.4"
+        "doctrine/orm": "~2.4",
+        "symfony/routing": "~2.5",
+        "symfony/http-foundation": "~2.5"
     },
     "autoload": {
         "psr-0": {"Archiweb": "src/"}
