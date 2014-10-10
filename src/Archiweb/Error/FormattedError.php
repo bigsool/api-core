@@ -66,7 +66,7 @@ class FormattedError extends \Exception {
      */
     static public function setLang($lang) {
 
-        return self::$lang = $lang;
+        self::$lang = $lang;
 
     }
 
@@ -85,15 +85,15 @@ class FormattedError extends \Exception {
      */
     public function __toString () {
 
-        $childErrorsStr = "";
+        $childErrors = array();
         foreach ($this->childErrors as $childError) {
-            $childErrorsStr .= $childError;
+            $childErrors[] = json_decode($childError);
         }
 
         $result = array("code" => $this->code,
                         "message" => $this->message,
                         "field" => $this->field,
-                        "childErrors" => json_decode($childErrorsStr));
+                        "childErrors" => $childErrors);
 
         return json_encode($result);
 
