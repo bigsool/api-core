@@ -4,38 +4,35 @@
 namespace Archiweb\Error;
 
 use Archiweb\TestCase;
-use Archiweb\Error\Error;
 
 class ErrorTest extends TestCase {
-
 
     private $error;
 
     public function setUp () {
 
         parent::setUp();
-        $this->error = new Error(201,"Id utilisateur invalide","User id invalid","userId",200);
+        $this->error = new Error(201, "Id utilisateur invalide", "User id invalid", "userId", 200);
 
     }
 
     public function testGetCode () {
 
-        $this->assertEquals(201,$this->error->getCode());
+        $this->assertEquals(201, $this->error->getCode());
 
     }
 
     public function testGetFrMessage () {
 
-        $this->assertEquals("Id utilisateur invalide",$this->error->getFrMessage());
+        $this->assertEquals("Id utilisateur invalide", $this->error->getFrMessage());
 
     }
 
     public function testGetEnMessage () {
 
-        $this->assertEquals("User id invalid",$this->error->getEnMessage());
+        $this->assertEquals("User id invalid", $this->error->getEnMessage());
 
     }
-
 
     public function testGetField () {
 

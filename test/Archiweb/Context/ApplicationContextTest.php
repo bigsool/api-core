@@ -5,6 +5,7 @@ namespace Archiweb\Context;
 
 
 use Archiweb\TestCase;
+use Symfony\Component\Routing\Route;
 
 class ApplicationContextTest extends TestCase {
 
@@ -151,17 +152,44 @@ class ApplicationContextTest extends TestCase {
         $this->assertCount(0, $appCtx->getActions());
 
         $mockAction = $this->getMockAction();
+        $mockAction->method('getModule')->willReturn('module');
+        $mockAction->method('getName')->willReturn('name');
         $appCtx->addAction($mockAction);
         $this->assertCount(1, $appCtx->getActions());
         $this->assertSame($mockAction, $appCtx->getActions()[0]);
 
         $mockAction2 = $this->getMockAction();
         $appCtx->addAction($mockAction2);
+        $mockAction->method('getModule')->willReturn('module');
+        $mockAction->method('getName')->willReturn('name2');
         $this->assertCount(2, $appCtx->getActions());
         $this->assertSame($mockAction2, $appCtx->getActions()[1]);
 
         $appCtx->addAction($mockAction2);
         $this->assertCount(2, $appCtx->getActions());
+
+        $this->assertSame($mockAction, $appCtx->getAction('module', 'name'));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testActionNotFound () {
+
+        $this->getApplicationContext()->getAction('qwe', 'qwe');
+
+    }
+
+    public function testRoutes () {
+
+        $appCtx = $this->getApplicationContext();
+        $this->assertInstanceOf('\Symfony\Component\Routing\RouteCollection', $appCtx->getRoutes());
+        $this->assertSame(0, $appCtx->getRoutes()->count());
+
+        $route1 = new Route('path');
+        $appCtx->addRoute('route1', $route1);
+        $this->assertSame(1, $appCtx->getRoutes()->count());
 
     }
 

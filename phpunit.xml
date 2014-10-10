@@ -7,6 +7,7 @@
             <directory>src/</directory>
             <exclude>
                 <directory>src/Archiweb/Model/</directory>
+                <directory>src/Archiweb/Module/UserFeature</directory>
             </exclude>
         </whitelist>
     </filter>
