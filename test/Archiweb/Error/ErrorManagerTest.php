@@ -4,8 +4,6 @@
 namespace Archiweb\Error;
 
 use Archiweb\TestCase;
-use Archiweb\Error\Error;
-use Archiweb\Error\ErrorManager;
 
 class ErrorManagerTest extends TestCase {
 
@@ -16,17 +14,17 @@ class ErrorManagerTest extends TestCase {
         $errorManager->addError($error);
         $errors = $errorManager->getErrors();
 
-        $this->assertTrue(in_array($error,$errors));
+        $this->assertTrue(in_array($error, $errors));
 
     }
 
-    public function testAddDefinedError() {
+    public function testAddDefinedError () {
 
         $error = $this->getMockError();
         ErrorManager::addDefinedError($error);
         $definedErrors = ErrorManager::getDefinedErrors();
 
-        $this->assertTrue(in_array($error,$definedErrors));
+        $this->assertTrue(in_array($error, $definedErrors));
 
     }
 

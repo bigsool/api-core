@@ -22,7 +22,7 @@ class ErrorManager {
     protected $lang;
 
     /**
-     * @param string  $lang
+     * @param string $lang
      */
     public function __construct ($lang) {
 
@@ -40,10 +40,20 @@ class ErrorManager {
     }
 
     /**
-     * @param Error $error
+     * @return array
+     */
+    static public function getDefinedErrors () {
+
+        return self::$definedErrors;
+
+    }
+
+    /**
+     * @param Error  $error
      * @param string $field
      */
-    public function addError (Error $error, $field = null) {
+    public function addError (Error $error, $field = NULL) {
+
         $this->errors[] = $error;
 
     }
@@ -58,24 +68,10 @@ class ErrorManager {
     }
 
     /**
-     * @return array
-     */
-    static public function getDefinedErrors () {
-
-        return self::$definedErrors;
-
-    }
-
-    /**
      * @param Error $error
      */
-    public function getFormattedError (Error $error = null) {
-
-
-
+    public function getFormattedError (Error $error = NULL) {
 
     }
-
-
 
 }

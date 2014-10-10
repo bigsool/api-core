@@ -32,13 +32,13 @@ class Error {
     protected $parentCode;
 
     /**
-     * @param int $code
-     * @param string  $frMessage
-     * @param string  $enMessage
-     * @param string  $field
-     * @param int  $parentCode
+     * @param int    $code
+     * @param string $frMessage
+     * @param string $enMessage
+     * @param string $field
+     * @param int    $parentCode
      */
-    public function __construct ($code, $frMessage, $enMessage, $field = null, $parentCode = null) {
+    public function __construct ($code, $frMessage, $enMessage, $field = NULL, $parentCode = NULL) {
 
         $this->code = $code;
         $this->frMessage = $frMessage;

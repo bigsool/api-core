@@ -29,6 +29,7 @@ class FormattedError {
     /**
      * @param Error $error
      */
-    public function __construct ($error) {}
+    public function __construct ($error) {
+    }
 
 }
