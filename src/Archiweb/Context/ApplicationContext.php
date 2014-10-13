@@ -105,7 +105,11 @@ class ApplicationContext {
      */
     public function getNewRegistry () {
 
-        return new Registry($this->entityManager, $this);
+        $registry = new Registry($this->entityManager, $this);
+
+        $this->entityManager->getEventManager()->addEventSubscriber($registry);
+
+        return $registry;
 
     }
 

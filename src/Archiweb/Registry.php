@@ -9,11 +9,14 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
+use Archiweb\Parameter\Parameter;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
-class Registry {
+class Registry implements \Doctrine\Common\EventSubscriber {
 
     /**
      * @var string
@@ -76,6 +79,7 @@ class Registry {
      * @return mixed
      */
     public function save ($model) {
+
 
         $saveQueryContext = new SaveQueryContext($this->appCtx, $model);
 
@@ -236,4 +240,37 @@ class Registry {
 
     }
 
+    /**
+     * Returns an array of events this subscriber wants to listen to.
+     *
+     * @return array
+     */
+    public function getSubscribedEvents () {
+
+        return [Events::prePersist];
+
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist (LifecycleEventArgs $args) {
+
+        $entity = $args->getEntity();
+        $fields = $args->getEntityManager()->getClassMetadata(get_class($entity))->getFieldNames();
+
+        foreach ($fields as $fieldName) {
+            $getter = 'get' . ucfirst($fieldName);
+            $setter = 'set' . ucfirst($fieldName);
+            $value = $entity->$getter();
+            if (!($value instanceof Parameter)) {
+                continue;
+            }
+            if (!$value->isSafe()) {
+                throw new \RuntimeException('unsafe parameter ' . $fieldName . ' detected');
+            }
+            $entity->$setter($value->getValue());
+        }
+
+    }
 }
