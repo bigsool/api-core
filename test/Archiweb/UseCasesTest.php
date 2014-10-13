@@ -221,10 +221,10 @@ class UseCasesTest extends TestCase {
         $user->setName($params['name']->getValue());
         $user->setFirstname($params['firstname']->getValue());
         $user->setLang($params['lang']->getValue());
-        $user->setKnowsfrom($params['knowsFrom']->getValue());
+        $user->setKnowsFrom($params['knowsFrom']->getValue());
         $user->setRegisterDate(new \DateTime());
         $user->setLastLoginDate(new \DateTime());
-        $user->setConfirmationkey(uniqid());
+        $user->setConfirmationKey(uniqid());
         $user->setSalt(uniqid());
 
         $registry->save($user);
@@ -309,10 +309,10 @@ class UseCasesTest extends TestCase {
         $user->setName($this->d($params, 'name'));
         $user->setFirstname($this->d($params, 'firstname'));
         $user->setLang($this->d($params, 'lang'));
-        $user->setKnowsfrom($this->d($params, 'knowsFrom'));
+        $user->setKnowsFrom($this->d($params, 'knowsFrom'));
         $user->setRegisterDate(new \DateTime());
         $user->setLastLoginDate(new \DateTime());
-        $user->setConfirmationkey(uniqid());
+        $user->setConfirmationKey(uniqid());
         $user->setSalt(uniqid());
 
         self::$appCtx->getNewRegistry()->save($user);
