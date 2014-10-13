@@ -27,9 +27,9 @@ class FormattedError extends \Exception {
     protected $field;
 
     /**
-     * @var array
+     * @var FormattedError[]
      */
-    protected $childErrors;
+    protected $childErrors = [];
 
 
     /**
@@ -46,14 +46,14 @@ class FormattedError extends \Exception {
     /**
      * @param FormattedError $childError
      */
-    public function addChildError ($childError) {
+    public function addChildError (FormattedError $childError) {
 
         $this->childErrors[] = $childError;
 
     }
 
     /**
-     * @return array
+     * @return FormattedError[]
      */
     public function getChildErrors() {
 
@@ -90,10 +90,12 @@ class FormattedError extends \Exception {
             $childErrors[] = json_decode($childError);
         }
 
-        $result = array("code" => $this->code,
-                        "message" => $this->message,
-                        "field" => $this->field,
-                        "childErrors" => $childErrors);
+        if (count($childErrors)) {
+            $childErrors = ["childErrors" => $childErrors];
+        }
+
+        $result = array_merge(["code" => $this->code,"message" => $this->message,
+                        "field" => $this->field],$childErrors);
 
         return json_encode($result);
 

@@ -7,24 +7,110 @@ use Archiweb\TestCase;
 
 class ErrorManagerTest extends TestCase {
 
-    public function testAddError () {
+    /**
+     * @var Error
+     */
+    protected static $errMock1;
 
-        $error = $this->getMockError();
-        $errorManager = new ErrorManager("fr");
-        $errorManager->addError($error);
-        $errors = $errorManager->getErrors();
+    /**
+     * @var Error
+     */
+    protected static $error1;
 
-        $this->assertTrue(in_array($error, $errors));
+    /**
+     * @var Error
+     */
+    protected static $error10;
+
+    /**
+     * @var Error
+     */
+    protected static $error100;
+
+    /**
+     * @var Error
+     */
+    protected static $error101;
+
+    /**
+     * @var Error
+     */
+    protected static $error1000;
+
+    /**
+     * @var Error
+     */
+    protected static $error11;
+
+    public static function setUpBeforeClass () {
+
+        define('__TEST__ERR_MOCK_1', rand());
+        ErrorManager::addDefinedError(
+            self::$errMock1 = new Error(__TEST__ERR_MOCK_1, '__TEST__ERR_MOCK_1', '__TEST__ERR_MOCK_1'));
+
+        ErrorManager::addDefinedError(self::$error1 = new Error(1, 'message fr 1', 'message en 1', 'field1'));
+
+        ErrorManager::addDefinedError(self::$error10 = new Error(10, 'message fr 10', 'message en 10', 'field10', 1));
+
+        ErrorManager::addDefinedError(
+            self::$error100 = new Error(100, 'message fr 100', 'message en 100', 'field100', 10));
+        ErrorManager::addDefinedError(
+            self::$error101 = new Error(101, 'message fr 101', 'message en 101', 'field101', 10));
+
+        ErrorManager::addDefinedError(
+            self::$error1000 = new Error(1000, 'message fr 1000', 'message en 1000', 'field1000', 101));
+
+        ErrorManager::addDefinedError(self::$error11 = new Error(11, 'message fr 11', 'message en 11', 'field300', 1));
 
     }
 
-    public function testAddDefinedError () {
+    public function testAddError () {
 
-        $error = $this->getMockError();
-        ErrorManager::addDefinedError($error);
-        $definedErrors = ErrorManager::getDefinedErrors();
+        $errorManager = new ErrorManager("fr");
+        $this->assertCount(0, $errorManager->getErrors());
 
-        $this->assertTrue(in_array($error, $definedErrors));
+        $errorManager->addError(__TEST__ERR_MOCK_1);
+        $errors = $errorManager->getErrors();
+        $this->assertCount(1, $errors);
+        $this->assertContains(self::$errMock1, $errors);
+
+    }
+
+    /* public function testAddDefinedError () {
+
+         $error = $this->getMockError();
+         ErrorManager::addDefinedError($error);
+         $definedErrors = ErrorManager::getDefinedErrors();
+
+         $this->assertTrue(in_array($error, $definedErrors));
+
+     }*/
+
+    public function testGetFormattedError () {
+
+        $errorManager = new ErrorManager("fr");
+        $errorManager->addError(self::$error1000->getCode());
+        $errorManager->addError(self::$error11->getCode());
+
+        $formattedError = $errorManager->getFormattedError();
+
+        $this->assertEquals($formattedError->getCode(), 1);
+        $this->assertCount(2, $formattedError->getChildErrors());
+
+        $formattedChildErrors = $formattedError->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 10);
+        $this->assertEquals($formattedChildErrors[1]->getCode(), 11);
+
+        $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 101);
+        $this->assertCount(1, $formattedChildErrors);
+
+        $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 1000);
+        $this->assertCount(1, $formattedChildErrors);
 
     }
 

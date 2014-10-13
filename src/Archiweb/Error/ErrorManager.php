@@ -66,24 +66,130 @@ class ErrorManager {
     }
 
     /**
+     * @param Error $error
+     * @return Error
+     */
+    private function getMainParent ($error) {
+
+        $parent = $error;
+        foreach (self::$definedErrors as $definedError) {
+            if ($definedError->getCode() == $error->getParentCode()) {
+                $parent = $this->getMainParent($definedError);
+                break;
+            }
+        }
+        return $parent;
+    }
+
+    /**
+     * @return Error
+     */
+    private function getParent ($error) {
+
+        foreach (self::$definedErrors as $definedError) {
+            if ($definedError->getCode() == $error->getParentCode()) {
+                return $definedError;
+            }
+        }
+
+        return null;
+
+    }
+
+    /**
+     * @param Error $parentCode
      * @return array
      */
-    static public function getDefinedErrors () {
+    private function getChildErrors ($parentCode) {
 
-        return self::$definedErrors;
+        $childErrors = [];
+        foreach (self::$definedErrors as $definedError) {
+            if ($definedError->getParentCode() == $parentCode) {
+                $childErrors[] = $definedError;
+            }
+        }
+
+        return $childErrors;
+
+    }
+
+    /**
+     * @param Error $childError
+     * @param Error $error
+     * @return boolean
+     */
+    private function parentOf ($childError, $error, &$isParent) {
+
+        $parent = $this->getParent($childError);
+
+        if ($parent != null) {
+            if ($parent->getCode() == $error->getCode()) {
+                $isParent = true;
+            }
+            else {
+                $this->parentOf($parent,$error,$isParent);
+            }
+        }
+
+        return $isParent;
+
+    }
+
+    /**
+     * @param Error $errorToCheck
+     * @return boolean
+     */
+    private function isInTheErrorThree ($errorToCheck) {
+
+        if (in_array($errorToCheck,$this->errors)) return true;
+
+        $isParent = false;
+
+        foreach ($this->errors as $error) {
+
+            $this->parentOf($error,$errorToCheck,$isParent);
+
+        }
+
+        return $isParent;
 
     }
 
     /**
      * @param Error $error
+     * @return FormattedError
+     */
+    private function buildFormattedError (Error $error) {
+
+        $childErrors = $this->getChildErrors($error->getCode());
+        $formattedError = new FormattedError($error);
+
+        if ($childErrors) {
+            foreach ($childErrors as $childError) {
+                if ($this->isInTheErrorThree($childError)) {
+                    $formattedError->addChildError($this->buildFormattedError($childError));
+                }
+            }
+        }
+
+        return $formattedError;
+
+    }
+
+
+    /**
+     * @param Error $error
+     * @return FormattedError
      */
     public function getFormattedError (Error $error = null) {
 
         if ($error) {
             return new FormattedError($error);
         }
+        $parent = $this->getMainParent($this->errors[1]);
+        $formattedError = $this->buildFormattedError($parent);
 
-        // TOCONTINUE
+        return $formattedError;
 
     }
 
