@@ -17,25 +17,6 @@ use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
 class Application {
 
-    /**
-     * @return ApplicationContext
-     */
-    protected function createApplicationContext() {
-
-        $appCtx = new ApplicationContext();
-
-        require __DIR__.'/../../doctrine/config.php';
-
-        /**
-         * @var EntityManager $entityManager;
-         */
-        $appCtx->setEntityManager($entityManager);
-        $appCtx->setRuleProcessor(new RuleProcessor());
-
-        return $appCtx;
-
-    }
-
     public function run () {
 
         try {
@@ -85,6 +66,25 @@ class Application {
             exit('fatal error');
 
         }
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    protected function createApplicationContext () {
+
+        $appCtx = new ApplicationContext();
+
+        require __DIR__ . '/../../doctrine/config.php';
+
+        /**
+         * @var EntityManager $entityManager ;
+         */
+        $appCtx->setEntityManager($entityManager);
+        $appCtx->setRuleProcessor(new RuleProcessor());
+
+        return $appCtx;
 
     }
 

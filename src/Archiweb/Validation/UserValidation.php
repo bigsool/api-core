@@ -14,7 +14,7 @@ class UserValidation extends ConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'email' =>
+            'email'    =>
                 [
                     new Assert\NotBlank(),
                     new Assert\Email(),

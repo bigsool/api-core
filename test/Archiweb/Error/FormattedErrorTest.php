@@ -4,13 +4,11 @@
 namespace Archiweb\Error;
 
 use Archiweb\TestCase;
-use Archiweb\Error\Error;
-use Archiweb\Error\formattedError;
 
 class FormattedErrorTest extends TestCase {
 
-
     private $formattedError;
+
     private $childErrors;
 
     public function setUp () {
@@ -47,26 +45,26 @@ class FormattedErrorTest extends TestCase {
 
     }
 
-    public function testAddChildError()  {
+    public function testAddChildError () {
 
         $this->formattedError->addChildError($this->childErrors[0]);
         $this->assertTrue(in_array($this->childErrors[0], $this->formattedError->getChildErrors()));
 
     }
 
-    public function testGetCode()  {
+    public function testGetCode () {
 
         $this->assertEquals(200, $this->formattedError->getCode());
 
     }
 
-    public function testField()  {
+    public function testField () {
 
         $this->assertEquals("userId", $this->formattedError->getField());
 
     }
 
-    public function testGetMessage()  {
+    public function testGetMessage () {
 
         $error = $this->getMockError();
         $error->method('getFrMessage')->willReturn('echec authentification');
@@ -82,32 +80,31 @@ class FormattedErrorTest extends TestCase {
 
     }
 
-    public function testToString()  {
+    public function testToString () {
 
         $this->formattedError->addChildError($this->childErrors[0]);
         $this->formattedError->addChildError($this->childErrors[1]);
         $childErrors = $this->formattedError->getChildErrors();
 
-        $tab = ["code" => $this->formattedError->getCode(),
-                "message" => $this->formattedError->getMessage(),
-                "field" => $this->formattedError->getField(),
-                "childErrors" =>[
+        $tab = ["code"        => $this->formattedError->getCode(),
+                "message"     => $this->formattedError->getMessage(),
+                "field"       => $this->formattedError->getField(),
+                "childErrors" => [
                     [
-                      "code" => $childErrors[0]->getCode(),
-                      "message" => $childErrors[0]->getMessage(),
-                      "field" => $childErrors[0]->getField(),
-                    ],[
-                      "code" => $childErrors[1]->getCode(),
-                      "message" => $childErrors[1]->getMessage(),
-                      "field" => $childErrors[1]->getField(),
+                        "code"    => $childErrors[0]->getCode(),
+                        "message" => $childErrors[0]->getMessage(),
+                        "field"   => $childErrors[0]->getField(),
+                    ],
+                    [
+                        "code"    => $childErrors[1]->getCode(),
+                        "message" => $childErrors[1]->getMessage(),
+                        "field"   => $childErrors[1]->getField(),
                     ]
-                ]];
+                ]
+        ];
 
-        $this->assertEquals($this->formattedError,json_encode($tab));
+        $this->assertEquals($this->formattedError, json_encode($tab));
 
     }
-
-
-
 
 }

@@ -41,28 +41,28 @@ class Helper {
     }
 
     /**
+     * @return string
+     */
+    public static function createSalt () {
+
+        return uniqid('', true);
+
+    }
+
+    /**
      * @param string $salt
      * @param string $password
      *
      * @return string
      */
-    public static function encryptPassword($salt, $password) {
+    public static function encryptPassword ($salt, $password) {
 
-        $hash = $salt.$password;
+        $hash = $salt . $password;
         for ($i = 0; $i < 3004; ++$i) {
-            $hash = hash('sha512', $salt.$hash);
+            $hash = hash('sha512', $salt . $hash);
         }
 
         return $hash;
-
-    }
-
-    /**
-     * @return string
-     */
-    public static function createSalt() {
-
-        return uniqid('',true);
 
     }
 

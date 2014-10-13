@@ -31,7 +31,6 @@ class FormattedError extends \Exception {
      */
     protected $childErrors = [];
 
-
     /**
      * @param Error $error
      */
@@ -40,6 +39,15 @@ class FormattedError extends \Exception {
         $this->code = $error->getCode();
         $this->message = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
         $this->field = $error->getField();
+
+    }
+
+    /**
+     * @param string $lang
+     */
+    static public function setLang ($lang) {
+
+        self::$lang = $lang;
 
     }
 
@@ -55,26 +63,16 @@ class FormattedError extends \Exception {
     /**
      * @return FormattedError[]
      */
-    public function getChildErrors() {
+    public function getChildErrors () {
 
         return $this->childErrors;
 
     }
 
     /**
-     * @param string $lang
-     */
-    static public function setLang($lang) {
-
-        self::$lang = $lang;
-
-    }
-
-
-    /**
      * @return string
      */
-    public function getField() {
+    public function getField () {
 
         return $this->field;
 
@@ -94,8 +92,10 @@ class FormattedError extends \Exception {
             $childErrors = ["childErrors" => $childErrors];
         }
 
-        $result = array_merge(["code" => $this->code,"message" => $this->message,
-                        "field" => $this->field],$childErrors);
+        $result = array_merge(["code"    => $this->code,
+                               "message" => $this->message,
+                               "field"   => $this->field
+                              ], $childErrors);
 
         return json_encode($result);
 
