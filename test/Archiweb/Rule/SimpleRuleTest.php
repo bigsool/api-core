@@ -4,6 +4,7 @@
 namespace Archiweb\Rule;
 
 
+use Archiweb\Model\User;
 use Archiweb\TestCase;
 
 class SimpleRuleTest extends TestCase {
@@ -21,8 +22,12 @@ class SimpleRuleTest extends TestCase {
 
         }, $this->getMockFilter());
 
-        $rule->shouldApply($this->getMockQueryContext());
+        // shouldn't be called in a save context
+        $rule->shouldApply($this->getSaveQueryContext(new User()));
+        $this->assertFalse($called);
 
+        // should be called in query context
+        $rule->shouldApply($this->getFindQueryContext('User'));
         $this->assertTrue($called);
 
     }
