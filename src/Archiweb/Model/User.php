@@ -57,12 +57,12 @@ class User {
     /**
      * @var string
      */
-    private $knowsfrom;
+    private $knowsFrom;
 
     /**
      * @var string
      */
-    private $confirmationkey;
+    private $confirmationKey;
 
     /**
      * @var \Archiweb\Model\Company
@@ -353,9 +353,9 @@ class User {
      *
      * @return string
      */
-    public function getKnowsfrom () {
+    public function getKnowsFrom () {
 
-        return $this->knowsfrom;
+        return $this->knowsFrom;
     }
 
     /**
@@ -365,9 +365,9 @@ class User {
      *
      * @return User
      */
-    public function setKnowsfrom ($knowsfrom) {
+    public function setKnowsFrom ($knowsFrom) {
 
-        $this->knowsfrom = $knowsfrom;
+        $this->knowsFrom = $knowsFrom;
 
         return $this;
     }
@@ -377,21 +377,21 @@ class User {
      *
      * @return string
      */
-    public function getConfirmationkey () {
+    public function getConfirmationKey () {
 
-        return $this->confirmationkey;
+        return $this->confirmationKey;
     }
 
     /**
      * Set confirmationkey
      *
-     * @param string $confirmationkey
+     * @param string $confirmationKey
      *
      * @return User
      */
-    public function setConfirmationkey ($confirmationkey) {
+    public function setConfirmationKey ($confirmationKey) {
 
-        $this->confirmationkey = $confirmationkey;
+        $this->confirmationKey = $confirmationKey;
 
         return $this;
     }

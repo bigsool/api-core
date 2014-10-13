@@ -66,14 +66,14 @@ Archiweb\Model\User:
             nullable: true
             comment: ''
             column: last_login_date
-        knowsfrom:
+        knowsFrom:
             type: string
             nullable: true
             length: 255
             fixed: false
             comment: ''
             column: knowsFrom
-        confirmationkey:
+        confirmationKey:
             type: string
             nullable: true
             length: 255
