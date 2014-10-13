@@ -14,8 +14,8 @@ class ApplicationContextTest extends TestCase {
         $ctx = new ApplicationContext();
         $ruleMgr = $this->getMockRuleProcessor();
 
-        $ctx->setRuleManager($ruleMgr);
-        $this->assertSame($ruleMgr, $ctx->getRuleManager());
+        $ctx->setRuleProcessor($ruleMgr);
+        $this->assertSame($ruleMgr, $ctx->getRuleProcessor());
 
     }
 
@@ -160,8 +160,8 @@ class ApplicationContextTest extends TestCase {
 
         $mockAction2 = $this->getMockAction();
         $appCtx->addAction($mockAction2);
-        $mockAction->method('getModule')->willReturn('module');
-        $mockAction->method('getName')->willReturn('name2');
+        $mockAction2->method('getModule')->willReturn('module');
+        $mockAction2->method('getName')->willReturn('name2');
         $this->assertCount(2, $appCtx->getActions());
         $this->assertSame($mockAction2, $appCtx->getActions()[1]);
 
@@ -178,6 +178,36 @@ class ApplicationContextTest extends TestCase {
     public function testActionNotFound () {
 
         $this->getApplicationContext()->getAction('qwe', 'qwe');
+
+    }
+
+    public function testHelper () {
+
+        $appCtx = $this->getApplicationContext();
+        $this->assertInternalType('array', $appCtx->getHelpers());
+        $this->assertCount(0, $appCtx->getHelpers());
+
+        $helper = new \stdClass();
+        $appCtx->addHelper('helper1', $helper);
+        $this->assertCount(1, $appCtx->getHelpers());
+        $this->assertSame($helper, $appCtx->getHelpers()['helper1']);
+
+        $helper2 = new \stdClass();
+        $appCtx->addHelper('helper2', $helper2);
+        $this->assertCount(2, $appCtx->getHelpers());
+        $this->assertSame($helper2, $appCtx->getHelper('helper2'));
+
+        $appCtx->addHelper('helper2', new \stdClass());
+        $this->assertCount(2, $appCtx->getHelpers());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testHelperNotFound () {
+
+        $this->getApplicationContext()->getHelper('qwe');
 
     }
 
