@@ -5,32 +5,64 @@ namespace Archiweb\Module\UserFeature;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Model\User;
+use Archiweb\Parameter\Parameter;
+use Archiweb\Parameter\SafeParameter;
 
 class Helper {
 
+    /**
+     * @param ActionContext $actCtx
+     * @param Parameter[]   $params
+     */
     public function createUser (ActionContext $actCtx, array $params) {
 
         $registry = $actCtx->getApplicationContext()->getNewRegistry();
-        $params = $actCtx->getParams();
-        foreach ($params as $param) {
-            $this->assertTrue($param->isSafe());
-        }
+
+        $salt = self::createSalt();
+        $params['password'] = new SafeParameter(self::encryptPassword($salt, $params['password']->getValue()));
 
         $user = new User();
-        $user->setEmail($params['email']->getValue());
-        $user->setPassword($params['password']->getValue());
-        $user->setName($params['name']->getValue());
-        $user->setFirstname($params['firstname']->getValue());
-        $user->setLang($params['lang']->getValue());
-        $user->setKnowsfrom($params['knowsFrom']->getValue());
+
+        $user->setEmail($params['email']);
+        $user->setPassword($params['password']);
+        $user->setName($params['name']);
+        $user->setFirstname($params['firstname']);
+        $user->setLang($params['lang']);
+        $user->setKnowsFrom($params['knowsFrom']);
         $user->setRegisterDate(new \DateTime());
-        $user->setLastLoginDate(new \DateTime());
-        $user->setConfirmationkey(uniqid());
-        $user->setSalt(uniqid());
+        $user->setConfirmationKey(uniqid());
+        $user->setSalt($salt);
 
         $registry->save($user);
 
         $actCtx['user'] = $user;
+
+    }
+
+    /**
+     * @param string $salt
+     * @param string $password
+     *
+     * @return string
+     */
+    public static function encryptPassword($salt, $password) {
+
+        $hash = $salt.$password;
+        for ($i = 0; $i < 3004; ++$i) {
+            $hash = hash('sha512', $salt.$hash);
+        }
+
+        return $hash;
+
+    }
+
+    /**
+     * @return string
+     */
+    public static function createSalt() {
+
+        return uniqid('',true);
 
     }
 

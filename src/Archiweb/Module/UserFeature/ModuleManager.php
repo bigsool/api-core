@@ -7,7 +7,9 @@ use Archiweb\Action\GenericAction as Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\QueryContext;
 use Archiweb\Controller;
+use Archiweb\Error\ErrorManager;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
@@ -16,9 +18,13 @@ use Archiweb\Field\StarField;
 use Archiweb\Filter\ExpressionFilter;
 use Archiweb\Filter\FilterReference;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
+use Archiweb\Module\UserFeature\Helper as UserFeatureHelper;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Parameter\SafeParameter;
 use Archiweb\Rule\SimpleRule;
+use Archiweb\Validation\UserValidation;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 
 class ModuleManager extends AbstractModuleManager {
@@ -32,9 +38,40 @@ class ModuleManager extends AbstractModuleManager {
 
         }, function (ActionContext $context) {
 
+            $params = ['name' => ERR_PARAMS_INVALID, 'email' => ERR_INVALID_PARAM_EMAIL, 'firstname' => ERR_PARAMS_INVALID, 'password' => ERR_PARAMS_INVALID,'knowsFrom'=>ERR_PARAMS_INVALID];
+
+            $errorManager = new ErrorManager('fr');
+            $userValidation = new UserValidation();
+            foreach ($params as $name => $errorCode) {
+                $param = $context->getParam($name);
+                $value = isset($param) ? $param->getValue() : NULL ;
+                $violations = $userValidation->validate($name, $value);
+                if ($violations->count()) {
+                    $errorManager->addError($errorCode, $name);
+                } else {
+                    $context->setParam($name, new SafeParameter($value));
+                }
+            }
+            if (!empty($errorManager->getErrors())) {
+                // TODO: throw $errorManager->getFormattedError();
+                $errorCodes = [];
+                foreach($errorManager->getErrors() as $error) {
+                    $errorCodes[] = $error->getCode();
+                }
+                throw new \Exception(json_encode($errorCodes));
+            }
+
         }, function (ActionContext $context) {
 
-            return ['user'=>'qwe'];
+            /**
+             * @var UserFeatureHelper $helper
+             */
+            $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
+            $params = $context->getParams(['name', 'email', 'firstname', 'password','knowsFrom']);
+            $params['lang'] = new SafeParameter('fr');
+            $helper->createUser($context, $params);
+
+            return $context['user'];
 
         }));
 
@@ -62,6 +99,15 @@ class ModuleManager extends AbstractModuleManager {
 
     }
 
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadHelpers (ApplicationContext &$context) {
+
+        $context->addHelper('UserFeatureHelper', new Helper());
+
+    }
+
     public function loadRoutes (ApplicationContext &$context) {
 
         $context->addRoute('userCreate', new Route('/user/create',
@@ -78,18 +124,13 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addRule(new SimpleRule('UserMeRule', function (FindQueryContext $context) {
 
-            return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
+            if ($context instanceof FindQueryContext) {
+
+                return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
+
+            }
 
         }, new FilterReference($context, 'User', 'mine')));
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadHelpers(ApplicationContext &$context) {
-
-        $context->addHelper('UserFeatureHelper', new Helper());
 
     }
 

@@ -7,12 +7,12 @@ namespace Archiweb\Error;
 class ErrorManager {
 
     /**
-     * @var array
+     * @var Error[]
      */
     static protected $definedErrors;
 
     /**
-     * @var array
+     * @var Error[]
      */
     protected $errors = array();
 
@@ -31,21 +31,33 @@ class ErrorManager {
      */
     static public function addDefinedError (Error $error) {
 
-        self::$definedErrors[] = $error;
+        $errorCode = $error->getCode();
+        if (isset(self::$definedErrors[$errorCode])) {
+            throw new \RuntimeException('already defined error ' . $errorCode);
+        }
+
+        self::$definedErrors[$errorCode] = $error;
 
     }
 
     /**
-     * @param Error $error
+     * @param int    $errorCode
      * @param string $field
      */
-    public function addError (Error $error, $field = null) {
-        $this->errors[] = $error;
+    public function addError ($errorCode, $field = NULL) {
+
+        if (!isset(self::$definedErrors[$errorCode])) {
+            throw new \RuntimeException('undefined error code ' . $errorCode);
+        }
+        $error = self::$definedErrors[$errorCode];
+        if (!in_array($error, $this->errors)) {
+            $this->errors[] = $error;
+        }
 
     }
 
     /**
-     * @return array
+     * @return Error[]
      */
     public function getErrors () {
 
