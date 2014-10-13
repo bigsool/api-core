@@ -44,9 +44,22 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     }
 
     /**
-     * @return Parameter[]
+     * @param array $keys
+     *
+     * @return \Archiweb\Parameter\Parameter[]
      */
-    public function getParams () {
+    public function getParams (array $keys = NULL) {
+
+        if (isset($keys)) {
+
+            $params = [];
+            foreach ($keys as $key) {
+                $params[$key] = $this->getParam($key);
+            }
+
+            return $params;
+
+        }
 
         return $this->params;
     }
@@ -56,13 +69,9 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
      */
     public function setParams ($params) {
 
-        foreach ($params as $param) {
-            if (!($param instanceof Parameter)) {
-                throw new \RuntimeException('invalid type');
-            }
+        foreach ($params as $key => $value) {
+            $this->setParam($key, $value);
         }
-
-        $this->params = $params;
 
     }
 
@@ -74,6 +83,20 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
+    }
+
+    /**
+     * @param string    $key
+     * @param Parameter $value
+     */
+    public function setParam ($key, Parameter $value) {
+
+        if (!is_scalar($key)) {
+            throw new \RuntimeException('invalid key type');
+        }
+
+        $this->params[$key] = $value;
 
     }
 

@@ -51,17 +51,15 @@ class ActionContextTest extends TestCase {
 
     public function testParams () {
 
-        $array = [$this->getMockParameter('a'), 'b' => $this->getMockParameter(2), $this->getMockParameter(['c'])];
-
-        $params = ['a' => 0, 'b', new \stdClass()];
+        $array = ['a' => new UnsafeParameter(0), new SafeParameter('b'), new UnsafeParameter(new \stdClass())];
         $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getParams')->willReturn($params);
+        $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams($array);
 
         $this->assertSame($array, $ctx->getParams());
         $this->assertSame($array[0], $ctx->getParam(0));
-        $this->assertSame($array['b'], $ctx->getParam('b'));
+        $this->assertSame($array['a'], $ctx->getParam('a'));
 
     }
 
