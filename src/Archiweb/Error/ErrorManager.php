@@ -45,13 +45,19 @@ class ErrorManager {
      */
     public function addError ($errorCode, $field = NULL) {
 
-        if (!isset(self::$definedErrors[$errorCode])) {
-            throw new \RuntimeException('undefined error code ' . $errorCode);
-        }
-        $error = self::$definedErrors[$errorCode];
+        $error = $this->getErrorForErrorCode($errorCode);
         if (!in_array($error, $this->errors)) {
             $this->errors[] = $error;
         }
+
+    }
+
+    protected function getErrorForErrorCode($errorCode) {
+
+        if (!isset(self::$definedErrors[$errorCode])) {
+            throw new \RuntimeException('undefined error code ' . $errorCode);
+        }
+        return self::$definedErrors[$errorCode];
 
     }
 
@@ -65,14 +71,14 @@ class ErrorManager {
     }
 
     /**
-     * @param Error $error
+     * @param int $errorCode
      *
      * @return FormattedError
      */
-    public function getFormattedError (Error $error = NULL) {
+    public function getFormattedError ($errorCode = NULL) {
 
-        if ($error) {
-            return new FormattedError($error);
+        if ($errorCode) {
+            return new FormattedError($this->getErrorForErrorCode($errorCode));
         }
         $parent = $this->getMainParent($this->errors[1]);
         $formattedError = $this->buildFormattedError($parent);
