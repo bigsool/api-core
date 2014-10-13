@@ -41,7 +41,7 @@ abstract class ConstraintsProvider {
     }
 
     /**
-     * @return Constraint[]
+     * @return Constraint[][]
      */
     protected abstract function listConstraints ();
 

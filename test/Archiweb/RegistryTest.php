@@ -20,6 +20,8 @@ use Archiweb\Model\Product;
 use Archiweb\Model\Storage;
 use Archiweb\Model\User;
 use Archiweb\Operator\EqualOperator;
+use Archiweb\Parameter\SafeParameter;
+use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\Rule\CallbackRule;
 use Archiweb\Rule\FieldRule;
 use Archiweb\Rule\SimpleRule;
@@ -132,7 +134,28 @@ class RegistryTest extends TestCase {
         $product->setPrice($this->product['price']);
         $product->setWeight($this->product['weight']);
         $product->setAvailable($this->product['available']);
-        $product->setVat($this->product['vat']);
+        $product->setVat(new SafeParameter($this->product['vat']));
+
+        $registry = $this->appCtx->getNewRegistry();
+        $registry->save($product);
+
+        $this->assertEquals(1, $product->getId());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSaveWithUnsafeParameter () {
+
+        $product = new Product();
+        $product->setName($this->product['name']);
+        $product->setBundleid($this->product['bundleid']);
+        $product->setConsumable($this->product['consumable']);
+        $product->setPrice($this->product['price']);
+        $product->setWeight($this->product['weight']);
+        $product->setAvailable($this->product['available']);
+        $product->setVat(new UnsafeParameter($this->product['vat']));
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);

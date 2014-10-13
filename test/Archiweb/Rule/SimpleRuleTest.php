@@ -87,4 +87,17 @@ class SimpleRuleTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testApplyInSaveParameter () {
+
+        $filter = $this->getMockFilter();
+
+        $rule = new SimpleRule('name', $this->getCallable(), $filter);
+        $ctx = $this->getSaveQueryContext(new User());
+        $rule->apply($ctx);
+
+    }
+
 } 

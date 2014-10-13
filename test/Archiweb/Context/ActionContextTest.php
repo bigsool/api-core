@@ -57,9 +57,20 @@ class ActionContextTest extends TestCase {
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams($array);
 
+        $a = $ctx->getParams([0, 'a']);
+
         $this->assertSame($array, $ctx->getParams());
         $this->assertSame($array[0], $ctx->getParam(0));
         $this->assertSame($array['a'], $ctx->getParam('a'));
+
+        $this->assertCount(2, $ctx->getParams([1, 'a']));
+        $this->assertContains($array[1], $ctx->getParams([1, 'a']));
+        $this->assertContains($array['a'], $ctx->getParams([1, 'a']));
+
+        $this->assertNull($ctx->getParam('qwe'));
+        $qweParam = $this->getMockParameter();
+        $ctx->setParam('qwe', $qweParam);
+        $this->assertSame($qweParam, $ctx->getParam('qwe'));
 
     }
 
@@ -72,6 +83,18 @@ class ActionContextTest extends TestCase {
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams(['qwe']);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetParamInvalidType () {
+
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $ctx->setParam(new \stdClass(), $this->getMockParameter());
 
     }
 

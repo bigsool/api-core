@@ -3,13 +3,12 @@
 
 namespace Archiweb\Validation;
 
-use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserValidation extends ConstraintsProvider {
 
     /**
-     * @return Constraint[]
+     * @return Constraint[][]
      */
     protected function listConstraints () {
 

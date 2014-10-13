@@ -8,6 +8,7 @@
             <exclude>
                 <directory>src/Archiweb/Model/</directory>
                 <directory>src/Archiweb/Module/UserFeature</directory>
+                <file>src/Archiweb/Validation/UserValidation.php</file>
             </exclude>
         </whitelist>
     </filter>
