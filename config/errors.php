@@ -1,7 +1,7 @@
 <?php
 
-use Archiweb\Error\ErrorManager;
 use Archiweb\Error\Error;
+use Archiweb\Error\ErrorManager;
 
 define('ERR_CUSTOM_ERROR', 0);
 ErrorManager::addDefinedError(new Error(ERR_CUSTOM_ERROR, '', ''));
@@ -21,7 +21,8 @@ ErrorManager::addDefinedError(new Error(ERR_METHOD_NOT_FOUND, 'méthode introuva
                                         ERR_REQUEST_INVALID));
 
 define('ERR_CLIENT_IS_INVALID', 5);
-ErrorManager::addDefinedError(new Error(ERR_CLIENT_IS_INVALID, 'client invalide', 'invalid client', ERR_REQUEST_INVALID));
+ErrorManager::addDefinedError(new Error(ERR_CLIENT_IS_INVALID, 'client invalide', 'invalid client',
+                                        ERR_REQUEST_INVALID));
 
 define('ERR_PROTOCOL_IS_INVALID', 6);
 ErrorManager::addDefinedError(new Error(ERR_PROTOCOL_IS_INVALID, 'protocole non reconnu', 'invalid protocol',
@@ -62,7 +63,8 @@ ErrorManager::addDefinedError(new Error(ERR_UNKNOWN_AMAZON_ERROR, "erreur amazon
                                         ERR_INTERNAL_ERROR));
 
 define('ERR_AUTH_TOKEN_EXPIRED', 19);
-ErrorManager::addDefinedError(new Error(ERR_AUTH_TOKEN_EXPIRED, "jeton d'authentification expiré", 'auth token expired'));
+ErrorManager::addDefinedError(new Error(ERR_AUTH_TOKEN_EXPIRED, "jeton d'authentification expiré",
+                                        'auth token expired'));
 
 define('ERR_PARAMS_INVALID', 100);
 ErrorManager::addDefinedError(new Error(ERR_PARAMS_INVALID, "au moins un paramètre est invalid",
@@ -70,4 +72,8 @@ ErrorManager::addDefinedError(new Error(ERR_PARAMS_INVALID, "au moins un paramè
 
 define('ERR_INVALID_PARAM_EMAIL', 101);
 ErrorManager::addDefinedError(new Error(ERR_INVALID_PARAM_EMAIL, "adresse email invalide", 'email is invalid',
+                                        ERR_PARAMS_INVALID));
+
+define('ERR_INVALID_PASSWORD', 102);
+ErrorManager::addDefinedError(new Error(ERR_INVALID_PASSWORD, "mot de passe invalid", 'password is invalid',
                                         ERR_PARAMS_INVALID));
