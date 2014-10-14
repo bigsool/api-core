@@ -19,12 +19,75 @@ class RequestContext implements ApplicationContextProvider {
     protected $applicationContext;
 
     /**
+     * @var string
+     */
+    protected $clientName;
+
+    /**
+     * @var string
+     */
+    protected $clientVersion;
+
+    /**
+     * @var string
+     */
+    protected $locale;
+
+    /**
      * @param ApplicationContext $context
      */
     public function __construct (ApplicationContext $context) {
 
         $this->applicationContext = $context;
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientName () {
+
+        return $this->clientName;
+    }
+
+    /**
+     * @param string $clientName
+     */
+    public function setClientName ($clientName) {
+
+        $this->clientName = $clientName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientVersion () {
+
+        return $this->clientVersion;
+    }
+
+    /**
+     * @param string $clientVersion
+     */
+    public function setClientVersion ($clientVersion) {
+
+        $this->clientVersion = $clientVersion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale () {
+
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale ($locale) {
+
+        $this->locale = $locale;
     }
 
     /**

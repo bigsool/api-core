@@ -5,6 +5,8 @@ namespace Archiweb\Context;
 
 
 use Archiweb\Action\Action;
+use Archiweb\Error\ErrorManager;
+use Archiweb\Error\FormattedError;
 use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
@@ -311,6 +313,19 @@ class ApplicationContext {
     public function getRoutes () {
 
         return $this->routes;
+
+    }
+
+    /**
+     * @param RequestContext $context
+     *
+     * @return ErrorManager
+     */
+    public function getErrorManager (RequestContext $context) {
+
+        FormattedError::setLang($context->getLocale());
+
+        return new ErrorManager();
 
     }
 

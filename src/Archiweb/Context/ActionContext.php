@@ -168,16 +168,30 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
      */
     public function getApplicationContext () {
 
-        return $this->getParentContext()->getApplicationContext();
+        return $this->getRequestContext()->getApplicationContext();
+
+    }
+
+    /**
+     * @return RequestContext|ActionContext
+     */
+    public function getParentContext () {
+
+        return $this->parentContext;
 
     }
 
     /**
      * @return RequestContext
      */
-    public function getParentContext () {
+    public function getRequestContext() {
 
-        return $this->parentContext;
+        $context = $this;
+        while (!($context instanceof RequestContext)) {
+            $context = $context->getParentContext();
+        }
+
+        return $context;
 
     }
 

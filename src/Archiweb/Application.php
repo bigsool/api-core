@@ -34,6 +34,9 @@ class Application {
             }
 
             $request = Request::createFromGlobals();
+            $locale = $request->getLocale();
+            $preferred = $request->getPreferredLanguage();
+            $langues = $request->getLanguages();
             $SfnReqCtx = new SymfonyRequestContext();
             $SfnReqCtx->fromRequest($request);
 

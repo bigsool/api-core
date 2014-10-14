@@ -3,12 +3,11 @@
 
 namespace Archiweb\Module\UserFeature;
 
-use Archiweb\Action\GenericAction as Action;
+use Archiweb\Action\SimpleAction as Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Controller;
-use Archiweb\Error\ErrorManager;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
@@ -32,48 +31,25 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('User', 'create', function (ActionContext $context) {
+        $context->addAction(new Action('User', 'create', NULL,
+                                       ['name'      => [ERR_PARAMS_INVALID, new UserValidation()],
+                                        'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
+                                        'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
+                                        'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
+                                        'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
+                                       ], function (ActionContext $context) {
 
-        }, function (ActionContext $context) {
+                /**
+                 * @var UserFeatureHelper $helper
+                 */
+                $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
+                $params = $context->getVerifiedParams();
+                $params['lang'] = new SafeParameter('fr');
+                $helper->createUser($context, $params);
 
-            $params =
-                ['name'      => ERR_PARAMS_INVALID,
-                 'email'     => ERR_INVALID_PARAM_EMAIL,
-                 'firstname' => ERR_PARAMS_INVALID,
-                 'password'  => ERR_INVALID_PASSWORD,
-                 'knowsFrom' => ERR_PARAMS_INVALID
-                ];
+                return $context['user'];
 
-            $errorManager = new ErrorManager('fr');
-            $userValidation = new UserValidation();
-            foreach ($params as $name => $errorCode) {
-                $param = $context->getParam($name);
-                $value = isset($param) ? $param->getValue() : NULL;
-                $violations = $userValidation->validate($name, $value);
-                if ($violations->count()) {
-                    $errorManager->addError($errorCode, $name);
-                }
-                else {
-                    $context->setParam($name, new SafeParameter($value));
-                }
-            }
-            if (!empty($errorManager->getErrors())) {
-                throw $errorManager->getFormattedError();
-            }
-
-        }, function (ActionContext $context) {
-
-            /**
-             * @var UserFeatureHelper $helper
-             */
-            $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
-            $params = $context->getParams(['name', 'email', 'firstname', 'password', 'knowsFrom']);
-            $params['lang'] = new SafeParameter('fr');
-            $helper->createUser($context, $params);
-
-            return $context['user'];
-
-        }));
+            }));
 
     }
 
