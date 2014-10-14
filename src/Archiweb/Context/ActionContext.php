@@ -4,6 +4,7 @@
 namespace Archiweb\Context;
 
 use Archiweb\Parameter\Parameter;
+use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 
 class ActionContext extends \ArrayObject implements ApplicationContextProvider {
@@ -12,6 +13,11 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
      * @var Parameter[]
      */
     protected $params;
+
+    /**
+     * @var SafeParameter[]
+     */
+    protected $verifiedParams = [];
 
     /**
      * @var RequestContext|ActionContext
@@ -46,7 +52,7 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     /**
      * @param array $keys
      *
-     * @return \Archiweb\Parameter\Parameter[]
+     * @return Parameter[]
      */
     public function getParams (array $keys = NULL) {
 
@@ -97,6 +103,63 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
         }
 
         $this->params[$key] = $value;
+
+    }
+
+    /**
+     * @param array $keys
+     *
+     * @return SafeParameter[]
+     */
+    public function getVerifiedParams (array $keys = NULL) {
+
+        if (isset($keys)) {
+
+            $verifiedParams = [];
+            foreach ($keys as $key) {
+                $verifiedParams[$key] = $this->getVerifiedParam($key);
+            }
+
+            return $verifiedParams;
+
+        }
+
+        return $this->verifiedParams;
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return SafeParameter
+     */
+    public function getVerifiedParam ($key) {
+
+        return isset($this->verifiedParams[$key]) ? $this->verifiedParams[$key] : NULL;
+
+    }
+
+    /**
+     * @param SafeParameter[] $verifiedParams
+     */
+    public function setVerifiedParams ($verifiedParams) {
+
+        foreach ($verifiedParams as $key => $value) {
+            $this->setVerifiedParam($key, $value);
+        }
+
+    }
+
+    /**
+     * @param string        $key
+     * @param SafeParameter $value
+     */
+    public function setVerifiedParam ($key, SafeParameter $value) {
+
+        if (!is_scalar($key)) {
+            throw new \RuntimeException('invalid key type');
+        }
+
+        $this->verifiedParams[$key] = $value;
 
     }
 
