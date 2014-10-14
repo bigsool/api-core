@@ -128,17 +128,6 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     }
 
     /**
-     * @param mixed $key
-     *
-     * @return SafeParameter
-     */
-    public function getVerifiedParam ($key) {
-
-        return isset($this->verifiedParams[$key]) ? $this->verifiedParams[$key] : NULL;
-
-    }
-
-    /**
      * @param SafeParameter[] $verifiedParams
      */
     public function setVerifiedParams ($verifiedParams) {
@@ -146,6 +135,17 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
         foreach ($verifiedParams as $key => $value) {
             $this->setVerifiedParam($key, $value);
         }
+
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return SafeParameter
+     */
+    public function getVerifiedParam ($key) {
+
+        return isset($this->verifiedParams[$key]) ? $this->verifiedParams[$key] : NULL;
 
     }
 
@@ -173,18 +173,9 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     }
 
     /**
-     * @return RequestContext|ActionContext
-     */
-    public function getParentContext () {
-
-        return $this->parentContext;
-
-    }
-
-    /**
      * @return RequestContext
      */
-    public function getRequestContext() {
+    public function getRequestContext () {
 
         $context = $this;
         while (!($context instanceof RequestContext)) {
@@ -192,6 +183,15 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
         }
 
         return $context;
+
+    }
+
+    /**
+     * @return RequestContext|ActionContext
+     */
+    public function getParentContext () {
+
+        return $this->parentContext;
 
     }
 

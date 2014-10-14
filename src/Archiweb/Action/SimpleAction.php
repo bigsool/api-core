@@ -130,7 +130,7 @@ class SimpleAction implements Action {
         foreach ($this->params as $field => $params) {
             /**
              * @var ConstraintsProvider $validator
-            */
+             */
             $param = $context->getParam($field);
             $value = isset($param) ? $param->getValue() : NULL;
             $violations = $params['validator']->validate($field, $value, $params['forceOptional']);

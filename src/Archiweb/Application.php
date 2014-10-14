@@ -9,6 +9,7 @@ use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Error\FormattedError;
 use Archiweb\Module\ModuleManager;
+use Archiweb\RPC\JSONP;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,24 +34,29 @@ class Application {
                 $moduleManager->load($appCtx);
             }
 
-            $request = Request::createFromGlobals();
-            $locale = $request->getLocale();
-            $preferred = $request->getPreferredLanguage();
-            $langues = $request->getLanguages();
-            $SfnReqCtx = new SymfonyRequestContext();
-            $SfnReqCtx->fromRequest($request);
-
-            $matcher = new UrlMatcher($appCtx->getRoutes(), $SfnReqCtx);
-
-            $reqCtx = new RequestContext($appCtx);
-            $reqCtx->setParams($request->query->all());
-
-            /**
-             * @var Controller $controller
-             */
-            $controller = $matcher->matchRequest($request)['controller'];
-
             try {
+                $request = Request::createFromGlobals();
+                $sfReqCtx = new SymfonyRequestContext();
+                $sfReqCtx->fromRequest($request);
+
+                $rpcHandler = new JSONP($appCtx, $request);
+
+                $matcher = new UrlMatcher($appCtx->getRoutes(), $sfReqCtx);
+
+                $reqCtx = new RequestContext($appCtx);
+                $reqCtx->setParams($rpcHandler->getParams());
+
+                /**
+                 * @var Controller $controller
+                 */
+                try {
+                    $controller = $matcher->match($rpcHandler->getPath())['controller'];
+                }
+                catch (\Exception $e) {
+                    throw $appCtx->getErrorManager($reqCtx)->getFormattedError(ERR_METHOD_NOT_FOUND);
+                }
+
+
                 $result = $controller->apply(new ActionContext($reqCtx));
                 $response = new Response(json_encode($result));
 

@@ -37,6 +37,7 @@ class ErrorManager {
 
     /**
      * @param string $errorCode
+     *
      * @return Error
      */
     static public function getDefinedError ($errorCode) {
@@ -45,7 +46,7 @@ class ErrorManager {
             return self::$definedErrors[$errorCode];
         }
 
-        return null;
+        return NULL;
 
     }
 
@@ -93,6 +94,7 @@ class ErrorManager {
 
         if ($errorCode) {
             $error = $this->getErrorForErrorCode($errorCode);
+
             return new FormattedError($error);
         }
         $parent = $this->getMainParent($this->errors[0]);
@@ -130,8 +132,8 @@ class ErrorManager {
     private function buildFormattedError (Error $error) {
 
         $childErrors = $this->getChildErrors($error->getCode());
-        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : null;
-        $formattedError = new FormattedError($error,$field);
+        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : NULL;
+        $formattedError = new FormattedError($error, $field);
 
         if ($childErrors) {
             foreach ($childErrors as $childError) {
