@@ -89,11 +89,14 @@ class ErrorManagerTest extends TestCase {
     public function testGetFormattedError () {
 
         $errorManager = new ErrorManager("fr");
+
         $errorManager->addError(self::$error1000->getCode());
-        $errorManager->addError(self::$error11->getCode());
-
         $formattedError = $errorManager->getFormattedError();
+        $this->assertEquals($formattedError->getCode(), 1);
+        $this->assertCount(1, $formattedError->getChildErrors());
 
+        $errorManager->addError(self::$error11->getCode());
+        $formattedError = $errorManager->getFormattedError();
         $this->assertEquals($formattedError->getCode(), 1);
         $this->assertCount(2, $formattedError->getChildErrors());
 
@@ -111,6 +114,14 @@ class ErrorManagerTest extends TestCase {
 
         $this->assertEquals($formattedChildErrors[0]->getCode(), 1000);
         $this->assertCount(1, $formattedChildErrors);
+
+
+
+        $errorManager = new ErrorManager("fr");
+        $errorManager->addError(self::$error1->getCode());
+        $formattedError = $errorManager->getFormattedError();
+        $this->assertEquals($formattedError->getCode(), 1);
+        $this->assertCount(0, $formattedError->getChildErrors());
 
     }
 

@@ -52,11 +52,12 @@ class ErrorManager {
 
     }
 
-    protected function getErrorForErrorCode($errorCode) {
+    protected function getErrorForErrorCode ($errorCode) {
 
         if (!isset(self::$definedErrors[$errorCode])) {
             throw new \RuntimeException('undefined error code ' . $errorCode);
         }
+
         return self::$definedErrors[$errorCode];
 
     }
@@ -80,7 +81,7 @@ class ErrorManager {
         if ($errorCode) {
             return new FormattedError($this->getErrorForErrorCode($errorCode));
         }
-        $parent = $this->getMainParent($this->errors[1]);
+        $parent = $this->getMainParent($this->errors[0]);
         $formattedError = $this->buildFormattedError($parent);
 
         return $formattedError;
@@ -95,10 +96,12 @@ class ErrorManager {
     private function getMainParent ($error) {
 
         $parent = $error;
-        foreach (self::$definedErrors as $definedError) {
-            if ($definedError->getCode() == $error->getParentCode()) {
-                $parent = $this->getMainParent($definedError);
-                break;
+        if ($error->getParentCode() != NULL) {
+            foreach (self::$definedErrors as $definedError) {
+                if ($definedError->getCode() == $error->getParentCode()) {
+                    $parent = $this->getMainParent($definedError);
+                    break;
+                }
             }
         }
 
