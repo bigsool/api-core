@@ -48,7 +48,7 @@ class ErrorManagerTest extends TestCase {
         ErrorManager::addDefinedError(
             self::$errMock1 = new Error(__TEST__ERR_MOCK_1, '__TEST__ERR_MOCK_1', '__TEST__ERR_MOCK_1'));
 
-        ErrorManager::addDefinedError(self::$error1 = new Error(1, 'message fr 1', 'message en 1', 'field1'));
+        ErrorManager::addDefinedError(self::$error1 = new Error(1, 'message fr 1', 'message en 1', null,'field1'));
 
         ErrorManager::addDefinedError(self::$error10 = new Error(10, 'message fr 10', 'message en 10', 1, 'field10'));
 
@@ -122,6 +122,20 @@ class ErrorManagerTest extends TestCase {
         $formattedError = $errorManager->getFormattedError();
         $this->assertEquals($formattedError->getCode(), 1);
         $this->assertCount(0, $formattedError->getChildErrors());
+
+        $errorManager = new ErrorManager("fr");
+        $errorManager->addError(self::$error1->getCode(),"fieldModified");
+        $formattedError = $errorManager->getFormattedError();
+        $this->assertEquals($formattedError->getField(),"fieldModified");
+
+
+    }
+
+    public function testGetDefinedError () {
+
+        $errorManager = new ErrorManager("fr");
+        $definedError = $errorManager->getDefinedError(self::$error1 ->getCode());
+        $this->assertSame(self::$error1,$definedError);
 
     }
 

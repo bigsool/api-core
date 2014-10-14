@@ -34,11 +34,11 @@ class FormattedError extends \Exception {
     /**
      * @param Error $error
      */
-    public function __construct ($error) {
+    public function __construct ($error, $field = null) {
 
         $this->code = $error->getCode();
         $this->message = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
-        $this->field = $error->getField();
+        $this->field = $field ? $field : $error->getField();
 
     }
 
