@@ -88,14 +88,15 @@ class FormattedError extends \Exception {
             $childErrors[] = json_decode($childError);
         }
 
-        if (count($childErrors)) {
-            $childErrors = ["childErrors" => $childErrors];
+        $result = ["code" => $this->code, "message" => $this->message];
+
+        if ($this->field) {
+            $result["field"] = $this->field;
         }
 
-        $result = array_merge(["code"    => $this->code,
-                               "message" => $this->message,
-                               "field"   => $this->field
-                              ], $childErrors);
+        if (count($childErrors)) {
+            $result["errors"] = $childErrors;
+        }
 
         return json_encode($result);
 

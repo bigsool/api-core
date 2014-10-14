@@ -89,7 +89,7 @@ class FormattedErrorTest extends TestCase {
         $tab = ["code"        => $this->formattedError->getCode(),
                 "message"     => $this->formattedError->getMessage(),
                 "field"       => $this->formattedError->getField(),
-                "childErrors" => [
+                "errors" => [
                     [
                         "code"    => $childErrors[0]->getCode(),
                         "message" => $childErrors[0]->getMessage(),
