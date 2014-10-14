@@ -57,7 +57,8 @@ class ModuleManager extends AbstractModuleManager {
                     $context->setParam($name, new SafeParameter($value));
                 }
             }
-            if (!empty($errorManager->getErrors())) {
+            $errors = $errorManager->getErrors();
+            if (!empty($errors)) {
                 throw $errorManager->getFormattedError();
             }
 

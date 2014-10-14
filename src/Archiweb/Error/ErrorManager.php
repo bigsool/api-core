@@ -26,6 +26,11 @@ class ErrorManager {
     }
 
     /**
+     * @var Error[]
+     */
+    protected $fields = [];
+
+    /**
      * @param Error $error
      */
     static public function addDefinedError (Error $error) {
@@ -40,6 +45,20 @@ class ErrorManager {
     }
 
     /**
+     * @param string $errorCode
+     * @return Error
+     */
+    static public function getDefinedError ($errorCode) {
+
+        if (isset(self::$definedErrors[$errorCode])) {
+            return self::$definedErrors[$errorCode];
+        }
+
+        return null;
+
+    }
+
+    /**
      * @param int    $errorCode
      * @param string $field
      */
@@ -48,6 +67,9 @@ class ErrorManager {
         $error = $this->getErrorForErrorCode($errorCode);
         if (!in_array($error, $this->errors)) {
             $this->errors[] = $error;
+        }
+        if ($field) {
+            $this->fields[$error->getCode()] = $field;
         }
 
     }
@@ -79,7 +101,8 @@ class ErrorManager {
     public function getFormattedError ($errorCode = NULL) {
 
         if ($errorCode) {
-            return new FormattedError($this->getErrorForErrorCode($errorCode));
+            $error = $this->getErrorForErrorCode($errorCode);
+            return new FormattedError($error);
         }
         $parent = $this->getMainParent($this->errors[0]);
         $formattedError = $this->buildFormattedError($parent);
@@ -96,9 +119,9 @@ class ErrorManager {
     private function getMainParent ($error) {
 
         $parent = $error;
-        if ($error->getParentCode() != NULL) {
+        if ($error->getParentCode() !== NULL) {
             foreach (self::$definedErrors as $definedError) {
-                if ($definedError->getCode() == $error->getParentCode()) {
+                if ($definedError->getCode() === $error->getParentCode()) {
                     $parent = $this->getMainParent($definedError);
                     break;
                 }
@@ -116,7 +139,8 @@ class ErrorManager {
     private function buildFormattedError (Error $error) {
 
         $childErrors = $this->getChildErrors($error->getCode());
-        $formattedError = new FormattedError($error);
+        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : null;
+        $formattedError = new FormattedError($error,$field);
 
         if ($childErrors) {
             foreach ($childErrors as $childError) {
@@ -200,7 +224,7 @@ class ErrorManager {
     private function getParent ($error) {
 
         foreach (self::$definedErrors as $definedError) {
-            if ($definedError->getCode() == $error->getParentCode()) {
+            if ($definedError->getCode() === $error->getParentCode()) {
                 return $definedError;
             }
         }
