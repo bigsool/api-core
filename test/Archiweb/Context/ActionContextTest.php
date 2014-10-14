@@ -57,8 +57,6 @@ class ActionContextTest extends TestCase {
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams($array);
 
-        $a = $ctx->getParams([0, 'a']);
-
         $this->assertSame($array, $ctx->getParams());
         $this->assertSame($array[0], $ctx->getParam(0));
         $this->assertSame($array['a'], $ctx->getParam('a'));
@@ -95,6 +93,53 @@ class ActionContextTest extends TestCase {
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setParam(new \stdClass(), $this->getMockParameter());
+
+    }
+
+    public function testVerifiedParams () {
+
+        $array = ['a' => new SafeParameter(0), new SafeParameter('b'), new SafeParameter(new \stdClass())];
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $ctx->setVerifiedParams($array);
+
+        $this->assertSame($array, $ctx->getVerifiedParams());
+        $this->assertSame($array[0], $ctx->getVerifiedParam(0));
+        $this->assertSame($array['a'], $ctx->getVerifiedParam('a'));
+
+        $this->assertCount(2, $ctx->getVerifiedParams([1, 'a']));
+        $this->assertContains($array[1], $ctx->getVerifiedParams([1, 'a']));
+        $this->assertContains($array['a'], $ctx->getVerifiedParams([1, 'a']));
+
+        $this->assertNull($ctx->getVerifiedParam('qwe'));
+        $qweParam = new SafeParameter('qwe');
+        $ctx->setVerifiedParam('qwe', $qweParam);
+        $this->assertSame($qweParam, $ctx->getVerifiedParam('qwe'));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testVerifiedParamInvalidType () {
+
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $ctx->setVerifiedParams([new UnsafeParameter('qwe')]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetVerifiedParamInvalidType () {
+
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $ctx->setVerifiedParam(new \stdClass(), new SafeParameter('qwe'));
 
     }
 
