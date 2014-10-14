@@ -40,7 +40,7 @@ class ModuleManager extends AbstractModuleManager {
                 ['name'      => ERR_PARAMS_INVALID,
                  'email'     => ERR_INVALID_PARAM_EMAIL,
                  'firstname' => ERR_PARAMS_INVALID,
-                 'password'  => ERR_PARAMS_INVALID,
+                 'password'  => ERR_INVALID_PASSWORD,
                  'knowsFrom' => ERR_PARAMS_INVALID
                 ];
 
@@ -58,12 +58,7 @@ class ModuleManager extends AbstractModuleManager {
                 }
             }
             if (!empty($errorManager->getErrors())) {
-                // TODO: throw $errorManager->getFormattedError();
-                $errorCodes = [];
-                foreach ($errorManager->getErrors() as $error) {
-                    $errorCodes[] = $error->getCode();
-                }
-                throw new \Exception(json_encode($errorCodes));
+                throw $errorManager->getFormattedError();
             }
 
         }, function (ActionContext $context) {
