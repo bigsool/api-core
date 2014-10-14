@@ -50,17 +50,17 @@ class ErrorManagerTest extends TestCase {
 
         ErrorManager::addDefinedError(self::$error1 = new Error(1, 'message fr 1', 'message en 1', 'field1'));
 
-        ErrorManager::addDefinedError(self::$error10 = new Error(10, 'message fr 10', 'message en 10', 'field10', 1));
+        ErrorManager::addDefinedError(self::$error10 = new Error(10, 'message fr 10', 'message en 10', 1, 'field10'));
 
         ErrorManager::addDefinedError(
-            self::$error100 = new Error(100, 'message fr 100', 'message en 100', 'field100', 10));
+            self::$error100 = new Error(100, 'message fr 100', 'message en 100', 10, 'field100'));
         ErrorManager::addDefinedError(
-            self::$error101 = new Error(101, 'message fr 101', 'message en 101', 'field101', 10));
+            self::$error101 = new Error(101, 'message fr 101', 'message en 101', 10, 'field101'));
 
         ErrorManager::addDefinedError(
-            self::$error1000 = new Error(1000, 'message fr 1000', 'message en 1000', 'field1000', 101));
+            self::$error1000 = new Error(1000, 'message fr 1000', 'message en 1000', 101, 'field1000'));
 
-        ErrorManager::addDefinedError(self::$error11 = new Error(11, 'message fr 11', 'message en 11', 'field300', 1));
+        ErrorManager::addDefinedError(self::$error11 = new Error(11, 'message fr 11', 'message en 11', 1, 'field300'));
 
     }
 

@@ -35,10 +35,10 @@ class Error {
      * @param int    $code
      * @param string $frMessage
      * @param string $enMessage
-     * @param string $field
      * @param int    $parentCode
+     * @param string $field
      */
-    public function __construct ($code, $frMessage, $enMessage, $field = NULL, $parentCode = NULL) {
+    public function __construct ($code, $frMessage, $enMessage, $parentCode = NULL, $field = NULL) {
 
         $this->code = $code;
         $this->frMessage = $frMessage;
