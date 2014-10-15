@@ -76,15 +76,67 @@ class ErrorManagerTest extends TestCase {
 
     }
 
-    /* public function testAddDefinedError () {
 
-         $error = $this->getMockError();
-         ErrorManager::addDefinedError($error);
-         $definedErrors = ErrorManager::getDefinedErrors();
 
-         $this->assertTrue(in_array($error, $definedErrors));
+    /**
+     * @expectedException \Exception
+     */
+     public function testAddDefinedErrorWithSameError () {
 
-     }*/
+         ErrorManager::addDefinedError(self::$errMock1);
+
+     }
+
+    public function testGetDefinedError () {
+
+        $errorManager = new ErrorManager("fr");
+        $definedError = $errorManager->getDefinedError(self::$error1->getCode());
+        $this->assertSame(self::$error1, $definedError);
+
+    }
+
+    public function testGetDefinedErrorWithBadErrorCode () {
+
+        $error = ErrorManager::getDefinedError(99999999);
+        $this->assertEquals(null,$error);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetErrorForErrorCode () {
+
+        $errorManager = new ErrorManager("fr");
+        $meth = new \ReflectionMethod("Archiweb\Error\ErrorManager", 'getErrorForErrorCode');
+        $meth->setAccessible(true);
+        $meth->invokeArgs($errorManager, [99999999]);
+
+    }
+
+    public function testGetFormattedErrorWithError () {
+
+        $errorManager = new ErrorManager("fr");
+
+        $formattedError = $errorManager->getFormattedError(self::$error1000->getCode());
+        $this->assertEquals($formattedError->getCode(), 1);
+        $this->assertCount(1, $formattedError->getChildErrors());
+
+        $formattedChildErrors = $formattedError->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 10);
+
+        $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 101);
+        $this->assertCount(1, $formattedChildErrors);
+
+        $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
+
+        $this->assertEquals($formattedChildErrors[0]->getCode(), 1000);
+        $this->assertCount(1, $formattedChildErrors);
+
+    }
 
     public function testGetFormattedError () {
 
@@ -129,12 +181,6 @@ class ErrorManagerTest extends TestCase {
 
     }
 
-    public function testGetDefinedError () {
 
-        $errorManager = new ErrorManager("fr");
-        $definedError = $errorManager->getDefinedError(self::$error1->getCode());
-        $this->assertSame(self::$error1, $definedError);
-
-    }
 
 }
