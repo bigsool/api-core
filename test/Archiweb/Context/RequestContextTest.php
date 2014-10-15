@@ -69,7 +69,7 @@ class RequestContextTest extends TestCase {
 
     }
 
-    public function testLocale() {
+    public function testLocale () {
 
         $ctx = $this->getRequestContext();
         $locale = 'fr';
@@ -78,7 +78,7 @@ class RequestContextTest extends TestCase {
 
     }
 
-    public function testClientVersion() {
+    public function testClientVersion () {
 
         $ctx = $this->getRequestContext();
         $version = '1.2.3';
@@ -87,7 +87,7 @@ class RequestContextTest extends TestCase {
 
     }
 
-    public function testClientName() {
+    public function testClientName () {
 
         $ctx = $this->getRequestContext();
         $name = 'archipad';

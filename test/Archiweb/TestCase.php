@@ -333,7 +333,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return AbstractConstraintsProvider
      */
-    public function getMockConstraintsProvider() {
+    public function getMockConstraintsProvider () {
 
         return $this->getMockBuilder('\Archiweb\Validation\ConstraintsProvider')
                     ->disableOriginalConstructor()

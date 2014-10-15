@@ -9,34 +9,34 @@ use Symfony\Component\HttpFoundation\Request;
 
 class JSONPTest extends TestCase {
 
-    public function testConstructor() {
+    public function testConstructor () {
 
         $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
-        $params = ['param1'=>'value1','param2'];
-        $req->query->add(['method'=>'method','params'=>$params]);
+        $params = ['param1' => 'value1', 'param2'];
+        $req->query->add(['method' => 'method', 'params' => $params]);
         $JSONP = new JSONP($appCtx, $req);
 
         $this->assertSame('/service/method', $JSONP->getPath());
         $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client',$JSONP->getClientName());
+        $this->assertSame('client', $JSONP->getClientName());
         $this->assertSame('version', $JSONP->getClientVersion());
         $this->assertSame('en', $JSONP->getLocale());
 
 
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+fr/service/');
         $params = [];
-        $req->query->add(['method'=>'method']);
+        $req->query->add(['method' => 'method']);
         $JSONP = new JSONP($appCtx, $req);
 
         $this->assertSame('/service/method', $JSONP->getPath());
         $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client',$JSONP->getClientName());
+        $this->assertSame('client', $JSONP->getClientName());
         $this->assertSame('version', $JSONP->getClientVersion());
         $this->assertSame('fr', $JSONP->getLocale());
 
@@ -45,13 +45,13 @@ class JSONPTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testClientNotFound() {
+    public function testClientNotFound () {
 
         $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/');
         new JSONP($appCtx, $req);
 
@@ -60,13 +60,13 @@ class JSONPTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidClient() {
+    public function testInvalidClient () {
 
         $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/clientversion+locale/');
         new JSONP($appCtx, $req);
 
@@ -75,13 +75,13 @@ class JSONPTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testServiceNotFound() {
+    public function testServiceNotFound () {
 
         $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/');
         new JSONP($appCtx, $req);
 
@@ -90,13 +90,13 @@ class JSONPTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testMethodNotFound() {
+    public function testMethodNotFound () {
 
         $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request',['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
         new JSONP($appCtx, $req);
 

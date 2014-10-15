@@ -14,6 +14,19 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
 
     /**
      * @param string $name
+     *
+     * @return Constraint[]|null
+     */
+    public function getConstraintsFor ($name) {
+
+        $constraints = $this->listConstraints();
+
+        return isset($constraints[$name]) ? $constraints[$name] : NULL;
+
+    }
+
+    /**
+     * @param string $name
      * @param mixed  $value
      * @param bool   $forceOptional
      *
@@ -36,19 +49,6 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
 
         return $constraints ? Validation::createValidator()->validate($value, $constraints)
             : new ConstraintViolationList();
-
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return Constraint[]|null
-     */
-    public function getConstraintsFor ($name) {
-
-        $constraints = $this->listConstraints();
-
-        return isset($constraints[$name]) ? $constraints[$name] : NULL;
 
     }
 
