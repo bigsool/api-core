@@ -66,6 +66,10 @@ class ErrorManager {
 
     }
 
+    /**
+     * @param string $errorCode
+     * @return Error
+     */
     protected function getErrorForErrorCode ($errorCode) {
 
         if (!isset(self::$definedErrors[$errorCode])) {
@@ -93,10 +97,9 @@ class ErrorManager {
     public function getFormattedError ($errorCode = NULL) {
 
         if ($errorCode) {
-            $error = $this->getErrorForErrorCode($errorCode);
-
-            return new FormattedError($error);
+            $this->addError($errorCode);
         }
+
         $parent = $this->getMainParent($this->errors[0]);
         $formattedError = $this->buildFormattedError($parent);
 
