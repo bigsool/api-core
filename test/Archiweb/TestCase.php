@@ -24,6 +24,7 @@ use Archiweb\Operator\CompareOperator;
 use Archiweb\Operator\LogicOperator;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Rule\Rule;
+use Archiweb\Validation\AbstractConstraintsProvider;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -324,6 +325,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockFieldKeyPath () {
 
         return $this->getMockBuilder('\Archiweb\Field\KeyPath')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return AbstractConstraintsProvider
+     */
+    public function getMockConstraintsProvider() {
+
+        return $this->getMockBuilder('\Archiweb\Validation\ConstraintsProvider')
                     ->disableOriginalConstructor()
                     ->getMock();
 

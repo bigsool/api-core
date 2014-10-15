@@ -1,16 +1,10 @@
 <?php
-
-
 namespace Archiweb\Validation;
 
-
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Validation;
 
-abstract class ConstraintsProvider {
+interface ConstraintsProvider {
 
     /**
      * @param string $name
@@ -19,42 +13,12 @@ abstract class ConstraintsProvider {
      *
      * @return ConstraintViolationList|\Symfony\Component\Validator\ConstraintViolationListInterface
      */
-    public function validate ($name, $value, $forceOptional = false) {
-
-        $constraints = $this->getConstraintsFor($name);
-        if ($forceOptional) {
-            $constraints = array_reduce($constraints, function ($constraints, Constraint $constraint) {
-
-                if (!($constraint instanceof Assert\NotBlank)) {
-                    $constraints[] = $constraint;
-                }
-
-                return $constraints;
-
-            }, []);
-        }
-
-        return $constraints ? Validation::createValidator()->validate($value, $constraints)
-            : new ConstraintViolationList();
-
-    }
+    public function validate ($name, $value, $forceOptional = false);
 
     /**
      * @param string $name
      *
      * @return Constraint[]|null
      */
-    public function getConstraintsFor ($name) {
-
-        $constraints = $this->listConstraints();
-
-        return isset($constraints[$name]) ? $constraints[$name] : NULL;
-
-    }
-
-    /**
-     * @return Constraint[][]
-     */
-    protected abstract function listConstraints ();
-
-} 
+    public function getConstraintsFor ($name);
+}

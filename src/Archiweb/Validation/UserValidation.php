@@ -5,7 +5,7 @@ namespace Archiweb\Validation;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class UserValidation extends ConstraintsProvider {
+class UserValidation extends AbstractConstraintsProvider {
 
     /**
      * @return Constraint[][]

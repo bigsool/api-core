@@ -15,7 +15,7 @@ class ConstraintsProviderTest extends TestCase {
         $emailConstraints = [new NotBlank(), new Email()];
 
         /**
-         * @var ConstraintsProvider $provider
+         * @var AbstractConstraintsProvider $provider
          */
         $provider = $this->getMockForAbstractClass('\Archiweb\Validation\ConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);
@@ -30,7 +30,7 @@ class ConstraintsProviderTest extends TestCase {
         $emailConstraints = [new NotBlank(), new Email()];
 
         /**
-         * @var ConstraintsProvider $provider
+         * @var AbstractConstraintsProvider $provider
          */
         $provider = $this->getMockForAbstractClass('\Archiweb\Validation\ConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);

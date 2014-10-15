@@ -8,6 +8,7 @@ use Archiweb\Context\ActionContext;
 use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\SafeParameter;
+use Archiweb\Validation\AbstractConstraintsProvider;
 use Archiweb\Validation\ConstraintsProvider;
 
 class SimpleAction implements Action {
@@ -129,7 +130,7 @@ class SimpleAction implements Action {
         $errorManager = $context->getApplicationContext()->getErrorManager($context->getRequestContext());
         foreach ($this->params as $field => $params) {
             /**
-             * @var ConstraintsProvider $validator
+             * @var AbstractConstraintsProvider $validator
              */
             $param = $context->getParam($field);
             $value = isset($param) ? $param->getValue() : NULL;
