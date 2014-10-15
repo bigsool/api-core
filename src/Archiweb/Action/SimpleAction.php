@@ -144,7 +144,8 @@ class SimpleAction implements Action {
                 $context->setVerifiedParam($field, $safeParameter);
             }
         }
-        if (!empty($errorManager->getErrors())) {
+        $errors = $errorManager->getErrors();
+        if (!empty($errors)) {
             throw $errorManager->getFormattedError();
         }
 
