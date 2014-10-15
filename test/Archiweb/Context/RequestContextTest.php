@@ -69,4 +69,31 @@ class RequestContextTest extends TestCase {
 
     }
 
+    public function testLocale() {
+
+        $ctx = $this->getRequestContext();
+        $locale = 'fr';
+        $ctx->setLocale($locale);
+        $this->assertSame($locale, $ctx->getLocale());
+
+    }
+
+    public function testClientVersion() {
+
+        $ctx = $this->getRequestContext();
+        $version = '1.2.3';
+        $ctx->setClientVersion($version);
+        $this->assertSame($version, $ctx->getClientVersion());
+
+    }
+
+    public function testClientName() {
+
+        $ctx = $this->getRequestContext();
+        $name = 'archipad';
+        $ctx->setClientName($name);
+        $this->assertSame($name, $ctx->getClientName());
+
+    }
+
 } 
