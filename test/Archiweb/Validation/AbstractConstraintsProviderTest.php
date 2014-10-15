@@ -40,6 +40,14 @@ class AbstractConstraintsProviderTest extends TestCase {
         $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
         $this->assertSame(0, $violations->count());
 
+        $violations = $provider->validate('email', '');
+        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
+        $this->assertSame(1, $violations->count());
+
+        $violations = $provider->validate('email', '', true);
+        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
+        $this->assertSame(0, $violations->count());
+
         $violations = $provider->validate('email', 'julienbigsool.com');
         $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
         $this->assertSame(1, $violations->count());
