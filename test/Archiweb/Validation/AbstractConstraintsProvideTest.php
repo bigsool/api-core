@@ -8,7 +8,8 @@ use Archiweb\TestCase;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ConstraintsProviderTest extends TestCase {
+
+class AbstractConstraintsProviderTest extends TestCase {
 
     public function testGetConstraintsFor () {
 
@@ -17,7 +18,7 @@ class ConstraintsProviderTest extends TestCase {
         /**
          * @var AbstractConstraintsProvider $provider
          */
-        $provider = $this->getMockForAbstractClass('\Archiweb\Validation\ConstraintsProvider');
+        $provider = $this->getMockForAbstractClass('\Archiweb\Validation\AbstractConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);
 
         $this->assertSame($emailConstraints, $provider->getConstraintsFor('email'));
@@ -32,7 +33,7 @@ class ConstraintsProviderTest extends TestCase {
         /**
          * @var AbstractConstraintsProvider $provider
          */
-        $provider = $this->getMockForAbstractClass('\Archiweb\Validation\ConstraintsProvider');
+        $provider = $this->getMockForAbstractClass('\Archiweb\Validation\AbstractConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);
 
         $violations = $provider->validate('email', 'julien@bigsool.com');
