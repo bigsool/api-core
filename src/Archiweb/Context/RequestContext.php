@@ -4,6 +4,7 @@
 namespace Archiweb\Context;
 
 
+use Archiweb\Auth;
 use Archiweb\Parameter\UnsafeParameter;
 
 class RequestContext implements ApplicationContextProvider {
@@ -34,12 +35,34 @@ class RequestContext implements ApplicationContextProvider {
     protected $locale;
 
     /**
+     * @var Auth
+     */
+    protected $auth;
+
+    /**
      * @param ApplicationContext $context
      */
     public function __construct (ApplicationContext $context) {
 
         $this->applicationContext = $context;
+        $this->auth = new Auth();
 
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth () {
+
+        return $this->auth;
+    }
+
+    /**
+     * @param Auth $auth
+     */
+    public function setAuth (Auth $auth) {
+
+        $this->auth = $auth;
     }
 
     /**

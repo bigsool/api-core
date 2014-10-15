@@ -5,6 +5,7 @@ namespace Archiweb\Action;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\RequestContext;
 use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\SafeParameter;
@@ -24,14 +25,14 @@ class SimpleAction implements Action {
     protected $name;
 
     /**
-     * @var
+     * @var callable
      */
     protected $process;
 
     /**
-     * @var
+     * @var string|string[]
      */
-    protected $minAuth;
+    protected $minRights;
 
     /**
      * @var array
@@ -39,13 +40,13 @@ class SimpleAction implements Action {
     protected $params;
 
     /**
-     * @param string   $module
-     * @param string   $name
-     * @param          $minAuth
-     * @param array    $params
-     * @param callable $process
+     * @param string          $module
+     * @param string          $name
+     * @param string|string[] $minRights
+     * @param array           $params
+     * @param callable        $process
      */
-    public function __construct ($module, $name, $minAuth, array $params, callable $process) {
+    public function __construct ($module, $name, $minRights, array $params, callable $process) {
 
         if (!is_string($module) || empty($module)) {
             throw new \RuntimeException('invalid module');
@@ -58,7 +59,7 @@ class SimpleAction implements Action {
         $this->module = $module;
         $this->name = $name;
         $this->process = \Closure::bind($process, $this);
-        $this->minAuth = $minAuth;
+        $this->minRights = $minRights;
         $this->setParams($params);
 
     }
@@ -82,9 +83,22 @@ class SimpleAction implements Action {
 
     /**
      * @param ActionContext $context
+     *
+     * @throws FormattedError
      */
     public function authorize (ActionContext $context) {
-        // TODO: Implement authorize() method.
+
+        $reqCtx = $context->getParentContext();
+        if ($reqCtx instanceof RequestContext) {
+
+            if (!$reqCtx->getAuth()->hasRights($this->minRights)) {
+
+                throw $context->getApplicationContext()->getErrorManager($reqCtx)->getFormattedError(ERR_PERMISSION_DENIED);
+
+            }
+
+        }
+
     }
 
     /**

@@ -4,6 +4,7 @@
 namespace Archiweb\Action;
 
 
+use Archiweb\Auth;
 use Archiweb\Context\ActionContext;
 use Archiweb\Error\Error;
 use Archiweb\Error\ErrorManager;
@@ -14,6 +15,12 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 class SimpleActionTest extends TestCase {
+
+    public static function setUpBeforeClass () {
+
+        require_once __DIR__ . '/../../../config/errors.php';
+
+    }
 
     public function testGetModule () {
 
@@ -163,6 +170,36 @@ class SimpleActionTest extends TestCase {
         $action->process($ctx);
 
         $this->assertTrue($called);
+
+    }
+
+    public function testAuthorize () {
+
+        $reqCtx = $this->getRequestContext();
+        $action = new SimpleAction('module', 'name', Auth::GUEST, [], $this->getCallable());
+        $this->assertNull($action->authorize($reqCtx->getNewActionContext()));
+
+        /**
+         * @var Auth $auth
+         */
+        $rights = [Auth::AUTHENTICATED];
+        $auth = $this->getMock('\Archiweb\Auth', ['hasRights']);
+        $auth->method('hasRights')->with($this->equalTo($rights))->willReturn(true);
+        $reqCtx->setAuth($auth);
+        $action = new SimpleAction('module', 'name', $rights, [], $this->getCallable());
+        $this->assertNull($action->authorize($reqCtx->getNewActionContext()));
+
+    }
+
+    /**
+     * @expectedException \Archiweb\Error\FormattedError
+     * @expectedExceptionCode 7
+     */
+    public function testAuthorizeFail () {
+
+        $reqCtx = $this->getRequestContext();
+        $action = new SimpleAction('module', 'name', Auth::AUTHENTICATED, [], $this->getCallable());
+        $action->authorize($reqCtx->getNewActionContext());
 
     }
 
