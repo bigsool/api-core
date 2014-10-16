@@ -2,6 +2,9 @@
 
 namespace Archiweb\Config;
 
+use Archiweb\Context\ApplicationContext;
+use Archiweb\Controller;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Definition\Processor;
 
@@ -17,27 +20,25 @@ class ConfigManager  {
      */
     private $config;
 
-    /**
-     * @var array
-     */
-    private $yamlFilePaths;
 
     /**
      * @param string $yamlFilePaths
      */
-    function __construct ($yamlFilePaths) {
+    function __construct ($yamlConfigPaths, $yamlRoutesPath) {
 
+        $this->appCtx = ApplicationContext::getInstance();
         $this->configValidator = new ConfigValidator();
         $this->configValidator->setConfigValidations();
-        $this->yamlFilePaths = $yamlFilePaths;
-        $this->loadConfig();
+
+        $this->loadConfig($yamlConfigPaths);
+        $this->loadRoutes($yamlRoutesPath);
 
     }
 
-    private function loadConfig () {
+    private function loadConfig ($yamlFilePaths) {
 
         $configs = [];
-        foreach ($this->yamlFilePaths as $yamlFilePath) {
+        foreach ($yamlFilePaths as $yamlFilePath) {
             $configs = array_merge($configs, Yaml::parse($yamlFilePath));
         }
         $processor = new Processor();
@@ -45,6 +46,17 @@ class ConfigManager  {
             $this->configValidator,
             $configs
         );
+
+    }
+
+    private function loadRoutes ($yamlRoutesPath) {
+
+        $parse = Yaml::parse($yamlRoutesPath);
+        foreach($parse['routes'] as $name => $value) {
+            $this->appCtx->addRoute($name, new Route($value['path'], [
+                'controller' => new Controller($value['controller'], $value['method'])
+            ]));
+        }
 
     }
 
