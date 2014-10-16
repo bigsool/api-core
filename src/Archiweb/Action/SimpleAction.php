@@ -7,7 +7,6 @@ namespace Archiweb\Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\RequestContext;
-use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Validation\AbstractConstraintsProvider;

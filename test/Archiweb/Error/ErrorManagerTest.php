@@ -48,7 +48,8 @@ class ErrorManagerTest extends TestCase {
         $this->errorManager = self::getApplicationContext()->getErrorManager();
 
         @define('__TEST__ERR_1', rand());
-        $this->errorManager->defineError($this->error1 = new Error(__TEST__ERR_1, 'message fr 1', 'message en 1', NULL, 'field1'));
+        $this->errorManager->defineError(
+            $this->error1 = new Error(__TEST__ERR_1, 'message fr 1', 'message en 1', NULL, 'field1'));
 
         @define('__TEST__ERR_10', rand());
         $this->errorManager->defineError(
@@ -56,14 +57,17 @@ class ErrorManagerTest extends TestCase {
 
         @define('__TEST__ERR_100', rand());
         $this->errorManager->defineError(
-            $this->error100 = new Error(__TEST__ERR_100, 'message fr 100', 'message en 100', __TEST__ERR_10, 'field100'));
+            $this->error100 =
+                new Error(__TEST__ERR_100, 'message fr 100', 'message en 100', __TEST__ERR_10, 'field100'));
         @define('__TEST__ERR_101', rand());
         $this->errorManager->defineError(
-            $this->error101 = new Error(__TEST__ERR_101, 'message fr 101', 'message en 101', __TEST__ERR_10, 'field101'));
+            $this->error101 =
+                new Error(__TEST__ERR_101, 'message fr 101', 'message en 101', __TEST__ERR_10, 'field101'));
 
         @define('__TEST__ERR_1000', rand());
         $this->errorManager->defineError(
-            $this->error1000 = new Error(__TEST__ERR_1000, 'message fr 1000', 'message en 1000', __TEST__ERR_101, 'field1000'));
+            $this->error1000 =
+                new Error(__TEST__ERR_1000, 'message fr 1000', 'message en 1000', __TEST__ERR_101, 'field1000'));
 
         @define('__TEST__ERR_11', rand());
         $this->errorManager->defineError(
@@ -74,7 +78,7 @@ class ErrorManagerTest extends TestCase {
     public function testAddError () {
 
         $errorManager = $this->getMockErrorManager();
-        $error = new Error(rand(),'','');
+        $error = new Error(rand(), '', '');
         $errorManager->defineError($error);
         $this->assertCount(0, $errorManager->getErrors());
 

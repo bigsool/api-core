@@ -6,9 +6,7 @@ namespace Archiweb\Action;
 
 use Archiweb\Auth;
 use Archiweb\Context\ActionContext;
-use Archiweb\Context\ApplicationContext;
 use Archiweb\Error\Error;
-use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\TestCase;
@@ -57,8 +55,8 @@ class SimpleActionTest extends TestCase {
 
         $errorCodeA = rand();
         $errorCodeB = rand();
-        $errorManager->defineError(new Error($errorCodeA, 'fr', 'en',1));
-        $errorManager->defineError(new Error($errorCodeB, 'fr', 'en',1));
+        $errorManager->defineError(new Error($errorCodeA, 'fr', 'en', 1));
+        $errorManager->defineError(new Error($errorCodeB, 'fr', 'en', 1));
 
         $constraintsProviderA = $this->getMockConstraintsProvider();
         $constraintsProviderB = $this->getMockConstraintsProvider();
