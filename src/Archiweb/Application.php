@@ -19,6 +19,11 @@ use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 class Application {
 
     /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
      * @var ApplicationContext
      */
     protected $appCtx;
@@ -44,8 +49,10 @@ class Application {
         /**
          * @var EntityManager $entityManager ;
          */
-        $this->appCtx->setEntityManager($entityManager);
+        $this->appCtx->setEntityManager($this->entityManager = $entityManager);
         $this->appCtx->setRuleProcessor(new RuleProcessor());
+
+        $entityManager->beginTransaction();
 
         return $this->appCtx;
 
@@ -92,9 +99,10 @@ class Application {
 
 
                 $result = $controller->apply(new ActionContext($reqCtx));
-                $response = new Response(json_encode($result));
+                $response = new Response($this->appCtx->getJMSSerializer()->serialize($result,'json'));
 
                 $response->send();
+                $this->entityManager->commit();
             }
             catch (FormattedError $e) {
                 (new Response((string)$e))->send();
