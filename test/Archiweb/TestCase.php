@@ -13,6 +13,7 @@ use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Error\Error;
+use Archiweb\Error\ErrorManager;
 use Archiweb\Expression\Expression;
 use Archiweb\Expression\ExpressionWithOperator;
 use Archiweb\Expression\KeyPath as ExpressionKeyPath;
@@ -33,6 +34,29 @@ use Doctrine\ORM\Tools\Setup;
 class TestCase extends \PHPUnit_Framework_TestCase {
 
     /**
+     *
+     */
+    public static function setUpBeforeClass () {
+
+        parent::setUpBeforeClass();
+
+        self::resetApplicationContext();
+
+    }
+
+    /**
+     *
+     */
+    public static function resetApplicationContext () {
+
+        $instanceProperty = (new \ReflectionClass('\Archiweb\Context\ApplicationContext'))->getProperty('instance');
+        $instanceProperty->setAccessible(true);
+        $instanceProperty->setValue(NULL, NULL);
+        $instanceProperty->setAccessible(false);
+
+    }
+
+    /**
      * @param ApplicationContext $appCtx
      */
     public static function resetDatabase (ApplicationContext $appCtx) {
@@ -49,6 +73,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $schemaTool->dropDatabase();
         $schemaTool->createSchema($classes);
+    }
+
+    /**
+     * @return ErrorManager
+     */
+    public function getMockErrorManager () {
+
+        return $this->getMockBuilder('\Archiweb\Error\ErrorManager')
+                    ->disableOriginalConstructor()
+                    ->getMockForAbstractClass();
+
     }
 
     /**
@@ -268,32 +303,44 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public static function getApplicationContext ($conn = NULL) {
 
-        $config =
-            Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
-                                                   __DIR__ . '/../../src/');
-        $config->setSQLLogger(new DebugStack());
-        $tmpDir = sys_get_temp_dir();
-        $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
-        $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
-        if (file_exists($originalDb)) {
-            copy($originalDb, $tmpDB);
+        $instanceProperty = (new \ReflectionClass('\Archiweb\Context\ApplicationContext'))->getProperty('instance');
+        $instanceProperty->setAccessible(true);
+        $instance = $instanceProperty->getValue(NULL);
+        $instanceProperty->setAccessible(false);
+
+        if (!$instance) {
+
+            $config =
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
+                                                       __DIR__ . '/../../src/');
+            $config->setSQLLogger(new DebugStack());
+            $tmpDir = sys_get_temp_dir();
+            $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
+            $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
+            if (file_exists($originalDb)) {
+                copy($originalDb, $tmpDB);
+            }
+
+            if ($conn == NULL) {
+                $conn = array(
+                    'driver' => 'pdo_sqlite',
+                    'path'   => $tmpDB,
+                );
+            }
+            $em = EntityManager::create($conn, $config);
+            $em->getConnection()->query('PRAGMA foreign_keys = ON');
+
+            $ctx = ApplicationContext::getInstance();
+            $ruleMgr = new RuleProcessor();
+            $ctx->setRuleProcessor($ruleMgr);
+            $ctx->setEntityManager($em);
+
+            require_once __DIR__ . '/../../config/errors.php';
+            loadErrors($ctx->getErrorManager());
+
         }
 
-        if ($conn == NULL) {
-            $conn = array(
-                'driver' => 'pdo_sqlite',
-                'path'   => $tmpDB,
-            );
-        }
-        $em = EntityManager::create($conn, $config);
-        $em->getConnection()->query('PRAGMA foreign_keys = ON');
-
-        $ctx = new ApplicationContext();
-        $ruleMgr = new RuleProcessor();
-        $ctx->setRuleProcessor($ruleMgr);
-        $ctx->setEntityManager($em);
-
-        return $ctx;
+        return ApplicationContext::getInstance();
 
     }
 
@@ -356,7 +403,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getActionContext () {
 
-        return (new RequestContext($this->getApplicationContext()))->getNewActionContext();
+        return (new RequestContext(ApplicationContext::getInstance()))->getNewActionContext();
 
     }
 

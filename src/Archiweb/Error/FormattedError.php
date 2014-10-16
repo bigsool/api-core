@@ -9,7 +9,7 @@ class FormattedError extends \Exception {
     /**
      * @var string
      */
-    static protected $lang;
+    static protected $lang = 'en';
 
     /**
      * @var int
@@ -32,7 +32,8 @@ class FormattedError extends \Exception {
     protected $childErrors = [];
 
     /**
-     * @param Error $error
+     * @param Error       $error
+     * @param string|null $field
      */
     public function __construct ($error, $field = NULL) {
 

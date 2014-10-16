@@ -9,7 +9,7 @@ class ErrorManager {
     /**
      * @var Error[]
      */
-    static protected $definedErrors;
+    protected $definedErrors;
 
     /**
      * @var Error[]
@@ -22,16 +22,22 @@ class ErrorManager {
     protected $fields = [];
 
     /**
+     * The constructor should be called only by the ApplicationContext
+     */
+    protected function __construct () {
+    }
+
+    /**
      * @param Error $error
      */
-    static public function addDefinedError (Error $error) {
+    public function defineError (Error $error) {
 
         $errorCode = $error->getCode();
-        if (isset(self::$definedErrors[$errorCode])) {
+        if (isset($this->definedErrors[$errorCode])) {
             throw new \RuntimeException('already defined error ' . $errorCode);
         }
 
-        self::$definedErrors[$errorCode] = $error;
+        $this->definedErrors[$errorCode] = $error;
 
     }
 
@@ -40,43 +46,13 @@ class ErrorManager {
      *
      * @return Error
      */
-    static public function getDefinedError ($errorCode) {
+    public function getDefinedError ($errorCode) {
 
-        if (isset(self::$definedErrors[$errorCode])) {
-            return self::$definedErrors[$errorCode];
+        if (isset($this->definedErrors[$errorCode])) {
+            return $this->definedErrors[$errorCode];
         }
 
         return NULL;
-
-    }
-
-    /**
-     * @param int    $errorCode
-     * @param string $field
-     */
-    public function addError ($errorCode, $field = NULL) {
-
-        $error = $this->getErrorForErrorCode($errorCode);
-        if (!in_array($error, $this->errors)) {
-            $this->errors[] = $error;
-        }
-        if ($field) {
-            $this->fields[$error->getCode()] = $field;
-        }
-
-    }
-
-    /**
-     * @param string $errorCode
-     * @return Error
-     */
-    protected function getErrorForErrorCode ($errorCode) {
-
-        if (!isset(self::$definedErrors[$errorCode])) {
-            throw new \RuntimeException('undefined error code ' . $errorCode);
-        }
-
-        return self::$definedErrors[$errorCode];
 
     }
 
@@ -108,6 +84,37 @@ class ErrorManager {
     }
 
     /**
+     * @param int    $errorCode
+     * @param string $field
+     */
+    public function addError ($errorCode, $field = NULL) {
+
+        $error = $this->getErrorForErrorCode($errorCode);
+        if (!in_array($error, $this->errors)) {
+            $this->errors[] = $error;
+        }
+        if ($field) {
+            $this->fields[$error->getCode()] = $field;
+        }
+
+    }
+
+    /**
+     * @param string $errorCode
+     *
+     * @return Error
+     */
+    protected function getErrorForErrorCode ($errorCode) {
+
+        if (!isset($this->definedErrors[$errorCode])) {
+            throw new \RuntimeException('undefined error code ' . $errorCode);
+        }
+
+        return $this->definedErrors[$errorCode];
+
+    }
+
+    /**
      * @param Error $error
      *
      * @return Error
@@ -116,7 +123,7 @@ class ErrorManager {
 
         $parent = $error;
         if ($error->getParentCode() !== NULL) {
-            foreach (self::$definedErrors as $definedError) {
+            foreach ($this->definedErrors as $definedError) {
                 if ($definedError->getCode() === $error->getParentCode()) {
                     $parent = $this->getMainParent($definedError);
                     break;
@@ -158,7 +165,7 @@ class ErrorManager {
     private function getChildErrors ($parentCode) {
 
         $childErrors = [];
-        foreach (self::$definedErrors as $definedError) {
+        foreach ($this->definedErrors as $definedError) {
             if ($definedError->getParentCode() == $parentCode) {
                 $childErrors[] = $definedError;
             }
@@ -215,11 +222,13 @@ class ErrorManager {
     }
 
     /**
-     * @return Error
+     * @param Error $error
+     *
+     * @return Error|null
      */
-    private function getParent ($error) {
+    private function getParent (Error $error) {
 
-        foreach (self::$definedErrors as $definedError) {
+        foreach ($this->definedErrors as $definedError) {
             if ($definedError->getCode() === $error->getParentCode()) {
                 return $definedError;
             }

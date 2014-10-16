@@ -58,6 +58,8 @@ class RegistryTest extends TestCase {
 
         parent::setUp();
 
+        self::resetApplicationContext();
+
         $this->appCtx = $this->getApplicationContext(self::$doctrineConnectionSettings);
         $this->appCtx->addField(new StarField('Product'));
         $this->appCtx->addField(new Field('Product', 'name'));
@@ -107,7 +109,7 @@ class RegistryTest extends TestCase {
         $queries = $em->getConfiguration()->getSQLLogger()->queries;
 
         if ($queries) {
-            var_dump($em->getConfiguration()->getSQLLogger()->queries);
+            //var_dump($em->getConfiguration()->getSQLLogger()->queries);
         }
 
     }

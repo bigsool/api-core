@@ -5,6 +5,7 @@ namespace Archiweb\Action;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
@@ -71,7 +72,8 @@ class SimpleAction implements Action {
 
         $this->params = [];
         foreach ($params as $field => $param) {
-            if (!is_array($param) || count($param) < 2 || !ErrorManager::getDefinedError($param[0])
+            $errorManager = ApplicationContext::getInstance()->getErrorManager();
+            if (!is_array($param) || count($param) < 2 || !$errorManager->getDefinedError($param[0])
                 || !($param[1] instanceof ConstraintsProvider)
             ) {
                 throw new \RuntimeException('invalid param');
@@ -93,7 +95,7 @@ class SimpleAction implements Action {
 
             if (!$reqCtx->getAuth()->hasRights($this->minRights)) {
 
-                throw $context->getApplicationContext()->getErrorManager($reqCtx)->getFormattedError(ERR_PERMISSION_DENIED);
+                throw $context->getApplicationContext()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
 
             }
 
@@ -141,7 +143,7 @@ class SimpleAction implements Action {
      */
     public function validate (ActionContext $context) {
 
-        $errorManager = $context->getApplicationContext()->getErrorManager($context->getRequestContext());
+        $errorManager = $context->getApplicationContext()->getErrorManager();
         foreach ($this->params as $field => $params) {
             /**
              * @var AbstractConstraintsProvider $validator

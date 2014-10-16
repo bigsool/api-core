@@ -5,6 +5,7 @@ namespace Archiweb\Context;
 
 
 use Archiweb\Auth;
+use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\UnsafeParameter;
 
 class RequestContext implements ApplicationContextProvider {
@@ -55,6 +56,7 @@ class RequestContext implements ApplicationContextProvider {
     public function getAuth () {
 
         return $this->auth;
+
     }
 
     /**
@@ -63,6 +65,7 @@ class RequestContext implements ApplicationContextProvider {
     public function setAuth (Auth $auth) {
 
         $this->auth = $auth;
+
     }
 
     /**
@@ -71,6 +74,7 @@ class RequestContext implements ApplicationContextProvider {
     public function getClientName () {
 
         return $this->clientName;
+
     }
 
     /**
@@ -79,6 +83,7 @@ class RequestContext implements ApplicationContextProvider {
     public function setClientName ($clientName) {
 
         $this->clientName = $clientName;
+
     }
 
     /**
@@ -87,6 +92,7 @@ class RequestContext implements ApplicationContextProvider {
     public function getClientVersion () {
 
         return $this->clientVersion;
+
     }
 
     /**
@@ -95,6 +101,7 @@ class RequestContext implements ApplicationContextProvider {
     public function setClientVersion ($clientVersion) {
 
         $this->clientVersion = $clientVersion;
+
     }
 
     /**
@@ -103,6 +110,7 @@ class RequestContext implements ApplicationContextProvider {
     public function getLocale () {
 
         return $this->locale;
+
     }
 
     /**
@@ -110,7 +118,9 @@ class RequestContext implements ApplicationContextProvider {
      */
     public function setLocale ($locale) {
 
+        FormattedError::setLang($locale);
         $this->locale = $locale;
+
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Archiweb;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\RequestContext;
+use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Module\ModuleManager;
 use Archiweb\RPC\JSONP;
@@ -18,11 +19,45 @@ use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
 class Application {
 
+    /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
+
+    public function __construct () {
+
+        $this->appCtx = $this->createApplicationContext();
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    protected function createApplicationContext () {
+
+        $this->appCtx = new ApplicationContext();
+
+        require __DIR__ . '/../../doctrine/config.php';
+        require_once __DIR__ . '/../../config/errors.php';
+        loadErrors($this->appCtx->getErrorManager());
+
+
+        /**
+         * @var EntityManager $entityManager ;
+         */
+        $this->appCtx->setEntityManager($entityManager);
+        $this->appCtx->setRuleProcessor(new RuleProcessor());
+
+        return $this->appCtx;
+
+    }
+
+    /**
+     *
+     */
     public function run () {
 
         try {
-
-            $appCtx = $this->createApplicationContext();
 
             $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
             foreach ($modules as $moduleName) {
@@ -31,7 +66,7 @@ class Application {
                  * @var ModuleManager $moduleManager
                  */
                 $moduleManager = new $className;
-                $moduleManager->load($appCtx);
+                $moduleManager->load($this->appCtx);
             }
 
             try {
@@ -39,11 +74,11 @@ class Application {
                 $sfReqCtx = new SymfonyRequestContext();
                 $sfReqCtx->fromRequest($request);
 
-                $rpcHandler = new JSONP($appCtx, $request);
+                $rpcHandler = new JSONP($this->appCtx, $request);
 
-                $matcher = new UrlMatcher($appCtx->getRoutes(), $sfReqCtx);
+                $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
-                $reqCtx = new RequestContext($appCtx);
+                $reqCtx = new RequestContext($this->appCtx);
                 $reqCtx->setParams($rpcHandler->getParams());
 
                 /**
@@ -53,7 +88,7 @@ class Application {
                     $controller = $matcher->match($rpcHandler->getPath())['controller'];
                 }
                 catch (\Exception $e) {
-                    throw $appCtx->getErrorManager($reqCtx)->getFormattedError(ERR_METHOD_NOT_FOUND);
+                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
                 }
 
 
@@ -75,25 +110,6 @@ class Application {
             exit('fatal error');
 
         }
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    protected function createApplicationContext () {
-
-        $appCtx = new ApplicationContext();
-
-        require __DIR__ . '/../../doctrine/config.php';
-
-        /**
-         * @var EntityManager $entityManager ;
-         */
-        $appCtx->setEntityManager($entityManager);
-        $appCtx->setRuleProcessor(new RuleProcessor());
-
-        return $appCtx;
 
     }
 
