@@ -77,7 +77,11 @@ function loadErrors (ErrorManager $errorManager) {
                                          ERR_PARAMS_INVALID));
 
     @define('ERR_INVALID_PASSWORD', 102);
-    $errorManager->defineError(new Error(ERR_INVALID_PASSWORD, "mot de passe invalid", 'password is invalid',
+    $errorManager->defineError(new Error(ERR_INVALID_PASSWORD, "mot de passe invalide", 'password is invalid',
+                                         ERR_PARAMS_INVALID));
+
+    @define('ERR_INVALID_NAME', 103);
+    $errorManager->defineError(new Error(ERR_INVALID_NAME, "nom invalide", 'name is invalid',
                                          ERR_PARAMS_INVALID));
 
 }
