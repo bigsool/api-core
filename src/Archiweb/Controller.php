@@ -4,22 +4,29 @@
 namespace Archiweb;
 
 
-use Archiweb\Action\Action;
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 
 class Controller {
 
     /**
-     * @var Action
+     * @var string
      */
-    protected $action;
+    protected $module;
 
     /**
-     * @param Action $action
+     * @var string
      */
-    public function __construct (Action $action) {
+    protected $actionName;
 
-        $this->action = $action;
+    /**
+     * @param string $module
+     * @param string $actionName
+     */
+    public function __construct ($module, $actionName) {
+
+        $this->module = $module;
+        $this->actionName = $actionName;
 
     }
 
@@ -30,7 +37,7 @@ class Controller {
      */
     public function apply (ActionContext $context) {
 
-        return $this->action->process($context);
+        return ApplicationContext::getInstance()->getAction($this->module, $this->actionName)->process($context);
 
     }
 
