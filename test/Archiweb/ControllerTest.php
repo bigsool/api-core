@@ -5,6 +5,7 @@ namespace Archiweb;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 
 class ControllerTest extends TestCase {
 
@@ -14,6 +15,9 @@ class ControllerTest extends TestCase {
         $called = false;
 
         $action = $this->getMockAction();
+        $action->method('getModule')->willReturn('module');
+        $action->method('getName')->willReturn('name');
+        ApplicationContext::getInstance()->addAction($action);
         $action->method('process')->will($this->returnCallback(function (ActionContext $ctx) use (&$context, &$called) {
 
             $this->assertSame($context, $ctx);
@@ -21,7 +25,7 @@ class ControllerTest extends TestCase {
 
         }));
 
-        (new Controller($action))->apply($context);
+        (new Controller('module','name'))->apply($context);
 
         $this->assertTrue($called);
 
