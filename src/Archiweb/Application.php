@@ -18,11 +18,52 @@ use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
 class Application {
 
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
+
+    public function __construct () {
+
+        $this->appCtx = $this->createApplicationContext();
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    protected function createApplicationContext () {
+
+        $this->appCtx = ApplicationContext::getInstance();
+
+        require __DIR__ . '/../../doctrine/config.php';
+        require_once __DIR__ . '/../../config/errors.php';
+        loadErrors($this->appCtx->getErrorManager());
+
+
+        /**
+         * @var EntityManager $entityManager ;
+         */
+        $this->appCtx->setEntityManager($this->entityManager = $entityManager);
+        $this->appCtx->setRuleProcessor(new RuleProcessor());
+
+        $entityManager->beginTransaction();
+
+        return $this->appCtx;
+
+    }
+
+    /**
+     *
+     */
     public function run () {
 
         try {
-
-            $appCtx = $this->createApplicationContext();
 
             $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
             foreach ($modules as $moduleName) {
@@ -31,7 +72,7 @@ class Application {
                  * @var ModuleManager $moduleManager
                  */
                 $moduleManager = new $className;
-                $moduleManager->load($appCtx);
+                $moduleManager->load($this->appCtx);
             }
 
             try {
@@ -39,11 +80,11 @@ class Application {
                 $sfReqCtx = new SymfonyRequestContext();
                 $sfReqCtx->fromRequest($request);
 
-                $rpcHandler = new JSONP($appCtx, $request);
+                $rpcHandler = new JSONP($this->appCtx, $request);
 
-                $matcher = new UrlMatcher($appCtx->getRoutes(), $sfReqCtx);
+                $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
-                $reqCtx = new RequestContext($appCtx);
+                $reqCtx = new RequestContext($this->appCtx);
                 $reqCtx->setParams($rpcHandler->getParams());
 
                 /**
@@ -53,14 +94,15 @@ class Application {
                     $controller = $matcher->match($rpcHandler->getPath())['controller'];
                 }
                 catch (\Exception $e) {
-                    throw $appCtx->getErrorManager($reqCtx)->getFormattedError(ERR_METHOD_NOT_FOUND);
+                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
                 }
 
 
                 $result = $controller->apply(new ActionContext($reqCtx));
-                $response = new Response(json_encode($result));
+                $response = new Response($this->appCtx->getJMSSerializer()->serialize($result,'json'));
 
                 $response->send();
+                $this->entityManager->commit();
             }
             catch (FormattedError $e) {
                 (new Response((string)$e))->send();
@@ -75,25 +117,6 @@ class Application {
             exit('fatal error');
 
         }
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    protected function createApplicationContext () {
-
-        $appCtx = new ApplicationContext();
-
-        require __DIR__ . '/../../doctrine/config.php';
-
-        /**
-         * @var EntityManager $entityManager ;
-         */
-        $appCtx->setEntityManager($entityManager);
-        $appCtx->setRuleProcessor(new RuleProcessor());
-
-        return $appCtx;
 
     }
 

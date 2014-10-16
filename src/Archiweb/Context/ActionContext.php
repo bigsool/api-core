@@ -31,11 +31,8 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
 
         parent::__construct();
 
-        $params = [];
         if ($context instanceof RequestContext) {
-            foreach ($context->getParams() as $key => $value) {
-                $params[$key] = new UnsafeParameter($value);
-            }
+            $params = $this->convertToUnsafeParameter($context->getParams());
         }
         elseif ($context instanceof ActionContext) {
             $params = $context->getParams();
@@ -192,6 +189,22 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     public function getParentContext () {
 
         return $this->parentContext;
+
+    }
+
+    /**
+     * @param array $values
+     *
+     * @return UnsafeParameter[]
+     */
+    public function convertToUnsafeParameter (array $values) {
+
+        $params = [];
+        foreach ($values as $key => $value) {
+            $params[$key] = new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value) : $value);
+        }
+
+        return $params;
 
     }
 

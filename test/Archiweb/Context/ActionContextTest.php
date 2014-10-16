@@ -45,7 +45,7 @@ class ActionContextTest extends TestCase {
      */
     public function testInvalidContext () {
 
-        new ActionContext(new ApplicationContext());
+        new ActionContext(new \stdClass());
 
     }
 

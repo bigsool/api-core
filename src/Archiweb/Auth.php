@@ -7,7 +7,9 @@ namespace Archiweb;
 class Auth {
 
     const GUEST = 'GUEST';
+
     const AUTHENTICATED = 'AUTHENTICATED';
+
     // Could be CREATE_PROJECT, SHARE_PROJECT ...
 
     /**
@@ -29,7 +31,7 @@ class Auth {
      *
      * @return bool
      */
-    public function hasRights($rights) {
+    public function hasRights ($rights) {
 
         return 0 == count(array_diff((array)$rights, $this->rights));
 

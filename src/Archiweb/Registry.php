@@ -80,7 +80,6 @@ class Registry implements \Doctrine\Common\EventSubscriber {
      */
     public function save ($model) {
 
-
         $saveQueryContext = new SaveQueryContext($this->appCtx, $model);
 
         $ruleProcessor = new RuleProcessor();

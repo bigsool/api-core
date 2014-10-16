@@ -7,7 +7,6 @@ namespace Archiweb\Action;
 use Archiweb\Auth;
 use Archiweb\Context\ActionContext;
 use Archiweb\Error\Error;
-use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\TestCase;
@@ -15,12 +14,6 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 class SimpleActionTest extends TestCase {
-
-    public static function setUpBeforeClass () {
-
-        require_once __DIR__ . '/../../../config/errors.php';
-
-    }
 
     public function testGetModule () {
 
@@ -58,13 +51,17 @@ class SimpleActionTest extends TestCase {
 
     public function testValidate () {
 
-        ErrorManager::addDefinedError(new Error(ord('a'), 'fr', 'en'));
-        ErrorManager::addDefinedError(new Error(ord('b'), 'fr', 'en'));
+        $errorManager = $this->getApplicationContext()->getErrorManager();
+
+        $errorCodeA = rand();
+        $errorCodeB = rand();
+        $errorManager->defineError(new Error($errorCodeA, 'fr', 'en', 1));
+        $errorManager->defineError(new Error($errorCodeB, 'fr', 'en', 1));
 
         $constraintsProviderA = $this->getMockConstraintsProvider();
         $constraintsProviderB = $this->getMockConstraintsProvider();
 
-        $params = ['a' => [ord('a'), $constraintsProviderA]];
+        $params = ['a' => [$errorCodeA, $constraintsProviderA]];
         $context = $this->getActionContext();
         $context->setParam('a', new UnsafeParameter('A'));
         $context->setParam('b', new UnsafeParameter('B'));
@@ -89,7 +86,7 @@ class SimpleActionTest extends TestCase {
         // No exceptions
         $action->validate($context);
 
-        $params['b'] = [ord('b'), $constraintsProviderB, true];
+        $params['b'] = [$errorCodeB, $constraintsProviderB, true];
 
         $calledB = false;
         $constraintsProviderB->method('validate')->will($this->returnCallback(function ($field, $value,
@@ -115,7 +112,9 @@ class SimpleActionTest extends TestCase {
             $this->fail('SimpleAction->validate() should throw an Exception');
         }
         catch (FormattedError $e) {
-            $this->assertSame(ord('b'), $e->getCode());
+            $this->assertSame(1, $e->getCode());
+            $this->assertCount(1, $e->getChildErrors());
+            $this->assertSame($errorCodeB, $e->getChildErrors()[0]->getCode());
         }
 
         $this->assertTrue($calledA);
@@ -196,6 +195,8 @@ class SimpleActionTest extends TestCase {
      * @expectedExceptionCode 7
      */
     public function testAuthorizeFail () {
+
+        self::resetApplicationContext();
 
         $reqCtx = $this->getRequestContext();
         $action = new SimpleAction('module', 'name', Auth::AUTHENTICATED, [], $this->getCallable());

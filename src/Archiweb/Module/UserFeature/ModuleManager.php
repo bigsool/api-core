@@ -31,25 +31,25 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('User', 'create', NULL,
-                                       ['name'      => [ERR_PARAMS_INVALID, new UserValidation()],
-                                        'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
-                                        'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
-                                        'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
-                                        'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
-                                       ], function (ActionContext $context) {
+        $context->addAction(new Action('User', 'create', NULL, [
+            'name'      => [ERR_INVALID_NAME, new UserValidation()],
+            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
+            'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
+            'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
+            'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
+        ], function (ActionContext $context) {
 
-                /**
-                 * @var UserFeatureHelper $helper
-                 */
-                $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
-                $params = $context->getVerifiedParams();
-                $params['lang'] = new SafeParameter('fr');
-                $helper->createUser($context, $params);
+            /**
+             * @var UserFeatureHelper $helper
+             */
+            $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
+            $params = $context->getVerifiedParams();
+            $params['lang'] = new SafeParameter('fr');
+            $helper->createUser($context, $params);
 
-                return $context['user'];
+            return $context['user'];
 
-            }));
+        }));
 
     }
 
@@ -85,11 +85,6 @@ class ModuleManager extends AbstractModuleManager {
     }
 
     public function loadRoutes (ApplicationContext &$context) {
-
-        $context->addRoute('userCreate', new Route('/user/create',
-                                                   ['controller' => new Controller($context->getAction('User',
-                                                                                                       'create'))
-                                                   ]));
 
     }
 

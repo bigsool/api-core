@@ -11,7 +11,7 @@ class ApplicationContextTest extends TestCase {
 
     public function testRuleManager () {
 
-        $ctx = new ApplicationContext();
+        $ctx = $this->getApplicationContext();
         $ruleMgr = $this->getMockRuleProcessor();
 
         $ctx->setRuleProcessor($ruleMgr);
@@ -21,7 +21,7 @@ class ApplicationContextTest extends TestCase {
 
     public function testFilters () {
 
-        $ctx = new ApplicationContext();
+        $ctx = $this->getApplicationContext();
         $filters = [$this->getMockFilter(), $this->getMockFilter(), $this->getMockFilter()];
 
         $this->assertSame([], $ctx->getFilters());
@@ -37,7 +37,7 @@ class ApplicationContextTest extends TestCase {
 
     public function testFields () {
 
-        $ctx = new ApplicationContext();
+        $ctx = $this->getApplicationContext();
         $fields = [$this->getMockField(), $this->getMockField(), $this->getMockField()];
 
         $this->assertSame([], $ctx->getFields());
@@ -53,7 +53,7 @@ class ApplicationContextTest extends TestCase {
 
     public function testRules () {
 
-        $ctx = new ApplicationContext();
+        $ctx = $this->getApplicationContext();
         $rules = [$this->getMockRule(), $this->getMockRule(), $this->getMockRule()];
 
         $this->assertSame([], $ctx->getRules());

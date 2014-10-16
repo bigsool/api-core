@@ -6,17 +6,22 @@ namespace Archiweb\Context;
 
 use Archiweb\Action\Action;
 use Archiweb\Error\ErrorManager;
-use Archiweb\Error\FormattedError;
 use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
 use Archiweb\Registry;
 use Archiweb\Rule\Rule;
 use Archiweb\RuleProcessor;
 use Doctrine\ORM\EntityManager;
+use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class ApplicationContext {
+
+    /**
+     * @var ApplicationContext
+     */
+    protected static $instance;
 
     /**
      * @var EntityManager
@@ -44,7 +49,7 @@ class ApplicationContext {
     protected $rules = [];
 
     /**
-     * @var \Archiweb\Action\Action[]
+     * @var Action[]
      */
     protected $actions = [];
 
@@ -54,13 +59,34 @@ class ApplicationContext {
     protected $routes;
 
     /**
+     * @var ErrorManager
+     */
+    protected $errorManager;
+
+    /**
      * @var object[]
      */
     protected $helpers = [];
 
-    public function __construct () {
+    /**
+     *
+     */
+    protected function __construct () {
 
         $this->routes = new RouteCollection();
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public static function getInstance () {
+
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
 
     }
 
@@ -317,15 +343,29 @@ class ApplicationContext {
     }
 
     /**
-     * @param RequestContext $context
-     *
+     * @return \JMS\Serializer\Serializer
+     */
+    public function getJMSSerializer() {
+
+        return SerializerBuilder::create()->build();
+
+    }
+
+    /**
      * @return ErrorManager
      */
-    public function getErrorManager (RequestContext $context) {
+    public function getErrorManager () {
 
-        FormattedError::setLang($context->getLocale());
+        if (!isset($this->errorManager)) {
+            $errorManager = new \ReflectionClass('\Archiweb\Error\ErrorManager');
+            $this->errorManager = $errorManager->newInstanceWithoutConstructor();
+            $constructor = $errorManager->getConstructor();
+            $constructor->setAccessible(true);
+            $constructor->invoke($this->errorManager);
+            $constructor->setAccessible(false);
+        }
 
-        return new ErrorManager();
+        return $this->errorManager;
 
     }
 
