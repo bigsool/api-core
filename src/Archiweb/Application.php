@@ -7,7 +7,6 @@ namespace Archiweb;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\RequestContext;
-use Archiweb\Error\ErrorManager;
 use Archiweb\Error\FormattedError;
 use Archiweb\Module\ModuleManager;
 use Archiweb\RPC\JSONP;
@@ -35,7 +34,7 @@ class Application {
      */
     protected function createApplicationContext () {
 
-        $this->appCtx = new ApplicationContext();
+        $this->appCtx = ApplicationContext::getInstance();
 
         require __DIR__ . '/../../doctrine/config.php';
         require_once __DIR__ . '/../../config/errors.php';
