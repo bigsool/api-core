@@ -11,6 +11,11 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigManager  {
 
     /**
+     * @var ApplicationContext
+     */
+    private $appCtx;
+
+    /**
      * @var ConfigValidator
      */
     private $configValidator;

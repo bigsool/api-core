@@ -3,6 +3,8 @@
 
 namespace Archiweb\Error;
 
+use Archiweb\ApplicationTest;
+use Archiweb\Context\ApplicationContext;
 use Archiweb\TestCase;
 use \Archiweb\Config\ConfigManager;
 
@@ -25,6 +27,11 @@ class ConfigManagerTest extends TestCase {
 
         $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
         $this->assertInstanceOf('\Archiweb\Config\ConfigManager',$configManager);
+        $appCtx = ApplicationContext::getInstance();
+        $routes = $appCtx->getRoutes();
+        $this->assertCount(2,$routes);
+        $this->assertEquals($routes->get('userCreate')->getPath(),"/user/create");
+        $this->assertEquals($routes->get('userUpdate')->getPath(),"/user/update");
 
     }
 
@@ -76,6 +83,8 @@ class ConfigManagerTest extends TestCase {
         $this->assertEquals($expectedConfig,$config);
 
     }
+
+
 
 
 }
