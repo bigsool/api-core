@@ -401,6 +401,10 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithAlias () {
 
+        $this->appCtx->addField(new Field('User', 'email'));
+        $this->appCtx->addField(new Field('User', 'name'));
+        $this->appCtx->addField(new Field('Company', 'name'));
+
         $qryCtx = new FindQueryContext('User');
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
