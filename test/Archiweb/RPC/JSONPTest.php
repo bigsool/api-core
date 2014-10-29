@@ -11,7 +11,6 @@ class JSONPTest extends TestCase {
 
     public function testConstructor () {
 
-        $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
@@ -47,7 +46,6 @@ class JSONPTest extends TestCase {
      */
     public function testClientNotFound () {
 
-        $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
@@ -62,7 +60,6 @@ class JSONPTest extends TestCase {
      */
     public function testInvalidClient () {
 
-        $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
@@ -77,7 +74,6 @@ class JSONPTest extends TestCase {
      */
     public function testServiceNotFound () {
 
-        $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
@@ -92,7 +88,6 @@ class JSONPTest extends TestCase {
      */
     public function testMethodNotFound () {
 
-        $appCtx = $this->getApplicationContext();
         /**
          * @var Request $req
          */
