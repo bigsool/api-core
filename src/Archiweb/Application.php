@@ -80,7 +80,7 @@ class Application {
                 $sfReqCtx = new SymfonyRequestContext();
                 $sfReqCtx->fromRequest($request);
 
-                $rpcHandler = new JSONP($this->appCtx, $request);
+                $rpcHandler = new JSONP();
 
                 $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
