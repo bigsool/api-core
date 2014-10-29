@@ -8,17 +8,12 @@ use Archiweb\Auth;
 use Archiweb\Error\FormattedError;
 use Archiweb\Parameter\UnsafeParameter;
 
-class RequestContext implements ApplicationContextProvider {
+class RequestContext {
 
     /**
      * @var array
      */
     protected $params = [];
-
-    /**
-     * @var ApplicationContext
-     */
-    protected $applicationContext;
 
     /**
      * @var string
@@ -41,11 +36,9 @@ class RequestContext implements ApplicationContextProvider {
     protected $auth;
 
     /**
-     * @param ApplicationContext $context
      */
-    public function __construct (ApplicationContext $context) {
+    public function __construct () {
 
-        $this->applicationContext = $context;
         $this->auth = new Auth();
 
     }
@@ -167,15 +160,6 @@ class RequestContext implements ApplicationContextProvider {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public function getApplicationContext () {
-
-        return $this->applicationContext;
 
     }
 }

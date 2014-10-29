@@ -4,6 +4,7 @@
 namespace Archiweb;
 
 
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Rule\Rule;
 use Doctrine\ORM\Query;
@@ -41,7 +42,7 @@ class RuleProcessor {
      */
     public function findRules (QueryContext $ctx) {
 
-        $appCtx = $ctx->getApplicationContext();
+        $appCtx = ApplicationContext::getInstance();
 
         $rulesAndFlatten = [];
 

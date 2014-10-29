@@ -84,7 +84,7 @@ class Application {
 
                 $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
-                $reqCtx = new RequestContext($this->appCtx);
+                $reqCtx = new RequestContext();
                 $reqCtx->setParams($rpcHandler->getParams());
 
                 /**

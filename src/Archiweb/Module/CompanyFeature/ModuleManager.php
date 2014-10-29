@@ -35,7 +35,7 @@ class ModuleManager extends AbstractModuleManager {
             /**
              * @var CompanyFeatureHelper $helper
              */
-            $helper = $context->getApplicationContext()->getHelper('CompanyFeatureHelper');
+            $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
             $params = $context->getVerifiedParams();
             $helper->createCompany($context, $params);
 

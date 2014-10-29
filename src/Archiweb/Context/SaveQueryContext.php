@@ -7,11 +7,6 @@ namespace Archiweb\Context;
 class SaveQueryContext implements QueryContext {
 
     /**
-     * @var ApplicationContext
-     */
-    protected $appCtx;
-
-    /**
      * @var
      */
     protected $model;
@@ -22,10 +17,9 @@ class SaveQueryContext implements QueryContext {
     protected $entity;
 
     /**
-     * @param ApplicationContext $ctx
-     * @param                    $model
+     * @param $model
      */
-    public function __construct (ApplicationContext $ctx, $model) {
+    public function __construct ($model) {
 
         if (!is_object($model)) {
             throw new \RuntimeException('invalid model type');
@@ -37,17 +31,7 @@ class SaveQueryContext implements QueryContext {
         }
 
         $this->entity = $class->getShortName();
-        $this->appCtx = $ctx;
         $this->model = $model;
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public function getApplicationContext () {
-
-        return $this->appCtx;
 
     }
 

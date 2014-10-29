@@ -291,7 +291,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getRequestContext () {
 
-        return new RequestContext($this->getApplicationContext());
+        return new RequestContext();
 
     }
 
@@ -403,7 +403,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getActionContext () {
 
-        return (new RequestContext(ApplicationContext::getInstance()))->getNewActionContext();
+        return (new RequestContext())->getNewActionContext();
 
     }
 
@@ -416,7 +416,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
 
-        return new FindQueryContext($this->getApplicationContext(), $entity, $fields, $filters);
+        return new FindQueryContext($entity, $fields, $filters);
 
     }
 
@@ -427,7 +427,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getSaveQueryContext ($model) {
 
-        return new SaveQueryContext($this->getApplicationContext(), $model);
+        return new SaveQueryContext($model);
 
     }
 

@@ -94,7 +94,7 @@ class SimpleAction implements Action {
 
             if (!$reqCtx->getAuth()->hasRights($this->minRights)) {
 
-                throw $context->getApplicationContext()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
 
             }
 
@@ -142,7 +142,7 @@ class SimpleAction implements Action {
      */
     public function validate (ActionContext $context) {
 
-        $errorManager = $context->getApplicationContext()->getErrorManager();
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
         foreach ($this->params as $field => $params) {
             /**
              * @var AbstractConstraintsProvider $validator

@@ -91,15 +91,6 @@ class FindQueryContextTest extends TestCase {
 
     }
 
-    public function testGetApplicationContext () {
-
-        $ctx = $this->getFindQueryContext('Company');
-        $appCtx = $ctx->getApplicationContext();
-
-        $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
-
-    }
-
     /**
      *
      */

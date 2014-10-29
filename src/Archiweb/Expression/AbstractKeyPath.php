@@ -4,6 +4,7 @@
 namespace Archiweb\Expression;
 
 
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Registry;
@@ -127,7 +128,7 @@ abstract class AbstractKeyPath extends Value {
                 break;
             }
 
-            $metadata = $ctx->getApplicationContext()->getClassMetadata($entity);
+            $metadata = ApplicationContext::getInstance()->getClassMetadata($entity);
             $fields = $metadata->getFieldNames();
 
             if (in_array($field, $fields)) {
@@ -195,7 +196,7 @@ abstract class AbstractKeyPath extends Value {
             $this->process($ctx);
         }
 
-        return $ctx->getApplicationContext()->getFieldByEntityAndName($this->entity, $this->field);
+        return ApplicationContext::getInstance()->getFieldByEntityAndName($this->entity, $this->field);
 
     }
 

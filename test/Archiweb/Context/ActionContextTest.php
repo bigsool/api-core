@@ -18,6 +18,7 @@ class ActionContextTest extends TestCase {
         $ctx = new ActionContext($reqCtx);
 
         $this->assertSame($reqCtx, $ctx->getParentContext());
+        $this->assertSame($reqCtx, $ctx->getRequestContext());
         $this->assertInternalType('array', $ctx->getParams());
         $this->assertCount(count($params), $ctx->getParams());
         foreach ($ctx->getParams() as $key => $value) {
@@ -140,15 +141,6 @@ class ActionContextTest extends TestCase {
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setVerifiedParam(new \stdClass(), new SafeParameter('qwe'));
-
-    }
-
-    public function testGetApplicationContext () {
-
-        $ctx = $this->getActionContext();
-        $appCtx = $ctx->getApplicationContext();
-
-        $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
 
     }
 

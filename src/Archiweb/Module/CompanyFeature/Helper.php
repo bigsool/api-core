@@ -16,7 +16,7 @@ class Helper {
      */
     public function createCompany (ActionContext $actCtx, array $params) {
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
 
         $company = new Company();
 

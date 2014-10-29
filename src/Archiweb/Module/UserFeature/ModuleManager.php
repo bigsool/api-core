@@ -42,7 +42,7 @@ class ModuleManager extends AbstractModuleManager {
             /**
              * @var UserFeatureHelper $helper
              */
-            $helper = $context->getApplicationContext()->getHelper('UserFeatureHelper');
+            $helper = ApplicationContext::getInstance()->getHelper('UserFeatureHelper');
             $params = $context->getVerifiedParams();
             $params['lang'] = new SafeParameter('fr');
             $helper->createUser($context, $params);

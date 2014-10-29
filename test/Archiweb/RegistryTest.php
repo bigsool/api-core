@@ -69,15 +69,9 @@ class RegistryTest extends TestCase {
         $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', 'SELECT', $expression);
         $this->appCtx->addFilter($funcConsumableFilter);
 
-        $funcConsumableRule = new SimpleRule('funcConsumableRule', function () {
-
-            return true;
-
-        }, $funcConsumableFilter);
-
         $funcStarField = new StarField('Functionality');
         $this->appCtx->addField($funcStarField);
-        $this->appCtx->addRule(new FieldRule($funcStarField, $funcConsumableRule));
+        $this->appCtx->addRule(new FieldRule($funcStarField, $funcConsumableFilter));
 
     }
 
@@ -294,7 +288,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFilterAsArray () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx = new FindQueryContext('Product');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
@@ -312,7 +306,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindFieldsWithoutFilter () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx = new FindQueryContext('Product');
         $qryCtx->addKeyPath(new FieldKeyPath('name'));
         $qryCtx->addKeyPath(new FieldKeyPath('price'));
 
@@ -333,7 +327,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFilterAsObject () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx = new FindQueryContext('Product');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
@@ -358,7 +352,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithFilters () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx = new FindQueryContext('Product');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('price'), new Value(17));
@@ -389,7 +383,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Functionality');
+        $qryCtx = new FindQueryContext('Functionality');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
@@ -407,7 +401,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithAlias () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'User');
+        $qryCtx = new FindQueryContext('User');
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
         $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
@@ -427,7 +421,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFields () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Product');
+        $qryCtx = new FindQueryContext('Product');
         $this->appCtx->getNewRegistry()->find($qryCtx);
 
     }
@@ -437,7 +431,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithBadEntity () {
 
-        $qryCtx = new FindQueryContext($this->appCtx, 'Qwe');
+        $qryCtx = new FindQueryContext('Qwe');
         $this->appCtx->getNewRegistry()->find($qryCtx);
 
     }
