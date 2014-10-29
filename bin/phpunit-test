@@ -1,1 +1,2 @@
+#!/usr/bin/env sh
 ../vendor/bin/phpunit --bootstrap ../test/autoload.php -c ../phpunit.xml --verbose --strict --colors ../test/
