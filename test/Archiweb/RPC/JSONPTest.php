@@ -31,6 +31,8 @@ class JSONPTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+fr/service/');
         $params = [];
         $req->query->add(['method' => 'method']);
+        $req->query->add(['entity' => ($entity = 'entity')]);
+        $req->query->add(['fields' => ($fields = ['field1','field2.subField1'])]);
         $JSONP = new JSONP($req);
 
         $this->assertSame('/service/method', $JSONP->getPath());
@@ -38,6 +40,8 @@ class JSONPTest extends TestCase {
         $this->assertSame('client', $JSONP->getClientName());
         $this->assertSame('version', $JSONP->getClientVersion());
         $this->assertSame('fr', $JSONP->getLocale());
+        $this->assertSame($entity, $JSONP->getReturnedRootEntity());
+        $this->assertSame($fields, $JSONP->getReturnedFields());
 
     }
 
@@ -93,6 +97,23 @@ class JSONPTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
+        new JSONP($req);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testStarFieldAsKeyPath () {
+
+        /**
+         * @var Request $req
+         */
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
+        $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
+        $req->query->add(['method' => 'method']);
+        $req->query->add(['entity' => 'entity']);
+        $req->query->add(['fields' => ['*']]);
         new JSONP($req);
 
     }

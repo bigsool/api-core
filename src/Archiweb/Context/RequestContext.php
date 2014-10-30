@@ -65,7 +65,7 @@ class RequestContext {
     /**
      * @param KeyPath[] $returnedKeyPaths
      */
-    public function setReturnedKeyPaths ($returnedKeyPaths) {
+    public function setReturnedKeyPaths (array $returnedKeyPaths) {
 
         $this->returnedKeyPaths = $returnedKeyPaths;
     }

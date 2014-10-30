@@ -87,4 +87,40 @@ class RequestContextTest extends TestCase {
 
     }
 
+    public function testRootEntity() {
+
+        $ctx = $this->getRequestContext();
+        $entity = 'Company';
+        $ctx->setReturnedRootEntity($entity);
+        $this->assertSame($entity, $ctx->getReturnedRootEntity());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidRootEntityType() {
+
+        $this->getRequestContext()->setReturnedRootEntity(new \stdClass());
+
+    }
+
+    public function testKeyPaths () {
+
+        $ctx = $this->getRequestContext();
+        $keyPaths = [$this->getMockFieldKeyPath(),$this->getMockFieldKeyPath()];
+        $ctx->setReturnedKeyPaths($keyPaths);
+        $this->assertSame($keyPaths, $ctx->getReturnedKeyPaths());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidKeyPathsType () {
+
+        $this->getRequestContext()->setReturnedKeyPaths([new \stdClass()]);
+
+    }
+
 } 
