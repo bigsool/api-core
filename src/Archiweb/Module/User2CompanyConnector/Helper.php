@@ -5,6 +5,7 @@ namespace Archiweb\Module\User2CompanyConnector;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Parameter\Parameter;
@@ -17,15 +18,15 @@ class Helper {
      */
     public function listUsers (ActionContext $actCtx, array $params) {
 
-        $appCtx = $actCtx->getApplicationContext();
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $appCtx = ApplicationContext::getInstance();
+        $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext($appCtx, 'User');
+        $qryCtx = new FindQueryContext('User');
 
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
         $qryCtx->addKeyPath(new FieldKeyPath('company'));
 
-        $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
+        $qryCtx->setParams(['authUser' => $actCtx->getAuth()->getUser()]);
 
         $result = $registry->find($qryCtx, false);
 

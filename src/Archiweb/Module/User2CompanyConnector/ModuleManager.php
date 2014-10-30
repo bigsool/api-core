@@ -4,12 +4,14 @@
 namespace Archiweb\Module\User2CompanyConnector;
 
 use Archiweb\Action\SimpleAction as Action;
+use Archiweb\Auth;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Controller;
 use Archiweb\Model\Company;
 use Archiweb\Model\User;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
+use Archiweb\Module\UserFeature\Helper as UserFeatureHelper;
 use Archiweb\Validation\CompanyValidation;
 use Archiweb\Validation\User2CompanyValidation;
 use Symfony\Component\Routing\Route;
@@ -52,15 +54,14 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new Action('User2Company', 'listUsers', NULL, [
-            'id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()],
+        $context->addAction(new Action('User2Company', 'listUsers', Auth::AUTHENTICATED, [
+            'id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation(), true],
         ], function (ActionContext $context) {
 
             /**
-             * @var UserFeatureHelper $helper
+             * @var Helper $helper
              */
-
-            $helper = $context->getApplicationContext()->getHelper('User2CompanyHelper');
+            $helper = ApplicationContext::getInstance()->getHelper('User2CompanyHelper');
             $params = $context->getVerifiedParams();
 
             $helper->listUsers($context, $params);

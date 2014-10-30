@@ -3,6 +3,7 @@
 
 namespace Archiweb\Context;
 
+use Archiweb\Auth;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
@@ -25,6 +26,11 @@ class ActionContext extends \ArrayObject {
     protected $parentContext;
 
     /**
+     * @var Auth
+     */
+    protected $auth;
+
+    /**
      * @param RequestContext|ActionContext $context
      */
     public function __construct ($context) {
@@ -42,6 +48,7 @@ class ActionContext extends \ArrayObject {
         }
 
         $this->parentContext = $context;
+        $this->auth = $context->getAuth();
         $this->setParams($params);
 
     }
@@ -103,6 +110,14 @@ class ActionContext extends \ArrayObject {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
 
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth () {
+
+        return $this->auth;
     }
 
     /**
