@@ -6,6 +6,7 @@ namespace Archiweb\Context;
 
 use Archiweb\Auth;
 use Archiweb\Error\FormattedError;
+use Archiweb\Field\KeyPath;
 use Archiweb\Parameter\UnsafeParameter;
 
 class RequestContext {
@@ -36,11 +37,53 @@ class RequestContext {
     protected $auth;
 
     /**
+     * @var string
+     */
+    protected $returnedRootEntity;
+
+    /**
+     * @var KeyPath[]
+     */
+    protected $returnedKeyPaths;
+
+    /**
      */
     public function __construct () {
 
         $this->auth = new Auth();
 
+    }
+
+    /**
+     * @return KeyPath[]
+     */
+    public function getReturnedKeyPaths () {
+
+        return $this->returnedKeyPaths;
+    }
+
+    /**
+     * @param KeyPath[] $returnedKeyPaths
+     */
+    public function setReturnedKeyPaths ($returnedKeyPaths) {
+
+        $this->returnedKeyPaths = $returnedKeyPaths;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReturnedRootEntity () {
+
+        return $this->returnedRootEntity;
+    }
+
+    /**
+     * @param string $returnedRootEntity
+     */
+    public function setReturnedRootEntity ($returnedRootEntity) {
+
+        $this->returnedRootEntity = $returnedRootEntity;
     }
 
     /**
@@ -162,4 +205,5 @@ class RequestContext {
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
 
     }
+
 }

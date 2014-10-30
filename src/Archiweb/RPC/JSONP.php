@@ -35,6 +35,16 @@ class JSONP implements Handler {
     protected $params;
 
     /**
+     * @var string
+     */
+    protected $returnedRootEntity;
+
+    /**
+     * @var string[]
+     */
+    protected $returnedFields;
+
+    /**
      * @param Request $request
      *
      * @throws \Archiweb\Error\FormattedError
@@ -68,6 +78,11 @@ class JSONP implements Handler {
         $this->path = '/' . $service . '/' . $method;
 
         $this->params = $request->query->get('params') ?: [];
+
+        // TODO: what to do when entity and/or fields are not defined ?
+        $this->returnedRootEntity = $request->query->get('entity');
+
+        $this->returnedFields = $request->query->get('fields');
 
     }
 
@@ -114,5 +129,19 @@ class JSONP implements Handler {
 
         return $this->path;
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getReturnedRootEntity () {
+        // TODO: Implement getReturnedRootEntity() method.
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getReturnedFields () {
+        // TODO: Implement getReturnedFields() method.
     }
 }
