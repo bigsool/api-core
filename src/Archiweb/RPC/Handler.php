@@ -41,11 +41,11 @@ interface Handler {
     /**
      * @return string
      */
-    public function getReturnedRootEntity();
+    public function getReturnedRootEntity ();
 
     /**
      * @return string[]
      */
-    public function getReturnedFields();
+    public function getReturnedFields ();
 
 } 

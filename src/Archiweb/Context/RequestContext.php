@@ -98,24 +98,6 @@ class RequestContext {
     }
 
     /**
-     * @return Auth
-     */
-    public function getAuth () {
-
-        return $this->auth;
-
-    }
-
-    /**
-     * @param Auth $auth
-     */
-    public function setAuth (Auth $auth) {
-
-        $this->auth = $auth;
-
-    }
-
-    /**
      * @return string
      */
     public function getClientName () {
@@ -216,6 +198,24 @@ class RequestContext {
         }
 
         $this->params = $params;
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth () {
+
+        return $this->auth;
+
+    }
+
+    /**
+     * @param Auth $auth
+     */
+    public function setAuth (Auth $auth) {
+
+        $this->auth = $auth;
 
     }
 

@@ -11,7 +11,6 @@ use Archiweb\Controller;
 use Archiweb\Model\Company;
 use Archiweb\Model\User;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
-use Archiweb\Module\UserFeature\Helper as UserFeatureHelper;
 use Archiweb\Validation\CompanyValidation;
 use Archiweb\Validation\User2CompanyValidation;
 use Symfony\Component\Routing\Route;

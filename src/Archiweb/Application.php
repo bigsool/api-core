@@ -9,7 +9,6 @@ use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
-use Archiweb\DoctrineProxyHandler;
 use Archiweb\Error\FormattedError;
 use Archiweb\Field\KeyPath;
 use Archiweb\Field\KeyPath as FieldKeyPath;
