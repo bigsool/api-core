@@ -62,7 +62,7 @@ class ModuleManager extends AbstractModuleManager {
     public function loadFilters (ApplicationContext &$context) {
 
         $expression = new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('users'));
-        $context->addFilter(new ExpressionFilter('Company', 'mee', 'SELECT', $expression));
+        $context->addFilter(new ExpressionFilter('Company', 'mee', $expression));
 
     }
 

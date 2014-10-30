@@ -10,7 +10,7 @@ class CallbackFilterTest extends TestCase {
 
         $expression = $this->getMockExpression();
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+        $callBackFilter = new CallbackFilter('project', 'myProject', function () use ($expression) {
 
             return $expression;
 
@@ -26,7 +26,7 @@ class CallbackFilterTest extends TestCase {
 
         $expression = $this->getMockExpression();
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+        $callBackFilter = new CallbackFilter('project', 'myProject', function () use ($expression) {
 
             return $expression;
 
@@ -42,7 +42,7 @@ class CallbackFilterTest extends TestCase {
 
         $expression = $this->getMockExpression();
 
-        $callBackFilter = new CallbackFilter('project', 'myProject', 'select', function () use ($expression) {
+        $callBackFilter = new CallbackFilter('project', 'myProject', function () use ($expression) {
 
             return $expression;
 

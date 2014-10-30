@@ -21,12 +21,10 @@ class StringFilter extends Filter {
      * @param string $entity
      * @param string $name
      * @param string $expression
-     * @param string $command
      */
-    function __construct ($entity, $name, $expression, $command) {
+    function __construct ($entity, $name, $expression) {
 
         parent::__construct($entity, $name, $this->stringToExpression($expression));
-        $this->command = $command;
 
     }
 
