@@ -41,7 +41,7 @@ class Application {
 
     protected function getAuth ($name) {
 
-        $findCtx = new FindQueryContext( $this->appCtx, 'User');
+        $findCtx = new FindQueryContext('User');
         $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
         $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
@@ -130,17 +130,19 @@ class Application {
 
                 $response = new Response($serializer->serialize($result,'json'));
 
-                var_dump($response);
+                // var_dump($response);
 
                 $this->entityManager->commit();
 
             }
             catch (FormattedError $e) {
-                (new Response((string)$e))->send();
+                $response = new Response((string)$e);
             }
             catch (\Exception $e) {
-                (new Response(json_encode(['code' => $e->getCode(), 'message' => $e->getMessage()])))->send();
+                $response = new Response(json_encode(['code' => $e->getCode(), 'message' => $e->getMessage()]));
             }
+
+            //$response->send();
 
         }
         catch (\Exception $e) {

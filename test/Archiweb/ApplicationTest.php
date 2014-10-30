@@ -10,6 +10,9 @@ class ApplicationTest extends TestCase {
         $app = new Application();
         $app->run();
 
+        // TODO : replace this test by a test of the output
+        $this->assertTrue(true);
+
     }
 
 } 

@@ -6,7 +6,6 @@ namespace Archiweb\Module\CompanyFeature;
 use Archiweb\Action\SimpleAction as Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
-use Archiweb\Context\FindQueryContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath;
 use Archiweb\Expression\Parameter;
@@ -17,6 +16,7 @@ use Archiweb\Filter\FilterReference;
 use Archiweb\Module\CompanyFeature\Helper as CompanyFeatureHelper;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
 use Archiweb\Operator\MemberOf;
+use Archiweb\Rule\FieldRule;
 use Archiweb\Rule\SimpleRule;
 use Archiweb\Validation\CompanyValidation;
 
@@ -43,8 +43,6 @@ class ModuleManager extends AbstractModuleManager {
             return $context['company'];
 
         }));
-
-
 
     }
 
@@ -86,15 +84,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-   $context->addRule(new SimpleRule('CompanyMeRule', function (FindQueryContext $context) {
-
-            if ($context instanceof FindQueryContext) {
-
-                return $context->getEntity() == 'Company' || in_array('Company', $context->getJoinedEntities());
-
-            }
-
-        }, new FilterReference($context, 'Company', 'mee')));
+        $context->addRule(new FieldRule(new StarField('Company'), new FilterReference($context, 'Company', 'mee')));
 
     }
 

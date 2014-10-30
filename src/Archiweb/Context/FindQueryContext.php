@@ -6,6 +6,7 @@ namespace Archiweb\Context;
 
 use Archiweb\Field\KeyPath;
 use Archiweb\Filter\Filter;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class FindQueryContext implements QueryContext {
 
@@ -35,9 +36,13 @@ class FindQueryContext implements QueryContext {
     protected $filters = [];
 
     /**
-     * @param $entity
+     * @param string $entity
      */
     public function __construct ($entity) {
+
+        if (!is_string($entity)) {
+            throw new RuntimeException('$entity must be a string');
+        }
 
         $this->entity = $entity;
 

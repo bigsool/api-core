@@ -14,6 +14,15 @@ class FindQueryContextTest extends TestCase {
     protected $context;
 
     /**
+     * @expectedException \Exception
+     */
+    public function testInvalidTypeConstructor() {
+
+        new FindQueryContext(new \stdClass());
+
+    }
+
+    /**
      *
      */
     public function testEntity () {
