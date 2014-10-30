@@ -18,6 +18,11 @@ class CompanyValidation extends AbstractConstraintsProvider {
                     new Assert\NotBlank(),
                 ]
             ,
+            'id'    =>
+                [
+                    new Assert\NotBlank(),
+                ]
+            ,
         ];
 
     }

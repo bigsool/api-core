@@ -4,7 +4,6 @@ namespace Archiweb\Config;
 
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Controller;
-use SebastianBergmann\Exporter\Exception;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Yaml\Yaml;
 
@@ -27,10 +26,10 @@ class ConfigManager  {
 
 
     /**
-     * @param array $yamlFilePaths
+     * @param string[] $yamlConfigPaths
      * @param string $yamlRoutesPath
      */
-    function __construct ($yamlConfigPaths, $yamlRoutesPath) {
+    public function __construct ($yamlConfigPaths, $yamlRoutesPath) {
 
         $this->appCtx = ApplicationContext::getInstance();
 
@@ -47,8 +46,8 @@ class ConfigManager  {
         $configs = [];
         foreach ($yamlFilePaths as $yamlFilePath) {
             $config = Yaml::parse($yamlFilePath);
-            if (!is_array($config)) throw new Exception('config yaml file can\'t be found');
-            $configs = array_merge($configs, $config);
+            if (!is_array($config)) throw new \Exception('config yaml file can\'t be found');
+            $configs = array_merge_recursive($configs, $config);
         }
         $this->config = $configs;
 
@@ -60,7 +59,7 @@ class ConfigManager  {
     private function loadRoutes ($yamlRoutesPath) {
 
         $parse = Yaml::parse($yamlRoutesPath);
-        if (!is_array($parse)) throw new Exception('route yaml file can\'t be found');
+        if (!is_array($parse)) throw new \Exception('route yaml file can\'t be found');
         foreach($parse['routes'] as $name => $value) {
             $this->appCtx->addRoute($name, new Route($value['path'], [
                 'controller' => new Controller($value['controller'], $value['method'])

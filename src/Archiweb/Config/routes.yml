@@ -1,0 +1,2 @@
+routes :
+   companyListUsers: { path: /company/listUsers ,controller: User2Company, method: listUsers }

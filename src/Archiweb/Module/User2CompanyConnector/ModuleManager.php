@@ -12,7 +12,7 @@ use Archiweb\Model\User;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
 use Archiweb\Validation\User2CompanyValidation;
 use Symfony\Component\Routing\Route;
-
+use Archiweb\Validation\CompanyValidation;
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -52,6 +52,22 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
+        $context->addAction(new Action('User2Company', 'listUsers', NULL, [
+            'id'      => [ERR_INVALID_COMPANY_ID, new CompanyValidation()],
+        ], function (ActionContext $context) {
+            /**
+             * @var UserFeatureHelper $helper
+             */
+
+            $helper = $context->getApplicationContext()->getHelper('User2CompanyHelper');
+            $params = $context->getVerifiedParams();
+
+            $helper->listUsers($context, $params);
+
+            return $context['users'];
+
+        }));
+
     }
 
     /**
@@ -72,6 +88,8 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadHelpers (ApplicationContext &$context) {
+
+        $context->addHelper('User2CompanyHelper', new Helper());
 
     }
 

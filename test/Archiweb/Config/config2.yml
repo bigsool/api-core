@@ -1,0 +1,7 @@
+server:
+    database:
+          host: http://archipad.com
+          name: archiweb
+          user: thierry
+          password: qweqwe
+

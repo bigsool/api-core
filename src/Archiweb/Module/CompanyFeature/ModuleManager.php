@@ -32,6 +32,7 @@ class ModuleManager extends AbstractModuleManager {
             'name' => [ERR_INVALID_NAME, new CompanyValidation()],
         ], function (ActionContext $context) {
 
+
             /**
              * @var CompanyFeatureHelper $helper
              */
@@ -42,6 +43,8 @@ class ModuleManager extends AbstractModuleManager {
             return $context['company'];
 
         }));
+
+
 
     }
 
@@ -60,8 +63,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $expression = new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('company.users'));
-        $context->addFilter(new ExpressionFilter('Company', 'me', 'SELECT', $expression));
+        $expression = new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('users'));
+        $context->addFilter(new ExpressionFilter('Company', 'mee', 'SELECT', $expression));
 
     }
 
@@ -83,7 +86,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-        $context->addRule(new SimpleRule('CompanyMeRule', function (FindQueryContext $context) {
+   $context->addRule(new SimpleRule('CompanyMeRule', function (FindQueryContext $context) {
 
             if ($context instanceof FindQueryContext) {
 
@@ -91,7 +94,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }
 
-        }, new FilterReference($context, 'Company', 'me')));
+        }, new FilterReference($context, 'Company', 'mee')));
 
     }
 

@@ -84,4 +84,7 @@ function loadErrors (ErrorManager $errorManager) {
     $errorManager->defineError(new Error(ERR_INVALID_NAME, "nom invalide", 'name is invalid',
                                          ERR_PARAMS_INVALID));
 
+    @define('ERR_INVALID_COMPANY_ID', 104);
+    $errorManager->defineError(new Error(ERR_INVALID_COMPANY_ID, "company id invalide", 'company id is invalid',
+                                         ERR_PARAMS_INVALID));
 }

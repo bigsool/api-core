@@ -1,0 +1,12 @@
+blog:
+    title: My blog
+    description: This is just a test blog
+    rss: true
+    posts_main_page: 2
+    social:
+        twitter:
+            url: http://twitter.com/raulfraile
+            icon: twitter.png
+        sensiolabs_connect:
+            url: https://connect.sensiolabs.com/profile/raulfraile
+            icon: sensiolabs_connect.png

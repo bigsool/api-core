@@ -1,6 +1,6 @@
 Archiweb\Model\Transaction:
     type: entity
-    table: transaction
+    table: `transaction`
     indexes:
         payment_id:
             columns:

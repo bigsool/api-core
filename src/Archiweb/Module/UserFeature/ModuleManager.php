@@ -51,6 +51,8 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
+
+
     }
 
     /**
@@ -70,8 +72,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('*'), new Parameter(':authUser'));
-        $context->addFilter(new ExpressionFilter('User', 'me', 'SELECT', $expression));
+    //    $expression = new BinaryExpression(new EqualOperator(), new KeyPath('*'), new Parameter(':authUser'));
+      //  $context->addFilter(new ExpressionFilter('User', 'me', 'SELECT', $expression));
 
     }
 
@@ -93,15 +95,14 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-        $context->addRule(new SimpleRule('UserMeRule', function (FindQueryContext $context) {
+     /*   $context->addRule(new SimpleRule('UserMeRule', function (FindQueryContext $context) {
 
             if ($context instanceof FindQueryContext) {
-
+                $entity = $context->getEntity();
                 return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
-
             }
 
-        }, new FilterReference($context, 'User', 'mine')));
+        }, new FilterReference($context, 'User', 'me')));*/
 
     }
 
