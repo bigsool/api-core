@@ -4,7 +4,7 @@
 namespace Archiweb\Context;
 
 
-interface QueryContext extends ApplicationContextProvider {
+interface QueryContext {
 
     /**
      * @return string

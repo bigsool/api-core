@@ -14,7 +14,7 @@ class SaveQueryContextTest extends TestCase {
      */
     public function testInvalidModelType () {
 
-        new SaveQueryContext($this->getApplicationContext(), 'qwe');
+        new SaveQueryContext('qwe');
 
     }
 
@@ -23,22 +23,13 @@ class SaveQueryContextTest extends TestCase {
      */
     public function testInvalidModelClass () {
 
-        new SaveQueryContext($this->getApplicationContext(), new \stdClass());
-
-    }
-
-    public function testGetApplication () {
-
-        $appCtx = $this->getApplicationContext();
-        $ctx = new SaveQueryContext($appCtx, new Company());
-
-        $this->assertSame($appCtx, $ctx->getApplicationContext());
+        new SaveQueryContext(new \stdClass());
 
     }
 
     public function testGetEntity () {
 
-        $ctx = new SaveQueryContext($this->getApplicationContext(), new Company());
+        $ctx = new SaveQueryContext(new Company());
 
         $this->assertSame('Company', $ctx->getEntity());
 

@@ -7,7 +7,7 @@ use Archiweb\Parameter\Parameter;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 
-class ActionContext extends \ArrayObject implements ApplicationContextProvider {
+class ActionContext extends \ArrayObject {
 
     /**
      * @var Parameter[]
@@ -43,6 +43,22 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
 
         $this->parentContext = $context;
         $this->setParams($params);
+
+    }
+
+    /**
+     * @param array $values
+     *
+     * @return UnsafeParameter[]
+     */
+    public function convertToUnsafeParameter (array $values) {
+
+        $params = [];
+        foreach ($values as $key => $value) {
+            $params[$key] = new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value) : $value);
+        }
+
+        return $params;
 
     }
 
@@ -159,16 +175,6 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
         $this->verifiedParams[$key] = $value;
 
     }
-
-    /**
-     * @return ApplicationContext
-     */
-    public function getApplicationContext () {
-
-        return $this->getRequestContext()->getApplicationContext();
-
-    }
-
     /**
      * @return RequestContext
      */
@@ -189,22 +195,6 @@ class ActionContext extends \ArrayObject implements ApplicationContextProvider {
     public function getParentContext () {
 
         return $this->parentContext;
-
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return UnsafeParameter[]
-     */
-    public function convertToUnsafeParameter (array $values) {
-
-        $params = [];
-        foreach ($values as $key => $value) {
-            $params[$key] = new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value) : $value);
-        }
-
-        return $params;
 
     }
 

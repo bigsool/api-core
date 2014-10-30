@@ -37,9 +37,9 @@ class ModuleManager extends AbstractModuleManager {
              * @var Company $company
              */
             $context['user'] =
-            $user = $context->getApplicationContext()->getAction('User', 'create')->process($userContext);
+            $user = ApplicationContext::getInstance()->getAction('User', 'create')->process($userContext);
             $context['company'] =
-            $company = $context->getApplicationContext()->getAction('Company', 'create')->process($companyContext);
+            $company = ApplicationContext::getInstance()->getAction('Company', 'create')->process($companyContext);
 
             $user->setCompany($company);
             $company->addUser($user);

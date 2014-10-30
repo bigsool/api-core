@@ -35,21 +35,20 @@ class JSONP implements Handler {
     protected $params;
 
     /**
-     * @param ApplicationContext $context
-     * @param Request            $request
+     * @param Request $request
+     *
+     * @throws \Archiweb\Error\FormattedError
      */
-    public function __construct (ApplicationContext $context, Request $request) {
+    public function __construct (Request $request) {
 
         $explodedPathInfo = explode('/', trim($request->getPathInfo(), '/'));
 
         if (!isset($explodedPathInfo[1])) {
-            // TODO: use the ErrorManager
-            throw new \RuntimeException('invalid client');
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
         }
         $explodedClient = explode('+', $explodedPathInfo[1]);
         if (count($explodedClient) != 3) {
-            // TODO: use the ErrorManager
-            throw new \RuntimeException('invalid client');
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
         }
         list($this->clientName, $this->clientVersion, $this->locale) = $explodedClient;
         if ($this->locale != 'fr') {
@@ -57,15 +56,13 @@ class JSONP implements Handler {
         }
 
         if (!isset($explodedPathInfo[2])) {
-            // TODO: use the ErrorManager
-            throw new \RuntimeException('invalid service');
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_SERVICE_NOT_FOUND);
         }
         $service = $explodedPathInfo[2];
 
         $method = $request->query->get('method');
         if (!isset($method) || !is_string($method)) {
-            // TODO: use the ErrorManager
-            throw new \RuntimeException('invalid method');
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
         }
 
         $this->path = '/' . $service . '/' . $method;

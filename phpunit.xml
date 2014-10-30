@@ -8,7 +8,11 @@
             <exclude>
                 <directory>src/Archiweb/Model/</directory>
                 <directory>src/Archiweb/Module/UserFeature</directory>
+                <directory>src/Archiweb/Module/CompanyFeature</directory>
+                <directory>src/Archiweb/Module/User2CompanyConnector</directory>
                 <file>src/Archiweb/Validation/UserValidation.php</file>
+                <file>src/Archiweb/Validation/CompanyValidation.php</file>
+                <file>src/Archiweb/Validation/User2CompanyValidation.php</file>
             </exclude>
         </whitelist>
     </filter>

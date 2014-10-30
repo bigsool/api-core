@@ -5,6 +5,7 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\SaveQueryContext;
 use Archiweb\Field\Field;
 use Archiweb\Field\KeyPath;
 use Archiweb\Field\StarField;
@@ -18,13 +19,9 @@ class FieldRuleTest extends TestCase {
      */
     public function testGetName () {
 
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
+        $rule = new FieldRule($this->getMockCompanyNameField(), $this->getMockFilter());
 
-        $name = 'companyNameFieldRule';
-        $rule = new FieldRule($field, $mockRule);
-
-        $this->assertSame($name, $rule->getName());
+        $this->assertSame('companyNameFieldRule', $rule->getName());
 
     }
 
@@ -41,128 +38,85 @@ class FieldRuleTest extends TestCase {
 
     }
 
-    /**
-     * @return Rule
-     */
-    protected function getMockCompanyRule () {
-
-        $rule = $this->getMockRule();
-        $rule->method('getEntity')->willReturn('Company');
-
-        return $rule;
-
-    }
-
-    public function testGetRule () {
-
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
-        $rule = new FieldRule($field, $mockRule);
-
-        $this->assertSame($mockRule, $rule->getRule());
-
-    }
-
     public function testGetField () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
-        $rule = new FieldRule($field, $mockRule);
+        $rule = new FieldRule($field, $this->getMockFilter());
 
         $this->assertSame($field, $rule->getField());
+
+    }
+
+    public function testGetFilter () {
+
+        $filter = $this->getMockFilter();
+        $rule = new FieldRule($this->getMockCompanyNameField(), $filter);
+
+        $this->assertSame($filter, $rule->getFilter());
 
     }
 
     public function testListChildRule () {
 
         $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
-        $rule = new FieldRule($field, $mockRule);
+        $mockFilter = $this->getMockFilter();
+        $rule = new FieldRule($field, $mockFilter);
 
-        $this->assertSame([$mockRule], $rule->listChildRules());
+        $this->assertSame([], $rule->listChildRules());
 
     }
 
     public function testShouldApply () {
 
         $appCtx = $this->getApplicationContext();
+        $appCtx->addField($field = new Field('Company', 'name'));
+        $appCtx->addField($starField = new StarField('Company'));
+        $appCtx->addField(new Field('Company', 'city'));
 
-        $field = new Field('Company', 'name');
-        $mockRule = $this->getMockCompanyRule();
-        $mockRule->method('shouldApply')->willReturn(true);
-        $rule1 = new FieldRule($field, $mockRule);
-        $appCtx->addField($field);
+        $rule = new FieldRule($field, $this->getMockFilter());
+        $this->assertFalse($rule->shouldApply(new SaveQueryContext(new Company())));
 
-        $field = new Field('User', 'email');
-        $mockRule = $this->getMockCompanyRule();
-        $mockRule->method('shouldApply')->willReturn(false);
-        $rule2 = new FieldRule($field, $mockRule);
-        $appCtx->addField($field);
+        $qryCtx = new FindQueryContext('Company');
+        $qryCtx->addKeyPath(new KeyPath('city'));
+        $this->assertFalse($rule->shouldApply($qryCtx));
 
-        $appCtx->addField(new Field('Company', 'owner'));
-        $appCtx->addField(new Field('User', 'name'));
-        $appCtx->addField(new StarField('Company'));
-        $appCtx->addField(new StarField('User'));
-
-
-        $qryCtx = new FindQueryContext($appCtx, 'Company');
         $qryCtx->addKeyPath(new KeyPath('name'));
+        $this->assertTrue($rule->shouldApply($qryCtx));
 
-        $this->assertTrue($rule1->shouldApply($qryCtx));
+        $rule = new FieldRule($starField, $this->getMockFilter());
+        $this->assertTrue($rule->shouldApply($qryCtx));
 
-
-        $qryCtx = new FindQueryContext($appCtx, 'User');
-        $qryCtx->addKeyPath(new KeyPath('name'));
-
-        $this->assertFalse($rule1->shouldApply($qryCtx));
-
-
-        $qryCtx = new FindQueryContext($appCtx, 'User');
-        $qryCtx->addKeyPath(new KeyPath('email'));
-
-        $this->assertFalse($rule1->shouldApply($qryCtx));
-
-
-        $qryCtx = new FindQueryContext($appCtx, 'Company');
-        $qryCtx->addKeyPath(new KeyPath('owner'));
-
-        $this->assertFalse($rule1->shouldApply($qryCtx));
-
-
-        $qryCtx = new FindQueryContext($appCtx, 'Company');
-        $qryCtx->addKeyPath(new KeyPath('*'));
-
-        $this->assertTrue($rule1->shouldApply($qryCtx));
-
-    }
-
-    public function testInvalidContextType () {
-
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
-        $rule = new FieldRule($field, $mockRule);
-
-        $result = $rule->shouldApply($this->getSaveQueryContext(new Company()));
-        $this->assertFalse($result);
     }
 
     public function testApply () {
 
-        $field = $this->getMockCompanyNameField();
-        $mockRule = $this->getMockCompanyRule();
+        $appCtx = $this->getApplicationContext();
+        $appCtx->addField($field = new Field('Company', 'name'));
 
-        $called = false;
+        $filter = $this->getMockFilter();
 
-        $mockRule->method('apply')->will($this->returnCallback(function () use (&$called) {
+        $rule = new FieldRule($field, $filter);
 
-            $called = true;
+        $qryCtx = new FindQueryContext('Company');
+        $qryCtx->addKeyPath(new KeyPath('name'));
 
-        }));
+        $filters = $qryCtx->getFilters();
+        $this->assertCount(0, $filters);
 
-        $rule = new FieldRule($field, $mockRule);
-        $rule->apply($this->getMockFindQueryContext());
+        $rule->apply($qryCtx);
 
-        $this->assertTrue($called);
+        $filters = $qryCtx->getFilters();
+        $this->assertCount(1, $filters);
+        $this->assertContains($filter, $filters);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidContextApply () {
+
+        (new FieldRule($this->getMockField(), $this->getMockFilter()))->apply(new SaveQueryContext(new Company()));
 
     }
 

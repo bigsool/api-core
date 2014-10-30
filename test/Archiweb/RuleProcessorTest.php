@@ -58,7 +58,7 @@ class RuleProcessorTest extends TestCase {
 
         $processor = new RuleProcessor();
 
-        $processor->apply(new FindQueryContext($appCtx, 'Product'));
+        $processor->apply(new FindQueryContext('Product'));
 
         $this->assertCount(3, $appliedRules);
         foreach ($rulesWhichMustBeApplied as $rule) {

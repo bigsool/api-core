@@ -5,6 +5,7 @@ namespace Archiweb\Module\UserFeature;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Model\User;
 use Archiweb\Parameter\Parameter;
 use Archiweb\Parameter\SafeParameter;
@@ -17,7 +18,7 @@ class Helper {
      */
     public function createUser (ActionContext $actCtx, array $params) {
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
 
         $salt = self::createSalt();
         $params['password'] = new SafeParameter(self::encryptPassword($salt, $params['password']->getValue()));

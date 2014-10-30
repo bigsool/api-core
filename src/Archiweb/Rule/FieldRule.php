@@ -8,6 +8,7 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Field\Field;
 use Archiweb\Field\StarField;
+use Archiweb\Filter\Filter;
 
 class FieldRule implements Rule {
 
@@ -17,18 +18,18 @@ class FieldRule implements Rule {
     protected $field;
 
     /**
-     * @var Rule
+     * @var Filter
      */
-    protected $rule;
+    protected $filter;
 
     /**
      * @param Field $field
-     * @param Rule  $rule
+     * @param Filter $filter
      */
-    public function __construct (Field $field, Rule $rule) {
+    public function __construct (Field $field, Filter $filter) {
 
         $this->field = $field;
-        $this->rule = $rule;
+        $this->filter = $filter;
 
     }
 
@@ -37,8 +38,11 @@ class FieldRule implements Rule {
      */
     public function apply (QueryContext $ctx) {
 
-        $this->getRule()->apply($ctx);
+        if (!($ctx instanceof FindQueryContext)) {
+            throw new \RuntimeException('FieldRule is incompatible with SaveContext');
+        }
 
+        $ctx->addFilter($this->getFilter());
     }
 
     /**
@@ -55,7 +59,7 @@ class FieldRule implements Rule {
      */
     public function listChildRules () {
 
-        return [$this->getRule()];
+        return [];
 
     }
 
@@ -70,25 +74,16 @@ class FieldRule implements Rule {
             return false;
         }
 
-
-        if ($ctx->getEntity() != $this->getField()->getEntity()
-            && !in_array($this->getField()->getEntity(), $ctx->getJoinedEntities())
-        ) {
-            return false;
-        }
-
-        foreach ($ctx->getKeyPaths() as $keyPath) {
-            $keyPathField = $keyPath->getField($ctx);
-            if ($keyPathField->getEntity() != $ctx->getEntity()
-                && !in_array($keyPathField->getEntity(), $ctx->getJoinedEntities())
-            ) {
+        $keyPaths = $ctx->getKeyPaths();
+        foreach ($keyPaths as $keyPath) {
+            $field = $keyPath->getField($ctx);
+            if ($field->getEntity() != $this->getField()->getEntity()) {
                 continue;
             }
-            if ($keyPathField instanceof StarField) {
-                return $this->getRule()->shouldApply($ctx);
-            }
-            if ($keyPathField->getName() == $this->getField()->getName()) {
-                return $this->getRule()->shouldApply($ctx);
+            if ($field instanceof StarField || $this->getField() instanceof StarField
+                || $field->getName() == $this->getField()->getName()
+            ) {
+                return true;
             }
         }
 
@@ -97,11 +92,11 @@ class FieldRule implements Rule {
     }
 
     /**
-     * @return Rule
+     * @return Filter
      */
-    public function getRule () {
+    public function getFilter () {
 
-        return $this->rule;
+        return $this->filter;
 
     }
 

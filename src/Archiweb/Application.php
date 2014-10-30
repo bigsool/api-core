@@ -102,9 +102,12 @@ class Application {
                 $request = Request::createFromGlobals();
                 $sfReqCtx = new SymfonyRequestContext();
                 $sfReqCtx->fromRequest($request);
-                $rpcHandler = new JSONP($this->appCtx, $request);
+
+                $rpcHandler = new JSONP($request);
+
                 $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
-                $reqCtx = new RequestContext($this->appCtx);
+
+                $reqCtx = new RequestContext();
                 $reqCtx->setParams($rpcHandler->getParams());
                 /**
                  * @var Controller $controller

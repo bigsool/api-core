@@ -6,7 +6,6 @@ namespace Archiweb;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
-use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath as ExprKeyPath;
@@ -25,6 +24,7 @@ use Archiweb\Operator\MemberOf;
 use Archiweb\Operator\OrOperator;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
+use Archiweb\Rule\FieldRule;
 use Archiweb\Rule\SimpleRule;
 
 class UseCasesTest extends TestCase {
@@ -42,7 +42,7 @@ class UseCasesTest extends TestCase {
         self::resetDatabase(self::$appCtx);
 
         self::$appCtx->addField(new StarField('User'));
-        self::$appCtx->addField(new StarField('HostedProject'));
+        self::$appCtx->addField($hostedProjectStarField = new StarField('HostedProject'));
         self::$appCtx->addField(new StarField('Storage'));
 
         self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0', 'SELECT'));
@@ -61,18 +61,9 @@ class UseCasesTest extends TestCase {
                                                             new ExprKeyPath('sharedHostedProjects.participant', true)));
         self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', 'SELECT', $binary));
 
-        self::$appCtx->addRule(new SimpleRule('accessibleProjectRule', function (QueryContext $context) {
-
-            if ($context instanceof FindQueryContext) {
-
-                // TODO: il faut aussi gérer dans le cas où HostedProject fait partie des joins
-                return $context->getEntity() == 'HostedProject';
-
-            }
-
-            return false;
-
-        }, self::$appCtx->getFilterByEntityAndName('HostedProject', 'accessibleProject')));
+        self::$appCtx->addRule(new FieldRule(self::$appCtx->getFieldByEntityAndName('HostedProject', '*'),
+                                             self::$appCtx->getFilterByEntityAndName('HostedProject',
+                                                                                     'accessibleProject')));
 
     }
 
@@ -129,7 +120,7 @@ class UseCasesTest extends TestCase {
         $actCtxCompany['company']->addUser($actCtxUser['user']);
         $actCtxCompany['company']->setOwner($actCtxUser['user']);
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
         $registry->save($actCtxUser['user']);
 
     }
@@ -153,7 +144,7 @@ class UseCasesTest extends TestCase {
 
     protected function companyHelper (ActionContext $actCtx) {
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
         $params = $actCtx->getParams();
         foreach ($params as $param) {
             $this->assertTrue($param->isSafe());
@@ -178,7 +169,7 @@ class UseCasesTest extends TestCase {
 
     protected function storageHelper (ActionContext $actCtx, $prefix) {
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
 
         $storage = new Storage();
         $storage->setUrl(uniqid($prefix));
@@ -209,7 +200,7 @@ class UseCasesTest extends TestCase {
 
     protected function userHelper (ActionContext $actCtx) {
 
-        $registry = $actCtx->getApplicationContext()->getNewRegistry();
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
         $params = $actCtx->getParams();
         foreach ($params as $param) {
             $this->assertTrue($param->isSafe());
@@ -247,7 +238,7 @@ class UseCasesTest extends TestCase {
         $this->assertInstanceOf('\Archiweb\Model\User', $actCtx['authUser']);
         $this->assertSame('User 1', $actCtx['authUser']->getName());
 
-        $qryCtx = new FindQueryContext(self::$appCtx, 'HostedProject');
+        $qryCtx = new FindQueryContext('HostedProject');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
         $qryCtx->addKeyPath(new FieldKeyPath('creator.company.storage'));
         $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
@@ -443,7 +434,7 @@ class UseCasesTest extends TestCase {
      */
     protected function getUser ($name) {
 
-        $findCtx = new FindQueryContext(self::$appCtx, 'User');
+        $findCtx = new FindQueryContext('User');
         $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
         $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = self::$appCtx->getNewRegistry()->find($findCtx, false);

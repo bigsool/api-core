@@ -15,11 +15,6 @@ class FindQueryContext implements QueryContext {
     protected $params = [];
 
     /**
-     * @var ApplicationContext
-     */
-    protected $applicationContext;
-
-    /**
      * @var string
      */
     protected $entity;
@@ -40,22 +35,11 @@ class FindQueryContext implements QueryContext {
     protected $filters = [];
 
     /**
-     * @param ApplicationContext $ctx
-     * @param                    $entity
+     * @param $entity
      */
-    public function __construct (ApplicationContext $ctx, $entity) {
+    public function __construct ($entity) {
 
-        $this->applicationContext = $ctx;
         $this->entity = $entity;
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public function getApplicationContext () {
-
-        return $this->applicationContext;
 
     }
 

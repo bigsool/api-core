@@ -197,6 +197,7 @@ class SimpleActionTest extends TestCase {
     public function testAuthorizeFail () {
 
         self::resetApplicationContext();
+        self::getApplicationContext(); // Configure ApplicationContext
 
         $reqCtx = $this->getRequestContext();
         $action = new SimpleAction('module', 'name', Auth::AUTHENTICATED, [], $this->getCallable());

@@ -1,2 +1,3 @@
+#!/usr/bin/env sh
 cd ../doctrine
 ../vendor/bin/doctrine o:g:e ../src/

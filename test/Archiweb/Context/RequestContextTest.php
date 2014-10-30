@@ -60,15 +60,6 @@ class RequestContextTest extends TestCase {
 
     }
 
-    public function testGetApplicationContext () {
-
-        $ctx = $this->getRequestContext();
-        $appCtx = $ctx->getApplicationContext();
-
-        $this->assertInstanceOf('\Archiweb\Context\ApplicationContext', $appCtx);
-
-    }
-
     public function testLocale () {
 
         $ctx = $this->getRequestContext();

@@ -10,10 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 interface Handler {
 
     /**
-     * @param ApplicationContext $context
-     * @param Request            $request
+     * @param Request $request
      */
-    public function __construct (ApplicationContext $context, Request $request);
+    public function __construct (Request $request);
 
     /**
      * @return string
