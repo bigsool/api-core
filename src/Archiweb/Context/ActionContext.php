@@ -175,6 +175,7 @@ class ActionContext extends \ArrayObject {
         $this->verifiedParams[$key] = $value;
 
     }
+
     /**
      * @return RequestContext
      */

@@ -16,7 +16,7 @@ class FindQueryContextTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidTypeConstructor() {
+    public function testInvalidTypeConstructor () {
 
         new FindQueryContext(new \stdClass());
 

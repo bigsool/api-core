@@ -6,22 +6,13 @@ namespace Archiweb\Module\UserFeature;
 use Archiweb\Action\SimpleAction as Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
-use Archiweb\Context\FindQueryContext;
-use Archiweb\Controller;
-use Archiweb\Expression\BinaryExpression;
-use Archiweb\Expression\KeyPath;
-use Archiweb\Expression\Parameter;
 use Archiweb\Field\Field;
 use Archiweb\Field\StarField;
-use Archiweb\Filter\ExpressionFilter;
-use Archiweb\Filter\FilterReference;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
 use Archiweb\Module\UserFeature\Helper as UserFeatureHelper;
-use Archiweb\Operator\EqualOperator;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Rule\SimpleRule;
 use Archiweb\Validation\UserValidation;
-use Symfony\Component\Routing\Route;
 
 
 class ModuleManager extends AbstractModuleManager {
@@ -51,8 +42,6 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-
-
     }
 
     /**
@@ -72,8 +61,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-    //    $expression = new BinaryExpression(new EqualOperator(), new KeyPath('*'), new Parameter(':authUser'));
-      //  $context->addFilter(new ExpressionFilter('User', 'me', 'SELECT', $expression));
+        //    $expression = new BinaryExpression(new EqualOperator(), new KeyPath('*'), new Parameter(':authUser'));
+        //  $context->addFilter(new ExpressionFilter('User', 'me', 'SELECT', $expression));
 
     }
 
@@ -95,14 +84,14 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-     /*   $context->addRule(new SimpleRule('UserMeRule', function (FindQueryContext $context) {
+        /*   $context->addRule(new SimpleRule('UserMeRule', function (FindQueryContext $context) {
 
-            if ($context instanceof FindQueryContext) {
-                $entity = $context->getEntity();
-                return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
-            }
+               if ($context instanceof FindQueryContext) {
+                   $entity = $context->getEntity();
+                   return $context->getEntity() == 'User' || in_array('User', $context->getJoinedEntities());
+               }
 
-        }, new FilterReference($context, 'User', 'me')));*/
+           }, new FilterReference($context, 'User', 'me')));*/
 
     }
 

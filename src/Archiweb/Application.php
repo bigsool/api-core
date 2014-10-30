@@ -4,11 +4,14 @@
 namespace Archiweb;
 
 
+use Archiweb\Config\ConfigManager;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
+use Archiweb\DoctrineProxyHandler;
 use Archiweb\Error\FormattedError;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
 use Archiweb\RPC\JSONP;
@@ -17,9 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
-use \Archiweb\Config\ConfigManager;
-use Archiweb\Field\KeyPath as FieldKeyPath;
-use Archiweb\DoctrineProxyHandler;
 
 class Application {
 
@@ -36,17 +36,6 @@ class Application {
     public function __construct () {
 
         $this->appCtx = $this->createApplicationContext();
-
-    }
-
-    protected function getAuth ($name) {
-
-        $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
-        $findCtx->addKeyPath(new FieldKeyPath('*'));
-        $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
-
-        return $user;
 
     }
 
@@ -82,8 +71,8 @@ class Application {
         try {
 
             // load config
-            $configFiles = [__DIR__.'/Config/default.yml',__DIR__.'/Config/default.yml'];
-            $routesFile = __DIR__.'/Config/routes.yml';
+            $configFiles = [__DIR__ . '/Config/default.yml', __DIR__ . '/Config/default.yml'];
+            $routesFile = __DIR__ . '/Config/routes.yml';
             $configManager = new ConfigManager($configFiles, $routesFile);
 
             $user = $this->getAuth('thierry');
@@ -124,11 +113,11 @@ class Application {
 
                 $result = $controller->apply($actCtx);
 
-                $requiredFields = ['User' => ['email','password','ownedCompany'], 'Company' => ['name']];
+                $requiredFields = ['User' => ['email', 'password', 'ownedCompany'], 'Company' => ['name']];
 
                 $serializer = new Serializer($requiredFields);
 
-                $response = new Response($serializer->serialize($result,'json'));
+                $response = new Response($serializer->serialize($result, 'json'));
 
                 // var_dump($response);
 
@@ -147,9 +136,20 @@ class Application {
         }
         catch (\Exception $e) {
 
-            exit('fatal error code '.$e->getCode().' '.$e->getMessage().' '.$e->getTraceAsString());
+            exit('fatal error code ' . $e->getCode() . ' ' . $e->getMessage() . ' ' . $e->getTraceAsString());
 
         }
+
+    }
+
+    protected function getAuth ($name) {
+
+        $findCtx = new FindQueryContext('User');
+        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
+        $findCtx->addKeyPath(new FieldKeyPath('*'));
+        $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
+
+        return $user;
 
     }
 

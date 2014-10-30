@@ -4,7 +4,6 @@
 namespace Archiweb\RPC;
 
 
-use Archiweb\Context\ApplicationContext;
 use Symfony\Component\HttpFoundation\Request;
 
 interface Handler {

@@ -3,10 +3,9 @@
 
 namespace Archiweb\Error;
 
-use Archiweb\ApplicationTest;
+use Archiweb\Config\ConfigManager;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\TestCase;
-use \Archiweb\Config\ConfigManager;
 
 class ConfigManagerTest extends TestCase {
 
@@ -18,33 +17,33 @@ class ConfigManagerTest extends TestCase {
 
         parent::setUp();
 
-        $this->yamlConfigPaths = array(__DIR__.'/config.yml');
-        $this->yamlRoutesPath = __DIR__.'/routes.yml';
+        $this->yamlConfigPaths = array(__DIR__ . '/config.yml');
+        $this->yamlRoutesPath = __DIR__ . '/routes.yml';
 
     }
 
     public function testLoadConfigAndRoute () {
 
         $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
-        $this->assertInstanceOf('\Archiweb\Config\ConfigManager',$configManager);
+        $this->assertInstanceOf('\Archiweb\Config\ConfigManager', $configManager);
         $appCtx = ApplicationContext::getInstance();
         $routes = $appCtx->getRoutes();
-        $this->assertCount(2,$routes);
-        $this->assertEquals($routes->get('userCreate')->getPath(),"/user/create");
-        $this->assertEquals($routes->get('userUpdate')->getPath(),"/user/update");
+        $this->assertCount(2, $routes);
+        $this->assertEquals($routes->get('userCreate')->getPath(), "/user/create");
+        $this->assertEquals($routes->get('userUpdate')->getPath(), "/user/update");
 
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testLoadConfigWithBadYamlFile() {
+    public function testLoadConfigWithBadYamlFile () {
 
         $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
 
         $meth = new \ReflectionMethod($configManager, 'loadConfig');
         $meth->setAccessible(true);
-        $meth->invokeArgs($configManager, array(array(__DIR__.'/configs.yml')));
+        $meth->invokeArgs($configManager, array(array(__DIR__ . '/configs.yml')));
 
     }
 
@@ -57,7 +56,7 @@ class ConfigManagerTest extends TestCase {
 
         $meth = new \ReflectionMethod($configManager, 'loadRoutes');
         $meth->setAccessible(true);
-        $meth->invokeArgs($configManager, array(__DIR__.'/routess.yml'));
+        $meth->invokeArgs($configManager, array(__DIR__ . '/routess.yml'));
 
     }
 
@@ -72,19 +71,16 @@ class ConfigManagerTest extends TestCase {
         $expectedConfig = [
             "server" => [
                 "database" => [
-                    "host" => "http://archipad.com",
-                    "name" => "archiweb",
-                    "user"=> "thierry",
-                    "password"=> "qweqwe"
+                    "host"     => "http://archipad.com",
+                    "name"     => "archiweb",
+                    "user"     => "thierry",
+                    "password" => "qweqwe"
                 ]
             ]
         ];
 
-        $this->assertEquals($expectedConfig,$config);
+        $this->assertEquals($expectedConfig, $config);
 
     }
-
-
-
 
 }

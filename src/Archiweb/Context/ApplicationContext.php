@@ -345,7 +345,7 @@ class ApplicationContext {
     /**
      * @return \JMS\Serializer\Serializer
      */
-    public function getJMSSerializer() {
+    public function getJMSSerializer () {
 
         return SerializerBuilder::create()->build();
 

@@ -23,7 +23,7 @@ class FieldRule implements Rule {
     protected $filter;
 
     /**
-     * @param Field $field
+     * @param Field  $field
      * @param Filter $filter
      */
     public function __construct (Field $field, Filter $filter) {

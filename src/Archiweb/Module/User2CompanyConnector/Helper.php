@@ -6,9 +6,8 @@ namespace Archiweb\Module\User2CompanyConnector;
 
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\FindQueryContext;
-use Archiweb\Model\Company;
-use Archiweb\Parameter\Parameter;
 use Archiweb\Field\KeyPath as FieldKeyPath;
+use Archiweb\Parameter\Parameter;
 
 class Helper {
 
@@ -34,6 +33,4 @@ class Helper {
 
     }
 
-
-
-} 
+}

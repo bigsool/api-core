@@ -13,12 +13,12 @@ class CompanyValidation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'name'    =>
+            'name' =>
                 [
                     new Assert\NotBlank(),
                 ]
             ,
-            'id'    =>
+            'id'   =>
                 [
                     new Assert\NotBlank(),
                 ]

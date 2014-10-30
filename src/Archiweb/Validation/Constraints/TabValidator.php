@@ -18,6 +18,7 @@ class TabValidator extends ConstraintValidator {
      * @api
      */
     public function validate ($value, Constraint $constraint) {
+
         if (!is_array($value)) {
             $this->context->addViolation($constraint->message);
         }

@@ -6,10 +6,15 @@ class Serializer {
 
     private $entitiesRequired;
 
-
-    function __construct($entitiesRequired) {
+    function __construct ($entitiesRequired) {
 
         $this->entitiesRequired = $entitiesRequired;
+
+    }
+
+    public function serialize ($data) {
+
+        return json_encode($this->getSerializedResult($data));
 
     }
 
@@ -26,15 +31,17 @@ class Serializer {
             $result[$i] = [];
 
             $entityPath = get_class($entity);
-            $entityPathExploded = explode('\\',$entityPath);
-            $entityName = $entityPathExploded[count($entityPathExploded) -1];
+            $entityPathExploded = explode('\\', $entityPath);
+            $entityName = $entityPathExploded[count($entityPathExploded) - 1];
 
             $requiredFields = $this->entitiesRequired[$entityName];
 
-            foreach($requiredFields as $requiredField) {
-                $getter = "get".ucfirst($requiredField);
-                if (method_exists($entity,$getter)) {
-                    $result[$i][$requiredField] = is_object($entity->$getter()) ? $this->getSerializedResult($entity->$getter()) : $entity->$getter();
+            foreach ($requiredFields as $requiredField) {
+                $getter = "get" . ucfirst($requiredField);
+                if (method_exists($entity, $getter)) {
+                    $result[$i][$requiredField] =
+                        is_object($entity->$getter()) ? $this->getSerializedResult($entity->$getter())
+                            : $entity->$getter();
                 }
             }
 
@@ -43,12 +50,6 @@ class Serializer {
         }
 
         return $result;
-
-    }
-
-    public function serialize ($data) {
-
-        return json_encode($this->getSerializedResult($data));
 
     }
 

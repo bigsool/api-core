@@ -296,55 +296,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param mixed $conn
-     *
-     * @return ApplicationContext
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public static function getApplicationContext ($conn = NULL) {
-
-        $instanceProperty = (new \ReflectionClass('\Archiweb\Context\ApplicationContext'))->getProperty('instance');
-        $instanceProperty->setAccessible(true);
-        $instance = $instanceProperty->getValue(NULL);
-        $instanceProperty->setAccessible(false);
-
-        if (!$instance) {
-
-            $config =
-                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
-                                                       __DIR__ . '/../../src/');
-            $config->setSQLLogger(new DebugStack());
-            $tmpDir = sys_get_temp_dir();
-            $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
-            $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
-            if (file_exists($originalDb)) {
-                copy($originalDb, $tmpDB);
-            }
-
-            if ($conn == NULL) {
-                $conn = array(
-                    'driver' => 'pdo_sqlite',
-                    'path'   => $tmpDB,
-                );
-            }
-            $em = EntityManager::create($conn, $config);
-            $em->getConnection()->query('PRAGMA foreign_keys = ON');
-
-            $ctx = ApplicationContext::getInstance();
-            $ruleMgr = new RuleProcessor();
-            $ctx->setRuleProcessor($ruleMgr);
-            $ctx->setEntityManager($em);
-
-            require_once __DIR__ . '/../../config/errors.php';
-            loadErrors($ctx->getErrorManager());
-
-        }
-
-        return ApplicationContext::getInstance();
-
-    }
-
-    /**
      * @return Action
      */
     public function getMockAction () {
@@ -445,6 +396,55 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         }
 
         return $registry;
+
+    }
+
+    /**
+     * @param mixed $conn
+     *
+     * @return ApplicationContext
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public static function getApplicationContext ($conn = NULL) {
+
+        $instanceProperty = (new \ReflectionClass('\Archiweb\Context\ApplicationContext'))->getProperty('instance');
+        $instanceProperty->setAccessible(true);
+        $instance = $instanceProperty->getValue(NULL);
+        $instanceProperty->setAccessible(false);
+
+        if (!$instance) {
+
+            $config =
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
+                                                       __DIR__ . '/../../src/');
+            $config->setSQLLogger(new DebugStack());
+            $tmpDir = sys_get_temp_dir();
+            $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
+            $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
+            if (file_exists($originalDb)) {
+                copy($originalDb, $tmpDB);
+            }
+
+            if ($conn == NULL) {
+                $conn = array(
+                    'driver' => 'pdo_sqlite',
+                    'path'   => $tmpDB,
+                );
+            }
+            $em = EntityManager::create($conn, $config);
+            $em->getConnection()->query('PRAGMA foreign_keys = ON');
+
+            $ctx = ApplicationContext::getInstance();
+            $ruleMgr = new RuleProcessor();
+            $ctx->setRuleProcessor($ruleMgr);
+            $ctx->setEntityManager($em);
+
+            require_once __DIR__ . '/../../config/errors.php';
+            loadErrors($ctx->getErrorManager());
+
+        }
+
+        return ApplicationContext::getInstance();
 
     }
 
