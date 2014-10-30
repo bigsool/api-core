@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
+define('ROOT_DIR', __DIR__.'/../..');
+
 class Application {
 
     /**
@@ -46,8 +48,8 @@ class Application {
 
         $this->appCtx = ApplicationContext::getInstance();
 
-        require __DIR__ . '/../../doctrine/config.php';
-        require_once __DIR__ . '/../../config/errors.php';
+        require ROOT_DIR . '/doctrine/config.php';
+        require_once ROOT_DIR . '/config/errors.php';
         loadErrors($this->appCtx->getErrorManager());
 
 
@@ -71,8 +73,8 @@ class Application {
         try {
 
             // load config
-            $configFiles = [__DIR__ . '/Config/default.yml', __DIR__ . '/Config/default.yml'];
-            $routesFile = __DIR__ . '/Config/routes.yml';
+            $configFiles = [ROOT_DIR . '/config/default.yml'];
+            $routesFile = ROOT_DIR . '/config/routes.yml';
             $configManager = new ConfigManager($configFiles, $routesFile);
 
             $user = $this->getAuth('thierry');
