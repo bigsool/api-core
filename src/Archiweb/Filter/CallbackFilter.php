@@ -11,13 +11,11 @@ class CallbackFilter extends Filter {
     /**
      * @param string   $entity
      * @param string   $name
-     * @param string   $command
      * @param callable $callback
      */
-    function __construct ($entity, $name, $command, callable $callback) {
+    function __construct ($entity, $name, callable $callback) {
 
         parent::__construct($entity, $name, NULL);
-        $this->command = $command;
         $this->callback = $callback;
 
     }

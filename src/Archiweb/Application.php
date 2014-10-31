@@ -9,8 +9,8 @@ use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
-use Archiweb\DoctrineProxyHandler;
 use Archiweb\Error\FormattedError;
+use Archiweb\Field\KeyPath;
 use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
-define('ROOT_DIR', __DIR__.'/../..');
+define('ROOT_DIR', __DIR__ . '/../..');
 
 class Application {
 
@@ -75,9 +75,8 @@ class Application {
             // load config
             $configFiles = [ROOT_DIR . '/config/default.yml'];
             $routesFile = ROOT_DIR . '/config/routes.yml';
-            $configManager = new ConfigManager($configFiles, $routesFile);
 
-            $user = $this->getAuth('thierry');
+            new ConfigManager($configFiles, $routesFile);
 
             $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
             foreach ($modules as $moduleName) {
@@ -100,6 +99,13 @@ class Application {
 
                 $reqCtx = new RequestContext();
                 $reqCtx->setParams($rpcHandler->getParams());
+                $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
+                $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
+
+                    return new KeyPath($field);
+
+                }, $rpcHandler->getReturnedFields()));
+
                 /**
                  * @var Controller $controller
                  */
@@ -111,19 +117,15 @@ class Application {
                 }
                 $actCtx = new ActionContext($reqCtx);
 
-                $actCtx['authUser'] = $user[0];
-
                 $result = $controller->apply($actCtx);
 
                 $requiredFields = ['User' => ['email', 'password', 'ownedCompany'], 'Company' => ['name']];
 
-                $serializer = new Serializer($reqCtx);
+                $serializer = new Serializer($requiredFields);
 
-                $serializedResult = $serializer->serialize($result, 'json');
+                $response = new Response($serializer->serialize($result, 'json'));
 
-                $response = new Response($serializedResult);
-
-                var_dump($serializedResult);
+                // var_dump($response);
 
                 $this->entityManager->commit();
 
@@ -135,7 +137,7 @@ class Application {
                 $response = new Response(json_encode(['code' => $e->getCode(), 'message' => $e->getMessage()]));
             }
 
-           // $response->send();
+            $response->send();
 
         }
         catch (\Exception $e) {
@@ -149,7 +151,7 @@ class Application {
     protected function getAuth ($name) {
 
         $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
+        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
         $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
 

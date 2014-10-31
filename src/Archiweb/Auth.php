@@ -4,13 +4,18 @@
 namespace Archiweb;
 
 
+use Archiweb\Model\User;
+
 class Auth {
 
     const GUEST = 'GUEST';
 
     const AUTHENTICATED = 'AUTHENTICATED';
 
-    // Could be CREATE_PROJECT, SHARE_PROJECT ...
+    /**
+     * @var User
+     */
+    protected $user;
 
     /**
      * @var string[]
@@ -24,6 +29,25 @@ class Auth {
 
         $this->rights[] = self::GUEST;
 
+    }
+
+    // Could be CREATE_PROJECT, SHARE_PROJECT ...
+
+    /**
+     * @return User
+     */
+    public function getUser () {
+
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser (User $user) {
+
+        $this->user = $user;
+        $this->rights[] = self::AUTHENTICATED;
     }
 
     /**

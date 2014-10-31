@@ -25,14 +25,17 @@ class JSONPTest extends TestCase {
         $this->assertSame('client', $JSONP->getClientName());
         $this->assertSame('version', $JSONP->getClientVersion());
         $this->assertSame('en', $JSONP->getLocale());
+        $this->assertNull($JSONP->getReturnedRootEntity());
+        $this->assertSame([], $JSONP->getReturnedFields());
 
 
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+fr/service/');
         $params = [];
-        $req->query->add(['method' => 'method']);
-        $req->query->add(['entity' => ($entity = 'entity')]);
-        $req->query->add(['fields' => ($fields = ['field1','field2.subField1'])]);
+        $req->query->add(['method' => 'method',
+                          'entity' => ($entity = 'entity'),
+                          'fields' => ($fields = ['field1', 'field2.subField1'])
+                         ]);
         $JSONP = new JSONP($req);
 
         $this->assertSame('/service/method', $JSONP->getPath());

@@ -7,6 +7,7 @@ namespace Archiweb\Context;
 use Archiweb\Auth;
 use Archiweb\Error\FormattedError;
 use Archiweb\Field\KeyPath;
+use Archiweb\Filter\StringFilter;
 use Archiweb\Parameter\UnsafeParameter;
 
 class RequestContext {
@@ -44,7 +45,7 @@ class RequestContext {
     /**
      * @var KeyPath[]
      */
-    protected $returnedKeyPaths;
+    protected $returnedKeyPaths = [];
 
     /**
      */
@@ -67,6 +68,12 @@ class RequestContext {
      */
     public function setReturnedKeyPaths (array $returnedKeyPaths) {
 
+        foreach ($returnedKeyPaths as $returnedKeyPath) {
+            if (!($returnedKeyPath instanceof KeyPath)) {
+                throw new \RuntimeException('invalid $returnedKeyPath');
+            }
+        }
+
         $this->returnedKeyPaths = $returnedKeyPaths;
     }
 
@@ -83,25 +90,11 @@ class RequestContext {
      */
     public function setReturnedRootEntity ($returnedRootEntity) {
 
+        if (!is_string($returnedRootEntity)) {
+            throw new \RuntimeException('invalid $returnedRootEntity');
+        }
+
         $this->returnedRootEntity = $returnedRootEntity;
-    }
-
-    /**
-     * @return Auth
-     */
-    public function getAuth () {
-
-        return $this->auth;
-
-    }
-
-    /**
-     * @param Auth $auth
-     */
-    public function setAuth (Auth $auth) {
-
-        $this->auth = $auth;
-
     }
 
     /**
@@ -191,7 +184,38 @@ class RequestContext {
      */
     public function setParams (array $params) {
 
+        if (isset($params['auth'])) {
+            // TODO: replace that part by the real authentication system
+            $findCtx = new FindQueryContext('User');
+            $findCtx->addFilter(new StringFilter('User', '', 'id = :id'));
+            $findCtx->addKeyPath(new KeyPath('*'));
+            $findCtx->setParams(['id' => $params['auth']]);
+            $users = ApplicationContext::getInstance()->getNewRegistry()->find($findCtx, false);
+            if (count($users) == 1) {
+                $this->getAuth()->setUser($users[0]);
+            }
+            unset($params['auth']);
+        }
+
         $this->params = $params;
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth () {
+
+        return $this->auth;
+
+    }
+
+    /**
+     * @param Auth $auth
+     */
+    public function setAuth (Auth $auth) {
+
+        $this->auth = $auth;
 
     }
 

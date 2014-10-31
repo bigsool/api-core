@@ -27,7 +27,7 @@ class Helper {
         $qryCtx->addKeyPath(new FieldKeyPath('company'));
         $qryCtx->addKeyPath(new FieldKeyPath('company'));
 
-        $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
+        $qryCtx->setParams(['authUser' => $actCtx->getAuth()->getUser()]);
 
         $result = $registry->find($qryCtx, false);
 

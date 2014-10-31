@@ -9,7 +9,7 @@ class ExpressionFilterTest extends TestCase {
     public function testGetEntity () {
 
         $expressionWithOperator = $this->getMockExpressionWithOperator();
-        $expressionFilter = new ExpressionFilter('project', 'myProject', 'select', $expressionWithOperator);
+        $expressionFilter = new ExpressionFilter('project', 'myProject', $expressionWithOperator);
         $entity = $expressionFilter->getEntity();
         $this->assertEquals('project', $entity);
 
@@ -18,7 +18,7 @@ class ExpressionFilterTest extends TestCase {
     public function testGetName () {
 
         $expressionWithOperator = $this->getMockExpressionWithOperator();
-        $expressionFilter = new ExpressionFilter('project', 'myProject', 'select', $expressionWithOperator);
+        $expressionFilter = new ExpressionFilter('project', 'myProject', $expressionWithOperator);
         $name = $expressionFilter->getName();
         $this->assertEquals('myProject', $name);
 
@@ -27,7 +27,7 @@ class ExpressionFilterTest extends TestCase {
     public function testGetExpression () {
 
         $expressionWithOperator = $this->getMockExpressionWithOperator();
-        $expressionFilter = new ExpressionFilter('project', 'myProject', 'select', $expressionWithOperator);
+        $expressionFilter = new ExpressionFilter('project', 'myProject', $expressionWithOperator);
         $expression = $expressionFilter->getExpression();
         $this->assertEquals($expression, $expressionWithOperator);
 
@@ -38,7 +38,7 @@ class ExpressionFilterTest extends TestCase {
      */
     public function testGetExpressionWithoutExpression () {
 
-        (new ExpressionFilter('project', 'myProject', 'select', NULL))->getExpression();
+        (new ExpressionFilter('project', 'myProject', NULL))->getExpression();
 
     }
 

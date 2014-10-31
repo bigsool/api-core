@@ -45,21 +45,21 @@ class UseCasesTest extends TestCase {
         self::$appCtx->addField($hostedProjectStarField = new StarField('HostedProject'));
         self::$appCtx->addField(new StarField('Storage'));
 
-        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0', 'SELECT'));
+        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0'));
 
         self::$appCtx->addFilter(new StringFilter('HostedProject', 'withSharedProject',
-                                                  'sharedHostedProjects.participant = :authUser', 'SELECT'));
+                                                  'sharedHostedProjects.participant = :authUser'));
 
         $binary =
             new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new ExprKeyPath('creator.company.users'));
-        self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'fromMyCompany', 'SELECT', $binary));
+        self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'fromMyCompany', $binary));
 
         $binary = new BinaryExpression(new OrOperator(),
                                        new BinaryExpression(new MemberOf(), new Parameter(':authUser'),
                                                             new ExprKeyPath('creator.company.users', true)),
                                        new BinaryExpression(new EqualOperator(), new Parameter(':authUser'),
                                                             new ExprKeyPath('sharedHostedProjects.participant', true)));
-        self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', 'SELECT', $binary));
+        self::$appCtx->addFilter(new ExpressionFilter('HostedProject', 'accessibleProject', $binary));
 
         self::$appCtx->addRule(new FieldRule(self::$appCtx->getFieldByEntityAndName('HostedProject', '*'),
                                              self::$appCtx->getFilterByEntityAndName('HostedProject',
@@ -435,7 +435,7 @@ class UseCasesTest extends TestCase {
     protected function getUser ($name) {
 
         $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"', 'SELECT'));
+        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
         $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = self::$appCtx->getNewRegistry()->find($findCtx, false);
 

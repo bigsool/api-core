@@ -30,7 +30,7 @@ class SimpleAction implements Action {
     protected $process;
 
     /**
-     * @var string|string[]
+     * @var string[]
      */
     protected $minRights;
 
@@ -59,7 +59,7 @@ class SimpleAction implements Action {
         $this->module = $module;
         $this->name = $name;
         $this->process = \Closure::bind($process, $this);
-        $this->minRights = $minRights;
+        $this->minRights = (array)$minRights;
         $this->setParams($params);
 
     }

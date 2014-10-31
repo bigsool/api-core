@@ -82,7 +82,7 @@ class JSONP implements Handler {
         // TODO: what to do when entity and/or fields are not defined ?
         $this->returnedRootEntity = $request->query->get('entity');
 
-        $this->returnedFields = $request->query->get('fields');
+        $this->setReturnedFields($request->query->get('fields'));
 
     }
 
@@ -132,16 +132,37 @@ class JSONP implements Handler {
     }
 
     /**
-     * @return string
-     */
-    public function getReturnedRootEntity () {
-        // TODO: Implement getReturnedRootEntity() method.
-    }
-
-    /**
      * @return string[]
      */
     public function getReturnedFields () {
-        // TODO: Implement getReturnedFields() method.
+
+        return $this->returnedFields;
+
+    }
+
+    /**
+     * @param string[] $fields
+     */
+    protected function setReturnedFields (array $fields = NULL) {
+
+        $fields = (array)$fields;
+        foreach ($fields as $field) {
+            if (!is_string($field) || $field == '*') {
+                // TODO : this exception should have an error code
+                throw new \RuntimeException('invalid field');
+            }
+        }
+
+        $this->returnedFields = $fields;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getReturnedRootEntity () {
+
+        return $this->returnedRootEntity;
+
     }
 }

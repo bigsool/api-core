@@ -66,7 +66,7 @@ class RegistryTest extends TestCase {
         $this->appCtx->addField(new Field('Product', 'price'));
 
         $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('consumable'), new Value(1));
-        $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', 'SELECT', $expression);
+        $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', $expression);
         $this->appCtx->addFilter($funcConsumableFilter);
 
         $funcStarField = new StarField('Functionality');
@@ -356,7 +356,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('price'), new Value(17));
-        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
+        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
         $dql = 'SELECT product ' .
@@ -367,7 +367,7 @@ class RegistryTest extends TestCase {
         $parameter = new Parameter(':price');
         $expression = new BinaryExpression(new EqualOperator(), $parameter, new ExpressionKeyPath('price'));
         $qryCtx->setParams(['price' => 126]);
-        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', 'SELECT', $expression));
+        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
         $dql = 'SELECT product ' .

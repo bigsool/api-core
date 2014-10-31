@@ -7,7 +7,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetEntity () {
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1');
         $entity = $strFilter->getEntity();
         $this->assertEquals('project', $entity);
 
@@ -15,7 +15,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetName () {
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1');
         $name = $strFilter->getName();
         $this->assertEquals('myProject', $name);
 
@@ -23,7 +23,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetExpression () {
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner = 1');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
@@ -36,7 +36,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('Archiweb\Expression\Value', get_class($rightExpression));
         $this->assertEquals('1', $rightExpression->getValue());
 
-        $strFilter = new StringFilter('project', 'myProject', ':number != project.owner', 'select');
+        $strFilter = new StringFilter('project', 'myProject', ':number != project.owner');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
@@ -48,7 +48,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\Archiweb\Expression\KeyPath', $rightExpression);
         $this->assertSame('project.owner', $rightExpression->getValue());
 
-        $strFilter = new StringFilter('project', 'myProject', '1 >= :number', 'select');
+        $strFilter = new StringFilter('project', 'myProject', '1 >= :number');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
@@ -61,7 +61,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\Archiweb\Expression\Parameter', $rightExpression);
         $this->assertSame(':number', $rightExpression->getValue());
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner <= "qwe"', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner <= "qwe"');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
@@ -74,7 +74,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('Archiweb\Expression\Value', get_class($rightExpression));
         $this->assertEquals('qwe', $rightExpression->getValue());
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner > 1', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner > 1');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();
@@ -87,7 +87,7 @@ class StringFilterTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('Archiweb\Expression\Value', get_class($rightExpression));
         $this->assertEquals('1', $rightExpression->getValue());
 
-        $strFilter = new StringFilter('project', 'myProject', 'project.owner < 1', 'select');
+        $strFilter = new StringFilter('project', 'myProject', 'project.owner < 1');
         $expression = $strFilter->getExpression();
         $this->assertInstanceOf('\Archiweb\Expression\BinaryExpression', $expression);
         $operator = $expression->getOperator();

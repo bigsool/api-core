@@ -11,7 +11,6 @@ use Archiweb\Field\StarField;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
 use Archiweb\Module\UserFeature\Helper as UserFeatureHelper;
 use Archiweb\Parameter\SafeParameter;
-use Archiweb\Rule\SimpleRule;
 use Archiweb\Validation\UserValidation;
 
 
