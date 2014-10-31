@@ -117,11 +117,13 @@ class Application {
 
                 $requiredFields = ['User' => ['email', 'password', 'ownedCompany'], 'Company' => ['name']];
 
-                $serializer = new Serializer($requiredFields);
+                $serializer = new Serializer($reqCtx);
 
-                $response = new Response($serializer->serialize($result, 'json'));
+                $serializedResult = $serializer->serialize($result, 'json');
 
-                // var_dump($response);
+                $response = new Response($serializedResult);
+
+                var_dump($serializedResult);
 
                 $this->entityManager->commit();
 
@@ -133,7 +135,7 @@ class Application {
                 $response = new Response(json_encode(['code' => $e->getCode(), 'message' => $e->getMessage()]));
             }
 
-            //$response->send();
+           // $response->send();
 
         }
         catch (\Exception $e) {

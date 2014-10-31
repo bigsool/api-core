@@ -2,33 +2,59 @@
 
 namespace Archiweb;
 
+use Archiweb\Context\RequestContext;
+
 class Serializer {
 
-    private $entitiesRequired;
+    private $reqCtx;
+    private $entitiesRequired = ['User' => ['email', 'name', 'password', 'company'], 'Company' => ['id', 'storage'], 'Storage' =>['url']];
 
-    function __construct ($entitiesRequired) {
+    function __construct (RequestContext $reqCtx) {
 
-        $this->entitiesRequired = $entitiesRequired;
-
-    }
-
-    public function serialize ($data) {
-
-        return json_encode($this->getSerializedResult($data));
+        $this->reqCtx = $reqCtx;
+        //$returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
 
     }
 
-    private function getSerializedResult ($entities) {
+    public function serialize (array $result) {
 
-        $result = [];
+        $dataToSerialized = [];
+        $dataAlreadySerialized = [];
 
-        $entities = is_array($entities) ? $entities : array($entities);
+        foreach($result as $value) {
+            if (is_object($value)) {
+                $dataToSerialized[] = $value;
+            }
+            else {
+                foreach ($value as $elem) {
+                    if (is_object($elem)) {
+                        $dataToSerialized[] = $elem;
+                    }
+                    else {
+                       // $dataAlreadySerialized[] = $elem; Pas forcement le mettre
+                    }
+                }
+            }
+        }
+
+        $dataSerialized = $this->getSerializedResult($dataToSerialized);
+        $dataSerialized = array_merge($dataAlreadySerialized, $dataSerialized);
+
+        return json_encode($dataSerialized);
+
+    }
+
+    private function getSerializedResult ($result) {
+
+        $serializedResult = [];
+
+        $entities = is_array($result) ? $result : array($result);
 
         $i = 0;
 
         foreach ($entities as $entity) {
 
-            $result[$i] = [];
+            $serializedResult[$i] = [];
 
             $entityPath = get_class($entity);
             $entityPathExploded = explode('\\', $entityPath);
@@ -39,7 +65,7 @@ class Serializer {
             foreach ($requiredFields as $requiredField) {
                 $getter = "get" . ucfirst($requiredField);
                 if (method_exists($entity, $getter)) {
-                    $result[$i][$requiredField] =
+                    $serializedResult[$i][$requiredField] =
                         is_object($entity->$getter()) ? $this->getSerializedResult($entity->$getter())
                             : $entity->$getter();
                 }
@@ -49,7 +75,7 @@ class Serializer {
 
         }
 
-        return $result;
+        return $serializedResult;
 
     }
 

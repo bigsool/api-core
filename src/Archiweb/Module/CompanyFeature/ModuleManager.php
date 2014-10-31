@@ -52,8 +52,9 @@ class ModuleManager extends AbstractModuleManager {
     public function loadFields (ApplicationContext &$context) {
 
         $context->addField(new StarField('Company'));
+        $context->addField(new Field('Company', 'id'));
         $context->addField(new Field('Company', 'name'));
-
+        $context->addField(new StarField('Storage'));
     }
 
     /**
