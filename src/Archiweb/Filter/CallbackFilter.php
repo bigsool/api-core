@@ -2,9 +2,9 @@
 
 namespace Archiweb\Filter;
 
-class CallbackFilter extends Filter {
+use Archiweb\Expression\Expression;
 
-    private $command;
+class CallbackFilter extends Filter {
 
     private $callback;
 

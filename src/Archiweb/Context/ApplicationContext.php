@@ -12,7 +12,6 @@ use Archiweb\Registry;
 use Archiweb\Rule\Rule;
 use Archiweb\RuleProcessor;
 use Doctrine\ORM\EntityManager;
-use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -339,15 +338,6 @@ class ApplicationContext {
     public function getRoutes () {
 
         return $this->routes;
-
-    }
-
-    /**
-     * @return \JMS\Serializer\Serializer
-     */
-    public function getJMSSerializer () {
-
-        return SerializerBuilder::create()->build();
 
     }
 

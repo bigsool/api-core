@@ -5,6 +5,7 @@ namespace Archiweb\Module\CompanyFeature;
 
 
 use Archiweb\Context\ActionContext;
+use Archiweb\Context\ApplicationContext;
 use Archiweb\Model\Company;
 use Archiweb\Parameter\Parameter;
 

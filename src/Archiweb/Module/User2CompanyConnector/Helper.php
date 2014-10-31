@@ -21,7 +21,7 @@ class Helper {
         $appCtx = ApplicationContext::getInstance();
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('User');
+        $qryCtx = new FindQueryContext('User', $actCtx->getRequestContext());
 
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
         $qryCtx->addKeyPath(new FieldKeyPath('company'));

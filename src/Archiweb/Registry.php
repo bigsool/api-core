@@ -10,13 +10,14 @@ use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
-class Registry implements \Doctrine\Common\EventSubscriber {
+class Registry implements EventSubscriber {
 
     /**
      * @var string
@@ -188,11 +189,7 @@ class Registry implements \Doctrine\Common\EventSubscriber {
      */
     public function find (FindQueryContext $ctx, $hydrateArray = true) {
 
-        $entity = $ctx->getEntity();
-        $class = self::realModelClassName($entity);
-
         $qb = $this->getQueryBuilder($ctx->getEntity());
-        $alias = lcfirst($entity);
 
         $keyPaths = $ctx->getKeyPaths();
         if (empty($keyPaths)) {

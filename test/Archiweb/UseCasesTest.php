@@ -25,7 +25,6 @@ use Archiweb\Operator\OrOperator;
 use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\Rule\FieldRule;
-use Archiweb\Rule\SimpleRule;
 
 class UseCasesTest extends TestCase {
 

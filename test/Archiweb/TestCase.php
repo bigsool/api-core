@@ -7,7 +7,6 @@ namespace Archiweb;
 use Archiweb\Action\Action;
 use Archiweb\Context\ActionContext;
 use Archiweb\Context\ApplicationContext;
-use Archiweb\Context\EntityManagerReceiver;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
 use Archiweb\Context\RequestContext;
@@ -359,15 +358,14 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param string $entity
-     * @param array  $fields
-     * @param array  $filters
+     * @param string         $entity
+     * @param RequestContext $requestContext
      *
      * @return FindQueryContext
      */
-    public function getFindQueryContext ($entity, array $fields = [], array $filters = []) {
+    public function getFindQueryContext ($entity, RequestContext $requestContext = NULL) {
 
-        return new FindQueryContext($entity, $fields, $filters);
+        return new FindQueryContext($entity, $requestContext);
 
     }
 
@@ -383,6 +381,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param string $entity
+     *
      * @return Registry
      */
     public function getRegistry ($entity = NULL) {

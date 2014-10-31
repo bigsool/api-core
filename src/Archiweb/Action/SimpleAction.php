@@ -85,6 +85,7 @@ class SimpleAction implements Action {
     /**
      * @param ActionContext $context
      *
+     * @return bool
      * @throws FormattedError
      */
     public function authorize (ActionContext $context) {
@@ -99,6 +100,8 @@ class SimpleAction implements Action {
             }
 
         }
+
+        return true;
 
     }
 
@@ -147,9 +150,10 @@ class SimpleAction implements Action {
             /**
              * @var AbstractConstraintsProvider $validator
              */
+            $validator = $params['validator'];
             $param = $context->getParam($field);
             $value = isset($param) ? $param->getValue() : NULL;
-            $violations = $params['validator']->validate($field, $value, $params['forceOptional']);
+            $violations = $validator->validate($field, $value, $params['forceOptional']);
             if ($violations->count()) {
                 $errorManager->addError($params['error'], $field);
             }

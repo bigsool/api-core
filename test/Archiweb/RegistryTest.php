@@ -7,6 +7,7 @@ namespace Archiweb;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
+use Archiweb\Context\RequestContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath as ExpressionKeyPath;
 use Archiweb\Expression\Parameter;
@@ -24,7 +25,6 @@ use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\Rule\CallbackRule;
 use Archiweb\Rule\FieldRule;
-use Archiweb\Rule\SimpleRule;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 
@@ -383,7 +383,10 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
-        $qryCtx = new FindQueryContext('Functionality');
+        $reqCtx = $this->getRequestContext();
+        $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*')]);
+        $reqCtx->setReturnedRootEntity('Functionality');
+        $qryCtx = new FindQueryContext('Functionality',$reqCtx);
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();

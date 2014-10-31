@@ -7,7 +7,11 @@ use Archiweb\Context\RequestContext;
 class Serializer {
 
     private $reqCtx;
-    private $entitiesRequired = ['User' => ['email', 'name', 'password', 'company'], 'Company' => ['id', 'storage'], 'Storage' =>['url']];
+
+    private $entitiesRequired = ['User'    => ['email', 'name', 'password', 'company'],
+                                 'Company' => ['id', 'storage'],
+                                 'Storage' => ['url']
+    ];
 
     function __construct (RequestContext $reqCtx) {
 
@@ -21,7 +25,7 @@ class Serializer {
         $dataToSerialized = [];
         $dataAlreadySerialized = [];
 
-        foreach($result as $value) {
+        foreach ($result as $value) {
             if (is_object($value)) {
                 $dataToSerialized[] = $value;
             }
@@ -31,7 +35,7 @@ class Serializer {
                         $dataToSerialized[] = $elem;
                     }
                     else {
-                       // $dataAlreadySerialized[] = $elem; Pas forcement le mettre
+                        // $dataAlreadySerialized[] = $elem; Pas forcement le mettre
                     }
                 }
             }

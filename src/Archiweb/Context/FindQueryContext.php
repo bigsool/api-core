@@ -36,9 +36,15 @@ class FindQueryContext implements QueryContext {
     protected $filters = [];
 
     /**
-     * @param string $entity
+     * @var RequestContext
      */
-    public function __construct ($entity) {
+    protected $reqCtx;
+
+    /**
+     * @param string         $entity
+     * @param RequestContext $reqCtx
+     */
+    public function __construct ($entity, RequestContext $reqCtx = NULL) {
 
         if (!is_string($entity)) {
             throw new RuntimeException('$entity must be a string');
@@ -46,6 +52,18 @@ class FindQueryContext implements QueryContext {
 
         $this->entity = $entity;
 
+        if (is_null($reqCtx)) {
+            $reqCtx = new RequestContext();
+        }
+        $this->reqCtx = $reqCtx;
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getReqCtx () {
+
+        return $this->reqCtx;
     }
 
     /**

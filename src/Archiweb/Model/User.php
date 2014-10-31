@@ -359,9 +359,9 @@ class User {
     }
 
     /**
-     * Set knowsfrom
+     * Set knowsFrom
      *
-     * @param string $knowsfrom
+     * @param string $knowsFrom
      *
      * @return User
      */

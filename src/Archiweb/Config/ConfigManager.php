@@ -15,11 +15,6 @@ class ConfigManager {
     private $appCtx;
 
     /**
-     * @var ConfigValidator
-     */
-    private $configValidator;
-
-    /**
      * @var array
      */
     private $config;
@@ -38,7 +33,9 @@ class ConfigManager {
     }
 
     /**
-     * @param array $yamlFilePaths
+     * @param $yamlFilePaths
+     *
+     * @throws \Exception
      */
     private function loadConfig ($yamlFilePaths) {
 
@@ -55,7 +52,9 @@ class ConfigManager {
     }
 
     /**
-     * @param string $yamlRoutesPath
+     * @param $yamlRoutesPath
+     *
+     * @throws \Exception
      */
     private function loadRoutes ($yamlRoutesPath) {
 

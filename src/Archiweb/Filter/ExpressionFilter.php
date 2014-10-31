@@ -6,8 +6,6 @@ use Archiweb\Expression\ExpressionWithOperator as ExpressionWithOperator;
 
 class ExpressionFilter extends Filter {
 
-    private $command;
-
     /**
      * @param string                 $entity
      * @param string                 $name

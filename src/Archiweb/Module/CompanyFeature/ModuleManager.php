@@ -17,7 +17,6 @@ use Archiweb\Module\CompanyFeature\Helper as CompanyFeatureHelper;
 use Archiweb\Module\ModuleManager as AbstractModuleManager;
 use Archiweb\Operator\MemberOf;
 use Archiweb\Rule\FieldRule;
-use Archiweb\Rule\SimpleRule;
 use Archiweb\Validation\CompanyValidation;
 
 

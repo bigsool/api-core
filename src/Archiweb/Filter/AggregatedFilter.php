@@ -7,10 +7,14 @@ use Archiweb\Operator\LogicOperator as LogicOperator;
 
 class AggregatedFilter extends Filter {
 
-    private $command;
-
+    /**
+     * @var LogicOperator
+     */
     private $operator;
 
+    /**
+     * @var Filter[]
+     */
     private $filters = [];
 
     /**
