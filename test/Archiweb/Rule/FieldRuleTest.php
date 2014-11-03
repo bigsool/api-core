@@ -80,7 +80,7 @@ class FieldRuleTest extends TestCase {
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('Company');
 
-        $qryCtx = new FindQueryContext('Company',$reqCtx);
+        $qryCtx = new FindQueryContext('Company', $reqCtx);
         $reqCtx->setReturnedKeyPaths([new KeyPath('city')]);
         $qryCtx->addKeyPath(new KeyPath('city'));
         $this->assertFalse($rule->shouldApply($qryCtx));
@@ -107,7 +107,7 @@ class FieldRuleTest extends TestCase {
         $reqCtx->setReturnedRootEntity('Company');
         $reqCtx->setReturnedKeyPaths([new KeyPath('name')]);
 
-        $qryCtx = new FindQueryContext('Company',$reqCtx);
+        $qryCtx = new FindQueryContext('Company', $reqCtx);
         $qryCtx->addKeyPath(new KeyPath('name'));
 
         $filters = $qryCtx->getFilters();

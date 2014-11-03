@@ -7,7 +7,6 @@ namespace Archiweb;
 use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\QueryContext;
-use Archiweb\Context\RequestContext;
 use Archiweb\Expression\BinaryExpression;
 use Archiweb\Expression\KeyPath as ExpressionKeyPath;
 use Archiweb\Expression\Parameter;
@@ -387,7 +386,7 @@ class RegistryTest extends TestCase {
         $reqCtx = $this->getRequestContext();
         $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
         $reqCtx->setReturnedRootEntity('Functionality');
-        $qryCtx = new FindQueryContext('Functionality',$reqCtx);
+        $qryCtx = new FindQueryContext('Functionality', $reqCtx);
         $qryCtx->addKeyPath($fieldKeyPath);
 
         $registry = $this->appCtx->getNewRegistry();

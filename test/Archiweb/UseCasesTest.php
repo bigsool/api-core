@@ -230,7 +230,7 @@ class UseCasesTest extends TestCase {
         $reqCtx = new RequestContext(self::$appCtx);
         $reqCtx->setParams([]);
         $reqCtx->setReturnedRootEntity('HostedProject');
-        $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*'),new FieldKeyPath('creator.company.storage')]);
+        $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*'), new FieldKeyPath('creator.company.storage')]);
 
         $actCtx = $reqCtx->getNewActionContext();
         $result = $this->getUser('User 1');
