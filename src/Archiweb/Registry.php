@@ -186,12 +186,37 @@ class Registry implements EventSubscriber {
      * @param bool             $hydrateArray
      *
      * @return array
+     * @throws Error\FormattedError
      */
     public function find (FindQueryContext $ctx, $hydrateArray = true) {
 
-        $qb = $this->getQueryBuilder($ctx->getEntity());
+        $entity = $ctx->getEntity();
+        $requestedEntity = $ctx->getReqCtx()->getReturnedRootEntity();
+
+        if ($requestedEntity && $requestedEntity != $entity) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_REQUEST_INVALID);
+        }
+
+        $qb = $this->getQueryBuilder($entity);
+
 
         $keyPaths = $ctx->getKeyPaths();
+
+        // KeyPath as to be resolve to do the isEqual()
+        foreach ($keyPaths as $keyPath) {
+            $keyPath->resolve($this, $ctx);
+        }
+
+        foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as $keyPathFromRequest) {
+            // KeyPath as to be resolve to do the isEqual()
+            $keyPathFromRequest->resolve($this, $ctx);
+            foreach ($keyPaths as $alreadyAddedKeyPath) {
+                if ($keyPathFromRequest->isEqual($alreadyAddedKeyPath)) {
+                    continue 2;
+                }
+            }
+            $keyPaths[] = $keyPathFromRequest;
+        }
         if (empty($keyPaths)) {
             throw new \RuntimeException('fields are required');
         }

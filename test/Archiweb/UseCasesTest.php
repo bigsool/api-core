@@ -229,6 +229,8 @@ class UseCasesTest extends TestCase {
 
         $reqCtx = new RequestContext(self::$appCtx);
         $reqCtx->setParams([]);
+        $reqCtx->setReturnedRootEntity('HostedProject');
+        $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*'),new FieldKeyPath('creator.company.storage')]);
 
         $actCtx = $reqCtx->getNewActionContext();
         $result = $this->getUser('User 1');
@@ -237,9 +239,7 @@ class UseCasesTest extends TestCase {
         $this->assertInstanceOf('\Archiweb\Model\User', $actCtx['authUser']);
         $this->assertSame('User 1', $actCtx['authUser']->getName());
 
-        $qryCtx = new FindQueryContext('HostedProject');
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
-        $qryCtx->addKeyPath(new FieldKeyPath('creator.company.storage'));
+        $qryCtx = new FindQueryContext('HostedProject', $reqCtx);
         $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
         $qryCtx->addFilter(self::$appCtx->getFilterByEntityAndName('Storage', 'notOutOfQuota'));
 

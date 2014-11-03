@@ -383,11 +383,12 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
+        $fieldKeyPath = new FieldKeyPath('*');
         $reqCtx = $this->getRequestContext();
-        $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*')]);
+        $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
         $reqCtx->setReturnedRootEntity('Functionality');
         $qryCtx = new FindQueryContext('Functionality',$reqCtx);
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $qryCtx->addKeyPath($fieldKeyPath);
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);

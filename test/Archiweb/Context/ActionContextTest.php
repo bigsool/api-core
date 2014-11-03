@@ -74,7 +74,7 @@ class ActionContextTest extends TestCase {
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testParamInvalidType () {
 
@@ -121,7 +121,7 @@ class ActionContextTest extends TestCase {
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testVerifiedParamInvalidType () {
 
