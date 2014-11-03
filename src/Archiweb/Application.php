@@ -11,7 +11,6 @@ use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Error\FormattedError;
 use Archiweb\Field\KeyPath;
-use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
 use Archiweb\RPC\JSONP;
@@ -20,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 
 define('ROOT_DIR', __DIR__ . '/../..');
 
@@ -121,7 +121,7 @@ class Application {
 
                 $requiredFields = ['User' => ['email', 'password', 'ownedCompany'], 'Company' => ['name']];
 
-                $serializer = new Serializer($requiredFields);
+                $serializer = new Serializer($reqCtx,$this->appCtx->getNewRegistry());
 
                 $response = new Response($serializer->serialize($result, 'json'));
 
