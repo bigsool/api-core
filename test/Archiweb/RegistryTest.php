@@ -24,7 +24,6 @@ use Archiweb\Parameter\SafeParameter;
 use Archiweb\Parameter\UnsafeParameter;
 use Archiweb\Rule\CallbackRule;
 use Archiweb\Rule\FieldRule;
-use Archiweb\Rule\SimpleRule;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 
@@ -383,8 +382,12 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
-        $qryCtx = new FindQueryContext('Functionality');
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $fieldKeyPath = new FieldKeyPath('*');
+        $reqCtx = $this->getRequestContext();
+        $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
+        $reqCtx->setReturnedRootEntity('Functionality');
+        $qryCtx = new FindQueryContext('Functionality', $reqCtx);
+        $qryCtx->addKeyPath($fieldKeyPath);
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);

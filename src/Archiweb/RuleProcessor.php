@@ -38,7 +38,7 @@ class RuleProcessor {
     /**
      * @param QueryContext $ctx
      *
-     * @return array
+     * @return Rule[]
      */
     public function findRules (QueryContext $ctx) {
 

@@ -4,7 +4,6 @@
 namespace Archiweb\Expression;
 
 
-use Archiweb\RequestContext;
 use Archiweb\TestCase;
 
 class ValueTest extends TestCase {

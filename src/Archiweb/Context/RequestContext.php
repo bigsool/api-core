@@ -186,7 +186,7 @@ class RequestContext {
 
         if (isset($params['auth'])) {
             // TODO: replace that part by the real authentication system
-            $findCtx = new FindQueryContext('User');
+            $findCtx = new FindQueryContext('User', $this);
             $findCtx->addFilter(new StringFilter('User', '', 'id = :id'));
             $findCtx->addKeyPath(new KeyPath('*'));
             $findCtx->setParams(['id' => $params['auth']]);

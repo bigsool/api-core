@@ -5,6 +5,7 @@ namespace Archiweb\Rule;
 
 
 use Archiweb\Context\FindQueryContext;
+use Archiweb\Context\RequestContext;
 use Archiweb\Context\SaveQueryContext;
 use Archiweb\Field\Field;
 use Archiweb\Field\KeyPath;
@@ -76,10 +77,15 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $this->getMockFilter());
         $this->assertFalse($rule->shouldApply(new SaveQueryContext(new Company())));
 
-        $qryCtx = new FindQueryContext('Company');
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('Company');
+
+        $qryCtx = new FindQueryContext('Company', $reqCtx);
+        $reqCtx->setReturnedKeyPaths([new KeyPath('city')]);
         $qryCtx->addKeyPath(new KeyPath('city'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
+        $reqCtx->setReturnedKeyPaths([new KeyPath('city'), new KeyPath('name')]);
         $qryCtx->addKeyPath(new KeyPath('name'));
         $this->assertTrue($rule->shouldApply($qryCtx));
 
@@ -97,7 +103,11 @@ class FieldRuleTest extends TestCase {
 
         $rule = new FieldRule($field, $filter);
 
-        $qryCtx = new FindQueryContext('Company');
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('Company');
+        $reqCtx->setReturnedKeyPaths([new KeyPath('name')]);
+
+        $qryCtx = new FindQueryContext('Company', $reqCtx);
         $qryCtx->addKeyPath(new KeyPath('name'));
 
         $filters = $qryCtx->getFilters();

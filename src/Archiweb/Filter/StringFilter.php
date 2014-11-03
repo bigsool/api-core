@@ -15,8 +15,6 @@ use Archiweb\Operator\NotEqualOperator;
 
 class StringFilter extends Filter {
 
-    private $command;
-
     /**
      * @param string $entity
      * @param string $name

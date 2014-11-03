@@ -3,7 +3,6 @@
 namespace Archiweb\Context;
 
 
-use Archiweb\Operation;
 use Archiweb\TestCase;
 
 class FindQueryContextTest extends TestCase {

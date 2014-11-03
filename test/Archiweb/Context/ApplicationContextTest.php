@@ -223,13 +223,4 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetJMSSerializer () {
-
-        $appCtx = $this->getApplicationContext();
-        $JMSSerializer = $appCtx->getJMSSerializer();
-
-        $this->assertInstanceOf('\JMS\Serializer\Serializer', $JMSSerializer);
-
-    }
-
 } 

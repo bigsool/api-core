@@ -32,6 +32,17 @@ class KeyPath extends AbstractKeyPath {
     }
 
     /**
+     * @param $keyPath
+     *
+     * @return bool
+     */
+    public function isEqual ($keyPath) {
+
+        return ($keyPath instanceof self) && ($keyPath->entity === $this->entity) && ($keyPath->field === $this->field);
+
+    }
+
+    /**
      * @return bool
      */
     protected function isUsedInExpression () {
@@ -39,4 +50,5 @@ class KeyPath extends AbstractKeyPath {
         return false;
 
     }
+
 }

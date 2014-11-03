@@ -68,6 +68,10 @@ function loadErrors (ErrorManager $errorManager) {
     $errorManager->defineError(new Error(ERR_AUTH_TOKEN_EXPIRED, "jeton d'authentification expiré",
                                          'auth token expired'));
 
+    @define('ERR_BAD_ENTITY', 28);
+    $errorManager->defineError(new Error(ERR_BAD_ENTITY, "entité demandé non disponible",
+                                         'requested entity not available', ERR_REQUEST_INVALID));
+
     @define('ERR_PARAMS_INVALID', 100);
     $errorManager->defineError(new Error(ERR_PARAMS_INVALID, "au moins un paramètre est invalid",
                                          'one or more parameters are invalid'));

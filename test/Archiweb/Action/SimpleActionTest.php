@@ -176,7 +176,7 @@ class SimpleActionTest extends TestCase {
 
         $reqCtx = $this->getRequestContext();
         $action = new SimpleAction('module', 'name', Auth::GUEST, [], $this->getCallable());
-        $this->assertNull($action->authorize($reqCtx->getNewActionContext()));
+        $this->assertTrue($action->authorize($reqCtx->getNewActionContext()));
 
         /**
          * @var Auth $auth
@@ -186,7 +186,7 @@ class SimpleActionTest extends TestCase {
         $auth->method('hasRights')->with($this->equalTo($rights))->willReturn(true);
         $reqCtx->setAuth($auth);
         $action = new SimpleAction('module', 'name', $rights, [], $this->getCallable());
-        $this->assertNull($action->authorize($reqCtx->getNewActionContext()));
+        $this->assertTrue($action->authorize($reqCtx->getNewActionContext()));
 
     }
 

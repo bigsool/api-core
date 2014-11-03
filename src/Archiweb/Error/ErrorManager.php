@@ -158,7 +158,7 @@ class ErrorManager {
     }
 
     /**
-     * @param Error $parentCode
+     * @param int $parentCode
      *
      * @return array
      */
@@ -201,10 +201,11 @@ class ErrorManager {
     /**
      * @param Error $childError
      * @param Error $error
+     * @param bool  $isParent
      *
-     * @return boolean
+     * @return bool
      */
-    private function parentOf ($childError, $error, &$isParent) {
+    private function parentOf (Error $childError, Error $error, &$isParent) {
 
         $parent = $this->getParent($childError);
 

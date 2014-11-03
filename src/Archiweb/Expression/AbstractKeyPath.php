@@ -38,6 +38,11 @@ abstract class AbstractKeyPath extends Value {
     protected $joinsToDo = [];
 
     /**
+     * @var string
+     */
+    protected $result;
+
+    /**
      * @param mixed $value
      * @param bool  $useLeftJoin
      */
@@ -80,6 +85,10 @@ abstract class AbstractKeyPath extends Value {
             throw new \RuntimeException('invalid context');
         }
 
+        if ($this->result) {
+            return $this->result;
+        }
+
         if (!$this->field) {
             $this->process($ctx);
         }
@@ -102,10 +111,10 @@ abstract class AbstractKeyPath extends Value {
         }
 
         if ($this->isUsedInExpression() && isset($prevAlias) && $this->field == '*') {
-            return $prevAlias . '.' . $joinToDo['field'];
+            return $this->result = $prevAlias . '.' . $joinToDo['field'];
         }
 
-        return $alias . ($this->field == '*' ? '' : ('.' . $this->field));
+        return $this->result = $alias . ($this->field == '*' ? '' : ('.' . $this->field));
 
     }
 
@@ -190,9 +199,12 @@ abstract class AbstractKeyPath extends Value {
      *
      * @return \Archiweb\Field\Field
      */
-    public function getField (FindQueryContext $ctx) {
+    public function getField (FindQueryContext $ctx = NULL) {
 
         if (!$this->field) {
+            if (is_null($ctx)) {
+                throw new \RuntimeException('try to fetch field of a non processed KeyPath without context');
+            }
             $this->process($ctx);
         }
 

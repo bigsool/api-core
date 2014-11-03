@@ -10,13 +10,14 @@ use Archiweb\Context\SaveQueryContext;
 use Archiweb\Expression\NAryExpression;
 use Archiweb\Operator\AndOperator;
 use Archiweb\Parameter\Parameter;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
-class Registry implements \Doctrine\Common\EventSubscriber {
+class Registry implements EventSubscriber {
 
     /**
      * @var string
@@ -185,16 +186,37 @@ class Registry implements \Doctrine\Common\EventSubscriber {
      * @param bool             $hydrateArray
      *
      * @return array
+     * @throws Error\FormattedError
      */
     public function find (FindQueryContext $ctx, $hydrateArray = true) {
 
         $entity = $ctx->getEntity();
-        $class = self::realModelClassName($entity);
+        $requestedEntity = $ctx->getReqCtx()->getReturnedRootEntity();
 
-        $qb = $this->getQueryBuilder($ctx->getEntity());
-        $alias = lcfirst($entity);
+        if ($requestedEntity && $requestedEntity != $entity) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_REQUEST_INVALID);
+        }
+
+        $qb = $this->getQueryBuilder($entity);
+
 
         $keyPaths = $ctx->getKeyPaths();
+
+        // KeyPath as to be resolve to do the isEqual()
+        foreach ($keyPaths as $keyPath) {
+            $keyPath->resolve($this, $ctx);
+        }
+
+        foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as $keyPathFromRequest) {
+            // KeyPath as to be resolve to do the isEqual()
+            $keyPathFromRequest->resolve($this, $ctx);
+            foreach ($keyPaths as $alreadyAddedKeyPath) {
+                if ($keyPathFromRequest->isEqual($alreadyAddedKeyPath)) {
+                    continue 2;
+                }
+            }
+            $keyPaths[] = $keyPathFromRequest;
+        }
         if (empty($keyPaths)) {
             throw new \RuntimeException('fields are required');
         }
