@@ -58,20 +58,24 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param string $service
-     * @param string $method
-     * @param array  $params
-     * @param string $entity
-     * @param array  $fields
-     * @param mixed  $auth
-     * @return mixed
+     * @param       $service
+     * @param       $method
+     * @param array $params
+     * @param null  $entity
+     * @param array $fields
+     * @param null  $auth
+     *
+     * @throws \Exception
      */
     public static function get ($service, $method, array $params = [], $entity = NULL, array $fields = [],
                                 $auth = NULL) {
 
-        $client = new Client(['base_url' => 'http://localhost/archipad-proto/run.php/jsonp/archipad-cloud+1+fr/',
-                              'handler'  => new CurlHandler()
-                             ]);
+        $config = ['base_url' => 'http://localhost/archipad-proto/run.php/jsonp/archipad-cloud+1+fr/'];
+        if (version_compare(PHP_VERSION, '5.5.0')) {
+            $config['handler'] = new CurlHandler();
+        }
+        $client = new Client($config);
+
         $url = '';
         if (isset($service)) {
             $url .= urlencode($service) . '/';
@@ -98,10 +102,9 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         self::$lastRequest = $client->get($url, ['cookies' => ['XDEBUG_SESSION' => 'PHPSTORM'],]);
 
         try {
-            return self::$lastRequest->json(['object' => true, 'big_int_strings' => true]);
+            return self::$lastRequest->json(['object' => true, /*'big_int_strings' => true*/]);
         }
         catch (\Exception $e) {
-            throw $e;
             self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
                        . self::$lastRequest->getBody());
         }

@@ -10,9 +10,10 @@ class UserWithCompanyTestCase extends WebTestCase {
 
     public function testMinimalData () {
 
-        $result = $this->get('user', 'create', ['user' => ['email' => 'test@bigsool.com', 'password' => 'qwe'],
-                                      'company' => ['name' => 'bigsool']
-            ],'User',['id','email','password']);
+        $params = ['user'    => ['email' => $email = 'test@bigsool.com', 'password' => 'qwe'],
+                   'company' => ['name' => 'bigsool']
+        ];
+        $result = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
 
         $this->assertInstanceOf('\stdClass', $result);
 
@@ -21,9 +22,9 @@ class UserWithCompanyTestCase extends WebTestCase {
         $this->assertArrayHasKey('id', $properties);
         $this->assertArrayHasKey('email', $properties);
         $this->assertArrayHasKey('password', $properties);
-        $this->assertEquals(1, $result->id);
-        $this->assertEquals('julien@bigsool.com', $result->email);
-        $this->assertRegExp('/^[0-9a-f]{128}$/', $result->password);
+        $this->assertEquals(1, $properties['id']);
+        $this->assertEquals($params['user']['email'], $properties['email']);
+        $this->assertRegExp('/^[0-9a-f]{128}$/', $properties['password']);
 
     }
 
