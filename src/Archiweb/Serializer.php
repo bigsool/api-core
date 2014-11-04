@@ -30,32 +30,39 @@ class Serializer {
     }
 
     /**
-     * @param array $result
+     * @param mixed $result
      * @return array
      */
-    public function serialize (array $result) {
+    public function serialize ($result) {
 
         $dataToSerialized = [];
         $dataAlreadySerialized = [];
 
-        foreach($result as $value) {
-            if (is_object($value)) {
-                $dataToSerialized[] = $value;
-            }
-            else {
-                foreach ($value as $elem) {
-                    if (is_object($elem)) {
-                        $dataToSerialized[] = $elem;
-                    }
-                    else {
-                       // $dataAlreadySerialized[] = $elem; We don't need that for the moment
+        if (is_array($result)) {
+
+            foreach($result as $value) {
+                if (is_object($value)) {
+                    $dataToSerialized[] = $value;
+                }
+                else {
+                    foreach ($value as $elem) {
+                        if (is_object($elem)) {
+                            $dataToSerialized[] = $elem;
+                        }
+                        else {
+                            // $dataAlreadySerialized[] = $elem; We don't need that for the moment
+                        }
                     }
                 }
             }
-        }
 
-        $dataSerialized = $this->getSerializedResult($dataToSerialized);
-        $dataSerialized = array_merge($dataAlreadySerialized, $dataSerialized);
+            $dataSerialized = $this->getSerializedResult($dataToSerialized);
+            $dataSerialized = array_merge($dataAlreadySerialized, $dataSerialized);
+
+        }
+        else {
+            $dataSerialized = $this->getSerializedResult($result);
+        }
 
         return json_encode($dataSerialized);
 
@@ -77,7 +84,7 @@ class Serializer {
             $resultSerialized[] = $entitySerialized;
         }
 
-        return $resultSerialized;
+        return is_array($result) ? $resultSerialized : $resultSerialized[0];
 
     }
 
