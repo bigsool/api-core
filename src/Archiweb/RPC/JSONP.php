@@ -79,9 +79,7 @@ class JSONP implements Handler {
 
         $this->params = $request->query->get('params') ?: [];
 
-        // TODO: what to do when entity and/or fields are not defined ?
         $this->returnedRootEntity = $request->query->get('entity');
-
         $this->setReturnedFields($request->query->get('fields'));
 
     }
@@ -142,14 +140,15 @@ class JSONP implements Handler {
 
     /**
      * @param string[] $fields
+     *
+     * @throws \Archiweb\Error\FormattedError
      */
     protected function setReturnedFields (array $fields = NULL) {
 
         $fields = (array)$fields;
         foreach ($fields as $field) {
             if (!is_string($field) || $field == '*') {
-                // TODO : this exception should have an error code
-                throw new \RuntimeException('invalid field');
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
             }
         }
 

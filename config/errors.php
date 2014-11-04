@@ -72,6 +72,10 @@ function loadErrors (ErrorManager $errorManager) {
     $errorManager->defineError(new Error(ERR_BAD_ENTITY, "entité demandé non disponible",
                                          'requested entity not available', ERR_REQUEST_INVALID));
 
+    @define('ERR_BAD_FIELD', 29);
+    $errorManager->defineError(new Error(ERR_BAD_FIELD, "au moins un des fields est invalide",
+                                         'one or more field are invalid', ERR_REQUEST_INVALID));
+
     @define('ERR_PARAMS_INVALID', 100);
     $errorManager->defineError(new Error(ERR_PARAMS_INVALID, "au moins un paramètre est invalid",
                                          'one or more parameters are invalid'));
