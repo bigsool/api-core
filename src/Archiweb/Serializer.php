@@ -2,33 +2,37 @@
 
 namespace Archiweb;
 
-use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
-use Archiweb\Field\KeyPath;
 
 class Serializer {
 
+    /**
+     * @var RequestContext
+     */
     private $reqCtx;
+
+    /**
+     * @var array
+     */
     private $keyPathArrays = [];
-    private $entitiesRequired = ['User' => ['email', 'name', 'password', 'company'], 'Company' => ['id', 'storage'], 'Storage' =>['url']];
 
-    function __construct (RequestContext $reqCtx, $registry = null) {
+    /**
+     * @param RequestContext $reqCtx
+     */
+    function __construct (RequestContext $reqCtx) {
 
-        $this->reqCtx = $reqCtx;
         $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
 
-     /*   foreach ($returnedKeyPaths as $keyPath) {
-            $qryCtx = new FindQueryContext('User');
-            $qryCtx->addKeyPath(new KeyPath('*'));
-            $path = $keyPath->resolve($registry,$qryCtx);
-            $this->keyPathArrays[] = explode('.',$path);
-        }*/
-        $keyPaths = ['email','company.name','company.storage.url'];
-        foreach ($keyPaths as $keyPath) {
-            $this->keyPathArrays[] = explode('.',$keyPath);
+        foreach ($returnedKeyPaths as $keyPath) {
+            $this->keyPathArrays[] = explode('.',$keyPath->getValue());
         }
+
     }
 
+    /**
+     * @param array $result
+     * @return array
+     */
     public function serialize (array $result) {
 
         $dataToSerialized = [];
@@ -44,7 +48,7 @@ class Serializer {
                         $dataToSerialized[] = $elem;
                     }
                     else {
-                       // $dataAlreadySerialized[] = $elem; Pas forcement le mettre
+                       // $dataAlreadySerialized[] = $elem; We don't need that for the moment
                     }
                 }
             }
@@ -57,6 +61,10 @@ class Serializer {
 
     }
 
+    /**
+     * @param mixed $result
+     * @return array
+     */
     private function getSerializedResult ($result) {
 
         $entities = is_array($result) ? $result : array($result);
@@ -73,26 +81,31 @@ class Serializer {
 
     }
 
+    /**
+     * @param mixed $result
+     * @return array
+     */
     private function parseKeyPath($entity,$keyPathArray) {
 
         $result = [];
 
         $currentElemKeyPath = $keyPathArray[0];
         $getter = "get" . ucfirst($currentElemKeyPath);
+
         if (!method_exists($entity, $getter)) return $result;
 
         $object = $entity->$getter();
 
         if (is_array($object)) {
             $entityName = $this->getEntityNameFromKeyPath($object[0]);
-            $this->initNextArrayKeyPath($keyPathArray);
+            array_shift($keyPathArray);
             foreach ($object as $elem) {
-                $result[$entityName] = $this->parseKeyPath($object,$keyPathArray);
+                $result[$entityName][] = $this->parseKeyPath($elem,$keyPathArray);
             }
         }
         else if (is_object($object)) {
             $entityName = $this->getEntityNameFromKeyPath($object);
-            $this->initNextArrayKeyPath($keyPathArray);
+            array_shift($keyPathArray);
             $result[$entityName] = $this->parseKeyPath($object,$keyPathArray);
         }
         else {
@@ -103,12 +116,10 @@ class Serializer {
 
     }
 
-    private function initNextArrayKeyPath (&$arrayKeyPath) {
-
-        array_shift($arrayKeyPath);
-
-    }
-
+    /**
+     * @param mixed $arrayKeyPath
+     *
+     */
     private function getEntityNameFromKeyPath ($keyPath) {
 
         $entityPath = get_class($keyPath);

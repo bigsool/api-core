@@ -119,9 +119,7 @@ class Application {
 
                 $result = $controller->apply($actCtx);
 
-                $requiredFields = ['User' => ['email', 'password', 'ownedCompany'], 'Company' => ['name']];
-
-                $serializer = new Serializer($reqCtx,$this->appCtx->getNewRegistry());
+                $serializer = new Serializer($reqCtx);
 
                 $response = new Response($serializer->serialize($result, 'json'));
 
