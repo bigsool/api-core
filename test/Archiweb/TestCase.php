@@ -70,8 +70,10 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $cmf = $em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
+        $em->getConnection()->query('PRAGMA foreign_keys = OFF');
         $schemaTool->dropDatabase();
         $schemaTool->createSchema($classes);
+        $em->getConnection()->query('PRAGMA foreign_keys = ON');
     }
 
     /**
