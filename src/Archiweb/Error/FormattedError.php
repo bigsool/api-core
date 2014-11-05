@@ -80,13 +80,13 @@ class FormattedError extends \Exception {
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function __toString () {
+    public function toArray() {
 
         $childErrors = array();
         foreach ($this->childErrors as $childError) {
-            $childErrors[] = json_decode($childError);
+            $childErrors[] = $childError->toArray();
         }
 
         $result = ["code" => $this->code, "message" => $this->message];
@@ -99,7 +99,16 @@ class FormattedError extends \Exception {
             $result["errors"] = $childErrors;
         }
 
-        return json_encode($result);
+        return $result;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString () {
+
+        return json_encode($this->toArray());
 
     }
 
