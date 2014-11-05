@@ -14,7 +14,7 @@ interface Handler {
     /**
      * @param Request $request
      */
-    public function parse(Request $request);
+    public function parse (Request $request);
 
     /**
      * @param FormattedError $error

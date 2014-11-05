@@ -9,8 +9,8 @@ use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Error\FormattedError;
-use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Field\KeyPath;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
 use Archiweb\RPC\Handler;
@@ -184,9 +184,9 @@ class Application {
         catch (\Exception $e) {
 
             $this->appCtx->getLogger()->getMLogger()->addEmergency(json_encode(['code'       => $e->getCode(),
-                                                                            'message'    => $e->getMessage(),
-                                                                            'stackTrace' => $e->getTraceAsString()
-                                                                           ]));
+                                                                                'message'    => $e->getMessage(),
+                                                                                'stackTrace' => $e->getTraceAsString()
+                                                                               ]));
 
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');

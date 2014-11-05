@@ -138,6 +138,16 @@ class ApplicationContext {
 
     }
 
+    public function getSessionId () {
+
+        if (!isset($this->sessionId)) {
+            $this->sessionId = uniqid();
+        }
+
+        return $this->sessionId;
+
+    }
+
     /**
      * @return TraceLogger
      */
@@ -462,16 +472,6 @@ class ApplicationContext {
         }
 
         return $this->queryLogger;
-
-    }
-
-    public function getSessionId () {
-
-        if (!isset($this->sessionId)) {
-            $this->sessionId = uniqid();
-        }
-
-        return $this->sessionId;
 
     }
 

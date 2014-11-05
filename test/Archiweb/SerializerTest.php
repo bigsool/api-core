@@ -10,7 +10,7 @@ use Archiweb\Model\User;
 
 class SerializerTest extends TestCase {
 
-    function testSerialize() {
+    function testSerialize () {
 
         $company1 = new Company();
         $company1->setName('Bigsool');
@@ -43,7 +43,7 @@ class SerializerTest extends TestCase {
         $company1->addUser($user1);
         $company1->addUser($user2);
         $company1->addUser($user3);
-        $result = [$user1,$user2,$user3];
+        $result = [$user1, $user2, $user3];
 
         $registry = self::getApplicationContext()->getNewRegistry();
         $registry->save($user1);
@@ -58,33 +58,39 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
-                             ['email'=>'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-                             ['email'=>'julien@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-                             ['email'=>'thomas@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]]
-                          ];
+            ['email' => 'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'julien@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'thomas@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]]
+        ];
 
-        $this->assertEquals(json_encode($resultExpected),$result);
+        $this->assertEquals(json_encode($resultExpected), $result);
 
 
-        $result = [$user1,$user2,$user3];
+        $result = [$user1, $user2, $user3];
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.users.password')]);
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
-            ['email'=>'thierry@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]],
-            ['email'=>'julien@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]],
-            ['email'=>'thomas@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]]
+            ['email'   => 'thierry@bigsool.com',
+             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+            ],
+            ['email'   => 'julien@bigsool.com',
+             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+            ],
+            ['email'   => 'thomas@bigsool.com',
+             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+            ]
         ];
 
-        $this->assertEquals(json_encode($resultExpected),$result);
+        $this->assertEquals(json_encode($resultExpected), $result);
 
         $result = $serializer->serialize("blibli")->get();
 
-        $this->assertEquals($result,"blibli");
+        $this->assertEquals($result, "blibli");
 
         $result = $serializer->serialize(true)->get();
 
-        $this->assertEquals($result,"1");
+        $this->assertEquals($result, "1");
     }
 
 }

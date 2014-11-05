@@ -110,7 +110,7 @@ abstract class AbstractLogger implements LoggerInterface {
     public function setSessionId ($sessionId) {
 
         $this->sessionId = $sessionId;
-        
+
     }
 
 } 
