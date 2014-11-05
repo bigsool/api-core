@@ -32,14 +32,57 @@ class FormattedError extends \Exception {
     protected $childErrors = [];
 
     /**
-     * @param Error       $error
+     * @param Error|array $error
      * @param string|null $field
      */
     public function __construct ($error, $field = NULL) {
 
+        if ($error instanceof Error) {
+            $this->buildWithError($error, $field);
+        }
+        elseif (is_array($error)) {
+            $this->buildWithArray($error, $field);
+        }
+        else {
+            throw new \RuntimeException('unexpected error type');
+        }
+
+    }
+
+    /**
+     * @param Error       $error
+     * @param string|null $field
+     */
+    protected function buildWithError (Error $error, $field) {
+
         $this->code = $error->getCode();
         $this->message = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
         $this->field = $field ? $field : $error->getField();
+
+    }
+
+    /**
+     * @param array       $error
+     * @param string|null $field
+     */
+    protected function buildWithArray (array $error, $field) {
+
+        if (!isset($error['code'])) {
+            throw new \RuntimeException('code not found in the error array');
+        }
+        $this->code = $error['code'];
+
+        if (isset($error['message'])) {
+            $this->message = $error['message'];
+        }
+        elseif (isset($error['frMessage']) && isset($error['enMessage'])) {
+            $this->message = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
+        }
+        else {
+            throw new \RuntimeException('message not found in the error array');
+        }
+
+        $this->field = isset($error['field']) ? $error['field'] : $field;
 
     }
 
@@ -84,9 +127,18 @@ class FormattedError extends \Exception {
      */
     public function __toString () {
 
+        return json_encode($this->toArray());
+
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray () {
+
         $childErrors = array();
         foreach ($this->childErrors as $childError) {
-            $childErrors[] = json_decode($childError);
+            $childErrors[] = $childError->toArray();
         }
 
         $result = ["code" => $this->code, "message" => $this->message];
@@ -99,7 +151,7 @@ class FormattedError extends \Exception {
             $result["errors"] = $childErrors;
         }
 
-        return json_encode($result);
+        return $result;
 
     }
 

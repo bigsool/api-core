@@ -7,9 +7,9 @@ namespace Archiweb\RPC;
 use Archiweb\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class JSONPTest extends TestCase {
+class JSONTest extends TestCase {
 
-    public function testConstructor () {
+    public function testParse () {
 
         /**
          * @var Request $req
@@ -18,15 +18,16 @@ class JSONPTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
         $params = ['param1' => 'value1', 'param2'];
         $req->query->add(['method' => 'method', 'params' => $params]);
-        $JSONP = new JSONP($req);
+        $JSON = new JSON();
+        $JSON->parse($req);
 
-        $this->assertSame('/service/method', $JSONP->getPath());
-        $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client', $JSONP->getClientName());
-        $this->assertSame('version', $JSONP->getClientVersion());
-        $this->assertSame('en', $JSONP->getLocale());
-        $this->assertNull($JSONP->getReturnedRootEntity());
-        $this->assertSame([], $JSONP->getReturnedFields());
+        $this->assertSame('/service/method', $JSON->getPath());
+        $this->assertSame($params, $JSON->getParams());
+        $this->assertSame('client', $JSON->getClientName());
+        $this->assertSame('version', $JSON->getClientVersion());
+        $this->assertSame('en', $JSON->getLocale());
+        $this->assertNull($JSON->getReturnedRootEntity());
+        $this->assertSame([], $JSON->getReturnedFields());
 
 
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
@@ -36,15 +37,16 @@ class JSONPTest extends TestCase {
                           'entity' => ($entity = 'entity'),
                           'fields' => ($fields = ['field1', 'field2.subField1'])
                          ]);
-        $JSONP = new JSONP($req);
+        $JSON = new JSON();
+        $JSON->parse($req);
 
-        $this->assertSame('/service/method', $JSONP->getPath());
-        $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client', $JSONP->getClientName());
-        $this->assertSame('version', $JSONP->getClientVersion());
-        $this->assertSame('fr', $JSONP->getLocale());
-        $this->assertSame($entity, $JSONP->getReturnedRootEntity());
-        $this->assertSame($fields, $JSONP->getReturnedFields());
+        $this->assertSame('/service/method', $JSON->getPath());
+        $this->assertSame($params, $JSON->getParams());
+        $this->assertSame('client', $JSON->getClientName());
+        $this->assertSame('version', $JSON->getClientVersion());
+        $this->assertSame('fr', $JSON->getLocale());
+        $this->assertSame($entity, $JSON->getReturnedRootEntity());
+        $this->assertSame($fields, $JSON->getReturnedFields());
 
     }
 
@@ -58,7 +60,7 @@ class JSONPTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/');
-        new JSONP($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -72,7 +74,7 @@ class JSONPTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/clientversion+locale/');
-        new JSONP($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -86,7 +88,7 @@ class JSONPTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/');
-        new JSONP($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -100,7 +102,7 @@ class JSONPTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
-        new JSONP($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -117,7 +119,7 @@ class JSONPTest extends TestCase {
         $req->query->add(['method' => 'method']);
         $req->query->add(['entity' => 'entity']);
         $req->query->add(['fields' => ['*']]);
-        new JSONP($req);
+        (new JSON())->parse($req);
 
     }
 

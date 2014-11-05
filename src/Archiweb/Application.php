@@ -10,16 +10,16 @@ use Archiweb\Context\ApplicationContext;
 use Archiweb\Context\FindQueryContext;
 use Archiweb\Context\RequestContext;
 use Archiweb\Error\FormattedError;
+use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Field\KeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
-use Archiweb\RPC\JSONP;
+use Archiweb\RPC\Handler;
+use Archiweb\RPC\JSON;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
-use Archiweb\Field\KeyPath as FieldKeyPath;
 
 define('ROOT_DIR', __DIR__ . '/../..');
 
@@ -88,12 +88,26 @@ class Application {
                 $moduleManager->load($this->appCtx);
             }
 
+            // default RPCHandler
+            $rpcHandler = new JSON();
+
             try {
                 $request = Request::createFromGlobals();
                 $sfReqCtx = new SymfonyRequestContext();
                 $sfReqCtx->fromRequest($request);
 
-                $rpcHandler = new JSONP($request);
+                $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
+                $rpcClassName = '\Archiweb\RPC\\' . $protocol;
+                if (!$protocol || !class_exists($rpcClassName)) {
+                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
+                }
+
+                $rpcHandler = new $rpcClassName();
+                /**
+                 * @var Handler $rpcHandler
+                 */
+
+                $rpcHandler->parse($request);
 
                 $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
@@ -121,18 +135,18 @@ class Application {
 
                 $serializer = new Serializer($reqCtx);
 
-                $response = new Response($serializer->serialize($result, 'json'));
-
-                // var_dump($response);
+                $response = $rpcHandler->getSuccessResponse($serializer, $result);
 
                 $this->entityManager->commit();
 
             }
             catch (FormattedError $e) {
-                $response = new Response((string)$e);
+                $response = $rpcHandler->getErrorResponse($e);
             }
             catch (\Exception $e) {
-                $response = new Response(json_encode(['code' => $e->getCode(), 'message' => $e->getMessage()]));
+                $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
+                                                                              'message' => $e->getMessage()
+                                                                             ]));
             }
 
             $response->send();
