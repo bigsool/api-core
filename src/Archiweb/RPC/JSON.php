@@ -5,9 +5,12 @@ namespace Archiweb\RPC;
 
 
 use Archiweb\Context\ApplicationContext;
+use Archiweb\Error\FormattedError;
+use Archiweb\Serializer;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class JSONP implements Handler {
+class JSON implements Handler {
 
     /**
      * @var string
@@ -103,6 +106,17 @@ class JSONP implements Handler {
     }
 
     /**
+     * @param FormattedError $error
+     *
+     * @return Response
+     */
+    public static function getErrorResponse (FormattedError $error) {
+
+        return new Response(json_encode(array_merge($error->toArray(), ['result' => false])));
+
+    }
+
+    /**
      * @return string
      */
     public function getLocale () {
@@ -162,6 +176,21 @@ class JSONP implements Handler {
     public function getReturnedRootEntity () {
 
         return $this->returnedRootEntity;
+
+    }
+
+    /**
+     * @param Serializer $serializer
+     * @param mixed      $data
+     *
+     * @return Response
+     */
+    public static function getSuccessResponse (Serializer $serializer, $data) {
+
+        // TODO: implement array to the serializer
+        return new Response(json_encode(['result' => true,
+                                         'data'   => json_decode($serializer->serialize($data, 'json'))
+                                        ]));
 
     }
 }

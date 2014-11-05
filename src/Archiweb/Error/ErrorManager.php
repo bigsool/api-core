@@ -42,7 +42,7 @@ class ErrorManager {
     }
 
     /**
-     * @param string $errorCode
+     * @param int $errorCode
      *
      * @return Error
      */
