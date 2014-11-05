@@ -18,15 +18,15 @@ class JSONTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
         $params = ['param1' => 'value1', 'param2'];
         $req->query->add(['method' => 'method', 'params' => $params]);
-        $JSONP = new JSON($req);
+        $JSON = new JSON($req);
 
-        $this->assertSame('/service/method', $JSONP->getPath());
-        $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client', $JSONP->getClientName());
-        $this->assertSame('version', $JSONP->getClientVersion());
-        $this->assertSame('en', $JSONP->getLocale());
-        $this->assertNull($JSONP->getReturnedRootEntity());
-        $this->assertSame([], $JSONP->getReturnedFields());
+        $this->assertSame('/service/method', $JSON->getPath());
+        $this->assertSame($params, $JSON->getParams());
+        $this->assertSame('client', $JSON->getClientName());
+        $this->assertSame('version', $JSON->getClientVersion());
+        $this->assertSame('en', $JSON->getLocale());
+        $this->assertNull($JSON->getReturnedRootEntity());
+        $this->assertSame([], $JSON->getReturnedFields());
 
 
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
@@ -36,15 +36,15 @@ class JSONTest extends TestCase {
                           'entity' => ($entity = 'entity'),
                           'fields' => ($fields = ['field1', 'field2.subField1'])
                          ]);
-        $JSONP = new JSON($req);
+        $JSON = new JSON($req);
 
-        $this->assertSame('/service/method', $JSONP->getPath());
-        $this->assertSame($params, $JSONP->getParams());
-        $this->assertSame('client', $JSONP->getClientName());
-        $this->assertSame('version', $JSONP->getClientVersion());
-        $this->assertSame('fr', $JSONP->getLocale());
-        $this->assertSame($entity, $JSONP->getReturnedRootEntity());
-        $this->assertSame($fields, $JSONP->getReturnedFields());
+        $this->assertSame('/service/method', $JSON->getPath());
+        $this->assertSame($params, $JSON->getParams());
+        $this->assertSame('client', $JSON->getClientName());
+        $this->assertSame('version', $JSON->getClientVersion());
+        $this->assertSame('fr', $JSON->getLocale());
+        $this->assertSame($entity, $JSON->getReturnedRootEntity());
+        $this->assertSame($fields, $JSON->getReturnedFields());
 
     }
 
