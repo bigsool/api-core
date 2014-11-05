@@ -71,7 +71,7 @@ class Serializer {
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getJSON () {
 

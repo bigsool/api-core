@@ -155,9 +155,8 @@ class JSON implements Handler {
      */
     public function getSuccessResponse (Serializer $serializer, $data) {
 
-        // TODO: implement array to the serializer
         return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'result'  => json_decode($serializer->serialize($data)),
+                                         'result'  => $serializer->serialize($data)->get(),
                                          'id'      => $this->getId(),
                                         ]));
 
