@@ -71,7 +71,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
                                 $auth = NULL) {
 
         $config = ['base_url' => 'http://localhost/archipad-proto/run.php/jsonp/archipad-cloud+1+fr/'];
-        if (version_compare(PHP_VERSION, '5.5.0')) {
+        if (version_compare(PHP_VERSION, '5.5.0') >= 0) {
             $config['handler'] = new CurlHandler();
         }
         $client = new Client($config);
