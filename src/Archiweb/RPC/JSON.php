@@ -48,44 +48,9 @@ class JSON implements Handler {
     protected $returnedFields;
 
     /**
-     * @param Request $request
-     *
-     * @throws \Archiweb\Error\FormattedError
+     * @var string|null
      */
-    public function __construct (Request $request) {
-
-        $explodedPathInfo = explode('/', trim($request->getPathInfo(), '/'));
-
-        if (!isset($explodedPathInfo[1])) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
-        }
-        $explodedClient = explode('+', $explodedPathInfo[1]);
-        if (count($explodedClient) != 3) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
-        }
-        list($this->clientName, $this->clientVersion, $this->locale) = $explodedClient;
-        if ($this->locale != 'fr') {
-            $this->locale = 'en';
-        }
-
-        if (!isset($explodedPathInfo[2])) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_SERVICE_NOT_FOUND);
-        }
-        $service = $explodedPathInfo[2];
-
-        $method = $request->query->get('method');
-        if (!isset($method) || !is_string($method)) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
-        }
-
-        $this->path = '/' . $service . '/' . $method;
-
-        $this->params = $request->query->get('params') ?: [];
-
-        $this->returnedRootEntity = $request->query->get('entity');
-        $this->setReturnedFields($request->query->get('fields'));
-
-    }
+    protected $id;
 
     /**
      * @return string
@@ -110,9 +75,12 @@ class JSON implements Handler {
      *
      * @return Response
      */
-    public static function getErrorResponse (FormattedError $error) {
+    public function getErrorResponse (FormattedError $error) {
 
-        return new Response(json_encode(array_merge($error->toArray(), ['result' => false])));
+        return new Response(json_encode(['jsonrpc' => '2.0',
+                                         'error'   => $error->toArray(),
+                                         'id'      => $this->getId(),
+                                        ]));
 
     }
 
@@ -185,12 +153,64 @@ class JSON implements Handler {
      *
      * @return Response
      */
-    public static function getSuccessResponse (Serializer $serializer, $data) {
+    public function getSuccessResponse (Serializer $serializer, $data) {
 
         // TODO: implement array to the serializer
-        return new Response(json_encode(['result' => true,
-                                         'data'   => json_decode($serializer->serialize($data, 'json'))
+        return new Response(json_encode(['jsonrpc' => '2.0',
+                                         'result'  => json_decode($serializer->serialize($data)),
+                                         'id'      => $this->getId(),
                                         ]));
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @throws \Archiweb\Error\FormattedError
+     */
+    public function parse (Request $request) {
+
+        $explodedPathInfo = explode('/', trim($request->getPathInfo(), '/'));
+
+        if (!isset($explodedPathInfo[1])) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
+        }
+        $explodedClient = explode('+', $explodedPathInfo[1]);
+        if (count($explodedClient) != 3) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
+        }
+        list($this->clientName, $this->clientVersion, $this->locale) = $explodedClient;
+        if ($this->locale != 'fr') {
+            $this->locale = 'en';
+        }
+
+        if (!isset($explodedPathInfo[2])) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_SERVICE_NOT_FOUND);
+        }
+        $service = $explodedPathInfo[2];
+
+        $method = $request->query->get('method');
+        if (!isset($method) || !is_string($method)) {
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
+        }
+
+        $this->path = '/' . $service . '/' . $method;
+
+        $this->params = $request->query->get('params') ?: [];
+
+        $this->id = $request->query->get('id');
+
+        $this->returnedRootEntity = $request->query->get('entity');
+        $this->setReturnedFields($request->query->get('fields'));
+
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getId () {
+
+        return $this->id;
 
     }
 }

@@ -14,14 +14,14 @@ interface Handler {
     /**
      * @param Request $request
      */
-    public function __construct (Request $request);
+    public function parse(Request $request);
 
     /**
      * @param FormattedError $error
      *
      * @return Response
      */
-    public static function getErrorResponse (FormattedError $error);
+    public function getErrorResponse (FormattedError $error);
 
     /**
      * @param Serializer $serializer
@@ -29,7 +29,7 @@ interface Handler {
      *
      * @return Response
      */
-    public static function getSuccessResponse (Serializer $serializer, $data);
+    public function getSuccessResponse (Serializer $serializer, $data);
 
     /**
      * @return string

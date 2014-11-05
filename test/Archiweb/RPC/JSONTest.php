@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class JSONTest extends TestCase {
 
-    public function testConstructor () {
+    public function testParse () {
 
         /**
          * @var Request $req
@@ -18,7 +18,8 @@ class JSONTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
         $params = ['param1' => 'value1', 'param2'];
         $req->query->add(['method' => 'method', 'params' => $params]);
-        $JSON = new JSON($req);
+        $JSON = new JSON();
+        $JSON->parse($req);
 
         $this->assertSame('/service/method', $JSON->getPath());
         $this->assertSame($params, $JSON->getParams());
@@ -36,7 +37,8 @@ class JSONTest extends TestCase {
                           'entity' => ($entity = 'entity'),
                           'fields' => ($fields = ['field1', 'field2.subField1'])
                          ]);
-        $JSON = new JSON($req);
+        $JSON = new JSON();
+        $JSON->parse($req);
 
         $this->assertSame('/service/method', $JSON->getPath());
         $this->assertSame($params, $JSON->getParams());
@@ -58,7 +60,7 @@ class JSONTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/');
-        new JSON($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -72,7 +74,7 @@ class JSONTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/clientversion+locale/');
-        new JSON($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -86,7 +88,7 @@ class JSONTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/');
-        new JSON($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -100,7 +102,7 @@ class JSONTest extends TestCase {
          */
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
-        new JSON($req);
+        (new JSON())->parse($req);
 
     }
 
@@ -117,7 +119,7 @@ class JSONTest extends TestCase {
         $req->query->add(['method' => 'method']);
         $req->query->add(['entity' => 'entity']);
         $req->query->add(['fields' => ['*']]);
-        new JSON($req);
+        (new JSON())->parse($req);
 
     }
 

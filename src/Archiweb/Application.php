@@ -14,6 +14,8 @@ use Archiweb\Field\KeyPath as FieldKeyPath;
 use Archiweb\Field\KeyPath;
 use Archiweb\Filter\StringFilter;
 use Archiweb\Module\ModuleManager;
+use Archiweb\RPC\Handler;
+use Archiweb\RPC\JSON;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -87,7 +89,7 @@ class Application {
             }
 
             // default RPCHandler
-            $rpcHandler = '\Archiweb\RPC\JSON';
+            $rpcHandler = new JSON();
 
             try {
                 $request = Request::createFromGlobals();
@@ -100,7 +102,12 @@ class Application {
                     throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
                 }
 
-                $rpcHandler = new $rpcClassName($request);
+                $rpcHandler = new $rpcClassName();
+                /**
+                 * @var Handler $rpcHandler
+                 */
+
+                $rpcHandler->parse($request);
 
                 $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
@@ -134,10 +141,10 @@ class Application {
 
             }
             catch (FormattedError $e) {
-                $response = $rpcHandler::getErrorResponse($e);
+                $response = $rpcHandler->getErrorResponse($e);
             }
             catch (\Exception $e) {
-                $response = $rpcHandler::getErrorResponse(new FormattedError(['code'    => $e->getCode(),
+                $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
                                                                               'message' => $e->getMessage()
                                                                              ]));
             }
