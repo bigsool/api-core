@@ -7,7 +7,7 @@ namespace Archiweb\RPC;
 use Archiweb\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class JSONPTest extends TestCase {
+class JSONTest extends TestCase {
 
     public function testConstructor () {
 
