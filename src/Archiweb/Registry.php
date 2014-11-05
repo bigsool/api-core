@@ -194,7 +194,7 @@ class Registry implements EventSubscriber {
         $requestedEntity = $ctx->getReqCtx()->getReturnedRootEntity();
 
         if ($requestedEntity && $requestedEntity != $entity) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_REQUEST_INVALID);
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_ENTITY);
         }
 
         $qb = $this->getQueryBuilder($entity);
