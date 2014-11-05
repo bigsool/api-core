@@ -64,13 +64,14 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      * @param null  $entity
      * @param array $fields
      * @param null  $auth
+     * @param null  $id
      *
      * @return mixed
      *
      * @throws \Exception
      */
     public static function get ($service, $method, array $params = [], $entity = NULL, array $fields = [],
-                                $auth = NULL) {
+                                $auth = NULL, $id = NULL) {
 
         $config = ['base_url' => 'http://localhost/archipad-proto/run.php/JSON/archipad-cloud+1+fr/'];
         if (version_compare(PHP_VERSION, '5.5.0') >= 0) {
@@ -99,12 +100,18 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $url .= 'entity=' . urlencode($entity) . '&';
         }
 
+        if (!isset($id)) {
+            $id = uniqid();
+        }
+        $url .= 'id=' . urlencode($id) . '&';
+
         $url .= http_build_query(['fields' => $fields]);
+
 
         self::$lastRequest = $client->get($url, ['cookies' => ['XDEBUG_SESSION' => 'PHPSTORM'],]);
 
         try {
-            return self::$lastRequest->json(['object' => true, /*'big_int_strings' => true*/]);
+            return [$id => self::$lastRequest->json(['object' => true, /*'big_int_strings' => true*/])];
         }
         catch (\Exception $e) {
             self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
@@ -114,83 +121,84 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param mixed $result
-     * @param bool  $hasData
-     * @param bool  $hasMoreProperties
+     * @param mixed       $result
+     * @param string|null id
+     * @param bool        $hasMoreProperties
      */
-    public function assertSuccess ($result, $hasData = true, $hasMoreProperties = false) {
+    public function assertSuccess ($result, $id = NULL, $hasMoreProperties = false) {
 
         $this->assertInstanceOf('\stdClass', $result);
 
         $properties = get_object_vars($result);
-        $count = 1 + $hasData;
         if ($hasMoreProperties) {
-            $this->assertGreaterThan($count, count($properties));
+            $this->assertGreaterThan(3, count($properties));
         }
         else {
-            $this->assertCount($count, $properties);
+            $this->assertCount(3, $properties);
         }
+        $this->assertArrayHasKey('jsonrpc', $properties);
+        $this->assertArrayHasKey('id', $properties);
         $this->assertArrayHasKey('result', $properties);
-        $this->assertTrue($properties['result']);
-        if ($hasData) {
-            $this->assertArrayHasKey('data', $properties);
-        }
+        $this->assertArrayNotHasKey('error', $properties);
+        $this->assertSame('2.0', $properties['jsonrpc']);
+        $this->assertSame($id, $properties['id']);
 
     }
 
     /**
-     * @param mixed  $result
-     * @param int    $errorCode
-     * @param array  $childErrorCodes
-     * @param string $field
-     * @param bool   $hasData
-     * @param bool   $hasMoreProperties
+     * @param mixed       $result
+     * @param string|null id
+     * @param int         $errorCode
+     * @param array       $childErrorCodes
+     * @param string      $field
+     * @param bool        $hasMoreProperties
      */
-    public function assertFail ($result, $errorCode, array $childErrorCodes = [], $field = NULL, $hasData = false,
+    public function assertFail ($result, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
                                 $hasMoreProperties = false) {
 
         $this->assertInstanceOf('\stdClass', $result);
 
         $properties = get_object_vars($result);
-        $count = 1 + $hasData + (!!count($childErrorCodes)) + (!is_null($field)) + (!is_null($errorCode)) * 2;
         if ($hasMoreProperties) {
-            $this->assertGreaterThan($count, count($properties));
+            $this->assertGreaterThan(3, count($properties));
         }
         else {
-            $this->assertCount($count, $properties);
+            $this->assertCount(3, $properties);
         }
 
-        $this->assertArrayHasKey('result', $properties);
-        $this->assertFalse($properties['result']);
+        $this->assertArrayNotHasKey('result', $properties);
+        $this->assertSame('2.0', $properties['jsonrpc']);
+        $this->assertSame($id, $properties['id']);
+
+        $this->assertArrayHasKey('error', $properties);
+        $error = $properties['error'];
+        $this->assertInstanceOf('\stdClass', $error);
+        $errorProperties = get_object_vars($error);
 
         if (is_null($errorCode)) {
-            $this->assertArrayNotHasKey('code', $properties);
+            $this->assertArrayNotHasKey('code', $errorProperties);
         }
         else {
-            $this->assertArrayHasKey('code', $properties);
-            $this->assertEquals($errorCode, $properties['code']);
+            $this->assertArrayHasKey('code', $errorProperties);
+            $this->assertEquals($errorCode, $errorProperties['code']);
         }
 
         if (count($childErrorCodes)) {
-            $this->assertArrayHasKey('errors', $properties);
-            $errors = $properties['errors'];
+            $this->assertArrayHasKey('errors', $errorProperties);
+            $errors = $errorProperties['errors'];
             $this->assertInternalType('array', $errors);
             $this->assertRecursiveErrorCodes($errors, $childErrorCodes);
         }
         else {
-            $this->assertArrayNotHasKey('errors', $properties);
+            $this->assertArrayNotHasKey('errors', $errorProperties);
         }
 
         if (is_null($field)) {
-            $this->assertArrayNotHasKey('field', $properties);
+            $this->assertArrayNotHasKey('field', $errorProperties);
         }
         else {
-            $this->assertArrayHasKey('field', $properties);
-            $this->assertEquals($field, $properties['field']);
-        }
-
-        if ($hasData) {
-            $this->assertArrayHasKey('data', $properties);
+            $this->assertArrayHasKey('field', $errorProperties);
+            $this->assertEquals($field, $errorProperties['field']);
         }
 
     }

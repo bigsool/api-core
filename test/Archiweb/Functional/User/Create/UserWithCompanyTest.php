@@ -13,11 +13,12 @@ class UserWithCompanyTestCase extends WebTestCase {
         $params = ['user'    => ['email' => $email = 'test@bigsool.com', 'password' => 'qwe'],
                    'company' => ['name' => 'bigsool']
         ];
-        $result = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        $return = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        list($id, $result) = each($return);
 
-        $this->assertSuccess($result);
+        $this->assertSuccess($result, $id);
 
-        $data = $result->data;
+        $data = $result->result;
 
         $this->assertInstanceOf('\stdClass', $data);
 
@@ -35,18 +36,20 @@ class UserWithCompanyTestCase extends WebTestCase {
     public function testUserNotFound () {
 
         $params = ['company' => ['name' => 'bigsool']];
-        $result = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        $return = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        list($id, $result) = each($return);
 
-        $this->assertFail($result, 100, [], 'user');
+        $this->assertFail($result, $id, 100, [], 'user');
 
     }
 
     public function testCompanyNotFound () {
 
         $params = ['user' => ['email' => $email = 'test@bigsool.com', 'password' => 'qwe']];
-        $result = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        $return = $this->get('user', 'create', $params, 'User', ['id', 'email', 'password']);
+        list($id, $result) = each($return);
 
-        $this->assertFail($result, 100, [], 'company');
+        $this->assertFail($result, $id, 100, [], 'company');
 
     }
 
