@@ -7,7 +7,6 @@ use Archiweb\Field\KeyPath;
 use Archiweb\Model\Company;
 use Archiweb\Model\Storage;
 use Archiweb\Model\User;
-use Symfony\Component\HttpFoundation\Response;
 
 class SerializerTest extends TestCase {
 
@@ -41,7 +40,9 @@ class SerializerTest extends TestCase {
         $storage->setLastusedspaceupdate(new \DateTime());
         $storage->setIsoutofquota(false);
         $company1->setStorage($storage);
-
+        $company1->addUser($user1);
+        $company1->addUser($user2);
+        $company1->addUser($user3);
         $result = [$user1,$user2,$user3];
 
         $registry = self::getApplicationContext()->getNewRegistry();
@@ -55,19 +56,35 @@ class SerializerTest extends TestCase {
         $reqCtx->setReturnedRootEntity('User');
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.storage.url')]);
         $serializer = new Serializer($reqCtx);
-        $result = $serializer->serialize($result);
+        $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
                              ['email'=>'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
                              ['email'=>'julien@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
                              ['email'=>'thomas@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]]
                           ];
+
         $this->assertEquals(json_encode($resultExpected),$result);
 
 
-        $result = $serializer->serialize(true);
-        $resultExpected = ['email'=>'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]];
+        $result = [$user1,$user2,$user3];
+        $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.users.password')]);
+        $serializer = new Serializer($reqCtx);
+        $result = $serializer->serialize($result)->getJSON();
+        $resultExpected = [
+            ['email'=>'thierry@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]],
+            ['email'=>'julien@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]],
+            ['email'=>'thomas@bigsool.com', 'Company' => ['User' => [['password' => 'qwe'],['password' => 'qwe'],['password' => 'qwe']]]]
+        ];
+
         $this->assertEquals(json_encode($resultExpected),$result);
 
+        $result = $serializer->serialize("blibli")->get();
+
+        $this->assertEquals($result,"blibli");
+
+        $result = $serializer->serialize(true)->get();
+
+        $this->assertEquals($result,"1");
     }
 
 }

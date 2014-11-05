@@ -7,14 +7,14 @@ use Archiweb\Context\RequestContext;
 class Serializer {
 
     /**
-     * @var RequestContext
+     * @var array
      */
-    private $reqCtx;
+    private $keyPathArrays = [];
 
     /**
      * @var array
      */
-    private $keyPathArrays = [];
+    private $dataSerialized;
 
     /**
      * @param RequestContext $reqCtx
@@ -31,16 +31,16 @@ class Serializer {
 
     /**
      * @param mixed $result
-     * @return array
+     * @return Serializer
      */
-    public function serialize ($result) {
+    public function serialize ($data) {
 
         $dataToSerialized = [];
         $dataAlreadySerialized = [];
 
-        if (is_array($result)) {
+        if (is_array($data)) {
 
-            foreach($result as $value) {
+            foreach($data as $value) {
                 if (is_object($value)) {
                     $dataToSerialized[] = $value;
                 }
@@ -49,32 +49,52 @@ class Serializer {
                         if (is_object($elem)) {
                             $dataToSerialized[] = $elem;
                         }
-                        else {
-                            // $dataAlreadySerialized[] = $elem; We don't need that for the moment
-                        }
                     }
                 }
             }
 
-            $dataSerialized = $this->getSerializedResult($dataToSerialized);
+            $dataSerialized = $this->getSerializedData($dataToSerialized);
             $dataSerialized = array_merge($dataAlreadySerialized, $dataSerialized);
 
         }
+        else if (is_object($data)) {
+            $dataSerialized = $this->getSerializedData($data);
+        }
         else {
-            $dataSerialized = $this->getSerializedResult($result);
+            $dataSerialized = (string)$data;
         }
 
-        return json_encode($dataSerialized);
+        $this->dataSerialized = $dataSerialized;
+
+        return $this;
 
     }
 
     /**
-     * @param mixed $result
      * @return array
      */
-    private function getSerializedResult ($result) {
+    public function getJSON () {
 
-        $entities = is_array($result) ? $result : array($result);
+        return json_encode($this->dataSerialized);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function get () {
+
+        return $this->dataSerialized;
+
+    }
+
+    /**
+     * @param mixed $data
+     * @return array
+     */
+    private function getSerializedData ($data) {
+
+        $entities = is_array($data) ? $data : array($data);
         $resultSerialized = [];
         foreach ($entities as $entity) {
             $entitySerialized = [];
@@ -84,12 +104,13 @@ class Serializer {
             $resultSerialized[] = $entitySerialized;
         }
 
-        return is_array($result) ? $resultSerialized : $resultSerialized[0];
+        return is_array($data) ? $resultSerialized : $resultSerialized[0];
 
     }
 
     /**
-     * @param mixed $result
+     * @param mixed $entity
+     * @param array $keyPathArray
      * @return array
      */
     private function parseKeyPath($entity,$keyPathArray) {
@@ -103,10 +124,10 @@ class Serializer {
 
         $object = $entity->$getter();
 
-        if (is_array($object)) {
-            $entityName = $this->getEntityNameFromKeyPath($object[0]);
+        if ($object instanceof \Traversable) {
             array_shift($keyPathArray);
             foreach ($object as $elem) {
+                $entityName = $this->getEntityNameFromKeyPath($elem);
                 $result[$entityName][] = $this->parseKeyPath($elem,$keyPathArray);
             }
         }
@@ -124,8 +145,7 @@ class Serializer {
     }
 
     /**
-     * @param mixed $arrayKeyPath
-     *
+     * @param KeyPath $keyPath
      */
     private function getEntityNameFromKeyPath ($keyPath) {
 
