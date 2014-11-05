@@ -99,11 +99,6 @@ class RegistryTest extends TestCase {
         $prop->setAccessible(true);
 
         $em = $prop->getValue($this->appCtx);
-        $queries = $em->getConfiguration()->getSQLLogger()->queries;
-
-        if ($queries) {
-            //var_dump($em->getConfiguration()->getSQLLogger()->queries);
-        }
 
     }
 

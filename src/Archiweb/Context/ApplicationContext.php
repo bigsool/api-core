@@ -5,9 +5,14 @@ namespace Archiweb\Context;
 
 
 use Archiweb\Action\Action;
+use Archiweb\Config\ConfigManager;
 use Archiweb\Error\ErrorManager;
 use Archiweb\Field\Field;
 use Archiweb\Filter\Filter;
+use Archiweb\Logger\Logger;
+use Archiweb\Logger\QueryLogger;
+use Archiweb\Logger\SQLLogger;
+use Archiweb\Logger\TraceLogger;
 use Archiweb\Registry;
 use Archiweb\Rule\Rule;
 use Archiweb\RuleProcessor;
@@ -63,9 +68,39 @@ class ApplicationContext {
     protected $errorManager;
 
     /**
+     * @var ConfigManager
+     */
+    protected $configManager;
+
+    /**
+     * @var QueryLogger
+     */
+    protected $queryLogger;
+
+    /**
+     * @var SQLLogger
+     */
+    protected $sqlLogger;
+
+    /**
+     * @var TraceLogger
+     */
+    protected $traceLogger;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * @var object[]
      */
     protected $helpers = [];
+
+    /**
+     * @var string
+     */
+    protected $sessionId;
 
     /**
      *
@@ -86,6 +121,34 @@ class ApplicationContext {
         }
 
         return self::$instance;
+
+    }
+
+    /**
+     * @return Logger
+     */
+    public function getLogger () {
+
+        if (!isset($this->logger)) {
+            $this->logger = new Logger();
+            $this->logger->setSessionId($this->getSessionId());
+        }
+
+        return $this->logger;
+
+    }
+
+    /**
+     * @return TraceLogger
+     */
+    public function getTraceLogger () {
+
+        if (!isset($this->traceLogger)) {
+            $this->traceLogger = new TraceLogger();
+            $this->traceLogger->setSessionId($this->getSessionId());
+        }
+
+        return $this->traceLogger;
 
     }
 
@@ -113,6 +176,21 @@ class ApplicationContext {
     public function setEntityManager (EntityManager $entityManager) {
 
         $this->entityManager = $entityManager;
+        $entityManager->getConfiguration()->setSQLLogger($this->getSQLLogger());
+
+    }
+
+    /**
+     * @return SQLLogger
+     */
+    public function getSQLLogger () {
+
+        if (!isset($this->sqlLogger)) {
+            $this->sqlLogger = new SQLLogger();
+            $this->sqlLogger->setSessionId($this->getSessionId());
+        }
+
+        return $this->sqlLogger;
 
     }
 
@@ -356,6 +434,44 @@ class ApplicationContext {
         }
 
         return $this->errorManager;
+
+    }
+
+    public function getConfigManager () {
+
+        if (!isset($this->configManager)) {
+            // load config
+            $configFiles = [ROOT_DIR . '/config/default.yml'];
+            $routesFile = ROOT_DIR . '/config/routes.yml';
+
+            $this->configManager = new ConfigManager($configFiles, $routesFile);
+        }
+
+        return $this->configManager;
+
+    }
+
+    /**
+     * @return QueryLogger
+     */
+    public function getQueryLogger () {
+
+        if (!isset($this->queryLogger)) {
+            $this->queryLogger = new QueryLogger();
+            $this->queryLogger->setSessionId($this->getSessionId());
+        }
+
+        return $this->queryLogger;
+
+    }
+
+    public function getSessionId () {
+
+        if (!isset($this->sessionId)) {
+            $this->sessionId = uniqid();
+        }
+
+        return $this->sessionId;
 
     }
 
