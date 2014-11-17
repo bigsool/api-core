@@ -1,10 +1,11 @@
 {
+    "name": "api/core",
     "require": {
         "doctrine/orm": "~2.4",
         "symfony/routing": "~2.5",
         "symfony/http-foundation": "~2.5",
         "symfony/validator": "~2.5",
-        "symfony/config":"~2.5",
+        "symfony/config": "~2.5",
         "monolog/monolog": "~1.11"
     },
     "require-dev": {
@@ -16,6 +17,6 @@
         "psr-0": {"Core": "src/"}
     },
     "config": {
-        "preferred-install" : "dist"
+        "preferred-install": "dist"
     }
 }
