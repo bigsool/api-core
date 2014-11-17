@@ -1,7 +1,7 @@
 <?php
 
-use Archiweb\Error\Error;
-use Archiweb\Error\ErrorManager;
+use Core\Error\Error;
+use Core\Error\ErrorManager;
 
 function loadErrors (ErrorManager $errorManager) {
 

@@ -1,4 +1,4 @@
 <?php
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
-$loader->add('Archiweb\\', __DIR__);
+$loader->add('Core\\', __DIR__);

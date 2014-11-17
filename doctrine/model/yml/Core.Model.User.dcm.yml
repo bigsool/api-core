@@ -1,0 +1,132 @@
+Core\Model\User:
+    type: entity
+    table: user
+    indexes:
+        company_id:
+            columns:
+                - company_id
+    uniqueConstraints:
+        userEmail:
+            columns:
+                - email
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        email:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        password:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        name:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        firstname:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        lang:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        salt:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: SALT
+        registerDate:
+            type: datetime
+            nullable: false
+            comment: ''
+            column: register_date
+        lastLoginDate:
+            type: datetime
+            nullable: true
+            comment: ''
+            column: last_login_date
+        knowsFrom:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: knowsFrom
+        confirmationKey:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: confirmationKey
+    oneToOne:
+        ownedCompany:
+            targetEntity: Core\Model\Company
+            mappedBy: owner
+            cascade: ["persist"]
+        student:
+            targetEntity: Core\Model\Student
+            mappedBy: user
+    manyToOne:
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: users
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: true
+            cascade: ["persist"]
+    oneToMany:
+        hostedProjects:
+            targetEntity: Core\Model\HostedProject
+            mappedBy: creator
+            cascade: ["persist"]
+        deviceClients:
+            targetEntity: Core\Model\DeviceClient
+            mappedBy: user
+        projectPersons:
+            targetEntity: Core\Model\ProjectPerson
+            mappedBy: creator
+        projectTypicalDescriptions:
+            targetEntity: Core\Model\ProjectTypicalDescriptions
+            mappedBy: creator
+        reportTemplates:
+            targetEntity: Core\Model\ReportTemplate
+            mappedBy: user
+        sharedReports:
+            targetEntity: Core\Model\SharedReport
+            mappedBy: user
+        systemMessages:
+            targetEntity: Core\Model\SystemMessage
+            mappedBy: user
+        transactions:
+            targetEntity: Core\Model\Transaction
+            mappedBy: user
+        userProjectRoles:
+            targetEntity: Core\Model\UserProjectRole
+            mappedBy: user
+        sharedHostedProjects:
+            targetEntity: Core\Model\SharedHostedProject
+            mappedBy: participant
+            cascade: ["persist"]

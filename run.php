@@ -5,4 +5,4 @@ ini_set('display_errors', 1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-(new \Archiweb\Application())->run();
+(new \Core\Application())->run();

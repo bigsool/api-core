@@ -6,13 +6,13 @@
         <whitelist>
             <directory>src/</directory>
             <exclude>
-                <directory>src/Archiweb/Model/</directory>
-                <directory>src/Archiweb/Module/UserFeature</directory>
-                <directory>src/Archiweb/Module/CompanyFeature</directory>
-                <directory>src/Archiweb/Module/User2CompanyConnector</directory>
-                <file>src/Archiweb/Validation/UserValidation.php</file>
-                <file>src/Archiweb/Validation/CompanyValidation.php</file>
-                <file>src/Archiweb/Validation/User2CompanyValidation.php</file>
+                <directory>src/Core/Model/</directory>
+                <directory>src/Core/Module/UserFeature</directory>
+                <directory>src/Core/Module/CompanyFeature</directory>
+                <directory>src/Core/Module/User2CompanyConnector</directory>
+                <file>src/Core/Validation/UserValidation.php</file>
+                <file>src/Core/Validation/CompanyValidation.php</file>
+                <file>src/Core/Validation/User2CompanyValidation.php</file>
             </exclude>
         </whitelist>
     </filter>

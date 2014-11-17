@@ -1,0 +1,77 @@
+Core\Model\SharedReport:
+    type: entity
+    table: sharedReport
+    indexes:
+        company_id:
+            columns:
+                - company_id
+        user_id:
+            columns:
+                - user_id
+    uniqueConstraints:
+        report:
+            columns:
+                - reportId
+                - projectId
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        reportid:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+            column: reportId
+        projectid:
+            type: string
+            nullable: false
+            length: 16
+            fixed: false
+            comment: ''
+            column: projectId
+        projectname:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+            column: projectName
+        hash:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        password:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        timestamp:
+            type: datetime
+            nullable: false
+            comment: ''
+    manyToOne:
+        user:
+            targetEntity: Core\Model\User
+            inversedBy: sharedReports
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+                    nullable: false
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: sharedReports
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: false

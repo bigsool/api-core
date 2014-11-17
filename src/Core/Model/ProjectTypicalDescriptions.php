@@ -1,0 +1,113 @@
+<?php
+
+namespace Core\Model;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ProjectTypicalDescriptions
+ */
+class ProjectTypicalDescriptions {
+
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $category;
+
+    /**
+     * @var string
+     */
+    private $descriptions;
+
+    /**
+     * @var \Core\Model\User
+     */
+    private $creator;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId () {
+
+        return $this->id;
+    }
+
+    /**
+     * Get category
+     *
+     * @return string
+     */
+    public function getCategory () {
+
+        return $this->category;
+    }
+
+    /**
+     * Set category
+     *
+     * @param string $category
+     *
+     * @return ProjectTypicalDescriptions
+     */
+    public function setCategory ($category) {
+
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * Get descriptions
+     *
+     * @return string
+     */
+    public function getDescriptions () {
+
+        return $this->descriptions;
+    }
+
+    /**
+     * Set descriptions
+     *
+     * @param string $descriptions
+     *
+     * @return ProjectTypicalDescriptions
+     */
+    public function setDescriptions ($descriptions) {
+
+        $this->descriptions = $descriptions;
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \Core\Model\User
+     */
+    public function getCreator () {
+
+        return $this->creator;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \Core\Model\User $creator
+     *
+     * @return ProjectTypicalDescriptions
+     */
+    public function setCreator (\Core\Model\User $creator) {
+
+        $this->creator = $creator;
+
+        return $this;
+    }
+}
