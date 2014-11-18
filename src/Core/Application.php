@@ -9,8 +9,8 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Field\KeyPath;
 use Core\Field\KeyPath as FieldKeyPath;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
@@ -69,6 +69,22 @@ class Application {
     }
 
     /**
+     * @return ModuleManager[]
+     */
+    public function getModuleManagers () {
+
+        $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
+        $moduleManagers = [];
+        foreach ($modules as $moduleName) {
+            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+            $moduleManagers[] = new $className;
+        }
+
+        return $moduleManagers;
+
+    }
+
+    /**
      *
      */
     public function run () {
@@ -79,13 +95,7 @@ class Application {
 
         try {
 
-            $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
-            foreach ($modules as $moduleName) {
-                $className = "\\Core\\Module\\$moduleName\\ModuleManager";
-                /**
-                 * @var ModuleManager $moduleManager
-                 */
-                $moduleManager = new $className;
+            foreach ($this->getModuleManagers() as $moduleManager) {
                 $moduleManager->load($this->appCtx);
             }
 
