@@ -1,6 +1,12 @@
 <?php
 
-require_once __DIR__ . "/../vendor/autoload.php";
+if (!file_exists($file = __DIR__ . '/../vendor/autoload.php')
+    && !file_exists($file = __DIR__ . '/../../../../vendor/autoload.php')
+) {
+    throw new RuntimeException('autoload file autoload.php not found');
+}
+
+require_once $file;
 
 $config =
     \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../doctrine/model/yml"), true,
