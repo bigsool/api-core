@@ -1,0 +1,9 @@
+ReportTemplate:
+   manyToOne:
+        user:
+            targetEntity: Core\Model\User
+            inversedBy: reportTemplates
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+                    nullable: false

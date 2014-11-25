@@ -1,0 +1,5 @@
+User:
+ oneToMany:
+        transactions:
+            targetEntity: Core\Model\Transaction
+            mappedBy: user

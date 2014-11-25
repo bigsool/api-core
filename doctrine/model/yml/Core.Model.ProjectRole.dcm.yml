@@ -17,11 +17,8 @@ Core\Model\ProjectRole:
             length: 255
             fixed: false
             comment: ''
-    manyToMany:
-        companiesForWhichThisProjectRoleIsDefault:
-            targetEntity: Core\Model\Company
-            mappedBy: defaultRoles
-    oneToMany:
+
+  oneToMany:
         userProjectRoles:
             targetEntity: Core\Model\UserProjectRole
             mappedBy: projectRole

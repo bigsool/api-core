@@ -1,0 +1,9 @@
+SharedReport:
+    manyToOne:
+          user:
+              targetEntity: Core\Model\User
+              inversedBy: sharedReports
+              joinColumns:
+                  user_id:
+                      referencedColumnName: id
+                      nullable: false

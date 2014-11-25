@@ -31,17 +31,8 @@ Core\Model\Device:
             nullable: false
             length: 255
             fixed: false
-    manyToOne:
-        freetrialCompany:
-            targetEntity: Core\Model\Company
-            inversedBy: devicesUsedForTheFreetrial
-            joinColumns:
-                freetrial_company_id:
-                    referencedColumnName: id
+
     oneToMany:
         deviceClients:
             targetEntity: Core\Model\DeviceClient
-            mappedBy: device
-        deviceCompanies:
-            targetEntity: Core\Model\DeviceCompany
             mappedBy: device

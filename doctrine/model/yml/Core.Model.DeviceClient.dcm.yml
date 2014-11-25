@@ -44,14 +44,6 @@ Core\Model\DeviceClient:
             nullable: false
             comment: ''
             column: lastLogin
-    manyToOne:
-        user:
-            targetEntity: Core\Model\User
-            inversedBy: deviceClients
-            joinColumns:
-                user_id:
-                    referencedColumnName: id
-                    nullable: false
         device:
             targetEntity: Core\Model\Device
             inversedBy: deviceClients

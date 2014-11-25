@@ -29,14 +29,7 @@ Core\Model\OverconsumptionReminder:
             nullable: false
             unsigned: false
             comment: ''
-    manyToOne:
-        company:
-            targetEntity: Core\Model\Company
-            inversedBy: overconsumptionReminders
-            joinColumns:
-                company_id:
-                    referencedColumnName: id
-                    nullable: false
+
     oneToOne:
         companyForWhichThisOverconsumptionReminderIsStillCurrent:
             targetEntity: Core\Model\Company

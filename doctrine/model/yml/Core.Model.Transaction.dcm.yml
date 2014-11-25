@@ -45,27 +45,4 @@ Core\Model\Transaction:
             length: 255
             fixed: false
             comment: ''
-    oneToOne:
-        billingAddress:
-            targetEntity: Core\Model\BillingAddress
-            mappedBy: transaction
-        invoice:
-            targetEntity: Core\Model\Invoice
-            inversedBy: transaction
-            joinColumns:
-                invoice_id:
-                    referencedColumnName: id
-        payment:
-            targetEntity: Core\Model\Payment
-            inversedBy: transaction
-            joinColumns:
-                payment_id:
-                    referencedColumnName: id
-    manyToOne:
-        user:
-            targetEntity: Core\Model\User
-            inversedBy: transactions
-            joinColumns:
-                user_id:
-                    referencedColumnName: id
-                    nullable: false
+

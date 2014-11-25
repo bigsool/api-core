@@ -1,9 +1,7 @@
 Core\Model\BillingAddress:
     type: entity
     table: billingAddress
-    id:
-        transaction:
-              associationKey: true
+
     fields:
         name:
             type: string
@@ -37,11 +35,3 @@ Core\Model\BillingAddress:
             nullable: true
             length: 255
             fixed: false
-    oneToOne:
-        transaction:
-            targetEntity: Core\Model\Transaction
-            inversedBy: billingAddress
-            joinColumns:
-                transaction_id:
-                    referencedColumnName: id
-                    nullable: false

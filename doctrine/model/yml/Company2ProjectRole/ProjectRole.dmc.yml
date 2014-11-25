@@ -1,0 +1,5 @@
+ProjectRole:
+    manyToMany:
+        companiesForWhichThisProjectRoleIsDefault:
+            targetEntity: Core\Model\Company
+            mappedBy: defaultRoles

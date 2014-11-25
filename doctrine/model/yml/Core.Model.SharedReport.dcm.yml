@@ -60,18 +60,3 @@ Core\Model\SharedReport:
             type: datetime
             nullable: false
             comment: ''
-    manyToOne:
-        user:
-            targetEntity: Core\Model\User
-            inversedBy: sharedReports
-            joinColumns:
-                user_id:
-                    referencedColumnName: id
-                    nullable: false
-        company:
-            targetEntity: Core\Model\Company
-            inversedBy: sharedReports
-            joinColumns:
-                company_id:
-                    referencedColumnName: id
-                    nullable: false

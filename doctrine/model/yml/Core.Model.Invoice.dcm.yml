@@ -27,7 +27,3 @@ Core\Model\Invoice:
             length: 500
             fixed: false
             comment: ''
-    oneToOne:
-        transaction:
-            targetEntity: Core\Model\Transaction
-            mappedBy: invoice

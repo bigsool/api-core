@@ -73,15 +73,6 @@ Core\Model\HostedProject:
             options:
                 default: '0'
             column: isSynchronizable
-    manyToOne:
-        creator:
-            targetEntity: Core\Model\User
-            inversedBy: hostedProjects
-            joinColumns:
-                creator:
-                    referencedColumnName: id
-                    nullable: false
-            cascade: ["persist"]
     oneToMany:
         userProjectRoles:
             targetEntity: Core\Model\UserProjectRole

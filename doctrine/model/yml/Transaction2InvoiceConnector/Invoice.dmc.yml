@@ -1,0 +1,5 @@
+Invoice:
+    oneToOne:
+        transaction:
+            targetEntity: Core\Model\Transaction
+            mappedBy: invoice
