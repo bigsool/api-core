@@ -1,0 +1,9 @@
+ DeviceClient:
+     manyToOne:
+            user:
+                targetEntity: Core\Model\User
+                inversedBy: deviceClients
+                joinColumns:
+                    user_id:
+                        referencedColumnName: id
+                        nullable: false

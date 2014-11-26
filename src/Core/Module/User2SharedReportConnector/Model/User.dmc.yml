@@ -1,0 +1,5 @@
+User:
+    oneToMany:
+         sharedReports:
+             targetEntity: Core\Model\SharedReport
+             mappedBy: user

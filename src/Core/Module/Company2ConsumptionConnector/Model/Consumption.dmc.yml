@@ -1,0 +1,9 @@
+Consumption:
+   manyToOne:
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: consumptions
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: false

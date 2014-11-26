@@ -1,0 +1,55 @@
+Core\Model\Storage:
+    type: entity
+    table: storage
+    indexes:
+        company_id:
+            columns:
+                - company_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        url:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        login:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        password:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        usedSpace:
+            type: bigint
+            nullable: false
+            unsigned: true
+            comment: ''
+            options:
+                default: '0'
+            column: usedSpace
+        lastUsedSpaceUpdate:
+            type: datetime
+            nullable: false
+            comment: ''
+            column: lastUsedSpaceUpdate
+        isOutOfQuota:
+            type: boolean
+            nullable: false
+            comment: ''
+            options:
+                default: '0'
+            column: isOutOfQuota

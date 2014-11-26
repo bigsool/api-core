@@ -1,0 +1,6 @@
+Company:
+     oneToOne:
+           storage:
+               targetEntity: Core\Model\Storage
+               mappedBy: company
+               cascade: ["persist"]

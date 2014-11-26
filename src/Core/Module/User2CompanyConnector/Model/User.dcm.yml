@@ -1,0 +1,18 @@
+User:
+    oneToOne:
+        ownedCompany:
+           targetEntity: Core\Model\Company
+           mappedBy: owner
+           cascade: ["persist"]
+        student:
+           targetEntity: Core\Model\Student
+           mappedBy: user
+    manyToOne:
+        company:
+           targetEntity: Core\Model\Company
+           inversedBy: users
+           joinColumns:
+               company_id:
+                   referencedColumnName: id
+                   nullable: true
+           cascade: ["persist"]

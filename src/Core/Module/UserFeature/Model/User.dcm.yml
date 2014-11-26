@@ -1,0 +1,82 @@
+Core\Model\User:
+    type: entity
+    table: user
+    indexes:
+        company_id:
+            columns:
+                - company_id
+    uniqueConstraints:
+        userEmail:
+            columns:
+                - email
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        email:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        password:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        name:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        firstname:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        lang:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+        salt:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: SALT
+        registerDate:
+            type: datetime
+            nullable: false
+            comment: ''
+            column: register_date
+        lastLoginDate:
+            type: datetime
+            nullable: true
+            comment: ''
+            column: last_login_date
+        knowsFrom:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: knowsFrom
+        confirmationKey:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: confirmationKey

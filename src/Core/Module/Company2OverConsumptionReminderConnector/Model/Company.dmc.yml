@@ -1,0 +1,12 @@
+Company:
+   oneToMany:
+          overconsumptionReminders:
+              targetEntity: Core\Model\OverconsumptionReminder
+              mappedBy: company
+    oneToOne:
+            currentOverconsumptionReminder:
+                targetEntity: Core\Model\OverconsumptionReminder
+                inversedBy: companyForWhichThisOverconsumptionReminderIsStillCurrent
+                joinColumns:
+                    overconsumptionReminder_id:
+                        referencedColumnName: id

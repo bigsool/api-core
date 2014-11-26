@@ -1,0 +1,8 @@
+Transaction:
+    oneToOne:
+            invoice:
+                targetEntity: Core\Model\Invoice
+                inversedBy: transaction
+                joinColumns:
+                    invoice_id:
+                        referencedColumnName: id
