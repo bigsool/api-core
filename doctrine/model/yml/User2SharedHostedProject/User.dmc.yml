@@ -1,6 +1,0 @@
-User:
-    oneToMany:
-            sharedHostedProjects:
-                targetEntity: Core\Model\SharedHostedProject
-                mappedBy: participant
-                cascade: ["persist"]

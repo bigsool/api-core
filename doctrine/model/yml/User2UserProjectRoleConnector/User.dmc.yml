@@ -1,5 +1,0 @@
-User:
-    oneToMany:
-             userProjectRoles:
-                 targetEntity: Core\Model\UserProjectRole
-                 mappedBy: user

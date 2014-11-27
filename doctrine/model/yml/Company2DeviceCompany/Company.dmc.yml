@@ -1,5 +1,0 @@
-Company:
-    oneToMany:
-        deviceCompanies:
-            targetEntity: Core\Model\DeviceCompany
-            mappedBy: company

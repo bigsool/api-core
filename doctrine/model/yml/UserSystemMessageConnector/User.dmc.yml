@@ -1,5 +1,0 @@
-User:
-    oneToMany:
-            systemMessages:
-                targetEntity: Core\Model\SystemMessage
-                mappedBy: user

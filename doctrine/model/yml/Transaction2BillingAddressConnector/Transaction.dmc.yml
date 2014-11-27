@@ -1,5 +1,0 @@
-Transaction:
-    oneToOne:
-        billingAddress:
-            targetEntity: Core\Model\BillingAddress
-            mappedBy: transaction

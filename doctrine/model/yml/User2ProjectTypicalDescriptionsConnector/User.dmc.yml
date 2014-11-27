@@ -1,5 +1,0 @@
-User:
-    oneToMany:
-          projectTypicalDescriptions:
-              targetEntity: Core\Model\ProjectTypicalDescriptions
-              mappedBy: creator

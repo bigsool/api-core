@@ -68,4 +68,7 @@ Core\Model\Payment:
             precision: 10
             scale: 0
             comment: ''
-
+    oneToOne:
+        transaction:
+            targetEntity: Core\Model\Transaction
+            mappedBy: payment

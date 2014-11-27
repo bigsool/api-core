@@ -1,9 +1,0 @@
-ShareReport:
-   manyToOne:
-        company:
-            targetEntity: Core\Model\Company
-            inversedBy: sharedReports
-            joinColumns:
-                company_id:
-                    referencedColumnName: id
-                    nullable: false

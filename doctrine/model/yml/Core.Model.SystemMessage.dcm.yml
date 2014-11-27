@@ -50,3 +50,11 @@ Core\Model\SystemMessage:
             nullable: true
             comment: ''
             column: expirationDate
+    manyToOne:
+        user:
+            targetEntity: Core\Model\User
+            inversedBy: systemMessages
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+                    nullable: false

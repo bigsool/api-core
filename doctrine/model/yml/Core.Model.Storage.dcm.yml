@@ -53,3 +53,11 @@ Core\Model\Storage:
             options:
                 default: '0'
             column: isOutOfQuota
+    oneToOne:
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: storage
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: true

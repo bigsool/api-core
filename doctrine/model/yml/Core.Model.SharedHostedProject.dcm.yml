@@ -13,6 +13,14 @@ Core\Model\SharedHostedProject:
             length: 255
             fixed: false
     manyToOne:
+        participant:
+            targetEntity: Core\Model\User
+            inversedBy: sharedHostedProjects
+            joinColumns:
+                participantId:
+                    referencedColumnName: id
+                    nullable: false
+            cascade: ["persist"]
         hostedProject:
             targetEntity: Core\Model\HostedProject
             inversedBy: sharedHostedProjects

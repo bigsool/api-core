@@ -1,9 +1,0 @@
-SystemMessage:
-  manyToOne:
-        user:
-            targetEntity: Core\Model\User
-            inversedBy: systemMessages
-            joinColumns:
-                user_id:
-                    referencedColumnName: id
-                    nullable: false

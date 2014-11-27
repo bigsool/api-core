@@ -30,3 +30,10 @@ Core\Model\DeviceCompany:
                 device_id:
                     referencedColumnName: id
                     nullable: false
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: deviceCompanies
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: false

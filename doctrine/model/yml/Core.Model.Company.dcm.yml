@@ -63,5 +63,53 @@ Core\Model\Company:
             nullable: true
             length: 255
             fixed: false
-
-
+    oneToOne:
+        currentOverconsumptionReminder:
+            targetEntity: Core\Model\OverconsumptionReminder
+            inversedBy: companyForWhichThisOverconsumptionReminderIsStillCurrent
+            joinColumns:
+                overconsumptionReminder_id:
+                    referencedColumnName: id
+        owner:
+            targetEntity: Core\Model\User
+            inversedBy: ownedCompany
+            cascade: ["persist"]
+            joinColumns:
+                owner_id:
+                    referencedColumnName: id
+                    nullable: true
+        storage:
+            targetEntity: Core\Model\Storage
+            mappedBy: company
+            cascade: ["persist"]
+    oneToMany:
+        overconsumptionReminders:
+            targetEntity: Core\Model\OverconsumptionReminder
+            mappedBy: company
+        deviceCompanies:
+            targetEntity: Core\Model\DeviceCompany
+            mappedBy: company
+        devicesUsedForTheFreetrial:
+            targetEntity: Core\Model\Device
+            mappedBy: freetrialCompany
+        users:
+            targetEntity: Core\Model\User
+            mappedBy: company
+            cascade: ["persist"]
+        sharedReports:
+            targetEntity: Core\Model\SharedReport
+            mappedBy: company
+    manyToMany:
+        defaultRoles:
+            targetEntity: Core\Model\ProjectRole
+            inversedBy: companiesForWhichThisProjectRoleIsDefault
+            joinTable:
+                name: companyProjectDefaultRole
+                joinColumns:
+                    -
+                        name: company_id
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    -
+                        name: role_id
+                        referencedColumnName: id
