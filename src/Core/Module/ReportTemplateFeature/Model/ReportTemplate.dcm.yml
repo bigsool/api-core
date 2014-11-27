@@ -1,10 +1,7 @@
-Core\Model\ReportTemplate:
+ReportTemplate:
     type: entity
     table: reportTemplate
-    indexes:
-        user_id:
-            columns:
-                - user_id
+
     id:
         id:
             type: integer

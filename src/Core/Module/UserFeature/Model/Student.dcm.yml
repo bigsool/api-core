@@ -1,4 +1,4 @@
-Core\Model\Student:
+Student:
     type: entity
     table: student
     uniqueConstraints:

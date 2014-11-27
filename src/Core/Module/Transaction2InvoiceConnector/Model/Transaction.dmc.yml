@@ -1,4 +1,8 @@
 Transaction:
+    indexes:
+       invoice_id:
+           columns:
+               - invoice_id
     oneToOne:
             invoice:
                 targetEntity: Core\Model\Invoice

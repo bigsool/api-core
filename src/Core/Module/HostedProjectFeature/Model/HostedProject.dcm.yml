@@ -1,10 +1,7 @@
-Core\Model\HostedProject:
+HostedProject:
     type: entity
     table: hostedProject
-    indexes:
-        creator:
-            columns:
-                - creator
+
     id:
         id:
             type: bigint

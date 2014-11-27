@@ -1,4 +1,8 @@
 HostedProject:
+    indexes:
+          creator:
+              columns:
+                  - creator
     manyToOne:
       creator:
           targetEntity: Core\Model\User

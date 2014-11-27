@@ -1,5 +1,0 @@
-User:
-   oneToMany:
-          reportTemplates:
-              targetEntity: Core\Model\ReportTemplate
-              mappedBy: user

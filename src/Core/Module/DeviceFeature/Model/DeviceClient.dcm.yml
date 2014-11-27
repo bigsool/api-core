@@ -1,4 +1,4 @@
-Core\Model\DeviceClient:
+DeviceClient:
     type: entity
     table: deviceClient
     indexes:

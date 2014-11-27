@@ -1,4 +1,8 @@
 Transaction:
+    indexes:
+       user_id:
+           columns:
+               - user_id
     manyToOne:
             user:
                 targetEntity: Core\Model\User

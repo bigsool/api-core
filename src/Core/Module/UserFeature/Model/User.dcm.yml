@@ -1,10 +1,6 @@
-Core\Model\User:
+User:
     type: entity
     table: user
-    indexes:
-        company_id:
-            columns:
-                - company_id
     uniqueConstraints:
         userEmail:
             columns:

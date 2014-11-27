@@ -1,4 +1,8 @@
 User:
+    indexes:
+        company_id:
+            columns:
+                - company_id
     oneToOne:
         ownedCompany:
            targetEntity: Core\Model\Company

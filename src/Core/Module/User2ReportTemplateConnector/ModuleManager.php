@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\User2SharedHostedProjectConnector;
+namespace Core\Module\User2ReportTemplateConnector;
 
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;

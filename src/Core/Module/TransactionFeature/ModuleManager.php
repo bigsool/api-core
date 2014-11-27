@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\User2HostedProjectConnector;
+namespace Core\Module\TransactionFeature;
 
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;

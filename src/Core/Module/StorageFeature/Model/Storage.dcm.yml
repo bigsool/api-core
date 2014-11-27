@@ -1,4 +1,4 @@
-Core\Model\Storage:
+Storage:
     type: entity
     table: storage
     indexes:

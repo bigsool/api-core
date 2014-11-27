@@ -118,12 +118,15 @@ class BuildEntitiesCommand extends Command {
         $ymls = [];
         foreach ($modulesManagers as $moduleManager) {
             $loadYml = function (\ReflectionClass $class) use (&$ymls, &$loadYml) {
-
+                var_dump('PPPPP');
+                var_dump($class);
                 if (($parentClass = $class->getParentClass()) && !$parentClass->isAbstract()) {
                     $loadYml($parentClass);
                 }
                 $moduleFolder = dirname($class->getFileName());
                 $modelFiles = glob($moduleFolder . '/Model/*.dcm.yml');
+                var_dump('modul folder : '.$moduleFolder);
+                var_dump($modelFiles);
                 foreach ($modelFiles as $modelFile) {
                     $ymls = array_merge_recursive($ymls, Yaml::parse($modelFile));
                 }

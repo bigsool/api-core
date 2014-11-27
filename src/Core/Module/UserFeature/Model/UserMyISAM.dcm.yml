@@ -1,4 +1,4 @@
-Core\Model\UserMyISAM:
+UserMyISAM:
     type: entity
     table: user_myisam
     options:

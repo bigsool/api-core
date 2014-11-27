@@ -1,4 +1,4 @@
-Core\Model\DeviceCompanyState:
+DeviceCompanyState:
     type: entity
     table: deviceCompanyState
     indexes:

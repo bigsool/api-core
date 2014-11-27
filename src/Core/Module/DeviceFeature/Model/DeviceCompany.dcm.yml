@@ -1,4 +1,4 @@
-Core\Model\DeviceCompany:
+DeviceCompany:
     type: entity
     table: deviceCompany
     indexes:
