@@ -1,0 +1,10 @@
+SharedProject:
+     manyToOne:
+            participant:
+                targetEntity: Core\Model\User
+                inversedBy: sharedHostedProjects
+                joinColumns:
+                    participantId:
+                        referencedColumnName: id
+                        nullable: false
+                cascade: ["persist"]

@@ -1,0 +1,5 @@
+Company:
+  oneToMany:
+        devicesUsedForTheFreetrial:
+            targetEntity: Core\Model\Device
+            mappedBy: freetrialCompany

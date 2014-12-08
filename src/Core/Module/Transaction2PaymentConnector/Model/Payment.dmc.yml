@@ -1,0 +1,9 @@
+Payment:
+  indexes:
+     payment_id:
+         columns:
+             - payment_id
+  oneToOne:
+        transaction:
+            targetEntity: Core\Model\Transaction
+            mappedBy: payment

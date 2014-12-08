@@ -1,0 +1,13 @@
+Transaction:
+    indexes:
+       user_id:
+           columns:
+               - user_id
+    manyToOne:
+            user:
+                targetEntity: Core\Model\User
+                inversedBy: transactions
+                joinColumns:
+                    user_id:
+                        referencedColumnName: id
+                        nullable: false

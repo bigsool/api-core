@@ -1,0 +1,5 @@
+Company:
+    oneToMany:
+          sharedReports:
+              targetEntity: Core\Model\SharedReport
+              mappedBy: company

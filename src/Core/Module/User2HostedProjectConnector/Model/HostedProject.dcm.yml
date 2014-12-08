@@ -1,0 +1,14 @@
+HostedProject:
+    indexes:
+          creator:
+              columns:
+                  - creator
+    manyToOne:
+      creator:
+          targetEntity: Core\Model\User
+          inversedBy: hostedProjects
+          joinColumns:
+              creator:
+                  referencedColumnName: id
+                  nullable: false
+          cascade: ["persist"]

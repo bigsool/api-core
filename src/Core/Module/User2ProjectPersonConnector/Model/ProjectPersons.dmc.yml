@@ -1,0 +1,9 @@
+ProjectPersons:
+    manyToOne:
+            creator:
+                targetEntity: Core\Model\User
+                inversedBy: projectTypicalDescriptions
+                joinColumns:
+                    creator:
+                        referencedColumnName: id
+                        nullable: false

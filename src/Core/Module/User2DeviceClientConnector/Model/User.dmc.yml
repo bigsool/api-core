@@ -1,0 +1,5 @@
+User:
+  oneToMany:
+      deviceClients:
+        targetEntity: Core\Model\DeviceClient
+        mappedBy: user

@@ -1,0 +1,10 @@
+User:
+   manyToOne:
+          creator:
+              targetEntity: Core\Model\User
+              inversedBy: hostedProjects
+              joinColumns:
+                  creator:
+                      referencedColumnName: id
+                      nullable: false
+              cascade: ["persist"]

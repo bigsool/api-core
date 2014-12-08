@@ -1,0 +1,12 @@
+BillingAddress:
+    id:
+        transaction:
+              associationKey: true
+    oneToOne:
+        transaction:
+            targetEntity: Core\Model\Transaction
+            inversedBy: billingAddress
+            joinColumns:
+                transaction_id:
+                    referencedColumnName: id
+                    nullable: false

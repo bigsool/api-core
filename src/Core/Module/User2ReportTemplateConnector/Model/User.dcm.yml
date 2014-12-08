@@ -1,0 +1,9 @@
+User:
+  indexes:
+      user_id:
+          columns:
+              - user_id
+      oneToMany:
+            reportTemplates:
+                targetEntity: Core\Model\ReportTemplate
+                mappedBy: user

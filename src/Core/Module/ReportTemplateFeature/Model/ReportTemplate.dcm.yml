@@ -1,0 +1,31 @@
+ReportTemplate:
+    type: entity
+    table: reportTemplate
+
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ''
+        data:
+            type: text
+            nullable: false
+            length: null
+            fixed: false
+            comment: ''
+        date:
+            type: datetime
+            nullable: false
+            comment: ''
+
