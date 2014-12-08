@@ -1,9 +1,0 @@
-DeviceCompany:
-       manyToOne:
-            company:
-                targetEntity: Core\Model\Company
-                inversedBy: deviceCompanies
-                joinColumns:
-                    company_id:
-                        referencedColumnName: id
-                        nullable: false

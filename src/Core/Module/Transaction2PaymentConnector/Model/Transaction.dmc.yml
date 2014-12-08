@@ -1,8 +1,0 @@
-Transaction:
-  oneToOne:
-        payment:
-            targetEntity: Core\Model\Payment
-            inversedBy: transaction
-            joinColumns:
-                payment_id:
-                    referencedColumnName: id

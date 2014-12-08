@@ -1,5 +1,0 @@
-User:
-   oneToMany:
-        projectPersons:
-            targetEntity: Core\Model\ProjectPerson
-            mappedBy: creator
