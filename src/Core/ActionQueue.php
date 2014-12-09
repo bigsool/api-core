@@ -15,4 +15,11 @@ class ActionQueue extends \SplQueue {
 
     }
 
+    /**
+     * @return Action|void
+     */
+    public function dequeue() {
+
+    }
+
 } 
