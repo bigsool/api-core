@@ -22,10 +22,13 @@ class ActionQueueTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testEnqueueFail () {
 
         (new ActionQueue())->enqueue('qwe');
-        
+
     }
 
 } 
