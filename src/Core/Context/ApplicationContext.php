@@ -104,6 +104,16 @@ class ApplicationContext {
     protected $sessionId;
 
     /**
+     * @var ActionQueue
+     */
+    protected $onSuccessActionQueue;
+
+    /**
+     * @var ActionQueue
+     */
+    protected $onErrorActionQueue;
+
+    /**
      *
      */
     protected function __construct () {
@@ -481,12 +491,24 @@ class ApplicationContext {
      */
     public function getOnSuccessActionQueue() {
 
+        if (!isset($this->onSuccessActionQueue)) {
+            $this->onSuccessActionQueue = new ActionQueue();
+        }
+
+        return $this->onSuccessActionQueue;
+
     }
 
     /**
      * @return ActionQueue
      */
     public function getOnErrorActionQueue() {
+
+        if (!isset($this->onErrorActionQueue)) {
+            $this->onErrorActionQueue = new ActionQueue();
+        }
+
+        return $this->onErrorActionQueue;
 
     }
 

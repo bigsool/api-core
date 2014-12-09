@@ -229,7 +229,7 @@ class ApplicationContextTest extends TestCase {
         $successQueue = $appCtx->getOnSuccessActionQueue();
         $this->assertInstanceOf('\Core\ActionQueue', $successQueue);
         $this->assertEmpty($successQueue);
-        $errorQueue = $appCtx->getOnSuccessActionQueue();
+        $errorQueue = $appCtx->getOnErrorActionQueue();
         $this->assertInstanceOf('\Core\ActionQueue', $errorQueue);
         $this->assertEmpty($errorQueue);
 
