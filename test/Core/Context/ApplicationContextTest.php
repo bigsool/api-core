@@ -223,4 +223,27 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testActionQueues() {
+
+        $appCtx = $this->getApplicationContext();
+        $successQueue = $appCtx->getOnSuccessActionQueue();
+        $this->assertInstanceOf('\Core\ActionQueue', $successQueue);
+        $this->assertEmpty($successQueue);
+        $errorQueue = $appCtx->getOnSuccessActionQueue();
+        $this->assertInstanceOf('\Core\ActionQueue', $errorQueue);
+        $this->assertEmpty($errorQueue);
+
+        $successQueue->enqueue($this->getMockAction());
+        $this->assertCount(1, $successQueue);
+        $this->assertEmpty($errorQueue);
+
+        $errorQueue->enqueue($this->getMockAction());
+        $successQueue->dequeue();
+        $this->assertCount(1, $errorQueue);
+        $this->assertEmpty($successQueue);
+
+    }
+
+
+
 } 
