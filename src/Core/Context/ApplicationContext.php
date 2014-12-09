@@ -5,6 +5,7 @@ namespace Core\Context;
 
 
 use Core\Action\Action;
+use Core\ActionQueue;
 use Core\Config\ConfigManager;
 use Core\Error\ErrorManager;
 use Core\Field\Field;
@@ -472,6 +473,20 @@ class ApplicationContext {
         }
 
         return $this->queryLogger;
+
+    }
+
+    /**
+     * @return ActionQueue
+     */
+    public function getOnSuccessActionQueue() {
+
+    }
+
+    /**
+     * @return ActionQueue
+     */
+    public function getOnErrorActionQueue() {
 
     }
 
