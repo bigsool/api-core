@@ -4,15 +4,17 @@
 namespace Core;
 
 
+use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\KeyPath;
+use Core\Field\KeyPath as FieldKeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager;
+use Core\Parameter\SafeParameter;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Doctrine\ORM\EntityManager;
@@ -159,27 +161,70 @@ class Application {
 
                 $traceLogger->trace('response created');
 
+                // handle queued actions before commit
+                $queue = $this->appCtx->getOnSuccessActionQueue();
+                while (!$queue->isEmpty()) {
+                    /**
+                     * @var Action $action
+                     */
+                    list($action, $params) = $queue->dequeue();
+                    $ctx = new ActionContext($reqCtx);
+                    $params = array_map(function ($value) {
+
+                        return new SafeParameter($value);
+
+                    }, $params);
+                    $ctx->setParams($params);
+                    $action->process($ctx);
+                }
+
+                $traceLogger->trace('success queue processed');
+
                 $this->entityManager->commit();
 
                 $traceLogger->trace('database committed');
 
             }
-            catch (FormattedError $e) {
-
-                $traceLogger->trace('FormattedError thrown');
-
-                $response = $rpcHandler->getErrorResponse($e);
-
-                $traceLogger->trace('response created');
-
-            }
             catch (\Exception $e) {
 
-                $traceLogger->trace('Exception thrown');
+                // handle queued actions before commit
+                $queue = $this->appCtx->getOnErrorActionQueue();
+                while (!$queue->isEmpty()) {
+                    /**
+                     * @var Action $action
+                     */
+                    list($action, $params) = $queue->dequeue();
+                    if (!isset($reqCtx) || !($reqCtx instanceof RequestContext)) {
+                        $reqCtx = new RequestContext();
+                    }
+                    $ctx = new ActionContext($reqCtx);
+                    $params = array_map(function ($value) {
 
-                $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
-                                                                              'message' => $e->getMessage()
-                                                                             ]));
+                        return new SafeParameter($value);
+
+                    }, $params);
+                    $ctx->setParams($params);
+                    $action->process($ctx);
+                }
+
+                $traceLogger->trace('error queue processed');
+
+                if ($e instanceof FormattedError) {
+
+                    $traceLogger->trace('FormattedError thrown');
+
+                    $response = $rpcHandler->getErrorResponse($e);
+
+                }
+                else {
+
+                    $traceLogger->trace('Exception thrown');
+
+                    $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
+                                                                                  'message' => $e->getMessage()
+                                                                                 ]));
+
+                }
 
                 $traceLogger->trace('response created');
             }
