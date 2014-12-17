@@ -7,7 +7,7 @@ namespace Core\Validation\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class TabValidator extends ConstraintValidator {
+class DictionaryValidator extends ConstraintValidator {
 
     /**
      * Checks if the passed value is valid.

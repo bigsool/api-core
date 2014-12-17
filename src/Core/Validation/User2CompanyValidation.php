@@ -3,7 +3,7 @@
 
 namespace Core\Validation;
 
-use Core\Validation\Constraints\Tab;
+use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class User2CompanyValidation extends AbstractConstraintsProvider {
@@ -16,13 +16,13 @@ class User2CompanyValidation extends AbstractConstraintsProvider {
         return [
             'user'    =>
                 [
-                    new Tab(),
+                    new Dictionary(),
                     new Assert\NotBlank()
                 ]
             ,
             'company' =>
                 [
-                    new Tab(),
+                    new Dictionary(),
                     new Assert\NotBlank()
                 ]
             ,
