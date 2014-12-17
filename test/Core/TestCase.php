@@ -20,6 +20,8 @@ use Core\Expression\Value;
 use Core\Field\Field;
 use Core\Field\KeyPath as FieldKeyPath;
 use Core\Filter\Filter;
+use Core\Module\MagicalModuleManager;
+use Core\Module\ModelAspect;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
 use Core\Parameter\Parameter;
@@ -82,6 +84,28 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockErrorManager () {
 
         return $this->getMockBuilder('\Core\Error\ErrorManager')
+                    ->disableOriginalConstructor()
+                    ->getMockForAbstractClass();
+
+    }
+
+    /**
+     * @return ModelAspect
+     */
+    public function getMockModelAspect () {
+
+        return $this->getMockBuilder('\Core\Module\ModelAspect')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return MagicalModuleManager
+     */
+    public function getMockMagicalModuleManager () {
+
+        return $this->getMockBuilder('\Core\Module\MagicalModuleManager')
                     ->disableOriginalConstructor()
                     ->getMockForAbstractClass();
 
