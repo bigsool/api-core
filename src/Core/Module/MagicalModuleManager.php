@@ -16,6 +16,13 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
+     * @return ModelAspect[]
+     */
+    protected function getAspects() {
+
+    }
+
+    /**
      * @param Parameter[] $params
      */
     protected function magicalCreate (array $params) {
