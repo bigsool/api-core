@@ -1,4 +1,4 @@
 <?php
 
-require __DIR__.'/vendor/bin/phpunit';
+require __DIR__.'/vendor/phpunit/phpunit/phpunit';
  
