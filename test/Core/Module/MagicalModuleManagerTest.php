@@ -257,13 +257,15 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager->loadActions($appCtx);
 
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('invalid email forced'),
+                                                         'password' => new UnsafeParameter('qwe')
+                                                        ]);
+
         /**
          * @var User $user
          */
-        $user = $this->magicalCreate($mgr, [
-            'email'    => new SafeParameter('invalid email forced'),
-            'password' => new UnsafeParameter('qwe')
-        ]);
+        $user = $this->magicalCreate($mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('invalid email forced', $user->getEmail());
