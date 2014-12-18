@@ -20,6 +20,7 @@ class ModelAspect {
         $this->constraints = $constraints;
         $this->keyPath = $keyPath;
     }
+
     /**
      * @return string
      */
@@ -35,7 +36,7 @@ class ModelAspect {
     }
 
     /**
-     * @return ConstraintsProvider[]
+     * @return ConstraintsProvider[]|null
      */
     public function getConstraints () {
         return $this->constraints;
