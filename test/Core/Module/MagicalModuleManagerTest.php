@@ -147,10 +147,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'   => 'User',
+            'model' => 'User',
         ]);
         $this->addAspect($mgr, [
-            'model'   => 'Company',
+            'model' => 'Company',
         ]);
 
     }
@@ -200,6 +200,9 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    /**
+     * @param MagicalModuleManager $mgr
+     */
     protected function addCompanyAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
@@ -211,6 +214,9 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    /**
+     * @param MagicalModuleManager $mgr
+     */
     protected function addStorageAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
@@ -286,7 +292,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         };
 
-        $mgr = $this->getMockMagicalModuleManager();
+        $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgr->method('getModuleName')->willReturn('ModuleName');
 
         $this->addUserAspect($mgr);
@@ -317,6 +323,54 @@ class MagicalModuleManagerTest extends TestCase {
 
         $action->process($this->getMockActionContext());
         $this->assertTrue($called);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDefineActionInvalidConstraint () {
+
+        self::resetApplicationContext();
+
+        $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgr->method('getModuleName')->willReturn('ModuleName');
+
+        $this->addUserAspect($mgr);
+        $this->defineAction($mgr, ['create',
+                                   ['param1' => [
+                                       ERR_INVALID_NAME,
+                                       [new NotBlank(), new Choice(['choices' => ['homme', 'femme']])]
+                                   ]
+                                   ],
+                                   $this->getCallable()
+        ]);
+
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn(['params1' => new UnsafeParameter('qwe')]);
+
+        ApplicationContext::getInstance()->getActions()[0]->process($this->getMockActionContext());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDefineActionInvalidConstraintOfModelAspect () {
+
+        self::resetApplicationContext();
+
+        $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgr->method('getModuleName')->willReturn('ModuleName');
+
+        $this->addUserAspect($mgr);
+        $this->addCompanyAspect($mgr);
+        $this->defineAction($mgr, ['create', [], $this->getCallable()]);
+
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn(['company' => new UnsafeParameter('qwe')]);
+
+        ApplicationContext::getInstance()->getActions()[0]->process($this->getMockActionContext());
 
     }
 
