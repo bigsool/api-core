@@ -463,6 +463,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
+        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
     }
 
