@@ -141,13 +141,18 @@ class MagicalModuleManagerTest extends TestCase {
 
         self::resetApplicationContext();
 
+        $this->getMockApplication();
+
         $appCtx = ApplicationContext::getInstance();
 
         $called = false;
 
-        $processFn = function (ActionContext $ctx) use (&$called) {
+        $self = $this;
 
-            $this->assertCount(0, $ctx->getParams());
+        $processFn = function (ActionContext $ctx) use (&$called, &$self) {
+
+            $params = $ctx->getParams();
+            $self->assertCount(0, $ctx->getParams());
             $called = true;
 
         };
@@ -163,7 +168,10 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('qwe', $action->getName());
         $this->assertSame('ModuleName', $action->getModule());
 
-        $action->process($this->getMockActionContext());
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn([]);
+
+        $action->process($actionContext);
         $this->assertTrue($called);
 
     }
@@ -216,19 +224,23 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('ModuleName', $action->getModule());
 
         $actionContext = $this->getMockActionContext();
-        $actionContext->setParams(['params0' => new UnsafeParameter('qwe'),
-                                   'params1' => new UnsafeParameter('homme'),
-                                   'params2' => new SafeParameter(new \DateTime())
-                                  ]);
+        $actionContext->method('getParams')->willReturn(['params0' => new UnsafeParameter('qwe'),
+                                                         'params1' => new UnsafeParameter('homme'),
+                                                         'params2' => new SafeParameter(new \DateTime())
+                                                        ]);
 
         $action->process($this->getMockActionContext());
         $this->assertTrue($called);
 
     }
 
-    public function testMagicalCreate () {
+    public function testSimpleMagicalCreate () {
 
         $mgr = $this->getMockMagicalModuleManager();
+
+        $app = $this->getMockApplication(['getModuleManagers']);
+        $app->method('getModuleManagers')
+            ->willReturn([]);
 
     }
 
