@@ -4,8 +4,8 @@
 namespace Core\Action;
 
 
-use Core\Context\ActionContext;
 use Closure;
+use Core\Context\ActionContext;
 
 class GenericAction implements Action {
 

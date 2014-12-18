@@ -223,7 +223,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testActionQueues() {
+    public function testActionQueues () {
 
         $appCtx = $this->getApplicationContext();
         $successQueue = $appCtx->getOnSuccessActionQueue();
@@ -244,6 +244,4 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-
-
-} 
+}

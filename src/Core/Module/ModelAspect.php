@@ -9,12 +9,34 @@ use Core\Validation\ConstraintsProvider;
 
 class ModelAspect {
 
+    /**
+     * @var string
+     */
     private $model;
+
+    /**
+     * @var string|null
+     */
     private $prefix;
+
+    /**
+     * @var ConstraintsProvider[]|null
+     */
     private $constraints;
+
+    /**
+     * @var AbstractKeyPath|null
+     */
     private $keyPath;
 
-    function __construct($model, $prefix, $constraints, $keyPath) {
+    /**
+     * @param string                $model
+     * @param string                $prefix
+     * @param ConstraintsProvider[] $constraints
+     * @param AbstractKeyPath       $keyPath
+     */
+    public function __construct ($model, $prefix, array $constraints, $keyPath) {
+
         $this->model = $model;
         $this->prefix = $prefix;
         $this->constraints = $constraints;
@@ -25,6 +47,7 @@ class ModelAspect {
      * @return string
      */
     public function getModel () {
+
         return $this->model;
     }
 
@@ -32,6 +55,7 @@ class ModelAspect {
      * @return string|null
      */
     public function getPrefix () {
+
         return $this->prefix;
     }
 
@@ -39,6 +63,7 @@ class ModelAspect {
      * @return ConstraintsProvider[]|null
      */
     public function getConstraints () {
+
         return $this->constraints;
     }
 
@@ -46,6 +71,7 @@ class ModelAspect {
      * @return AbstractKeyPath|null
      */
     public function getKeyPath () {
+
         return $this->keyPath;
     }
 

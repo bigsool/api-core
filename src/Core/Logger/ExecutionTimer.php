@@ -34,5 +34,5 @@ trait ExecutionTimer {
         return [$totalExecutionTime, $timeElapsedSincePreviousTrace];
 
     }
-    
+
 }

@@ -3,14 +3,14 @@
 namespace Core;
 
 // TODO: FIX SERVER[DOCUMENT_ROOT]
-require_once($_SERVER['DOCUMENT_ROOT']."/archiweb/include/lib/dispatcher/localDispatcher.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/archiweb/include/lib/dispatcher/localDispatcher.php");
 
 function callV1API ($service, $method, $params) {
 
     try {
         $result = callLocalAPI($service, $method, $params)->getResult();
     }
-    catch(\Exception $e) {
+    catch (\Exception $e) {
         throw $e;
     }
 

@@ -9,6 +9,15 @@ use Core\Action\Action;
 class ActionQueue extends \SplQueue {
 
     /**
+     * @return array
+     */
+    public function dequeue () {
+
+        return parent::dequeue();
+
+    }
+
+    /**
      * @param array $value
      */
     public function enqueue ($value) {
@@ -24,15 +33,6 @@ class ActionQueue extends \SplQueue {
         }
 
         parent::enqueue($value);
-
-    }
-
-    /**
-     * @return array
-     */
-    public function dequeue () {
-
-        return parent::dequeue();
 
     }
 
