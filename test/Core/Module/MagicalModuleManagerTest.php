@@ -7,6 +7,8 @@ namespace Core\Module;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Model\User;
+use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
+use Core\Module\StorageFeature\ModuleManager as StorageModuleManager;
 use Core\Module\UserFeature\Helper as UserHelper;
 use Core\Module\UserFeature\ModuleManager as UserModuleManager;
 use Core\Parameter\SafeParameter;
@@ -137,6 +139,7 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'      => 'storage',
             'keyPath'     => 'company.storage',
             'constraints' => [new Null()],
+            'actions'     => ['create' => NULL],
         ]);
 
     }
@@ -285,6 +288,48 @@ class MagicalModuleManagerTest extends TestCase {
         $method->setAccessible(true);
 
         return $method->invokeArgs($mgr, $args);
+
+    }
+
+    public function testComplexMagicalCreate () {
+
+        self::resetApplicationContext();
+
+        $mgr = $this->getMockMagicalModuleManager();
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $this->addUserAspect($mgr);
+        $this->addCompanyAspect($mgr);
+        $this->addStorageAspect($mgr);
+
+        $app = $this->getMockApplication();
+        $app->method('getModuleManagers')
+            ->willReturn([$storageModuleManager, $mgr, $companyModuleManager, $userModuleManager]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('qwe@qwe.com'),
+                                                         'password' => new UnsafeParameter('qwe'),
+                                                         'company'  => new UnsafeParameter(['name' => 'bigsool'])
+                                                        ]);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->magicalCreate($mgr, [$actionContext]);
+
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertSame('bigsool', $user->getCompany()->getName());
 
     }
 
