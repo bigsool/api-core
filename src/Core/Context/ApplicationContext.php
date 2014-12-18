@@ -114,6 +114,11 @@ class ApplicationContext {
     protected $onErrorActionQueue;
 
     /**
+     * @var string
+     */
+    protected $product;
+
+    /**
      *
      */
     protected function __construct () {
@@ -133,6 +138,22 @@ class ApplicationContext {
 
         return self::$instance;
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getProduct () {
+
+        return $this->product;
+    }
+
+    /**
+     * @param string $product
+     */
+    public function setProduct ($product) {
+
+        $this->product = $product;
     }
 
     /**
@@ -489,7 +510,7 @@ class ApplicationContext {
     /**
      * @return ActionQueue
      */
-    public function getOnSuccessActionQueue() {
+    public function getOnSuccessActionQueue () {
 
         if (!isset($this->onSuccessActionQueue)) {
             $this->onSuccessActionQueue = new ActionQueue();
@@ -502,7 +523,7 @@ class ApplicationContext {
     /**
      * @return ActionQueue
      */
-    public function getOnErrorActionQueue() {
+    public function getOnErrorActionQueue () {
 
         if (!isset($this->onErrorActionQueue)) {
             $this->onErrorActionQueue = new ActionQueue();

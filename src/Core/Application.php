@@ -48,6 +48,7 @@ class Application {
     protected function createApplicationContext () {
 
         $this->appCtx = ApplicationContext::getInstance();
+        $this->appCtx->setProduct(strstr(get_class($this), '\\', true));
 
         // This will log routes
         $this->appCtx->getConfigManager();
@@ -67,22 +68,6 @@ class Application {
         $entityManager->beginTransaction();
 
         return $this->appCtx;
-
-    }
-
-    /**
-     * @return ModuleManager[]
-     */
-    public function getModuleManagers () {
-
-        $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
-        $moduleManagers = [];
-        foreach ($modules as $moduleName) {
-            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
-            $moduleManagers[] = new $className;
-        }
-
-        return $moduleManagers;
 
     }
 
@@ -247,6 +232,22 @@ class Application {
             exit('Internal Server Error');
 
         }
+
+    }
+
+    /**
+     * @return ModuleManager[]
+     */
+    public function getModuleManagers () {
+
+        $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
+        $moduleManagers = [];
+        foreach ($modules as $moduleName) {
+            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+            $moduleManagers[] = new $className;
+        }
+
+        return $moduleManagers;
 
     }
 
