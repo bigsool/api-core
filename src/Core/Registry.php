@@ -145,7 +145,7 @@ class Registry implements EventSubscriber {
      *
      * @return string
      */
-    private static function realModelClassName ($entity) {
+    public static function realModelClassName ($entity) {
 
         $class = '\Core\Model\\' . $entity;
         if (!class_exists($class)) {

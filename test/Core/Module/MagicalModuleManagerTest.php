@@ -4,8 +4,14 @@
 namespace Core\Module;
 
 
+use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
+use Core\Parameter\SafeParameter;
+use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
 use Core\Validation\Constraints\Dictionary;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Null;
 
@@ -114,7 +120,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgr, [
             'model'       => 'Company',
             'prefix'      => 'company',
-            'keypath'     => 'company',
+            'keyPath'     => 'company',
             'constraints' => [new Dictionary(), new NotBlank()],
         ]);
 
@@ -125,9 +131,104 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgr, [
             'model'       => 'Storage',
             'prefix'      => 'storage',
-            'keypath'     => 'company.storage',
+            'keyPath'     => 'company.storage',
             'constraints' => [new Null()],
         ]);
+
+    }
+
+    public function testSimpleDefineAction () {
+
+        self::resetApplicationContext();
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $called = false;
+
+        $processFn = function (ActionContext $ctx) use (&$called) {
+
+            $this->assertCount(0, $ctx->getParams());
+            $called = true;
+
+        };
+
+        $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgr->method('getModuleName')->willReturn('ModuleName');
+        $this->addUserAspect($mgr);
+        $this->defineAction($mgr, ['qwe', [], $processFn]);
+
+        $actions = $appCtx->getActions();
+        $this->assertCount(1, $actions);
+        $action = $actions[0];
+        $this->assertSame('qwe', $action->getName());
+        $this->assertSame('ModuleName', $action->getModule());
+
+        $action->process($this->getMockActionContext());
+        $this->assertTrue($called);
+
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     */
+    protected function defineAction (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('defineAction');
+        $method->setAccessible(true);
+
+        $method->invokeArgs($mgr, $args);
+
+    }
+
+    public function testComplexDefineAction () {
+
+        self::resetApplicationContext();
+
+        $processFn = function (ActionContext $ctx) use (&$called) {
+
+            $this->assertCount(3, $ctx->getParams());
+            $called = true;
+
+        };
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $mgr->method('getModuleName')->willReturn('ModuleName');
+
+        $this->addUserAspect($mgr);
+        $this->defineAction($mgr, ['create',
+                                   ['param1' => [
+                                       ERR_INVALID_NAME,
+                                       [new NotBlank(), new Choice(['choices' => ['homme', 'femme']])]
+                                   ],
+                                    'param2' => [
+                                        ERR_INVALID_PARAM_EMAIL,
+                                        [new NotBlank(), new DateTime()]
+                                    ]
+                                   ],
+                                   $processFn
+        ]);
+
+        $actions = ApplicationContext::getInstance()->getActions();
+        $this->assertCount(1, $actions);
+        $action = $actions[0];
+        $this->assertSame('create', $action->getName());
+        $this->assertSame('ModuleName', $action->getModule());
+
+        $actionContext = $this->getMockActionContext();
+        $actionContext->setParams(['params0' => new UnsafeParameter('qwe'),
+                                   'params1' => new UnsafeParameter('homme'),
+                                   'params2' => new SafeParameter(new \DateTime())
+                                  ]);
+
+        $action->process($this->getMockActionContext());
+        $this->assertTrue($called);
+
+    }
+
+    public function testMagicalCreate () {
+
+        $mgr = $this->getMockMagicalModuleManager();
 
     }
 
