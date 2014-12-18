@@ -6,8 +6,12 @@ namespace Core\Module;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Model\User;
+use Core\Module\UserFeature\Helper as UserHelper;
+use Core\Module\UserFeature\ModuleManager as UserModuleManager;
 use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
+use Core\Registry;
 use Core\TestCase;
 use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -144,6 +148,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->getMockApplication();
 
         $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
 
         $called = false;
 
@@ -235,11 +240,49 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testSimpleMagicalCreate () {
 
+        self::resetApplicationContext();
+
         $mgr = $this->getMockMagicalModuleManager();
 
-        $app = $this->getMockApplication(['getModuleManagers']);
+        $userModuleManager = new UserModuleManager();
+
+        $this->addUserAspect($mgr);
+
+        $app = $this->getMockApplication();
         $app->method('getModuleManagers')
-            ->willReturn([]);
+            ->willReturn([$mgr, $userModuleManager]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->magicalCreate($mgr, [
+            'email'    => new SafeParameter('invalid email forced'),
+            'password' => new UnsafeParameter('qwe')
+        ]);
+
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     *
+     * @return mixed
+     */
+    protected function magicalCreate (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalCreate');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($mgr, $args);
 
     }
 

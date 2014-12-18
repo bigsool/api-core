@@ -115,14 +115,11 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param callable[] $fnToOverride
-     *
      * @return Application
      */
-    public function getMockApplication ($fnToOverride = []) {
+    public function getMockApplication () {
 
         return $this->getMockBuilder('\Core\Application')
-                    ->setMethods($fnToOverride)
                     ->getMock();
 
     }
