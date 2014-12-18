@@ -151,7 +151,6 @@ class MagicalModuleManagerTest extends TestCase {
 
         $processFn = function (ActionContext $ctx) use (&$called, &$self) {
 
-            $params = $ctx->getParams();
             $self->assertCount(0, $ctx->getParams());
             $called = true;
 
