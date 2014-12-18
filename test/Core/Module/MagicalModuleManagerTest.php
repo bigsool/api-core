@@ -212,7 +212,7 @@ class MagicalModuleManagerTest extends TestCase {
         $actions = ApplicationContext::getInstance()->getActions();
         $this->assertCount(1, $actions);
         $action = $actions[0];
-        $this->assertSame('qwe', $action->getName());
+        $this->assertSame('create', $action->getName());
         $this->assertSame('ModuleName', $action->getModule());
 
         $actionContext = $this->getMockActionContext();
