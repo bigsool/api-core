@@ -76,6 +76,85 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddAspectInvalidModel () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model' => 'qwe',
+        ]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddAspectInvalidPrefix () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model'  => 'User',
+            'prefix' => new \stdClass(),
+        ]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddAspectInvalidKeyPath () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model'   => 'User',
+            'keyPath' => 'qwe qwe',
+        ]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddAspectInvalidConstraints () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model'       => 'User',
+            'constraints' => [new \stdClass()],
+        ]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddAspectInvalidActions () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model'   => 'User',
+            'actions' => ['create' => new \stdClass()],
+        ]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddTwoMainEntitiesAspect () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->addAspect($mgr, [
+            'model'   => 'User',
+        ]);
+        $this->addAspect($mgr, [
+            'model'   => 'Company',
+        ]);
+
+    }
+
     public function testComplexAddAspect () {
 
         $mgr = $this->getMockMagicalModuleManager();
