@@ -101,12 +101,15 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param callable[] $fnToOverride
+     *
      * @return MagicalModuleManager
      */
-    public function getMockMagicalModuleManager () {
+    public function getMockMagicalModuleManager ($fnToOverride = []) {
 
         return $this->getMockBuilder('\Core\Module\MagicalModuleManager')
                     ->disableOriginalConstructor()
+                    ->setMethods($fnToOverride)
                     ->getMockForAbstractClass();
 
     }
