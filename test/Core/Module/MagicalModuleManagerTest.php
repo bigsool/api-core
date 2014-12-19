@@ -321,9 +321,9 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('create', $action->getName());
         $this->assertSame('ModuleName', $action->getModule());
 
-        $actionContext = $this->getActionContextWithParams(['params0' => new UnsafeParameter('qwe'),
-                                                            'params1' => new UnsafeParameter('homme'),
-                                                            'params2' => new SafeParameter(new \DateTime())
+        $actionContext = $this->getActionContextWithParams(['param0' => new UnsafeParameter('qwe'),
+                                                            'param1' => new UnsafeParameter('homme'),
+                                                            'param2' => new SafeParameter(new \DateTime())
                                                            ]);
 
         $action->process($actionContext);
