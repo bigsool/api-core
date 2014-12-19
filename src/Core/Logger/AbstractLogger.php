@@ -97,7 +97,7 @@ abstract class AbstractLogger implements LoggerInterface {
     public function getSessionId () {
 
         if (!isset($this->sessionId)) {
-            $this->getSessionId(uniqid());
+            $this->setSessionId(uniqid());
         }
 
         return $this->sessionId;
