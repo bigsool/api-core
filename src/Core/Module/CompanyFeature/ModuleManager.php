@@ -27,7 +27,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('Company', 'create', NULL, [
+        $context->addAction(new Action('Core\Company', 'create', NULL, [
             'name' => [ERR_INVALID_NAME, new CompanyValidation()],
         ], function (ActionContext $context) {
 

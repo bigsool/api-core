@@ -18,16 +18,16 @@ class RuntimeConstraintsProvider extends AbstractConstraintsProvider {
      */
     public function __construct (array $constraints = []) {
 
-     /*   foreach ($constraints as $field => $constraintArray) {
+          foreach ($constraints as $field => $constraintArray) {
             if (!is_string($field) || !is_array($constraintArray)) {
                 throw new \RuntimeException('invalid constraint type');
-            }*/
-            foreach ($constraints as $constraint) {
+            }
+            foreach ($constraintArray as $constraint) {
                 if (!($constraint instanceof Constraint)) {
                     throw new \RuntimeException('invalid constraint type');
                 }
             }
-        //}
+        }
 
         $this->constraints = $constraints;
 

@@ -8,6 +8,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\RequestContext;
 use Core\Expression\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Parameter\Parameter;
@@ -99,7 +100,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
 
             $result = $createAction->process($ctx);
-            if ($this->isMainEntity(modelAspect)) {
+            if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
             }
 
@@ -107,9 +108,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $mainEntityName = $this->getMainEntityName();
 
-        $qryCtx = new FindQueryContext('User', $appCtx->getRequestContext());
+        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
 
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
 
         foreach($this->modelAspects as $modelAspect) {
 
@@ -119,12 +120,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        $findQueryContext = new FindQueryContext($mainEntityName,$qryCtx);
-        $findQueryContext->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
+        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
 
         $registry = $appCtx->getNewRegistry();
 
-        $result = $registry->find($findQueryContext);
+        $result = $registry->find($qryCtx);
 
         return $result;
 
@@ -140,7 +140,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     private function isMainEntity ($modelAspect) {
-        return !$modelAspect->getPath();
+        return !$modelAspect->getKeyPath();
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     protected function defineAction ($name, $params, callable $processFn) {
 
         foreach ($params as $key => $value) {
-            $params[$key][1] = new RuntimeConstraintsProvider($value[1]);
+            $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
         }
 
         $module = $this->getModuleName();
