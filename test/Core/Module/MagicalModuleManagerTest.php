@@ -396,10 +396,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager->loadActions($appCtx);
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('invalid email forced'),
-                                                         'password' => new UnsafeParameter('qwe')
-                                                        ]);
+        $actionContext = $this->getActionContextWithParams(
+            ['email'    => new SafeParameter('qwe@qwe.com'),
+             'password' => new UnsafeParameter('qwe')
+            ]);
 
         /**
          * @var User $user
@@ -409,6 +409,25 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return ActionContext
+     */
+    protected function getActionContextWithParams (array $params) {
+
+        $map = [];
+        foreach ($params as $field => $value) {
+            $map[] = [$field, $value];
+        }
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn($params);
+        $actionContext->method('getParam')->will($this->returnValueMap($map));
+
+        return $actionContext;
 
     }
 
@@ -451,11 +470,12 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $companyModuleManager->loadActions($appCtx);
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('qwe@qwe.com'),
-                                                         'password' => new UnsafeParameter('qwe'),
-                                                         'company'  => new UnsafeParameter(['name' => 'bigsool'])
-                                                        ]);
+        $actionContext = $this->$this->getActionContextWithParams(
+            [
+                'email'    => new SafeParameter('qwe@qwe.com'),
+                'password' => new UnsafeParameter('qwe'),
+                'company'  => new UnsafeParameter(['name' => 'bigsool'])
+            ]);
 
         /**
          * @var User $user
@@ -513,11 +533,11 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $companyModuleManager->loadActions($appCtx);
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('qwe@qwe.com'),
-                                                         'password' => new UnsafeParameter('qwe'),
-                                                         'company'  => new UnsafeParameter(['name' => 'bigsool'])
-                                                        ]);
+        $actionContext = $this->$this->getActionContextWithParams(
+            ['email'    => new SafeParameter('qwe@qwe.com'),
+             'password' => new UnsafeParameter('qwe'),
+             'company'  => new UnsafeParameter(['name' => 'bigsool'])
+            ]);
 
         /**
          * @var User $user
