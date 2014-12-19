@@ -6,6 +6,7 @@ namespace Core\Module;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Context\RequestContext;
 use Core\Model\User;
 use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
 use Core\Module\StorageFeature\ModuleManager as StorageModuleManager;
@@ -395,6 +396,7 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => new SafeParameter('qwe@qwe.com'),
@@ -419,14 +421,8 @@ class MagicalModuleManagerTest extends TestCase {
      */
     protected function getActionContextWithParams (array $params) {
 
-        $map = [];
-        foreach ($params as $field => $value) {
-            $map[] = [$field, $value];
-        }
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn($params);
-        $actionContext->method('getParam')->will($this->returnValueMap($map));
-
+        $actionContext = new ActionContext(new RequestContext());
+        $actionContext->setParams($params);
         return $actionContext;
 
     }
@@ -468,9 +464,11 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
 
-        $actionContext = $this->$this->getActionContextWithParams(
+        $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe.com'),
                 'password' => new UnsafeParameter('qwe'),
@@ -531,9 +529,12 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
 
-        $actionContext = $this->$this->getActionContextWithParams(
+
+        $actionContext = $this->getActionContextWithParams(
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'password' => new UnsafeParameter('qwe'),
              'company'  => new UnsafeParameter(['name' => 'bigsool'])
