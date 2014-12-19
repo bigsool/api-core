@@ -101,6 +101,16 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return Auth
+     */
+    public function getMockAuth () {
+
+        return $this->getMockBuilder('\Core\Auth')
+                    ->getMock();
+
+    }
+
+    /**
      * @param callable[] $fnToOverride
      *
      * @return MagicalModuleManager

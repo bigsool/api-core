@@ -34,12 +34,19 @@ class FormattedErrorTest extends TestCase {
 
         $this->childErrors [] = new FormattedError($error);
 
-        $error = $this->getMockError();
+        /*$error = $this->getMockError();
         $error->method('getFrMessage')->willReturn('Mot de passe invalide');
         $error->method('getEnMessage')->willReturn('Password invalid');
         $error->method('getCode')->willReturn(202);
         $error->method('getParentCode')->willReturn(200);
-        $error->method('getField')->willReturn("password");
+        $error->method('getField')->willReturn("password");*/
+        $error = [
+            'frMessage' => 'Mot de passe invalide',
+            'enMessage' => 'Password invalid',
+            'code' => 202,
+            'parentCode' => 200,
+            'field' => 'password',
+        ];
 
         $this->childErrors [] = new FormattedError($error);
 
@@ -78,6 +85,9 @@ class FormattedErrorTest extends TestCase {
         $formattedError = new FormattedError($error);
         $this->assertEquals('login fail', $formattedError->getMessage());
 
+        $formattedError = new FormattedError(['code'=>0,'message'=>'qwe']);
+        $this->assertEquals('qwe', $formattedError->getMessage());
+
     }
 
     public function testToString () {
@@ -104,6 +114,33 @@ class FormattedErrorTest extends TestCase {
         ];
 
         $this->assertEquals($this->formattedError, json_encode($tab));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testErrorCodeNotFound () {
+
+        new FormattedError([]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testErrorMessageNotFound () {
+
+        new FormattedError(['code'=>0]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidConstructor () {
+
+        new FormattedError(201);
 
     }
 

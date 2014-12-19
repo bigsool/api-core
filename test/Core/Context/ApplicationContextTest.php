@@ -19,6 +19,25 @@ class ApplicationContextTest extends TestCase {
 
     }
 
+    public function testProduct () {
+
+        $ctx = $this->getApplicationContext();
+
+        $ctx->setProduct('Archipad');
+        $this->assertSame('Archipad', $ctx->getProduct());
+
+    }
+
+    public function testLogger () {
+
+        $ctx = $this->getApplicationContext();
+
+        $logger = $ctx->getLogger();
+        $this->assertInstanceOf('\Core\Logger\Logger', $logger);
+        $this->assertSame($logger, $ctx->getLogger());
+
+    }
+
     public function testFilters () {
 
         $ctx = $this->getApplicationContext();
