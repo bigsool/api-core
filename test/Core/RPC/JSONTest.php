@@ -4,6 +4,8 @@
 namespace Core\RPC;
 
 
+use Core\Context\RequestContext;
+use Core\Serializer;
 use Core\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -47,6 +49,9 @@ class JSONTest extends TestCase {
         $this->assertSame('fr', $JSON->getLocale());
         $this->assertSame($entity, $JSON->getReturnedRootEntity());
         $this->assertSame($fields, $JSON->getReturnedFields());
+
+        $response = $JSON->getSuccessResponse(new Serializer(new RequestContext()), 'qwe');
+        $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
     }
 
