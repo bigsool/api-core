@@ -467,4 +467,67 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    public function testMagicalCreateWithTwoMagicalModuleManager () {
+
+        self::resetApplicationContext();
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $this->addUserAspect($mgrUser);
+        $this->addCompanyAspect($mgrUser);
+
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany->method('getModuleName')->willReturn('CompanyModule');
+        $this->addAspect($mgrCompany, [
+            'model' => 'Company',
+        ]);
+        $self = $this;
+        $called = false;
+        $this->defineAction($mgrCompany, ['create',
+                                          [],
+                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
+
+                                              $params = $context->getParams();
+                                              $self->assertCount(1, $params);
+                                              $self->assertArrayHasKey('name', $params);
+                                              $self->assertSame('bigsool', $params['name']->getValue());
+                                              $called = true;
+
+                                              return $self->magicalCreate($mgrCompany, [$context]);
+
+                                          }
+        ]);
+
+        $app = $this->getMockApplication();
+        $app->method('getModuleManagers')
+            ->willReturn([$mgrCompany, $companyModuleManager, $userModuleManager, $mgrUser]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+
+        $actionContext = $this->getMockActionContext();
+        $actionContext->method('getParams')->willReturn(['email'    => new SafeParameter('qwe@qwe.com'),
+                                                         'password' => new UnsafeParameter('qwe'),
+                                                         'company'  => new UnsafeParameter(['name' => 'bigsool'])
+                                                        ]);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->magicalCreate($mgrUser, [$actionContext]);
+
+        $this->assertTrue($called);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertSame('bigsool', $user->getCompany()->getName());
+        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+
+    }
+
 } 
