@@ -21,7 +21,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('User', 'create', NULL, [
+        $context->addAction(new Action('Core\User', 'create', NULL, [
             'name'      => [ERR_INVALID_NAME, new UserValidation()],
             'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
             'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],

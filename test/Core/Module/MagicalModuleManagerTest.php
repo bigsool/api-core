@@ -285,9 +285,12 @@ class MagicalModuleManagerTest extends TestCase {
 
         self::resetApplicationContext();
 
-        $processFn = function (ActionContext $ctx) use (&$called) {
+        $this->getMockApplication();
 
-            $this->assertCount(3, $ctx->getParams());
+        $self = $this;
+        $processFn = function (ActionContext $ctx) use (&$called, &$self) {
+
+            $self->assertCount(3, $ctx->getParams());
             $called = true;
 
         };
