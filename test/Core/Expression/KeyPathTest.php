@@ -23,6 +23,15 @@ class KeyPathTest extends TestCase {
     /**
      * @expectedException \Exception
      */
+    public function testField () {
+
+        (new KeyPath('user.company.storage'))->getField();
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
     public function testInvalidFormat () {
 
         new KeyPath('qwe/qwe');
