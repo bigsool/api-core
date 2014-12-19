@@ -4,7 +4,6 @@
 namespace Core\Module;
 
 
-use Core\Application;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -332,6 +331,41 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     /**
+     * @param array $params
+     *
+     * @return ActionContext
+     */
+    protected function getActionContextWithParams (array $params) {
+
+        $actionContext = new ActionContext(new RequestContext());
+        $actionContext->setParams($params);
+
+        return $actionContext;
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidParameterDefineAction () {
+
+        self::resetApplicationContext();
+
+        $this->getMockApplication();
+
+        $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgr->method('getModuleName')->willReturn('ModuleName');
+
+        $this->addUserAspect($mgr);
+        $this->defineAction($mgr, ['create', ['qwe' => [ERR_INVALID_NAME, [new NotBlank()]]], $this->getCallable()]);
+
+        $actionContext = $this->getActionContextWithParams(['aze' => new UnsafeParameter('qwe')]);
+
+        ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
+
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testDefineActionInvalidConstraint () {
@@ -353,7 +387,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(['params1' => new UnsafeParameter('qwe')]);
 
-        ApplicationContext::getInstance()->getActions()[0]->process($this->getMockActionContext());
+        ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
 
     }
 
@@ -411,20 +445,6 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-
-    }
-
-    /**
-     * @param array $params
-     *
-     * @return ActionContext
-     */
-    protected function getActionContextWithParams (array $params) {
-
-        $actionContext = new ActionContext(new RequestContext());
-        $actionContext->setParams($params);
-
-        return $actionContext;
 
     }
 
@@ -556,6 +576,12 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    protected function tearDown () {
+
+        $this->rollBackDatabase();
+
+    }
+
     protected function rollBackDatabase () {
 
         $appCtx = ApplicationContext::getInstance();
@@ -569,12 +595,6 @@ class MagicalModuleManagerTest extends TestCase {
         if (isset($em)) {
             $em->rollback();
         }
-
-    }
-
-    protected function tearDown () {
-
-        $this->rollBackDatabase();
 
     }
 
