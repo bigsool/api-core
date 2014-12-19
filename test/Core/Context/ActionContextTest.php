@@ -12,15 +12,18 @@ class ActionContextTest extends TestCase {
 
     public function testRequestContext () {
 
+        $auth = $this->getMockAuth();
         $params = ['a' => 0, 'b', new \stdClass()];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn($params);
+        $reqCtx->method('getAuth')->willReturn($auth);
         $ctx = new ActionContext($reqCtx);
 
         $this->assertSame($reqCtx, $ctx->getParentContext());
         $this->assertSame($reqCtx, $ctx->getRequestContext());
         $this->assertInternalType('array', $ctx->getParams());
         $this->assertCount(count($params), $ctx->getParams());
+        $this->assertSame($auth, $ctx->getAuth());
         foreach ($ctx->getParams() as $key => $value) {
             $this->assertArrayHasKey($key, $params);
             $this->assertInstanceOf('\Core\Parameter\UnsafeParameter', $value);
@@ -31,13 +34,16 @@ class ActionContextTest extends TestCase {
 
     public function testActionContext () {
 
+        $auth = $this->getMockAuth();
         $params = ['a' => new UnsafeParameter(0), new SafeParameter('b'), new UnsafeParameter(new \stdClass())];
         $actCtx = $this->getMockActionContext();
         $actCtx->method('getParams')->willReturn($params);
+        $actCtx->method('getAuth')->willReturn($auth);
         $ctx = new ActionContext($actCtx);
 
         $this->assertSame($actCtx, $ctx->getParentContext());
         $this->assertSame($params, $ctx->getParams());
+        $this->assertSame($auth, $ctx->getAuth());
 
     }
 
