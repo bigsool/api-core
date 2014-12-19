@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Application;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -17,6 +18,7 @@ use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\TestCase;
 use Core\Validation\Constraints\Dictionary;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -319,13 +321,12 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('create', $action->getName());
         $this->assertSame('ModuleName', $action->getModule());
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['params0' => new UnsafeParameter('qwe'),
-                                                         'params1' => new UnsafeParameter('homme'),
-                                                         'params2' => new SafeParameter(new \DateTime())
-                                                        ]);
+        $actionContext = $this->getActionContextWithParams(['params0' => new UnsafeParameter('qwe'),
+                                                            'params1' => new UnsafeParameter('homme'),
+                                                            'params2' => new SafeParameter(new \DateTime())
+                                                           ]);
 
-        $action->process($this->getMockActionContext());
+        $action->process($actionContext);
         $this->assertTrue($called);
 
     }
@@ -350,8 +351,7 @@ class MagicalModuleManagerTest extends TestCase {
                                    $this->getCallable()
         ]);
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['params1' => new UnsafeParameter('qwe')]);
+        $actionContext = $this->getActionContextWithParams(['params1' => new UnsafeParameter('qwe')]);
 
         ApplicationContext::getInstance()->getActions()[0]->process($this->getMockActionContext());
 
@@ -423,6 +423,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = new ActionContext(new RequestContext());
         $actionContext->setParams($params);
+
         return $actionContext;
 
     }
@@ -491,6 +492,7 @@ class MagicalModuleManagerTest extends TestCase {
     public function testMagicalCreateWithTwoMagicalModuleManager () {
 
         self::resetApplicationContext();
+
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
 
@@ -551,6 +553,28 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+
+    }
+
+    protected function rollBackDatabase () {
+
+        $appCtx = ApplicationContext::getInstance();
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+
+        /**
+         * @var EntityManager $em
+         */
+        $em = $prop->getValue($appCtx);
+        if (isset($em)) {
+            $em->rollback();
+        }
+
+    }
+
+    protected function tearDown () {
+
+        $this->rollBackDatabase();
 
     }
 
