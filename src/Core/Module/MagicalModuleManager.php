@@ -9,9 +9,10 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Expression\KeyPath;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Parameter\Parameter;
+use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Symfony\Component\Validator\Validation;
 
@@ -33,6 +34,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $model = null;
         if (isset($config['model'])) {
             $model = $config['model'];
+            Registry::realModelClassName($model);
             if (!is_string($model)) throw new \RuntimeException('invalid model');
         }
 
@@ -85,7 +87,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->modelAspects as $modelAspect) {
 
-            $param = $modelAspect->getPrefix() ? $params[$modelAspect->getPrefix()] : [];
+            $param = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
             Validation::createValidator()->validate($param, $modelAspect->getConstraints());
 
             $appCtx = ApplicationContext::getInstance();
@@ -95,7 +97,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             try {
                 $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[],$params);
             }
-            catch (\Exception $e) {
+            catch (\RuntimeException $e) {
                 $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[],$params);
             }
 
@@ -124,9 +126,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $registry = $appCtx->getNewRegistry();
 
-        $result = $registry->find($qryCtx);
+        $result = $registry->find($qryCtx,false);
 
-        return $result;
+        return $result[0];
 
     }
 
