@@ -371,13 +371,22 @@ class ApplicationContext {
     /**
      * @param Action $action
      */
-    public function addAction (Action $action) {
+    public function addAction (Action $theAction) {
 
-        if (!in_array($action, $this->getActions(), true)) {
-            $this->actions[] = $action;
+        $i = 0;
+        foreach ($this->actions as $action) {
+            if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
+                $this->actions[$i] = $theAction;
+                return;
+            }
+            ++$i;
+        }
+        if (!in_array($theAction, $this->getActions(), true)) {
+            $this->actions[] = $theAction;
         }
 
     }
+
 
     /**
      * @return Action[]

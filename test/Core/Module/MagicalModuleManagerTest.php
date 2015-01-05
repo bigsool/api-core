@@ -22,6 +22,8 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Null;
+use Core\Validation\CompanyValidation;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class MagicalModuleManagerTest extends TestCase {
 
@@ -408,7 +410,7 @@ class MagicalModuleManagerTest extends TestCase {
         $actionContext = $this->getMockActionContext();
         $actionContext->method('getParams')->willReturn(['company' => new UnsafeParameter('qwe')]);
 
-        ApplicationContext::getInstance()->getActions()[0]->process($this->getMockActionContext());
+        ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
 
     }
 
@@ -441,9 +443,8 @@ class MagicalModuleManagerTest extends TestCase {
          * @var User $user
          */
         $user = $this->magicalCreate($mgr, [$actionContext]);
-
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
 
     }
@@ -477,6 +478,26 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addCompanyAspect($mgr);
         $this->addStorageAspect($mgr);
 
+        /* TODO: must be done in a YML
+        $mgr->addRelationship([
+            'model1' => 'user',
+            'attribute' => 'ownedCompany',
+            'model2' => 'company'
+        ]);
+
+        $mgr->addRelationship([
+          'model1' => 'user',
+          'attribute' => 'company',
+          'model2' => 'company'
+        ]);
+
+        $mgr->addRelationship([
+            'model1' => 'company',
+            'attribute' => 'owner',
+            'model2' => 'user'
+        ]);
+		*/
+
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
             ->willReturn([$storageModuleManager, $mgr, $companyModuleManager, $userModuleManager]);
@@ -488,10 +509,13 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe.com'),
+                'name' => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
                 'company'  => new UnsafeParameter(['name' => 'bigsool'])
             ]);
@@ -501,7 +525,7 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
         $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
@@ -521,27 +545,34 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addUserAspect($mgrUser);
         $this->addCompanyAspect($mgrUser);
 
+		/* TODO: must be done in an YML
+        $mgrUser->addRelationship([
+                                  'model1' => 'user',
+                                  'attribute' => 'ownedCompany',
+                                  'model2' => 'company'
+                              ]);
+
+        $mgrUser->addRelationship([
+                                  'model1' => 'user',
+                                  'attribute' => 'company',
+                                  'model2' => 'company'
+                              ]);
+
+        $mgrUser->addRelationship([
+                                  'model1' => 'company',
+                                  'attribute' => 'owner',
+                                  'model2' => 'user'
+                              ]);
+		*/
+
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrCompany->method('getModuleName')->willReturn('CompanyModule');
+        $mgrCompany->method('getModuleName')->willReturn('Core\Company');
         $this->addAspect($mgrCompany, [
             'model' => 'Company',
         ]);
         $self = $this;
         $called = false;
-        $this->defineAction($mgrCompany, ['create',
-                                          [],
-                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
 
-                                              $params = $context->getParams();
-                                              $self->assertCount(1, $params);
-                                              $self->assertArrayHasKey('name', $params);
-                                              $self->assertSame('bigsool', $params['name']->getValue());
-                                              $called = true;
-
-                                              return $self->magicalCreate($mgrCompany, [$context]);
-
-                                          }
-        ]);
 
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
@@ -558,9 +589,47 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => new SafeParameter('qwe@qwe.com'),
+             'name' => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
              'company'  => new UnsafeParameter(['name' => 'bigsool'])
             ]);
+
+        $this->defineAction($mgrCompany, ['create',
+                                          [],
+                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
+
+                                              $params = $context->getParams();
+                                              $self->assertCount(1, $params);
+                                              $self->assertArrayHasKey('name', $params);
+                                              $self->assertSame('bigsool', $params['name']->getValue());
+                                              $called = true;
+
+                                              return $self->magicalCreate($mgrCompany, [$context]);
+
+                                          }
+        ]);
+        /*
+        $this->defineAction($mgrCompany, ['create',
+                                          ['name' => [ERR_INVALID_NAME,  [
+                                              new Assert\NotBlank(),
+                                          ]]],
+                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
+
+                                              $params = $context->getParams();
+                                              //$self->assertCount(1, $params);
+                                              $self->assertArrayHasKey('company', $params);
+                                              $self->assertSame('bigsool', $params['company']['name']->getValue());
+                                              $called = true;
+
+                                              $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
+                                              $params = $context->getVerifiedParams();
+                                              $helper->createCompany($context, $params);
+
+                                              return $context['company'];
+
+                                          }
+        ]);
+        */
 
         /**
          * @var User $user
@@ -568,8 +637,8 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgrUser, [$actionContext]);
 
         $this->assertTrue($called);
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
+        $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());

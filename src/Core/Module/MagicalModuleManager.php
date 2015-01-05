@@ -9,15 +9,22 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Expression\KeyPath;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Parameter\Parameter;
+use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Symfony\Component\Validator\Validation;
 
 abstract class MagicalModuleManager extends ModuleManager {
 
     private $modelAspects = [];
+    private $models = [];
+    private $relationships = [];
+
+    public function addRelationship (array $relationship) {
+        $this->relationships[] = $relationship;
+    }
 
     /**
      * @param array $config
@@ -33,6 +40,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $model = null;
         if (isset($config['model'])) {
             $model = $config['model'];
+            Registry::realModelClassName($model);
             if (!is_string($model)) throw new \RuntimeException('invalid model');
         }
 
@@ -41,7 +49,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             $constraints = $config['constraints'];
             if (!is_array($config['constraints'])) throw new \RuntimeException('invalid constraints');
             foreach ($constraints as $constraint) {
-                $fgfgd = get_class($constraint);
                 if (!is_a($constraint, 'Symfony\Component\Validator\Constraint') && !is_a($constraint , 'Core\Validation\Constraints\Dictionary')) {
                     throw new \RuntimeException('invalid constraints');
                 }
@@ -85,7 +92,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->modelAspects as $modelAspect) {
 
-            $param = $modelAspect->getPrefix() ? $params[$modelAspect->getPrefix()] : [];
+            $ctxCopy = $ctx;
+
+            $param = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
             Validation::createValidator()->validate($param, $modelAspect->getConstraints());
 
             $appCtx = ApplicationContext::getInstance();
@@ -93,17 +102,33 @@ abstract class MagicalModuleManager extends ModuleManager {
             $product = $appCtx->getProduct();
 
             try {
-                $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[],$params);
+                $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[]);
             }
-            catch (\Exception $e) {
-                $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[],$params);
+            catch (\RuntimeException $e) {
+                $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[]);
             }
-
-            $result = $createAction->process($ctx);
+            if ($param) {
+                $ctxCopy->setParams($param);
+            }
+            $result = $createAction->process($ctxCopy);
+            $this->models[strtolower($modelAspect->getModel())] = $result;
             if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
             }
 
+        }
+
+        foreach ($this->relationships as $relationship) {
+            $fn = 'set'.ucfirst($relationship['attribute']);
+            $this->models[$relationship['model1']]->$fn($this->models[$relationship['model2']]);
+        }
+
+
+        $registry = $appCtx->getNewRegistry();
+
+
+        foreach ($this->models as $model) {
+            $registry->save($model);
         }
 
         $mainEntityName = $this->getMainEntityName();
@@ -122,11 +147,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
 
-        $registry = $appCtx->getNewRegistry();
 
-        $result = $registry->find($qryCtx);
+        $result = $registry->find($qryCtx,false);
 
-        return $result;
+        return $result[0];
 
     }
 
