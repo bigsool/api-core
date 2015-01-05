@@ -14,6 +14,7 @@ use Core\Filter\StringFilter;
 use Core\Parameter\Parameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Validator\Validation;
 
 abstract class MagicalModuleManager extends ModuleManager {
@@ -97,11 +98,12 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     protected function magicalCreate (ActionContext $ctx) {
 
-        $params = $ctx->getParams();
 
         $appCtx = ApplicationContext::getInstance();
 
         foreach ($this->modelAspects as $modelAspect) {
+
+            $params = $ctx->getParams();
 
             $actions = $modelAspect->getActions();
             $createAction = array_key_exists('create',$actions) ? $actions['create'] : 'none';
@@ -110,8 +112,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $ctxCopy = $ctx;
 
-            $param = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
-            Validation::createValidator()->validate($param, $modelAspect->getConstraints());
+            $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
+            Validation::createValidator()->validate($params, $modelAspect->getConstraints());
 
             if ($createAction == 'none') {
 
@@ -125,12 +127,13 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
 
-            if ($param) {
-                $ctxCopy->setParams($param);
+            if ($params) {
+                $params = $params->getValue();
+                $ctxCopy->setParams($params);
             }
 
             $result = $createAction->process($ctxCopy);
-            $this->models[strtolower($modelAspect->getModel())] = $result;
+            $this->models[$modelAspect->getModel()] = $result;
             if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
             }
@@ -139,20 +142,50 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         if (!isset($mainEntity)) return null;
 
-        foreach ($this->relationships as $relationship) {
-            $fn = 'set'.ucfirst($relationship['attribute']);
-            $this->models[$relationship['model1']]->$fn($this->models[$relationship['model2']]);
+        $mainEntityName = $this->getMainEntityName();
+
+        $metadata = $appCtx->getClassMetadata('Core\Model\\'.$mainEntityName);
+        $mapping = $metadata->getAssociationMappings();
+
+        foreach ($mapping as $elem) {
+
+            $source =  $mainEntityName;
+
+            $target =  explode('\\',$elem['targetEntity']);
+            $target = $target[count($target) - 1];
+
+            if (!array_key_exists($target,$this->models)) continue;
+
+            $field1 = $elem['fieldName'];
+            $field2 = $elem['mappedBy'];
+
+            $prefix1 = 'set';
+            $prefix2 = 'set';
+
+            if ($elem['type'] == ClassMetadataInfo::ONE_TO_MANY || $elem['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+                $field1 = substr($field1,0,strlen($field1) - 1);
+                $prefix1 = "add";
+            }
+
+            if ($elem['type'] == ClassMetadataInfo::MANY_TO_ONE || $elem['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+                $field2 = $elem['inversedBy'];
+                $field2 = substr($field2,0,strlen($field2) - 1);
+                $prefix2 = "add";
+            }
+
+            $fn = $prefix1.ucfirst($field1);
+            $this->models[$source]->$fn($this->models[$target]);
+
+            $fn = $prefix2.ucfirst($field2);
+            $this->models[$target]->$fn($this->models[$source]);
+
         }
 
-
         $registry = $appCtx->getNewRegistry();
-
 
         foreach ($this->models as $model) {
             $registry->save($model);
         }
-
-        $mainEntityName = $this->getMainEntityName();
 
         $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
 
