@@ -122,9 +122,9 @@ class ActionContext extends \ArrayObject {
 
     /**
      * @param string    $key
-     * @param mixed     $value
+     * @param Parameter $value
      */
-    public function setParam ($key,  $value) {
+    public function setParam ($key, Parameter $value) {
 
         if (!is_scalar($key)) {
             throw new \RuntimeException('invalid key type');

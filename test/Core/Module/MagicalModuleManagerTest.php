@@ -134,7 +134,7 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function AddAspectInvalidActions () {
+    public function testAddAspectInvalidActions () {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
@@ -349,7 +349,7 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function InvalidParameterDefineAction () {
+    public function testInvalidParameterDefineAction () {
 
         self::resetApplicationContext();
 
@@ -396,7 +396,7 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function DefineActionInvalidConstraintOfModelAspect () {
+    public function testDefineActionInvalidConstraintOfModelAspect () {
 
         self::resetApplicationContext();
 
@@ -444,7 +444,7 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalCreate($mgr, [$actionContext]);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        //$this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
 
     }
@@ -472,12 +472,13 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
-      //  $storageModuleManager = new StorageModuleManager();
+        $storageModuleManager = new StorageModuleManager();
 
         $this->addUserAspect($mgr);
         $this->addCompanyAspect($mgr);
-        //$this->addStorageAspect($mgr);
+        $this->addStorageAspect($mgr);
 
+        /* TODO: must be done in a YML
         $mgr->addRelationship([
             'model1' => 'user',
             'attribute' => 'ownedCompany',
@@ -495,10 +496,11 @@ class MagicalModuleManagerTest extends TestCase {
             'attribute' => 'owner',
             'model2' => 'user'
         ]);
+		*/
 
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
-            ->willReturn([/*$storageModuleManager,*/ $mgr, $companyModuleManager, $userModuleManager]);
+            ->willReturn([$storageModuleManager, $mgr, $companyModuleManager, $userModuleManager]);
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -507,15 +509,15 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-      //  $storageModuleManager->loadActions($appCtx);
-      //  $storageModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe.com'),
                 'name' => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => ['name' => new SafeParameter('bigsool')]
+                'company'  => new UnsafeParameter(['name' => 'bigsool'])
             ]);
 
         /**
@@ -524,7 +526,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
-       // $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
@@ -543,6 +545,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addUserAspect($mgrUser);
         $this->addCompanyAspect($mgrUser);
 
+		/* TODO: must be done in an YML
         $mgrUser->addRelationship([
                                   'model1' => 'user',
                                   'attribute' => 'ownedCompany',
@@ -560,6 +563,7 @@ class MagicalModuleManagerTest extends TestCase {
                                   'attribute' => 'owner',
                                   'model2' => 'user'
                               ]);
+		*/
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrCompany->method('getModuleName')->willReturn('Core\Company');
@@ -587,9 +591,24 @@ class MagicalModuleManagerTest extends TestCase {
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'name' => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => ['name' => new SafeParameter('bigsool')]
+             'company'  => new UnsafeParameter(['name' => 'bigsool'])
             ]);
 
+        $this->defineAction($mgrCompany, ['create',
+                                          [],
+                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
+
+                                              $params = $context->getParams();
+                                              $self->assertCount(1, $params);
+                                              $self->assertArrayHasKey('name', $params);
+                                              $self->assertSame('bigsool', $params['name']->getValue());
+                                              $called = true;
+
+                                              return $self->magicalCreate($mgrCompany, [$context]);
+
+                                          }
+        ]);
+        /*
         $this->defineAction($mgrCompany, ['create',
                                           ['name' => [ERR_INVALID_NAME,  [
                                               new Assert\NotBlank(),
@@ -610,6 +629,7 @@ class MagicalModuleManagerTest extends TestCase {
 
                                           }
         ]);
+        */
 
         /**
          * @var User $user
@@ -618,7 +638,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
-        //$this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
