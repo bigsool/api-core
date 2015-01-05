@@ -30,17 +30,25 @@ class ModelAspect {
     private $keyPath;
 
     /**
+     * @var Action[]|null
+     */
+    private $actions;
+
+
+    /**
      * @param string                $model
      * @param string                $prefix
      * @param ConstraintsProvider[] $constraints
+     * @param Action[]              $actions
      * @param AbstractKeyPath       $keyPath
      */
-    public function __construct ($model, $prefix, array $constraints, $keyPath) {
+    public function __construct ($model, $prefix, array $constraints, array $actions, $keyPath) {
 
         $this->model = $model;
         $this->prefix = $prefix;
         $this->constraints = $constraints;
         $this->keyPath = $keyPath;
+        $this->actions = $actions;
     }
 
     /**
@@ -73,6 +81,14 @@ class ModelAspect {
     public function getKeyPath () {
 
         return $this->keyPath;
+    }
+
+    /**
+     * @return Action[]|null
+     */
+    public function getActions () {
+
+        return $this->actions;
     }
 
 } 

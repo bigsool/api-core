@@ -37,6 +37,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $prefix = $config['prefix'];
             if (!is_string($prefix)) throw new \RuntimeException('invalid model');
         }
+
         $model = null;
         if (isset($config['model'])) {
             $model = $config['model'];
@@ -55,6 +56,17 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
+        $actions = [];
+        if (isset($config['actions'])) {
+            if (!is_array($config['actions'])) throw new \RuntimeException('invalid constraints');
+            foreach ($config['actions'] as $action) {
+                if ($action && !is_a($action,'Core\Action\Action')) {
+                    throw new \RuntimeException('invalid action');
+                }
+            }
+            $actions = $config['actions'];
+        }
+
         $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : null;
 
         if (!$keyPath) {
@@ -65,10 +77,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-
-
-
-        $this->modelAspects[] = new ModelAspect($model,$prefix,$constraints,$keyPath);
+        $this->modelAspects[] = new ModelAspect($model,$prefix,$constraints, $actions, $keyPath);
 
     }
 
@@ -90,26 +99,36 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $params = $ctx->getParams();
 
+        $appCtx = ApplicationContext::getInstance();
+
         foreach ($this->modelAspects as $modelAspect) {
+
+            $actions = $modelAspect->getActions();
+            $createAction = array_key_exists('create',$actions) ? $actions['create'] : 'none';
+
+            if ($createAction != 'none' && $actions['create'] == NULL) continue;
 
             $ctxCopy = $ctx;
 
             $param = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
             Validation::createValidator()->validate($param, $modelAspect->getConstraints());
 
-            $appCtx = ApplicationContext::getInstance();
+            if ($createAction == 'none') {
 
-            $product = $appCtx->getProduct();
+                $product = $appCtx->getProduct();
+                try {
+                    $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[]);
+                }
+                catch (\RuntimeException $e) {
+                    $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[]);
+                }
 
-            try {
-                $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[]);
             }
-            catch (\RuntimeException $e) {
-                $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[]);
-            }
+
             if ($param) {
                 $ctxCopy->setParams($param);
             }
+
             $result = $createAction->process($ctxCopy);
             $this->models[strtolower($modelAspect->getModel())] = $result;
             if ($this->isMainEntity($modelAspect)) {
@@ -117,6 +136,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
 
         }
+
+        if (!isset($mainEntity)) return null;
 
         foreach ($this->relationships as $relationship) {
             $fn = 'set'.ucfirst($relationship['attribute']);
@@ -138,15 +159,12 @@ abstract class MagicalModuleManager extends ModuleManager {
         $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
 
         foreach($this->modelAspects as $modelAspect) {
-
             if (($keyPath = $modelAspect->getKeyPath())) {
                 $qryCtx->addKeyPath($keyPath);
             }
-
         }
 
         $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
-
 
         $result = $registry->find($qryCtx,false);
 
@@ -169,9 +187,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param string   $name
+     * @param array    $params
      * @param callable $processFn
      */
-    protected function defineAction ($name, $params, callable $processFn) {
+    protected function defineAction ($name, Array $params, callable $processFn) {
 
         foreach ($params as $key => $value) {
             $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
