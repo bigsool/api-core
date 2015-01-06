@@ -49,6 +49,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             if (!is_string($model)) throw new \RuntimeException('invalid model');
         }
 
+        
         $constraints = [];
         if (isset($config['constraints'])) {
             $constraints = $config['constraints'];
