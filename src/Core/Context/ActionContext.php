@@ -101,6 +101,13 @@ class ActionContext extends \ArrayObject {
 
     }
 
+    public function clearParams () {
+
+        $this->params = [];
+        $this->verifiedParams = [];
+
+    }
+
     /**
      * @param mixed $key
      *

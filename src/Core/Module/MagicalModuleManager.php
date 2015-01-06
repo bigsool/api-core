@@ -19,19 +19,22 @@ use Symfony\Component\Validator\Validation;
 
 abstract class MagicalModuleManager extends ModuleManager {
 
+    /**
+     * @var array
+     */
     private $modelAspects = [];
-    private $models = [];
-    private $relationships = [];
 
-    public function addRelationship (array $relationship) {
-        $this->relationships[] = $relationship;
-    }
+
+    /**
+     * @var array
+     */
+    private $models = [];
+
 
     /**
      * @param array $config
      */
     protected function addAspect (array $config) {
-
 
         $prefix = null;
         if (isset($config['prefix'])) {
@@ -98,7 +101,6 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     protected function magicalCreate (ActionContext $ctx) {
 
-
         $appCtx = ApplicationContext::getInstance();
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -113,7 +115,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             $ctxCopy = $ctx;
 
             $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
-            Validation::createValidator()->validate($params, $modelAspect->getConstraints());
 
             if ($createAction == 'none') {
 
@@ -129,6 +130,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             if ($params) {
                 $params = $params->getValue();
+                $ctxCopy->clearParams();
                 $ctxCopy->setParams($params);
             }
 
@@ -231,8 +233,20 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
+        $modelAspects = $this->modelAspects;
 
-        $appCtx->addAction(new SimpleAction($module,$name,[], $params,$processFn));
+        $appCtx->addAction(new SimpleAction($module,$name,[], $params,function($actionContext) use ($processFn, $modelAspects) {
+            $params = $actionContext->getParams();
+            foreach ($modelAspects as $modelAspect) {
+                if (!$modelAspect->getPrefix()) continue;
+                $param = $params[$modelAspect->getPrefix()];
+                $constraintViolationList = Validation::createValidator()->validate($param->getValue(), $modelAspect->getConstraints());
+                if ($constraintViolationList->count()) {
+                    throw new \RuntimeException('constraint violation');
+                }
+            }
+            return $processFn($actionContext);
+        }));
 
     }
 
