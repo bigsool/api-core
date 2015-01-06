@@ -476,27 +476,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addUserAspect($mgr);
         $this->addCompanyAspect($mgr);
-        $this->addStorageAspect($mgr);
-
-        /* TODO: must be done in a YML
-        $mgr->addRelationship([
-            'model1' => 'user',
-            'attribute' => 'ownedCompany',
-            'model2' => 'company'
-        ]);
-
-        $mgr->addRelationship([
-          'model1' => 'user',
-          'attribute' => 'company',
-          'model2' => 'company'
-        ]);
-
-        $mgr->addRelationship([
-            'model1' => 'company',
-            'attribute' => 'owner',
-            'model2' => 'user'
-        ]);
-		*/
+        //$this->addStorageAspect($mgr);
 
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
@@ -509,15 +489,15 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+       // $storageModuleManager->loadActions($appCtx);
+       // $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe.com'),
                 'name' => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => new UnsafeParameter(['name' => 'bigsool'])
+                'company'  => new SafeParameter(['name' => new SafeParameter('bigsool')])
             ]);
 
         /**
@@ -526,7 +506,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
-        $this->assertSame('invalid email forced', $user->getEmail());
+       // $this->assertSame('invalid email forced', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
@@ -544,26 +524,6 @@ class MagicalModuleManagerTest extends TestCase {
         $mgrUser->method('getModuleName')->willReturn('UserModule');
         $this->addUserAspect($mgrUser);
         $this->addCompanyAspect($mgrUser);
-
-		/* TODO: must be done in an YML
-        $mgrUser->addRelationship([
-                                  'model1' => 'user',
-                                  'attribute' => 'ownedCompany',
-                                  'model2' => 'company'
-                              ]);
-
-        $mgrUser->addRelationship([
-                                  'model1' => 'user',
-                                  'attribute' => 'company',
-                                  'model2' => 'company'
-                              ]);
-
-        $mgrUser->addRelationship([
-                                  'model1' => 'company',
-                                  'attribute' => 'owner',
-                                  'model2' => 'user'
-                              ]);
-		*/
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrCompany->method('getModuleName')->willReturn('Core\Company');
@@ -591,11 +551,13 @@ class MagicalModuleManagerTest extends TestCase {
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'name' => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(['name' => 'bigsool'])
+             'company'  => new UnsafeParameter(['name' => new SafeParameter('bigsool')])
             ]);
 
         $this->defineAction($mgrCompany, ['create',
-                                          [],
+                                          ['name' => [ERR_INVALID_NAME,  [
+                                              new Assert\NotBlank(),
+                                          ]]],
                                           function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
 
                                               $params = $context->getParams();
@@ -604,32 +566,14 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertSame('bigsool', $params['name']->getValue());
                                               $called = true;
 
-                                              return $self->magicalCreate($mgrCompany, [$context]);
-
-                                          }
-        ]);
-        /*
-        $this->defineAction($mgrCompany, ['create',
-                                          ['name' => [ERR_INVALID_NAME,  [
-                                              new Assert\NotBlank(),
-                                          ]]],
-                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
-
-                                              $params = $context->getParams();
-                                              //$self->assertCount(1, $params);
-                                              $self->assertArrayHasKey('company', $params);
-                                              $self->assertSame('bigsool', $params['company']['name']->getValue());
-                                              $called = true;
-
                                               $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
                                               $params = $context->getVerifiedParams();
                                               $helper->createCompany($context, $params);
 
-                                              return $context['company'];
+                                              return  $context['company'];
 
                                           }
         ]);
-        */
 
         /**
          * @var User $user

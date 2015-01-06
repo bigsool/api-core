@@ -15,6 +15,7 @@ use Core\Parameter\Parameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Validator\Validation;
 
 abstract class MagicalModuleManager extends ModuleManager {
@@ -113,7 +114,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             $ctxCopy = $ctx;
 
             $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
-            Validation::createValidator()->validate($params, $modelAspect->getConstraints());
 
             if ($createAction == 'none') {
 
@@ -129,6 +129,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             if ($params) {
                 $params = $params->getValue();
+                $ctxCopy->clearParams();
                 $ctxCopy->setParams($params);
             }
 
@@ -229,10 +230,24 @@ abstract class MagicalModuleManager extends ModuleManager {
             $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
         }
 
+
+
+
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
-
-        $appCtx->addAction(new SimpleAction($module,$name,[], $params,$processFn));
+        $modelAspects = $this->modelAspects;
+        $appCtx->addAction(new SimpleAction($module,$name,[], $params,function($actionContext) use ($processFn, $modelAspects) {
+            $params = $actionContext->getParams();
+            foreach ($modelAspects as $modelAspect) {
+                if (!$modelAspect->getPrefix()) continue;
+                $param = $params[$modelAspect->getPrefix()];
+                $constraintViolationList = Validation::createValidator()->validate($param->getValue(), $modelAspect->getConstraints());
+                if ($constraintViolationList->count()) {
+                    throw new \RuntimeException('constraint violation');
+                }
+            }
+            return $processFn($actionContext);
+        }));
 
     }
 
