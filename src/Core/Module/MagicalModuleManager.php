@@ -49,7 +49,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             if (!is_string($model)) throw new \RuntimeException('invalid model');
         }
 
-        
+
         $constraints = [];
         if (isset($config['constraints'])) {
             $constraints = $config['constraints'];
@@ -113,8 +113,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             if ($createAction != 'none' && $actions['create'] == NULL) continue;
 
-            $ctxCopy = $ctx;
-
             $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
 
             if ($createAction == 'none') {
@@ -129,13 +127,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
 
+            $subContext = null;
             if ($params) {
-                $params = $params->getValue();
-                $ctxCopy->clearParams();
-                $ctxCopy->setParams($params);
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+                $subContext->setParams($params->getValue());
             }
 
-            $result = $createAction->process($ctxCopy);
+            $result = $createAction->process($subContext ? $subContext : $ctx);
             $this->models[$modelAspect->getModel()] = $result;
             if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
