@@ -531,7 +531,7 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'      => 'company',
             'keyPath'     => 'company',
             'constraints' => [new Dictionary(), new NotBlank()],
-            'actions'     => ['create' => new ActionReference(ApplicationContext::getInstance(),'Archipad\\Group','create')],
+            'actions'     => ['create' => new ActionReference('Archipad\\Group', 'create')],
         ]);
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
