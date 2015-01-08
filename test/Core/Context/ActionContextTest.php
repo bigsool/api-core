@@ -77,6 +77,9 @@ class ActionContextTest extends TestCase {
         $ctx->setParam('qwe', $qweParam);
         $this->assertSame($qweParam, $ctx->getParam('qwe'));
 
+        $ctx->setParams([]);
+        $this->assertEmpty($ctx->getParams());
+
     }
 
     /**
@@ -123,6 +126,14 @@ class ActionContextTest extends TestCase {
         $qweParam = new SafeParameter('qwe');
         $ctx->setVerifiedParam('qwe', $qweParam);
         $this->assertSame($qweParam, $ctx->getVerifiedParam('qwe'));
+
+        $ctx->setParams([]);
+        $this->assertEmpty($ctx->getVerifiedParams());
+
+        $ctx->setVerifiedParam('qwe', $qweParam);
+
+        $ctx->setVerifiedParams([]);
+        $this->assertEmpty($ctx->getVerifiedParams());
 
     }
 
