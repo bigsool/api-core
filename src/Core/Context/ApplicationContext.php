@@ -369,15 +369,16 @@ class ApplicationContext {
     }
 
     /**
-     * @param Action $action
+     * @param Action $theAction
      */
     public function addAction (Action $theAction) {
 
         $i = 0;
         foreach ($this->actions as $action) {
             if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
-                $this->actions[$i] = $theAction;
-                return;
+                //$this->actions[$i] = $theAction;
+                //return;
+                throw new \RuntimeException('action already defined for this module and name ('.$action->getModule().','.$action->getName().')');
             }
             ++$i;
         }

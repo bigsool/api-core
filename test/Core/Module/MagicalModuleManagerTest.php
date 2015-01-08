@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Action\ActionReference;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -476,7 +477,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addUserAspect($mgr);
         $this->addCompanyAspect($mgr);
-        //$this->addStorageAspect($mgr);
+       // $this->addStorageAspect($mgr);
 
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
@@ -506,7 +507,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
-       // $this->assertSame('invalid email forced', $user->getEmail());
+        $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
@@ -519,16 +520,29 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
         $this->addUserAspect($mgrUser);
-        $this->addCompanyAspect($mgrUser);
+
+        $this->addAspect($mgrUser, [
+            'model'       => 'Company',
+            'prefix'      => 'company',
+            'keyPath'     => 'company',
+            'constraints' => [new Dictionary(), new NotBlank()],
+            'actions'     => ['create' => new ActionReference(ApplicationContext::getInstance(),'Archipad\\Group','create')],
+        ]);
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrCompany->method('getModuleName')->willReturn('Core\Company');
+        $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
         $this->addAspect($mgrCompany, [
             'model' => 'Company',
+        ]);
+        $this->addAspect($mgrCompany, [
+            'model' => 'Storage',
+            'keyPath' => 'storage',
+            'prefix'   => 'storage',
         ]);
         $self = $this;
         $called = false;
@@ -545,13 +559,15 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'name' => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(['name' => new SafeParameter('bigsool')])
+             'company'  => new UnsafeParameter(['name' => new SafeParameter('bigsool'),'storage' => new UnsafeParameter(['url' => new SafeParameter('http://ddfd.fr')]),
+              ]),
             ]);
 
         $this->defineAction($mgrCompany, ['create',
@@ -561,16 +577,11 @@ class MagicalModuleManagerTest extends TestCase {
                                           function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
 
                                               $params = $context->getParams();
-                                              $self->assertCount(1, $params);
+                                              $self->assertCount(2, $params);
                                               $self->assertArrayHasKey('name', $params);
                                               $self->assertSame('bigsool', $params['name']->getValue());
                                               $called = true;
-
-                                              $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
-                                              $params = $context->getVerifiedParams();
-                                              $helper->createCompany($context, $params);
-
-                                              return  $context['company'];
+                                              return $self->magicalCreate($mgrCompany,[$context]);
 
                                           }
         ]);
