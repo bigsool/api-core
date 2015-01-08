@@ -11,7 +11,6 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
-use Core\Parameter\Parameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -20,42 +19,48 @@ use Symfony\Component\Validator\Validation;
 abstract class MagicalModuleManager extends ModuleManager {
 
     /**
-     * @var array
+     * @var ModelAspect[]
      */
     private $modelAspects = [];
-
 
     /**
      * @var array
      */
     private $models = [];
 
-
     /**
      * @param array $config
      */
     protected function addAspect (array $config) {
 
-        $prefix = null;
+        $prefix = NULL;
         if (isset($config['prefix'])) {
             $prefix = $config['prefix'];
-            if (!is_string($prefix)) throw new \RuntimeException('invalid model');
+            if (!is_string($prefix)) {
+                throw new \RuntimeException('invalid model');
+            }
         }
 
-        $model = null;
+        $model = NULL;
         if (isset($config['model'])) {
             $model = $config['model'];
             Registry::realModelClassName($model);
-            if (!is_string($model)) throw new \RuntimeException('invalid model');
+            if (!is_string($model)) {
+                throw new \RuntimeException('invalid model');
+            }
         }
 
 
         $constraints = [];
         if (isset($config['constraints'])) {
             $constraints = $config['constraints'];
-            if (!is_array($config['constraints'])) throw new \RuntimeException('invalid constraints');
+            if (!is_array($config['constraints'])) {
+                throw new \RuntimeException('invalid constraints');
+            }
             foreach ($constraints as $constraint) {
-                if (!is_a($constraint, 'Symfony\Component\Validator\Constraint') && !is_a($constraint , 'Core\Validation\Constraints\Dictionary')) {
+                if (!is_a($constraint, 'Symfony\Component\Validator\Constraint')
+                    && !is_a($constraint, 'Core\Validation\Constraints\Dictionary')
+                ) {
                     throw new \RuntimeException('invalid constraints');
                 }
             }
@@ -63,16 +68,18 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $actions = [];
         if (isset($config['actions'])) {
-            if (!is_array($config['actions'])) throw new \RuntimeException('invalid constraints');
+            if (!is_array($config['actions'])) {
+                throw new \RuntimeException('invalid constraints');
+            }
             foreach ($config['actions'] as $action) {
-                if ($action && !is_a($action,'Core\Action\Action')) {
+                if ($action && !is_a($action, 'Core\Action\Action')) {
                     throw new \RuntimeException('invalid action');
                 }
             }
             $actions = $config['actions'];
         }
 
-        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : null;
+        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
 
         if (!$keyPath) {
             foreach ($this->modelAspects as $modelAspect) {
@@ -82,23 +89,23 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-        $this->modelAspects[] = new ModelAspect($model,$prefix,$constraints, $actions, $keyPath);
+        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
 
     }
 
     /**
      * @return ModelAspect[]
      */
-    protected function getAspects() {
+    protected function getAspects () {
 
         return $this->modelAspects;
 
     }
 
-
     /**
-     * @param Parameter[] $params
-     * @return Model[] models
+     * @param ActionContext $ctx
+     *
+     * @return mixed models
      */
     protected function magicalCreate (ActionContext $ctx) {
 
@@ -109,25 +116,29 @@ abstract class MagicalModuleManager extends ModuleManager {
             $params = $ctx->getParams();
 
             $actions = $modelAspect->getActions();
-            $createAction = array_key_exists('create',$actions) ? $actions['create'] : 'none';
+            $createAction = array_key_exists('create', $actions) ? $actions['create'] : 'none';
 
-            if ($createAction != 'none' && $actions['create'] == NULL) continue;
+            if ($createAction != 'none' && $actions['create'] == NULL) {
+                continue;
+            }
 
-            $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
+            $params =
+                $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()])
+                    ? $params[$modelAspect->getPrefix()] : NULL : [];
 
             if ($createAction == 'none') {
 
                 $product = $appCtx->getProduct();
                 try {
-                    $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[]);
+                    $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create', []);
                 }
                 catch (\RuntimeException $e) {
-                    $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[]);
+                    $createAction = $appCtx->getAction('Core\\' . $modelAspect->getModel(), 'create', []);
                 }
 
             }
 
-            $subContext = null;
+            $subContext = NULL;
             if ($params) {
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
@@ -142,21 +153,25 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        if (!isset($mainEntity)) return null;
+        if (!isset($mainEntity)) {
+            return NULL;
+        }
 
         $mainEntityName = $this->getMainEntityName();
 
-        $metadata = $appCtx->getClassMetadata('Core\Model\\'.$mainEntityName);
+        $metadata = $appCtx->getClassMetadata('Core\Model\\' . $mainEntityName);
         $mapping = $metadata->getAssociationMappings();
 
         foreach ($mapping as $elem) {
 
-            $source =  $mainEntityName;
+            $source = $mainEntityName;
 
-            $target =  explode('\\',$elem['targetEntity']);
+            $target = explode('\\', $elem['targetEntity']);
             $target = $target[count($target) - 1];
 
-            if (!array_key_exists($target,$this->models)) continue;
+            if (!array_key_exists($target, $this->models)) {
+                continue;
+            }
 
             $field1 = $elem['fieldName'];
             $field2 = $elem['mappedBy'];
@@ -165,20 +180,20 @@ abstract class MagicalModuleManager extends ModuleManager {
             $prefix2 = 'set';
 
             if ($elem['type'] == ClassMetadataInfo::ONE_TO_MANY || $elem['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-                $field1 = substr($field1,0,strlen($field1) - 1);
+                $field1 = substr($field1, 0, strlen($field1) - 1);
                 $prefix1 = "add";
             }
 
             if ($elem['type'] == ClassMetadataInfo::MANY_TO_ONE || $elem['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $field2 = $elem['inversedBy'];
-                $field2 = substr($field2,0,strlen($field2) - 1);
+                $field2 = substr($field2, 0, strlen($field2) - 1);
                 $prefix2 = "add";
             }
 
-            $fn = $prefix1.ucfirst($field1);
+            $fn = $prefix1 . ucfirst($field1);
             $this->models[$source]->$fn($this->models[$target]);
 
-            $fn = $prefix2.ucfirst($field2);
+            $fn = $prefix2 . ucfirst($field2);
             $this->models[$target]->$fn($this->models[$source]);
 
         }
@@ -193,31 +208,42 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
 
-        foreach($this->modelAspects as $modelAspect) {
+        foreach ($this->modelAspects as $modelAspect) {
             if (($keyPath = $modelAspect->getKeyPath())) {
                 $qryCtx->addKeyPath($keyPath);
             }
         }
 
-        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
+        $qryCtx->addFilter(new StringFilter($mainEntityName, 'bla', 'id = ' . $mainEntity->getId()));
 
-        $result = $registry->find($qryCtx,false);
+        $result = $registry->find($qryCtx, false);
 
         return $result[0];
 
     }
 
+    /**
+     * @param ModelAspect $modelAspect
+     *
+     * @return bool
+     */
+    private function isMainEntity (ModelAspect $modelAspect) {
+
+        return !$modelAspect->getKeyPath();
+    }
+
+    /**
+     * @return null|string
+     */
     private function getMainEntityName () {
+
         foreach ($this->modelAspects as $modelAspect) {
             if ($modelAspect->getKeyPath() == '') {
                 return $modelAspect->getModel();
             }
         }
-        return null;
-    }
 
-    private function isMainEntity ($modelAspect) {
-        return !$modelAspect->getKeyPath();
+        return NULL;
     }
 
     /**
@@ -235,25 +261,34 @@ abstract class MagicalModuleManager extends ModuleManager {
         $appCtx = ApplicationContext::getInstance();
         $modelAspects = $this->modelAspects;
 
-        $appCtx->addAction(new SimpleAction($module,$name,[], $params,function($actionContext) use ($processFn, $modelAspects) {
-            $params = $actionContext->getParams();
-            foreach ($modelAspects as $modelAspect) {
-                if (!$modelAspect->getPrefix()) continue;
-                $param = $params[$modelAspect->getPrefix()];
-                $constraintViolationList = Validation::createValidator()->validate($param->getValue(), $modelAspect->getConstraints());
-                if ($constraintViolationList->count()) {
-                    throw new \RuntimeException('constraint violation');
+        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
+            function (ActionContext $actionContext) use ($processFn, $modelAspects) {
+
+                $params = $actionContext->getParams();
+                foreach ($modelAspects as $modelAspect) {
+                    if (!$modelAspect->getPrefix()) {
+                        continue;
+                    }
+                    $param = $params[$modelAspect->getPrefix()];
+                    $constraintViolationList =
+                        Validation::createValidator()->validate($param->getValue(), $modelAspect->getConstraints());
+                    if ($constraintViolationList->count()) {
+                        throw new \RuntimeException('constraint violation');
+                    }
                 }
-            }
-            return $processFn($actionContext);
-        }));
+
+                return $processFn($actionContext);
+            }));
 
     }
 
+    /**
+     * @return string
+     */
     protected function getModuleName () {
 
         $className = get_called_class();
-        $classNameExploded = explode('\\',$className);
+        $classNameExploded = explode('\\', $className);
 
         return $classNameExploded[count($classNameExploded) - 2];
 

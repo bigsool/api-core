@@ -378,7 +378,8 @@ class ApplicationContext {
             if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
                 //$this->actions[$i] = $theAction;
                 //return;
-                throw new \RuntimeException('action already defined for this module and name ('.$action->getModule().','.$action->getName().')');
+                throw new \RuntimeException('action already defined for this module and name (' . $action->getModule()
+                                            . ',' . $action->getName() . ')');
             }
             ++$i;
         }
@@ -387,7 +388,6 @@ class ApplicationContext {
         }
 
     }
-
 
     /**
      * @return Action[]

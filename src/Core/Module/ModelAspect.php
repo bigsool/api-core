@@ -34,7 +34,6 @@ class ModelAspect {
      */
     private $actions;
 
-
     /**
      * @param string                $model
      * @param string                $prefix

@@ -41,11 +41,11 @@ class FormattedErrorTest extends TestCase {
         $error->method('getParentCode')->willReturn(200);
         $error->method('getField')->willReturn("password");*/
         $error = [
-            'frMessage' => 'Mot de passe invalide',
-            'enMessage' => 'Password invalid',
-            'code' => 202,
+            'frMessage'  => 'Mot de passe invalide',
+            'enMessage'  => 'Password invalid',
+            'code'       => 202,
             'parentCode' => 200,
-            'field' => 'password',
+            'field'      => 'password',
         ];
 
         $this->childErrors [] = new FormattedError($error);
@@ -85,7 +85,7 @@ class FormattedErrorTest extends TestCase {
         $formattedError = new FormattedError($error);
         $this->assertEquals('login fail', $formattedError->getMessage());
 
-        $formattedError = new FormattedError(['code'=>0,'message'=>'qwe']);
+        $formattedError = new FormattedError(['code' => 0, 'message' => 'qwe']);
         $this->assertEquals('qwe', $formattedError->getMessage());
 
     }
@@ -131,7 +131,7 @@ class FormattedErrorTest extends TestCase {
      */
     public function testErrorMessageNotFound () {
 
-        new FormattedError(['code'=>0]);
+        new FormattedError(['code' => 0]);
 
     }
 
