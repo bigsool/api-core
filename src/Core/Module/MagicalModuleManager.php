@@ -95,12 +95,20 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    public function magicalCreate (ActionContext $ctx) {
+        return $this->magicalModify($ctx,'create');
+    }
+
+
+    public function magicalUpdate (ActionContext $ctx) {
+        return $this->magicalModify($ctx,'create');
+    }
 
     /**
      * @param Parameter[] $params
      * @return Model[] models
      */
-    protected function magicalCreate (ActionContext $ctx) {
+    protected function magicalModify (ActionContext $ctx, $action) {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -109,20 +117,20 @@ abstract class MagicalModuleManager extends ModuleManager {
             $params = $ctx->getParams();
 
             $actions = $modelAspect->getActions();
-            $createAction = array_key_exists('create',$actions) ? $actions['create'] : 'none';
+            $modifyAction = array_key_exists($action,$actions) ? $actions[$action] : 'none';
 
-            if ($createAction != 'none' && $actions['create'] == NULL) continue;
+            if ($modifyAction != 'none' && $actions[$action] == NULL) continue;
 
             $params = $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()]) ? $params[$modelAspect->getPrefix()] : null : [];
 
-            if ($createAction == 'none') {
+            if ($modifyAction == 'none') {
 
                 $product = $appCtx->getProduct();
                 try {
-                    $createAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), 'create',[]);
+                    $modifyAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), $action,[]);
                 }
                 catch (\RuntimeException $e) {
-                    $createAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),'create',[]);
+                    $modifyAction = $appCtx->getAction('Core\\'.$modelAspect->getModel(),$action,[]);
                 }
 
             }
@@ -134,7 +142,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $subContext->setParams($params->getValue());
             }
 
-            $result = $createAction->process($subContext ? $subContext : $ctx);
+            $result = $modifyAction->process($subContext ? $subContext : $ctx);
             $this->models[$modelAspect->getModel()] = $result;
             if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
@@ -204,6 +212,38 @@ abstract class MagicalModuleManager extends ModuleManager {
         $result = $registry->find($qryCtx,false);
 
         return $result[0];
+
+    }
+
+    protected function magicalFind ($ids) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $mainEntityName = $this->getMainEntityName();
+
+        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
+
+        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
+
+        foreach($this->modelAspects as $modelAspect) {
+            if (($keyPath = $modelAspect->getKeyPath())) {
+                $qryCtx->addKeyPath($keyPath);
+            }
+        }
+
+        $inClause = '('.$ids[0].',';
+        for ($i = 1 ; $i < count($ids) ; ++$i) {
+            $inClause .= ','.$ids[$i];
+        }
+        $inClause .= ')';
+
+        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id IN '.$inClause));
+
+        $result = $registry->find($qryCtx,false);
+
+        return $result;
 
     }
 
