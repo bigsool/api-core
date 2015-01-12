@@ -2,10 +2,10 @@
 
 namespace Core\Module\StorageFeature;
 
+use Core\Action\SimpleAction as Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
-use Core\Action\SimpleAction as Action;
 use Core\Module\StorageFeature\Helper as StorageFeatureHelper;
 
 class ModuleManager extends AbstractModuleManager {

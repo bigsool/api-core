@@ -95,15 +95,29 @@ class ActionContext extends \ArrayObject {
      */
     public function setParams ($params) {
 
+        $this->clearParams();
+
         foreach ($params as $key => $value) {
             $this->setParam($key, $value);
         }
 
     }
 
+    /**
+     *
+     */
     public function clearParams () {
 
         $this->params = [];
+        $this->clearVerifiedParams();
+
+    }
+
+    /**
+     *
+     */
+    public function clearVerifiedParams () {
+
         $this->verifiedParams = [];
 
     }
@@ -166,6 +180,8 @@ class ActionContext extends \ArrayObject {
      * @param SafeParameter[] $verifiedParams
      */
     public function setVerifiedParams ($verifiedParams) {
+
+        $this->clearVerifiedParams();
 
         foreach ($verifiedParams as $key => $value) {
             $this->setVerifiedParam($key, $value);

@@ -19,12 +19,11 @@ use Core\Registry;
 use Core\TestCase;
 use Core\Validation\Constraints\Dictionary;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Null;
-use Core\Validation\CompanyValidation;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class MagicalModuleManagerTest extends TestCase {
 
@@ -477,7 +476,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addUserAspect($mgr);
         $this->addCompanyAspect($mgr);
-       // $this->addStorageAspect($mgr);
+        // $this->addStorageAspect($mgr);
 
         $app = $this->getMockApplication();
         $app->method('getModuleManagers')
@@ -490,13 +489,13 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-       // $storageModuleManager->loadActions($appCtx);
-       // $storageModuleManager->loadHelpers($appCtx);
+        // $storageModuleManager->loadActions($appCtx);
+        // $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe.com'),
-                'name' => new SafeParameter('thierry'),
+                'name'     => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
                 'company'  => new SafeParameter(['name' => new SafeParameter('bigsool')])
             ]);
@@ -506,7 +505,7 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
@@ -531,7 +530,7 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'      => 'company',
             'keyPath'     => 'company',
             'constraints' => [new Dictionary(), new NotBlank()],
-            'actions'     => ['create' => new ActionReference(ApplicationContext::getInstance(),'Archipad\\Group','create')],
+            'actions'     => ['create' => new ActionReference('Archipad\\Group', 'create')],
         ]);
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
@@ -540,9 +539,9 @@ class MagicalModuleManagerTest extends TestCase {
             'model' => 'Company',
         ]);
         $this->addAspect($mgrCompany, [
-            'model' => 'Storage',
+            'model'   => 'Storage',
             'keyPath' => 'storage',
-            'prefix'   => 'storage',
+            'prefix'  => 'storage',
         ]);
         $self = $this;
         $called = false;
@@ -564,16 +563,20 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => new SafeParameter('qwe@qwe.com'),
-             'name' => new SafeParameter('thierry'),
+             'name'     => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(['name' => new SafeParameter('bigsool'),'storage' => new UnsafeParameter(['url' => new SafeParameter('http://ddfd.fr')]),
-              ]),
+             'company'  => new UnsafeParameter(['name'    => new SafeParameter('bigsool'),
+                                                'storage' => new UnsafeParameter(['url' => new SafeParameter('http://ddfd.fr')]),
+                                               ]),
             ]);
 
         $this->defineAction($mgrCompany, ['create',
-                                          ['name' => [ERR_INVALID_NAME,  [
-                                              new Assert\NotBlank(),
-                                          ]]],
+                                          ['name' => [ERR_INVALID_NAME,
+                                                      [
+                                                          new Assert\NotBlank(),
+                                                      ]
+                                          ]
+                                          ],
                                           function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
 
                                               $params = $context->getParams();
@@ -581,7 +584,8 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertArrayHasKey('name', $params);
                                               $self->assertSame('bigsool', $params['name']->getValue());
                                               $called = true;
-                                              return $self->magicalCreate($mgrCompany,[$context]);
+
+                                              return $self->magicalCreate($mgrCompany, [$context]);
 
                                           }
         ]);
@@ -592,7 +596,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgrUser, [$actionContext]);
 
         $this->assertTrue($called);
-        $this->assertInstanceOf(Registry::realModelClassName('User'),$user);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());

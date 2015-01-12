@@ -184,10 +184,21 @@ class ApplicationContextTest extends TestCase {
         $this->assertCount(2, $appCtx->getActions());
         $this->assertSame($mockAction2, $appCtx->getActions()[1]);
 
-        $appCtx->addAction($mockAction2);
-        $this->assertCount(2, $appCtx->getActions());
-
         $this->assertSame($mockAction, $appCtx->getAction('module', 'name'));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDuplicatedAction() {
+
+        $appCtx = $this->getApplicationContext();
+        $mockAction = $this->getMockAction();
+        $mockAction->method('getModule')->willReturn('module');
+        $mockAction->method('getName')->willReturn('name');
+        $appCtx->addAction($mockAction);
+        $appCtx->addAction($mockAction);
 
     }
 
