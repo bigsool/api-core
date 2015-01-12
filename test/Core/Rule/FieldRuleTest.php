@@ -71,6 +71,7 @@ class FieldRuleTest extends TestCase {
 
         $appCtx = $this->getApplicationContext();
         $appCtx->addField($field = new Field('Company', 'name'));
+        $appCtx->addField(new Field('User', 'name'));
         $appCtx->addField($starField = new StarField('Company'));
         $appCtx->addField(new Field('Company', 'city'));
 
@@ -79,6 +80,13 @@ class FieldRuleTest extends TestCase {
 
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('Company');
+
+        $reqUserCtx = new RequestContext();
+        $reqUserCtx->setReturnedRootEntity('User');
+        $qryCtx = new FindQueryContext('User', $reqUserCtx);
+        $reqUserCtx->setReturnedKeyPaths([new KeyPath('name')]);
+        $qryCtx->addKeyPath(new KeyPath('name'));
+        $this->assertFalse($rule->shouldApply($qryCtx));
 
         $qryCtx = new FindQueryContext('Company', $reqCtx);
         $reqCtx->setReturnedKeyPaths([new KeyPath('city')]);
