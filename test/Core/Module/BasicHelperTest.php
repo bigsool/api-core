@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Model\Product;
 use Core\Registry;
 use Core\TestCase;
 
@@ -23,7 +24,7 @@ class BasicHelperTest extends TestCase {
 
         $basicHelper = new BasicHelper();
 
-        $product = $basicHelper->create('product', [
+        $product = $basicHelper->basicSave(new Product, [
             'duration'   => NULL,
             'bundleid'   => 'bundle id',
             'name'       => 'produit',
@@ -37,7 +38,7 @@ class BasicHelperTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
         $this->assertNull($product->getId());
 
-        $product = $basicHelper->create('product', [
+        $product = $basicHelper->basicSave('product', [
             'duration'   => NULL,
             'bundleid'   => 'bundle id',
             'name'       => 'produit',
