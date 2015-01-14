@@ -6,6 +6,7 @@ namespace Core\Module\CompanyFeature;
 use Core\Action\SimpleAction as Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Context\FindQueryContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath;
 use Core\Expression\Parameter;
@@ -13,6 +14,7 @@ use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Filter\FilterReference;
+use Core\Filter\StringFilter;
 use Core\Module\CompanyFeature\Helper as CompanyFeatureHelper;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Operator\MemberOf;
@@ -31,13 +33,52 @@ class ModuleManager extends AbstractModuleManager {
             'name' => [ERR_INVALID_NAME, new CompanyValidation()],
         ], function (ActionContext $context) {
 
-
             /**
              * @var CompanyFeatureHelper $helper
              */
             $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
             $params = $context->getVerifiedParams();
             $helper->createCompany($context, $params);
+
+            return $context['company'];
+
+        }));
+
+        $context->addAction(new Action('Core\Company', 'update', NULL, [
+            'id'   => [ERR_INVALID_COMPANY_ID, new CompanyValidation()],
+            'name' => [ERR_INVALID_NAME, new CompanyValidation(), true/*force optional*/],
+        ], function (ActionContext $context) {
+
+            $qryCtx = new FindQueryContext('Company');
+            $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
+            $qryCtx->addFilter(new StringFilter('Company', '', 'id = :id'));
+
+            /**
+             * @var CompanyFeatureHelper $helper
+             */
+            $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
+            $params = $context->getVerifiedParams();
+            $companies = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx, false);
+
+            if (count($companies) != 1) {
+                throw new \RuntimeException('more or less than one entity found');
+            }
+
+            $helper->updateCompany($context, $companies[0], $params);
+
+            return $context['company'];
+
+        }));
+
+        $context->addAction(new Action('Core\Company', 'find', NULL, [
+        ], function (ActionContext $context) {
+
+            /**
+             * @var CompanyFeatureHelper $helper
+             */
+            $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
+            $reqCtx = $context->getRequestContext();
+            $helper->findCompany($context, $reqCtx->getReturnedKeyPaths(), [$reqCtx->getFilter()]);
 
             return $context['company'];
 
