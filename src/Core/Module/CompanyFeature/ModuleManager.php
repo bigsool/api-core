@@ -49,15 +49,17 @@ class ModuleManager extends AbstractModuleManager {
             'name' => [ERR_INVALID_NAME, new CompanyValidation(), true/*force optional*/],
         ], function (ActionContext $context) {
 
+            $params = $context->getVerifiedParams();
+
             $qryCtx = new FindQueryContext('Company');
             $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
             $qryCtx->addFilter(new StringFilter('Company', '', 'id = :id'));
+            $qryCtx->setParams(['id' => $params['id']->getValue()]);
 
             /**
              * @var CompanyFeatureHelper $helper
              */
             $helper = ApplicationContext::getInstance()->getHelper('CompanyFeatureHelper');
-            $params = $context->getVerifiedParams();
             $companies = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx, false);
 
             if (count($companies) != 1) {
