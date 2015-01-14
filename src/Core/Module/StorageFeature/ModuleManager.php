@@ -2,9 +2,14 @@
 
 namespace Core\Module\StorageFeature;
 
+use Core\Action\BasicCreateAction;
+use Core\Action\BasicFindAction;
+use Core\Action\BasicUpdateAction;
 use Core\Action\SimpleAction as Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Field\Field;
+use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Module\StorageFeature\Helper as StorageFeatureHelper;
 
@@ -15,21 +20,16 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('Core\Storage', 'create', NULL, [
-            'name' => [ERR_INVALID_NAME, new StorageValidation()],
-        ], function (ActionContext $context) {
+        $context->addAction(new BasicCreateAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [
+            'url' => [ERR_INVALID_NAME, new StorageValidation()],
+        ]));
 
+        $context->addAction(new BasicUpdateAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [
+            'url' => [ERR_INVALID_NAME, new StorageValidation()],
+        ]));
 
-            /**
-             * @var StorageFeatureHelper $helper
-             */
-            $helper = ApplicationContext::getInstance()->getHelper('StorageFeatureHelper');
-            $params = $context->getVerifiedParams();
-            $helper->createStorage($context, $params);
-
-            return $context['storage'];
-
-        }));
+        $context->addAction(new BasicFindAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [
+        ]));
 
     }
 
@@ -44,6 +44,10 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadFilters (ApplicationContext &$context) {
+
+        $context->addField(new StarField('Storage'));
+        $context->addField(new Field('Storage', 'id'));
+        $context->addField(new Field('Storage', 'url'));
 
     }
 
