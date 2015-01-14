@@ -1,16 +1,9 @@
 User:
-    indexes:
-        company_id:
-            columns:
-                - company_id
     oneToOne:
         ownedCompany:
            targetEntity: Core\Model\Company
            mappedBy: owner
            cascade: ["persist"]
-        student:
-           targetEntity: Core\Model\Student
-           mappedBy: user
     manyToOne:
         company:
            targetEntity: Core\Model\Company

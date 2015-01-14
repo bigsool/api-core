@@ -9,11 +9,11 @@ if (!file_exists($file = __DIR__ . '/../vendor/autoload.php')
 require_once $file;
 
 $config =
-    \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../doctrine/model/yml"), true,
+    \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../model/"), true,
                                                                __DIR__ . '/../src/');
 $conn = array(
     'driver' => 'pdo_sqlite',
-    'path'   => sys_get_temp_dir() . '/archiweb-proto.db.sqlite',
+    'path'   => __DIR__ . '/archiweb-proto.db.sqlite',
 );
 $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
 

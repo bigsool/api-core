@@ -6,147 +6,144 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Company
+ *
+ * @ORM\Table(name="company")
+ * @ORM\Entity
  */
-class Company {
-
+class Company
+{
     /**
      * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="address", type="text", nullable=true)
      */
     private $address;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="zipCode", type="string", length=255, nullable=true)
      */
     private $zipCode;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="city", type="string", length=255, nullable=true)
      */
     private $city;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="state", type="string", length=255, nullable=true)
      */
     private $state;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="country", type="string", length=255, nullable=true)
      */
     private $country;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
     private $tel;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="fax", type="string", length=255, nullable=true)
      */
     private $fax;
 
     /**
-     * @var string
-     */
-    private $tva;
-
-    /**
-     * @var \Core\Model\OverconsumptionReminder
-     */
-    private $currentOverconsumptionReminder;
-
-    /**
      * @var \Core\Model\User
+     *
+     * @ORM\OneToOne(targetEntity="Core\Model\User", inversedBy="ownedCompany", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="owner_id", referencedColumnName="id", unique=true, nullable=true)
+     * })
      */
     private $owner;
 
     /**
-     * @var \Core\Model\Storage
-     */
-    private $storage;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection
-     */
-    private $overconsumptionReminders;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $deviceCompanies;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $devicesUsedForTheFreetrial;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\OneToMany(targetEntity="Core\Model\User", mappedBy="company", cascade={"persist"})
      */
     private $users;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $sharedReports;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $defaultRoles;
-
-    /**
      * Constructor
      */
-    public function __construct () {
-
-        $this->overconsumptionReminders = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->deviceCompanies = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->devicesUsedForTheFreetrial = new \Doctrine\Common\Collections\ArrayCollection();
+    public function __construct()
+    {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sharedReports = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->defaultRoles = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
-    public function getId () {
-
+    public function getId()
+    {
         return $this->id;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName () {
-
-        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
-     *
      * @return Company
      */
-    public function setName ($name) {
-
+    public function setName($name)
+    {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     * @return Company
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
 
         return $this;
     }
@@ -154,23 +151,22 @@ class Company {
     /**
      * Get address
      *
-     * @return string
+     * @return string 
      */
-    public function getAddress () {
-
+    public function getAddress()
+    {
         return $this->address;
     }
 
     /**
-     * Set address
+     * Set zipCode
      *
-     * @param string $address
-     *
+     * @param string $zipCode
      * @return Company
      */
-    public function setAddress ($address) {
-
-        $this->address = $address;
+    public function setZipCode($zipCode)
+    {
+        $this->zipCode = $zipCode;
 
         return $this;
     }
@@ -178,23 +174,22 @@ class Company {
     /**
      * Get zipCode
      *
-     * @return string
+     * @return string 
      */
-    public function getZipCode () {
-
+    public function getZipCode()
+    {
         return $this->zipCode;
     }
 
     /**
-     * Set zipCode
+     * Set city
      *
-     * @param string $zipCode
-     *
+     * @param string $city
      * @return Company
      */
-    public function setZipCode ($zipCode) {
-
-        $this->zipCode = $zipCode;
+    public function setCity($city)
+    {
+        $this->city = $city;
 
         return $this;
     }
@@ -202,23 +197,22 @@ class Company {
     /**
      * Get city
      *
-     * @return string
+     * @return string 
      */
-    public function getCity () {
-
+    public function getCity()
+    {
         return $this->city;
     }
 
     /**
-     * Set city
+     * Set state
      *
-     * @param string $city
-     *
+     * @param string $state
      * @return Company
      */
-    public function setCity ($city) {
-
-        $this->city = $city;
+    public function setState($state)
+    {
+        $this->state = $state;
 
         return $this;
     }
@@ -226,23 +220,22 @@ class Company {
     /**
      * Get state
      *
-     * @return string
+     * @return string 
      */
-    public function getState () {
-
+    public function getState()
+    {
         return $this->state;
     }
 
     /**
-     * Set state
+     * Set country
      *
-     * @param string $state
-     *
+     * @param string $country
      * @return Company
      */
-    public function setState ($state) {
-
-        $this->state = $state;
+    public function setCountry($country)
+    {
+        $this->country = $country;
 
         return $this;
     }
@@ -250,23 +243,22 @@ class Company {
     /**
      * Get country
      *
-     * @return string
+     * @return string 
      */
-    public function getCountry () {
-
+    public function getCountry()
+    {
         return $this->country;
     }
 
     /**
-     * Set country
+     * Set tel
      *
-     * @param string $country
-     *
+     * @param string $tel
      * @return Company
      */
-    public function setCountry ($country) {
-
-        $this->country = $country;
+    public function setTel($tel)
+    {
+        $this->tel = $tel;
 
         return $this;
     }
@@ -274,23 +266,22 @@ class Company {
     /**
      * Get tel
      *
-     * @return string
+     * @return string 
      */
-    public function getTel () {
-
+    public function getTel()
+    {
         return $this->tel;
     }
 
     /**
-     * Set tel
+     * Set fax
      *
-     * @param string $tel
-     *
+     * @param string $fax
      * @return Company
      */
-    public function setTel ($tel) {
-
-        $this->tel = $tel;
+    public function setFax($fax)
+    {
+        $this->fax = $fax;
 
         return $this;
     }
@@ -298,71 +289,22 @@ class Company {
     /**
      * Get fax
      *
-     * @return string
+     * @return string 
      */
-    public function getFax () {
-
+    public function getFax()
+    {
         return $this->fax;
     }
 
     /**
-     * Set fax
+     * Set owner
      *
-     * @param string $fax
-     *
+     * @param \Core\Model\User $owner
      * @return Company
      */
-    public function setFax ($fax) {
-
-        $this->fax = $fax;
-
-        return $this;
-    }
-
-    /**
-     * Get tva
-     *
-     * @return string
-     */
-    public function getTva () {
-
-        return $this->tva;
-    }
-
-    /**
-     * Set tva
-     *
-     * @param string $tva
-     *
-     * @return Company
-     */
-    public function setTva ($tva) {
-
-        $this->tva = $tva;
-
-        return $this;
-    }
-
-    /**
-     * Get currentOverconsumptionReminder
-     *
-     * @return \Core\Model\OverconsumptionReminder
-     */
-    public function getCurrentOverconsumptionReminder () {
-
-        return $this->currentOverconsumptionReminder;
-    }
-
-    /**
-     * Set currentOverconsumptionReminder
-     *
-     * @param \Core\Model\OverconsumptionReminder $currentOverconsumptionReminder
-     *
-     * @return Company
-     */
-    public function setCurrentOverconsumptionReminder (\Core\Model\OverconsumptionReminder $currentOverconsumptionReminder = NULL) {
-
-        $this->currentOverconsumptionReminder = $currentOverconsumptionReminder;
+    public function setOwner(\Core\Model\User $owner = null)
+    {
+        $this->owner = $owner;
 
         return $this;
     }
@@ -370,162 +312,21 @@ class Company {
     /**
      * Get owner
      *
-     * @return \Core\Model\User
+     * @return \Core\Model\User 
      */
-    public function getOwner () {
-
+    public function getOwner()
+    {
         return $this->owner;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \Core\Model\User $owner
-     *
-     * @return Company
-     */
-    public function setOwner (\Core\Model\User $owner = NULL) {
-
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get storage
-     *
-     * @return \Core\Model\Storage
-     */
-    public function getStorage () {
-
-        return $this->storage;
-    }
-
-    /**
-     * Set storage
-     *
-     * @param \Core\Model\Storage $storage
-     *
-     * @return Company
-     */
-    public function setStorage (\Core\Model\Storage $storage = NULL) {
-
-        $this->storage = $storage;
-
-        return $this;
-    }
-
-    /**
-     * Add overconsumptionReminders
-     *
-     * @param \Core\Model\OverconsumptionReminder $overconsumptionReminders
-     *
-     * @return Company
-     */
-    public function addOverconsumptionReminder (\Core\Model\OverconsumptionReminder $overconsumptionReminders) {
-
-        $this->overconsumptionReminders[] = $overconsumptionReminders;
-
-        return $this;
-    }
-
-    /**
-     * Remove overconsumptionReminders
-     *
-     * @param \Core\Model\OverconsumptionReminder $overconsumptionReminders
-     */
-    public function removeOverconsumptionReminder (\Core\Model\OverconsumptionReminder $overconsumptionReminders) {
-
-        $this->overconsumptionReminders->removeElement($overconsumptionReminders);
-    }
-
-    /**
-     * Get overconsumptionReminders
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOverconsumptionReminders () {
-
-        return $this->overconsumptionReminders;
-    }
-
-    /**
-     * Add deviceCompanies
-     *
-     * @param \Core\Model\DeviceCompany $deviceCompanies
-     *
-     * @return Company
-     */
-    public function addDeviceCompany (\Core\Model\DeviceCompany $deviceCompanies) {
-
-        $this->deviceCompanies[] = $deviceCompanies;
-
-        return $this;
-    }
-
-    /**
-     * Remove deviceCompanies
-     *
-     * @param \Core\Model\DeviceCompany $deviceCompanies
-     */
-    public function removeDeviceCompany (\Core\Model\DeviceCompany $deviceCompanies) {
-
-        $this->deviceCompanies->removeElement($deviceCompanies);
-    }
-
-    /**
-     * Get deviceCompanies
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDeviceCompanies () {
-
-        return $this->deviceCompanies;
-    }
-
-    /**
-     * Add devicesUsedForTheFreetrial
-     *
-     * @param \Core\Model\Device $devicesUsedForTheFreetrial
-     *
-     * @return Company
-     */
-    public function addDevicesUsedForTheFreetrial (\Core\Model\Device $devicesUsedForTheFreetrial) {
-
-        $this->devicesUsedForTheFreetrial[] = $devicesUsedForTheFreetrial;
-
-        return $this;
-    }
-
-    /**
-     * Remove devicesUsedForTheFreetrial
-     *
-     * @param \Core\Model\Device $devicesUsedForTheFreetrial
-     */
-    public function removeDevicesUsedForTheFreetrial (\Core\Model\Device $devicesUsedForTheFreetrial) {
-
-        $this->devicesUsedForTheFreetrial->removeElement($devicesUsedForTheFreetrial);
-    }
-
-    /**
-     * Get devicesUsedForTheFreetrial
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDevicesUsedForTheFreetrial () {
-
-        return $this->devicesUsedForTheFreetrial;
     }
 
     /**
      * Add users
      *
      * @param \Core\Model\User $users
-     *
      * @return Company
      */
-    public function addUser (\Core\Model\User $users) {
-
+    public function addUser(\Core\Model\User $users)
+    {
         $this->users[] = $users;
 
         return $this;
@@ -536,86 +337,18 @@ class Company {
      *
      * @param \Core\Model\User $users
      */
-    public function removeUser (\Core\Model\User $users) {
-
+    public function removeUser(\Core\Model\User $users)
+    {
         $this->users->removeElement($users);
     }
 
     /**
      * Get users
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getUsers () {
-
+    public function getUsers()
+    {
         return $this->users;
-    }
-
-    /**
-     * Add sharedReports
-     *
-     * @param \Core\Model\SharedReport $sharedReports
-     *
-     * @return Company
-     */
-    public function addSharedReport (\Core\Model\SharedReport $sharedReports) {
-
-        $this->sharedReports[] = $sharedReports;
-
-        return $this;
-    }
-
-    /**
-     * Remove sharedReports
-     *
-     * @param \Core\Model\SharedReport $sharedReports
-     */
-    public function removeSharedReport (\Core\Model\SharedReport $sharedReports) {
-
-        $this->sharedReports->removeElement($sharedReports);
-    }
-
-    /**
-     * Get sharedReports
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSharedReports () {
-
-        return $this->sharedReports;
-    }
-
-    /**
-     * Add defaultRoles
-     *
-     * @param \Core\Model\ProjectRole $defaultRoles
-     *
-     * @return Company
-     */
-    public function addDefaultRole (\Core\Model\ProjectRole $defaultRoles) {
-
-        $this->defaultRoles[] = $defaultRoles;
-
-        return $this;
-    }
-
-    /**
-     * Remove defaultRoles
-     *
-     * @param \Core\Model\ProjectRole $defaultRoles
-     */
-    public function removeDefaultRole (\Core\Model\ProjectRole $defaultRoles) {
-
-        $this->defaultRoles->removeElement($defaultRoles);
-    }
-
-    /**
-     * Get defaultRoles
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDefaultRoles () {
-
-        return $this->defaultRoles;
     }
 }

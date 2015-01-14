@@ -6,79 +6,116 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Storage
+ *
+ * @ORM\Table(name="storage", indexes={@ORM\Index(name="company_id", columns={"company_id"})})
+ * @ORM\Entity
  */
-class Storage {
-
+class Storage
+{
     /**
      * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="url", type="string", length=255, nullable=false)
      */
     private $url;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="login", type="string", length=255, nullable=false)
      */
     private $login;
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
     private $password;
 
     /**
      * @var integer
+     *
+     * @ORM\Column(name="usedSpace", type="bigint", nullable=false)
      */
     private $usedSpace;
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="lastUsedSpaceUpdate", type="datetime", nullable=false)
      */
     private $lastUsedSpaceUpdate;
 
     /**
      * @var boolean
+     *
+     * @ORM\Column(name="isOutOfQuota", type="boolean", nullable=false)
      */
     private $isOutOfQuota;
 
     /**
      * @var \Core\Model\Company
+     *
+     * @ORM\OneToOne(targetEntity="Core\Model\Company", inversedBy="storage", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", unique=true, nullable=true)
+     * })
      */
     private $company;
+
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
-    public function getId () {
-
+    public function getId()
+    {
         return $this->id;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl () {
-
-        return $this->url;
     }
 
     /**
      * Set url
      *
      * @param string $url
-     *
      * @return Storage
      */
-    public function setUrl ($url) {
-
+    public function setUrl($url)
+    {
         $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string 
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set login
+     *
+     * @param string $login
+     * @return Storage
+     */
+    public function setLogin($login)
+    {
+        $this->login = $login;
 
         return $this;
     }
@@ -86,23 +123,22 @@ class Storage {
     /**
      * Get login
      *
-     * @return string
+     * @return string 
      */
-    public function getLogin () {
-
+    public function getLogin()
+    {
         return $this->login;
     }
 
     /**
-     * Set login
+     * Set password
      *
-     * @param string $login
-     *
+     * @param string $password
      * @return Storage
      */
-    public function setLogin ($login) {
-
-        $this->login = $login;
+    public function setPassword($password)
+    {
+        $this->password = $password;
 
         return $this;
     }
@@ -110,23 +146,22 @@ class Storage {
     /**
      * Get password
      *
-     * @return string
+     * @return string 
      */
-    public function getPassword () {
-
+    public function getPassword()
+    {
         return $this->password;
     }
 
     /**
-     * Set password
+     * Set usedSpace
      *
-     * @param string $password
-     *
+     * @param integer $usedSpace
      * @return Storage
      */
-    public function setPassword ($password) {
-
-        $this->password = $password;
+    public function setUsedSpace($usedSpace)
+    {
+        $this->usedSpace = $usedSpace;
 
         return $this;
     }
@@ -134,23 +169,22 @@ class Storage {
     /**
      * Get usedSpace
      *
-     * @return integer
+     * @return integer 
      */
-    public function getUsedSpace () {
-
+    public function getUsedSpace()
+    {
         return $this->usedSpace;
     }
 
     /**
-     * Set usedSpace
+     * Set lastUsedSpaceUpdate
      *
-     * @param integer $usedSpace
-     *
+     * @param \DateTime $lastUsedSpaceUpdate
      * @return Storage
      */
-    public function setUsedSpace ($usedSpace) {
-
-        $this->usedSpace = $usedSpace;
+    public function setLastUsedSpaceUpdate($lastUsedSpaceUpdate)
+    {
+        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
 
         return $this;
     }
@@ -158,23 +192,22 @@ class Storage {
     /**
      * Get lastUsedSpaceUpdate
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
-    public function getLastUsedSpaceUpdate () {
-
+    public function getLastUsedSpaceUpdate()
+    {
         return $this->lastUsedSpaceUpdate;
     }
 
     /**
-     * Set lastUsedSpaceUpdate
+     * Set isOutOfQuota
      *
-     * @param \DateTime $lastUsedSpaceUpdate
-     *
+     * @param boolean $isOutOfQuota
      * @return Storage
      */
-    public function setLastUsedSpaceUpdate ($lastUsedSpaceUpdate) {
-
-        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
+    public function setIsOutOfQuota($isOutOfQuota)
+    {
+        $this->isOutOfQuota = $isOutOfQuota;
 
         return $this;
     }
@@ -182,23 +215,22 @@ class Storage {
     /**
      * Get isOutOfQuota
      *
-     * @return boolean
+     * @return boolean 
      */
-    public function getIsOutOfQuota () {
-
+    public function getIsOutOfQuota()
+    {
         return $this->isOutOfQuota;
     }
 
     /**
-     * Set isOutOfQuota
+     * Set company
      *
-     * @param boolean $isOutOfQuota
-     *
+     * @param \Core\Model\Company $company
      * @return Storage
      */
-    public function setIsOutOfQuota ($isOutOfQuota) {
-
-        $this->isOutOfQuota = $isOutOfQuota;
+    public function setCompany(\Core\Model\Company $company = null)
+    {
+        $this->company = $company;
 
         return $this;
     }
@@ -206,24 +238,10 @@ class Storage {
     /**
      * Get company
      *
-     * @return \Core\Model\Company
+     * @return \Core\Model\Company 
      */
-    public function getCompany () {
-
+    public function getCompany()
+    {
         return $this->company;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Core\Model\Company $company
-     *
-     * @return Storage
-     */
-    public function setCompany (\Core\Model\Company $company = NULL) {
-
-        $this->company = $company;
-
-        return $this;
     }
 }

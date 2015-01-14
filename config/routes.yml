@@ -1,4 +1,4 @@
 routes :
-   createAccount: { path: /account/create, controller: Account, method: create }
-   updateAccount: { path: /account/update, controller: Account, method: update }
-   findAccount: { path: /account/find, controller: Account, method: find }
+   createAccount: { path: /Account/create, controller: Account, method: create }
+   updateAccount: { path: /Account/update, controller: Account, method: update }
+   findAccount: { path: /Account/find, controller: Account, method: find }

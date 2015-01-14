@@ -1,4 +1,14 @@
 Core\Model\Storage:
+    oneToOne:
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: storage
+            cascade:
+                - persist
+            joinColumns:
+                company_id:
+                    referencedColumnName: id
+                    nullable: true
     type: entity
     table: storage
     indexes:
@@ -53,11 +63,3 @@ Core\Model\Storage:
             options:
                 default: '0'
             column: isOutOfQuota
-    oneToOne:
-        company:
-            targetEntity: Core\Model\Company
-            inversedBy: storage
-            joinColumns:
-                company_id:
-                    referencedColumnName: id
-                    nullable: true
