@@ -118,15 +118,11 @@ class BuildEntitiesCommand extends Command {
         $ymls = [];
         foreach ($modulesManagers as $moduleManager) {
             $loadYml = function (\ReflectionClass $class) use (&$ymls, &$loadYml) {
-                var_dump('PPPPP');
-                var_dump($class);
                 if (($parentClass = $class->getParentClass()) && !$parentClass->isAbstract()) {
                     $loadYml($parentClass);
                 }
                 $moduleFolder = dirname($class->getFileName());
                 $modelFiles = glob($moduleFolder . '/Model/*.dcm.yml');
-                var_dump('modul folder : '.$moduleFolder);
-                var_dump($modelFiles);
                 foreach ($modelFiles as $modelFile) {
                     $ymls = array_merge_recursive($ymls, Yaml::parse($modelFile));
                 }
@@ -136,8 +132,14 @@ class BuildEntitiesCommand extends Command {
 
         // write new yml files
         $rootDir = substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR));
+        if ($rootDir == '') {
+            // SHOULD HAPEN ONLY IF YOU ARE TESTING CORE
+            $rootDir = __DIR__.'/../../../../';
+        }
         $this->modelDIr = $rootDir . '/model';
-        mkdir($this->modelDIr);
+        if (!is_dir($this->modelDIr)) {
+            mkdir($this->modelDIr);
+        }
 
         $driver = new \Doctrine\ORM\Mapping\Driver\YamlDriver($this->modelDIr);
         $config = Setup::createXMLMetadataConfiguration(array($this->modelDIr));
@@ -165,7 +167,9 @@ class BuildEntitiesCommand extends Command {
             $generator->setUpdateEntityIfExists(true);
             //$generator->setAnnotationPrefix('');
             $generator->generate(array($metadata), $rootDir . '/src');
-            $em->getProxyFactory()->generateProxyClasses(array($em->getClassMetadata($className)), $rootDir . '/proxy');
+
+            // Proxy works only if all model are generated
+            //$em->getProxyFactory()->generateProxyClasses(array($em->getClassMetadata($className)), $rootDir . '/proxy');
         }
 
         $this->finishProgress();
