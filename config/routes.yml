@@ -1,2 +1,4 @@
 routes :
-   companyListUsers: { path: /company/listUsers ,controller: User2Company, method: listUsers }
+   createAccount: { path: /account/create, controller: Account, method: create }
+   updateAccount: { path: /account/update, controller: Account, method: update }
+   findAccount: { path: /account/find, controller: Account, method: find }
