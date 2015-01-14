@@ -38,7 +38,7 @@ class BasicHelperTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
         $this->assertNull($product->getId());
 
-        $product = $basicHelper->basicSave('product', [
+        $product = $basicHelper->basicSave(new Product, [
             'duration'   => NULL,
             'bundleid'   => 'bundle id',
             'name'       => 'produit',
