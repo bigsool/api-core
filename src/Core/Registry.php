@@ -85,7 +85,6 @@ class Registry implements EventSubscriber {
 
         $ruleProcessor = new RuleProcessor();
         $ruleProcessor->apply($saveQueryContext);
-
         $this->entityManager->persist($model);
         $this->entityManager->flush();
 
@@ -268,7 +267,7 @@ class Registry implements EventSubscriber {
      */
     public function getSubscribedEvents () {
 
-        return [Events::prePersist];
+        return [Events::prePersist, Events::preUpdate];
 
     }
 
@@ -276,6 +275,20 @@ class Registry implements EventSubscriber {
      * @param LifecycleEventArgs $args
      */
     public function prePersist (LifecycleEventArgs $args) {
+        $this->preModification($args);
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function preUpdate (LifecycleEventArgs $args) {
+        $this->preModification($args);
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    protected function preModification (LifecycleEventArgs $args) {
 
         $entity = $args->getEntity();
         $fields = $args->getEntityManager()->getClassMetadata(get_class($entity))->getFieldNames();
@@ -294,4 +307,5 @@ class Registry implements EventSubscriber {
         }
 
     }
+
 }

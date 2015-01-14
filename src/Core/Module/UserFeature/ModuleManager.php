@@ -41,6 +41,25 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
+        $context->addAction(new Action('Core\User', 'update', NULL, [
+            'id'        => [ERR_INVALID_NAME, new UserValidation()],
+            'name'      => [ERR_INVALID_NAME, new UserValidation(),true],
+            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation(),true],
+            'firstname' => [ERR_PARAMS_INVALID, new UserValidation(),true],
+            'password'  => [ERR_INVALID_PASSWORD, new UserValidation(),true],
+        ], function (ActionContext $context) {
+
+            /**
+             * @var UserFeatureHelper $helper
+             */
+            $helper = ApplicationContext::getInstance()->getHelper('UserFeatureHelper');
+            $params = $context->getVerifiedParams();
+            $helper->updateUser($context, $params);
+
+            return $context['user'];
+
+        }));
+
     }
 
     /**

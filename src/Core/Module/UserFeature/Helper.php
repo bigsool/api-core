@@ -6,9 +6,12 @@ namespace Core\Module\UserFeature;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Context\FindQueryContext;
+use Core\Filter\StringFilter;
 use Core\Model\User;
 use Core\Parameter\Parameter;
 use Core\Parameter\SafeParameter;
+use Core\Field\KeyPath as FieldKeyPath;
 
 class Helper {
 
@@ -41,6 +44,35 @@ class Helper {
 
     }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param Parameter[]   $params
+     */
+    public function updateUser (ActionContext $actCtx, array $params) {
+
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('User', $actCtx->getRequestContext());
+
+        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+
+        $qryCtx->setParams(['id' => $params['id']->getValue()]);
+
+        $qryCtx->addFilter(new StringFilter('User', '', 'id = :id'));
+        $result = $registry->find($qryCtx, false);
+
+        $user = $result[0];
+
+        if (isset($params['email'])) $user->setEmail($params['email']);
+        if (isset($params['password'])) $user->setPassword($params['password']);
+        if (isset($params['name']))$user->setName($params['name']);
+        if (isset($params['firstname']))$user->setFirstname($params['firstname']);
+
+        $registry->save($user);
+
+        $actCtx['user'] = $user;
+
+    }
     /**
      * @return string
      */
