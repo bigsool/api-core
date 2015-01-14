@@ -7,6 +7,7 @@ namespace Core\Context;
 use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
+use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Parameter\UnsafeParameter;
 
@@ -48,10 +49,33 @@ class RequestContext {
     protected $returnedKeyPaths = [];
 
     /**
+     * @var Filter
+     */
+    protected $filter;
+
+    /**
      */
     public function __construct () {
 
         $this->auth = new Auth();
+
+    }
+
+    /**
+     * @return Filter
+     */
+    public function getFilter () {
+
+        return $this->filter;
+
+    }
+
+    /**
+     * @param Filter $filter
+     */
+    public function setFilter (Filter $filter) {
+
+        $this->filter = $filter;
 
     }
 
@@ -61,6 +85,7 @@ class RequestContext {
     public function getReturnedKeyPaths () {
 
         return $this->returnedKeyPaths;
+
     }
 
     /**
@@ -75,6 +100,7 @@ class RequestContext {
         }
 
         $this->returnedKeyPaths = $returnedKeyPaths;
+
     }
 
     /**
@@ -83,6 +109,7 @@ class RequestContext {
     public function getReturnedRootEntity () {
 
         return $this->returnedRootEntity;
+
     }
 
     /**
@@ -95,6 +122,7 @@ class RequestContext {
         }
 
         $this->returnedRootEntity = $returnedRootEntity;
+
     }
 
     /**

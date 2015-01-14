@@ -78,6 +78,15 @@ class RequestContextTest extends TestCase {
 
     }
 
+    public function testFilter () {
+
+        $ctx = $this->getRequestContext();
+        $filter = $this->getMockFilter();
+        $ctx->setFilter($filter);
+        $this->assertSame($filter, $ctx->getFilter());
+
+    }
+
     public function testClientName () {
 
         $ctx = $this->getRequestContext();
