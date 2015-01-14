@@ -101,7 +101,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
 
     public function magicalUpdate (ActionContext $ctx) {
-        return $this->magicalModify($ctx,'create');
+        return $this->magicalModify($ctx,'update');
     }
 
     /**
@@ -215,7 +215,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    protected function magicalFind ($ids) {
+    protected function magicalFind ($keyPaths,$filters) {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -225,21 +225,13 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
 
-        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
-
-        foreach($this->modelAspects as $modelAspect) {
-            if (($keyPath = $modelAspect->getKeyPath())) {
-                $qryCtx->addKeyPath($keyPath);
-            }
+        foreach($keyPaths as $keyPath) {
+            $qryCtx->addKeyPath($keyPath);
         }
 
-        $inClause = '('.$ids[0].',';
-        for ($i = 1 ; $i < count($ids) ; ++$i) {
-            $inClause .= ','.$ids[$i];
+        foreach($filters as $filter) {
+            $qryCtx->addFilter($filter);
         }
-        $inClause .= ')';
-
-        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id IN '.$inClause));
 
         $result = $registry->find($qryCtx,false);
 

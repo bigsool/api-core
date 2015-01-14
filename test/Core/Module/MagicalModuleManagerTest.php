@@ -464,6 +464,21 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     *
+     * @return mixed
+     */
+    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($mgr, $args);
+
+    }
+
     public function testComplexMagicalCreate () {
 
         self::resetApplicationContext();
@@ -602,6 +617,45 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
+    }
+
+    public function testSimpleMagicalUpdate () {
+
+        self::resetApplicationContext();
+
+        $mgr = $this->getMockMagicalModuleManager();
+
+        $userModuleManager = new UserModuleManager();
+
+        $this->addUserAspect($mgr);
+
+        $app = $this->getMockApplication();
+        $app->method('getModuleManagers')
+            ->willReturn([$mgr, $userModuleManager]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+
+        $actionContext = $this->getActionContextWithParams(
+            ['id' => new SafeParameter(1),
+             'email'    => new SafeParameter('youpy@qwe.com'),
+             'name' => new SafeParameter('youpy'),
+             'firstname' => new SafeParameter('youpy'),
+             'password' => new SafeParameter('youpy'),
+            ]);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->magicalUpdate($mgr, [$actionContext]);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('youpy@qwe.com', $user->getEmail());
+        $this->assertSame('youpy', $user->getName());
+        $this->assertSame('youpy', $user->getFirstname());
+        $this->assertSame('youpy', $user->getPassword());
     }
 
     protected function tearDown () {

@@ -35,7 +35,7 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
     public function validate ($name, $value, $forceOptional = false) {
 
         $constraints = $this->getConstraintsFor($name);
-        if ($forceOptional) {
+        if ($forceOptional && $constraints) {
             $constraints = array_reduce($constraints, function ($constraints, Constraint $constraint) {
 
                 if (!($constraint instanceof Assert\NotBlank)) {
