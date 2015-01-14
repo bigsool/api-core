@@ -4,6 +4,8 @@
 namespace Core\Module;
 
 
+use Core\Model\Company;
+use Core\Model\Product;
 use Core\Registry;
 use Core\TestCase;
 
@@ -23,7 +25,7 @@ class BasicHelperTest extends TestCase {
 
         $basicHelper = new BasicHelper();
 
-        $product = $basicHelper->create('product', [
+        $product = $basicHelper->basicSave(new Product, [
             'duration'   => NULL,
             'bundleid'   => 'bundle id',
             'name'       => 'produit',
@@ -37,7 +39,7 @@ class BasicHelperTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
         $this->assertNull($product->getId());
 
-        $product = $basicHelper->create('product', [
+        $product = $basicHelper->basicSave(new Product, [
             'duration'   => NULL,
             'bundleid'   => 'bundle id',
             'name'       => 'produit',
@@ -50,6 +52,24 @@ class BasicHelperTest extends TestCase {
 
         $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
         $this->assertSame(1, $product->getId());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testBasicSaveOnNotObject() {
+
+        (new BasicHelper())->basicSave('qwe', []);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testBasicSaveWithWrongParameter() {
+
+        (new BasicHelper())->basicSave(new Company(), ['qwe' => 'qwe']);
 
     }
 

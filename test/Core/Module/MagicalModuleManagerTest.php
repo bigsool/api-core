@@ -233,6 +233,67 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    public function testAddAspectOneToMany () {
+
+        $mgr = $this->getMockMagicalModuleManager();
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+
+        $this->addAspect($mgr, [
+            'model' => 'Company',
+        ]);
+        $this->addAspect($mgr, [
+            'model'   => 'User',
+            'keyPath' => 'users',
+            'prefix'  => 'users',
+        ]);
+
+        $app = $this->getMockApplication();
+        $app->method('getModuleManagers')
+            ->willReturn([$mgr, $companyModuleManager, $userModuleManager]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'name'  => new UnsafeParameter('qwe SA'),
+                'users' => new UnsafeParameter([
+                                                   [
+                                                       'email'    => 'qwe@qwe.com',
+                                                       'name'     => 'thierry',
+                                                       'password' => 'qwe',
+                                                   ],
+                                                   [
+                                                       'email'    => 'qwe2@qwe.com',
+                                                       'name'     => 'thierry2',
+                                                       'password' => 'qwe2',
+                                                   ]
+                                               ])
+            ]);
+        $mgr->magicalCreate($actionContext);
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return ActionContext
+     */
+    protected function getActionContextWithParams (array $params) {
+
+        $actionContext = new ActionContext(new RequestContext());
+        $actionContext->setParams($params);
+
+        return $actionContext;
+
+    }
+
     public function testSimpleDefineAction () {
 
         self::resetApplicationContext();
@@ -329,20 +390,6 @@ class MagicalModuleManagerTest extends TestCase {
 
         $action->process($actionContext);
         $this->assertTrue($called);
-
-    }
-
-    /**
-     * @param array $params
-     *
-     * @return ActionContext
-     */
-    protected function getActionContextWithParams (array $params) {
-
-        $actionContext = new ActionContext(new RequestContext());
-        $actionContext->setParams($params);
-
-        return $actionContext;
 
     }
 
@@ -512,7 +559,7 @@ class MagicalModuleManagerTest extends TestCase {
                 'email'    => new SafeParameter('qwe@qwe.com'),
                 'name'     => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => new SafeParameter(['name' => new SafeParameter('bigsool')])
+                'company'  => new SafeParameter(['name' => 'bigsool'])
             ]);
 
         /**
@@ -580,8 +627,8 @@ class MagicalModuleManagerTest extends TestCase {
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'name'     => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(['name'    => new SafeParameter('bigsool'),
-                                                'storage' => new UnsafeParameter(['url' => new SafeParameter('http://ddfd.fr')]),
+             'company'  => new UnsafeParameter(['name'    => 'bigsool',
+                                                'storage' => ['url' => 'http://ddfd.fr'],
                                                ]),
             ]);
 

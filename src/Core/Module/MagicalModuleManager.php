@@ -12,6 +12,7 @@ use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Parameter\Parameter;
+use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -139,7 +140,11 @@ abstract class MagicalModuleManager extends ModuleManager {
             if ($params) {
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
-                $subContext->setParams($params->getValue());
+                $subContextParams = $params->getValue();
+                foreach ($subContextParams as &$subContextParam) {
+                    $subContextParam = new UnsafeParameter($subContextParam);
+                }
+                $subContext->setParams($subContextParams);
             }
 
             $result = $modifyAction->process($subContext ? $subContext : $ctx);
