@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ModuleManager extends MagicalModuleManager {
 
-    public function __construct () {
+    public function load (ApplicationContext &$context) {
 
         $this->addAspect([
                              'model' => 'User',
@@ -33,6 +33,8 @@ class ModuleManager extends MagicalModuleManager {
                              'constraints' => [new Blank()],
                          ]);
 
+        parent::load($context);
+
     }
 
     /**
@@ -42,7 +44,7 @@ class ModuleManager extends MagicalModuleManager {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\User', 'create', NULL, [],
+        $context->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 $user = $self->magicalCreate($context);
@@ -51,7 +53,7 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\User', 'update', NULL, [],
+        $context->addAction(new SimpleAction('Core\Account', 'update', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 $user = $self->magicalUpdate($context);
@@ -60,7 +62,7 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\User', 'find', NULL, [],
+        $context->addAction(new SimpleAction('Core\Account', 'find', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 throw new \RuntimeException('Not implemented yet');
