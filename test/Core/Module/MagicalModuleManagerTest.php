@@ -27,6 +27,11 @@ use Symfony\Component\Validator\Constraints\Null;
 
 class MagicalModuleManagerTest extends TestCase {
 
+    /**
+     * @var Connection
+     */
+    protected static $doctrineConnectionSettings;
+
     public function testMinimalAddAspect () {
 
         $mgr = $this->getMockMagicalModuleManager();
@@ -249,9 +254,6 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'  => 'users',
         ]);
 
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$mgr, $companyModuleManager, $userModuleManager]);
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -295,10 +297,6 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     public function testSimpleDefineAction () {
-
-        self::resetApplicationContext();
-
-        $this->getMockApplication();
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -348,10 +346,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testComplexDefineAction () {
 
-        self::resetApplicationContext();
-
-        $this->getMockApplication();
-
         $self = $this;
         $processFn = function (ActionContext $ctx) use (&$called, &$self) {
 
@@ -398,10 +392,6 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testInvalidParameterDefineAction () {
 
-        self::resetApplicationContext();
-
-        $this->getMockApplication();
-
         $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgr->method('getModuleName')->willReturn('ModuleName');
 
@@ -418,8 +408,6 @@ class MagicalModuleManagerTest extends TestCase {
      * @expectedException \Exception
      */
     public function testDefineActionInvalidConstraint () {
-
-        self::resetApplicationContext();
 
         $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgr->method('getModuleName')->willReturn('ModuleName');
@@ -445,8 +433,6 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testDefineActionInvalidConstraintOfModelAspect () {
 
-        self::resetApplicationContext();
-
         $mgr = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgr->method('getModuleName')->willReturn('ModuleName');
 
@@ -463,17 +449,12 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testSimpleMagicalCreate () {
 
-        self::resetApplicationContext();
-
         $mgr = $this->getMockMagicalModuleManager();
 
         $userModuleManager = new UserModuleManager();
 
         $this->addUserAspect($mgr);
 
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$mgr, $userModuleManager]);
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -482,7 +463,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
-            ['email'    => new SafeParameter('qwe@qwe.com'),
+            ['email'    => new SafeParameter('qwe@qwe1.com'),
              'password' => new UnsafeParameter('qwe')
             ]);
 
@@ -491,7 +472,7 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalCreate($mgr, [$actionContext]);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame('qwe@qwe.com', $user->getEmail());
+        $this->assertSame('qwe@qwe1.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
 
     }
@@ -528,8 +509,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testComplexMagicalCreate () {
 
-        self::resetApplicationContext();
-
         $mgr = $this->getMockMagicalModuleManager();
 
         $userModuleManager = new UserModuleManager();
@@ -540,9 +519,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addCompanyAspect($mgr);
         // $this->addStorageAspect($mgr);
 
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$storageModuleManager, $mgr, $companyModuleManager, $userModuleManager]);
+
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -556,7 +533,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(
             [
-                'email'    => new SafeParameter('qwe@qwe.com'),
+                'email'    => new SafeParameter('qwe@qwe2.com'),
                 'name'     => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
                 'company'  => new SafeParameter(['name' => new UnsafeParameter('bigsool')])
@@ -568,7 +545,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalCreate($mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame('qwe@qwe.com', $user->getEmail());
+        $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
@@ -576,8 +553,6 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     public function testMagicalCreateWithTwoMagicalModuleManager () {
-
-        self::resetApplicationContext();
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
@@ -608,10 +583,6 @@ class MagicalModuleManagerTest extends TestCase {
         $self = $this;
         $called = false;
 
-
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$mgrCompany, $companyModuleManager, $userModuleManager, $mgrUser]);
 
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
@@ -666,16 +637,12 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
-        return $app;
-
     }
 
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
-    public function testSimpleMagicalUpdate ($app) {
-
-       self::resetApplicationContext();
+    public function testSimpleMagicalUpdate () {
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -683,11 +650,8 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addUserAspect($mgr);
 
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$mgr, $userModuleManager]);
 
-        $appCtx = ApplicationContext::getInstance();
+        $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
@@ -715,9 +679,8 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
-    public function testComplexMagicalUpdate ($app) {
+    public function testComplexMagicalUpdate () {
 
-        self::resetApplicationContext();
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
@@ -748,11 +711,8 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'  => 'storage',
         ]);
 
-        $app = $this->getMockApplication();
-        $app->method('getModuleManagers')
-            ->willReturn([$mgrCompany, $companyModuleManager, $userModuleManager, $mgrUser]);
 
-        $appCtx = ApplicationContext::getInstance();
+        $appCtx =  $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
@@ -772,7 +732,7 @@ class MagicalModuleManagerTest extends TestCase {
              'name' => new SafeParameter('youpy'),
              'firstname' => new SafeParameter('youpy'),
              'password' => new SafeParameter('youpy'),
-             'company' => new UnsafeParameter(['name'    => 'bigsoole', 'storage' => ['url' =>'http://www.bigsoole.com']])
+             'company' => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'), 'storage' => new SafeParameter(['url' =>new SafeParameter('http://www.bigsoole.com')])])
             ]);
 
         $this->defineAction($mgrCompany, ['update',
@@ -817,7 +777,23 @@ class MagicalModuleManagerTest extends TestCase {
         if (!in_array($currentTestFcName,$whiteList)) {
             $this->rollBackDatabase();
         }
+        else {
+            $this->commitDB();
+        }
 
+
+    }
+
+    protected function commitDB () {
+
+        $appCtx = ApplicationContext::getInstance();
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+        /**
+         * @var EntityManager $em
+         */
+        $em = $prop->getValue($appCtx);
+        $em->commit();
 
     }
 
@@ -834,6 +810,40 @@ class MagicalModuleManagerTest extends TestCase {
         if (isset($em)) {
             $em->rollback();
         }
+
+    }
+
+    public function setUp () {
+
+        parent::setUp();
+
+        self::resetApplicationContext();
+
+        $ctx = $this->getApplicationContext(self::$doctrineConnectionSettings);
+
+        $prop = new \ReflectionProperty($ctx, 'entityManager');
+        $prop->setAccessible(true);
+        /**
+         * @var EntityManager $em
+         */
+        $em = $prop->getValue($ctx);
+        $em->beginTransaction();
+    }
+
+    public static function setUpBeforeClass () {
+
+        parent::setUpBeforeClass();
+
+        $ctx = self::getApplicationContext();
+
+
+        $prop = new \ReflectionProperty($ctx, 'entityManager');
+        $prop->setAccessible(true);
+
+        $em = $prop->getValue($ctx);
+
+        self::$doctrineConnectionSettings = $em->getConnection();
+        self::resetDatabase($ctx);
 
     }
 

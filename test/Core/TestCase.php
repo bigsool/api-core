@@ -468,8 +468,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
                                                        __DIR__ . '/../../src/');
             $config->setSQLLogger(new DebugStack());
             $tmpDir = __DIR__.'/../../doctrine/';
-            $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
-            $tmpDB = $tmpDir. '/tmp.archiweb-proto.db.sqlite';
+            $originalDb = $tmpDir . 'archiweb-proto.db.sqlite';
+            $tmpDB = $tmpDir. 'tmp.archiweb-proto.db.sqlite';
             /*if (file_exists($originalDb)) {
                 copy($originalDb, $tmpDB);
             }*/
