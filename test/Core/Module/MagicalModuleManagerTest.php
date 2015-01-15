@@ -666,11 +666,16 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
+        return $app;
+
     }
 
-    public function testSimpleMagicalUpdate () {
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testSimpleMagicalUpdate ($app) {
 
-        self::resetApplicationContext();
+       self::resetApplicationContext();
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -707,7 +712,10 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('youpy', $user->getPassword());
     }
 
-    public function testComplexMagicalUpdate () {
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testComplexMagicalUpdate ($app) {
 
         self::resetApplicationContext();
 
@@ -764,7 +772,7 @@ class MagicalModuleManagerTest extends TestCase {
              'name' => new SafeParameter('youpy'),
              'firstname' => new SafeParameter('youpy'),
              'password' => new SafeParameter('youpy'),
-             'company' => new UnsafeParameter(['name'    => 'bigsoole', 'storage' => ['url' =>'http://bla']])
+             'company' => new UnsafeParameter(['name'    => 'bigsoole', 'storage' => ['url' =>'http://www.bigsoole.com']])
             ]);
 
         $this->defineAction($mgrCompany, ['update',
@@ -798,13 +806,18 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsoole', $user->getCompany()->getName());
 
 
-        $this->assertSame('http://bla', $user->getCompany()->getStorage()->getUrl());
+        $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
 
     }
 
     protected function tearDown () {
 
-        $this->rollBackDatabase();
+        $whiteList = ['testMagicalCreateWithTwoMagicalModuleManager','testSimpleMagicalUpdate','testComplexMagicalUpdate'];
+        $currentTestFcName = $this->getName();
+        if (!in_array($currentTestFcName,$whiteList)) {
+            $this->rollBackDatabase();
+        }
+
 
     }
 
