@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+cd ../doctrine
+../vendor/bin/doctrine c:b $1
