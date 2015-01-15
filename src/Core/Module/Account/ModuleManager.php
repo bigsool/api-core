@@ -29,7 +29,7 @@ class ModuleManager extends MagicalModuleManager {
         $this->addAspect([
                              'model'       => 'Storage',
                              'prefix'      => 'storage',
-                             'keyPath'     => 'storage',
+                             'keyPath'     => 'company.storage',
                              'constraints' => [new Blank()],
                          ]);
 
