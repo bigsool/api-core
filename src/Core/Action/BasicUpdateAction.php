@@ -7,6 +7,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Filter\StringFilter;
+use Core\Validation\CompanyValidation;
 
 class BasicUpdateAction extends SimpleAction {
 
@@ -23,9 +24,9 @@ class BasicUpdateAction extends SimpleAction {
             };
         }
 
-        array_merge($params, ['id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()]]);
+        $params = array_merge($params, ['id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()]]);
 
-        parent::__construct($module, 'create', $minRights, $params,
+        parent::__construct($module, 'update', $minRights, $params,
             function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
 
                 $preUpdateCallable($context);
@@ -45,10 +46,17 @@ class BasicUpdateAction extends SimpleAction {
                 }
 
                 $method = 'update' . ucfirst($model);
-                if (is_callable([$helper, $method], false, $callableName)) {
+                if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
-                $helper->$method($context, $entities[0], $params);
+
+                $newParams = [];
+                foreach ($params as $key => $value) {
+                    if ($key == "id") continue;
+                    $newParams[$key] = $value;
+                }
+
+                $helper->$method($context, $entities[0], $newParams);
 
                 return $context[$model];
 

@@ -29,7 +29,7 @@ class BasicCreateAction extends SimpleAction {
                 $helper = ApplicationContext::getInstance()->getHelper($helperName);
                 $params = $context->getVerifiedParams();
                 $method = 'create' . ucfirst($model);
-                if (is_callable([$helper, $method], false, $callableName)) {
+                if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
                 $helper->$method($context, $params);
