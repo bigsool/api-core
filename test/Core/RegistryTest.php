@@ -93,7 +93,7 @@ class RegistryTest extends TestCase {
 
     public function tearDown () {
 
-        parent::setUp();
+        parent::tearDown();
 
         $prop = new \ReflectionProperty($this->appCtx, 'entityManager');
         $prop->setAccessible(true);
