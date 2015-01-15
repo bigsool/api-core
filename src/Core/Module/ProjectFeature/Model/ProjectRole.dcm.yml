@@ -1,4 +1,4 @@
-Core\Model\ProjectRole:
+ProjectRole:
     type: entity
     table: projectRole
     id:
@@ -18,7 +18,7 @@ Core\Model\ProjectRole:
             fixed: false
             comment: ''
 
-  oneToMany:
+    oneToMany:
         userProjectRoles:
             targetEntity: Core\Model\UserProjectRole
             mappedBy: projectRole

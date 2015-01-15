@@ -1,4 +1,4 @@
-Core\Model\ProjectPerson:
+ProjectPerson:
     type: entity
     table: projectPerson
     indexes:

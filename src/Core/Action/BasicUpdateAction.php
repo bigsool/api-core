@@ -7,6 +7,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Filter\StringFilter;
+use Core\Validation\CompanyValidation;
 
 class BasicUpdateAction extends SimpleAction {
 
@@ -23,9 +24,10 @@ class BasicUpdateAction extends SimpleAction {
             };
         }
 
-        array_merge($params, ['id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()]]);
+        // TODO: DONT USE CompanyValidation
+        $params = array_merge($params, ['id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()]]);
 
-        parent::__construct($module, 'create', $minRights, $params,
+        parent::__construct($module, 'update', $minRights, $params,
             function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
 
                 $preUpdateCallable($context);

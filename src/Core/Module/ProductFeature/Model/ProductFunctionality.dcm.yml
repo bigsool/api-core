@@ -1,4 +1,4 @@
-Core\Model\ProductFunctionality:
+ProductFunctionality:
     type: entity
     table: productFunctionality
     id:

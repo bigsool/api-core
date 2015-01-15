@@ -21,7 +21,7 @@ class BasicFindAction extends SimpleAction {
             };
         }
 
-        parent::__construct($module, 'create', $minRights, $params,
+        parent::__construct($module, 'find', $minRights, $params,
             function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
 
                 $preUpdateCallable($context);

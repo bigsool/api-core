@@ -155,10 +155,16 @@ class BuildEntitiesCommand extends Command {
 
         foreach ($ymls as $modelName => $modelData) {
             $ymlContent = (new Dumper())->dump([$product . '\\Model\\' . $modelName => $modelData], 10);
-            file_put_contents($this->modelDIr . '/' . $product . '.Model.' . $modelName . '.dcm.yml', $ymlContent);
+            $ymlFilePath = $this->modelDIr . '/' . $product . '.Model.' . $modelName . '.dcm.yml';
+            file_put_contents($ymlFilePath, $ymlContent);
 
             $className = $product . '\\Model\\' . $modelName;
             $metadata = $cmf->getMetadataFor($className);
+
+            if (count($metadata->getIdentifier()) == 0) {
+                unlink($ymlFilePath);
+                continue;
+            }
             $generator = new \Doctrine\ORM\Tools\EntityGenerator();
             $generator->setBackupExisting(false);
             $generator->setGenerateAnnotations(true);

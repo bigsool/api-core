@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Storage
  *
- * @ORM\Table(name="storage", indexes={@ORM\Index(name="company_id", columns={"company_id"})})
+ * @ORM\Table(name="storage")
  * @ORM\Entity
  */
 class Storage

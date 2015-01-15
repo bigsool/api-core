@@ -78,6 +78,13 @@ class Company
     private $fax;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="tva", type="string", length=255, nullable=true)
+     */
+    private $tva;
+
+    /**
      * @var \Core\Model\User
      *
      * @ORM\OneToOne(targetEntity="Core\Model\User", inversedBy="ownedCompany", cascade={"persist"})
@@ -86,6 +93,13 @@ class Company
      * })
      */
     private $owner;
+
+    /**
+     * @var \Core\Model\Storage
+     *
+     * @ORM\OneToOne(targetEntity="Core\Model\Storage", mappedBy="company", cascade={"persist"})
+     */
+    private $storage;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -297,6 +311,29 @@ class Company
     }
 
     /**
+     * Set tva
+     *
+     * @param string $tva
+     * @return Company
+     */
+    public function setTva($tva)
+    {
+        $this->tva = $tva;
+
+        return $this;
+    }
+
+    /**
+     * Get tva
+     *
+     * @return string 
+     */
+    public function getTva()
+    {
+        return $this->tva;
+    }
+
+    /**
      * Set owner
      *
      * @param \Core\Model\User $owner
@@ -317,6 +354,29 @@ class Company
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * Set storage
+     *
+     * @param \Core\Model\Storage $storage
+     * @return Company
+     */
+    public function setStorage(\Core\Model\Storage $storage = null)
+    {
+        $this->storage = $storage;
+
+        return $this;
+    }
+
+    /**
+     * Get storage
+     *
+     * @return \Core\Model\Storage 
+     */
+    public function getStorage()
+    {
+        return $this->storage;
     }
 
     /**

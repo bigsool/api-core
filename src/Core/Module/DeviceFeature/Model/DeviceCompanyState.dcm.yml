@@ -2,12 +2,6 @@ DeviceCompanyState:
     type: entity
     table: deviceCompanyState
     indexes:
-        device_id:
-            columns:
-                - device_id
-        company_id:
-            columns:
-                - company_id
         IDX_4816AACA39EDDC8:
             columns:
                 - functionality_id

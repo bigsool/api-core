@@ -1,4 +1,4 @@
-Core\Model\BillingAddress:
+BillingAddress:
     type: entity
     table: billingAddress
 

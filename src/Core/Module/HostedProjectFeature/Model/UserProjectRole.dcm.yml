@@ -1,0 +1,42 @@
+UserProjectRole:
+    type: entity
+    table: userProjectRole
+    indexes:
+        hostedProject_id:
+            columns:
+                - hostedProject_id
+        role_id:
+            columns:
+                - role_id
+        IDX_6AFB5F0EA76ED395:
+            columns:
+                - user_id
+    id:
+        projectRole:
+              associationKey: true
+        user:
+              associationKey: true
+        hostedProject:
+              associationKey: true
+    manyToOne:
+        projectRole:
+            targetEntity: Core\Model\ProjectRole
+            inversedBy: userProjectRoles
+            joinColumns:
+                role_id:
+                    referencedColumnName: id
+                    nullable: false
+        user:
+            targetEntity: Core\Model\User
+            inversedBy: userProjectRoles
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+                    nullable: false
+        hostedProject:
+            targetEntity: Core\Model\HostedProject
+            inversedBy: userProjectRoles
+            joinColumns:
+                hostedProject_id:
+                    referencedColumnName: id
+                    nullable: false

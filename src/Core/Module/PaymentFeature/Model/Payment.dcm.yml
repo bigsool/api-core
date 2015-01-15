@@ -1,4 +1,4 @@
-Core\Model\Payment:
+Payment:
     type: entity
     table: payment
     id:

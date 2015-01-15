@@ -2,9 +2,6 @@ DeviceCompany:
     type: entity
     table: deviceCompany
     indexes:
-        company_id:
-            columns:
-                - company_id
         IDX_AA21A64B94A4C7D4:
             columns:
                 - device_id
@@ -28,5 +25,12 @@ DeviceCompany:
             inversedBy: deviceCompanies
             joinColumns:
                 device_id:
+                    referencedColumnName: id
+                    nullable: false
+        company:
+            targetEntity: Core\Model\Company
+            inversedBy: deviceCompanies
+            joinColumns:
+                company_id:
                     referencedColumnName: id
                     nullable: false

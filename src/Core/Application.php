@@ -240,7 +240,7 @@ class Application {
      */
     public function getModuleManagers () {
 
-        /*
+        //*
         $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
         /*/
         $modules = ['Account','UserFeature','CompanyFeature','StorageFeature'];

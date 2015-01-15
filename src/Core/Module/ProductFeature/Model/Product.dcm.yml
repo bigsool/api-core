@@ -1,4 +1,4 @@
-Core\Model\Product:
+Product:
     type: entity
     table: product
     uniqueConstraints:

@@ -1,4 +1,4 @@
-Core\Model\Consumption:
+Consumption:
     type: entity
     table: consumption
     indexes:

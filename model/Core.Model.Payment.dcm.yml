@@ -1,0 +1,70 @@
+Core\Model\Payment:
+    type: entity
+    table: payment
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        type:
+            type: string
+            nullable: false
+            length: null
+            fixed: false
+            comment: ''
+        receiptData:
+            type: text
+            nullable: false
+            length: null
+            fixed: false
+            comment: ''
+            column: receipt_data
+        amount:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            comment: ''
+        currency:
+            type: string
+            nullable: false
+            length: 3
+            fixed: false
+            comment: ''
+            options:
+                default: EUR
+        timestamp:
+            type: datetime
+            nullable: false
+            comment: ''
+        txnId:
+            type: string
+            nullable: true
+            length: 50
+            fixed: false
+            comment: ''
+            column: txn_id
+        externalid:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: ''
+            column: externalId
+        vat:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            comment: ''
+        shipping:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            comment: ''

@@ -1,0 +1,31 @@
+Core\Model\ProductFunctionality:
+    type: entity
+    table: productFunctionality
+    id:
+        functionality:
+            associationKey: true
+        product:
+            associationKey: true
+    fields:
+        quantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            options:
+                default: '1'
+    manyToOne:
+        functionality:
+            targetEntity: Core\Model\Functionality
+            inversedBy: productFunctionalities
+            joinColumns:
+                functionality_id:
+                    referencedColumnName: id
+                    nullable: false
+        product:
+            targetEntity: Core\Model\Product
+            inversedBy: productFunctionalities
+            joinColumns:
+                product_id:
+                    referencedColumnName: id
+                    nullable: false

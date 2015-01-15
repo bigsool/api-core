@@ -8,7 +8,6 @@ Company:
                 owner_id:
                     referencedColumnName: id
                     nullable: true
-    oneToOne:
         storage:
            targetEntity: Core\Model\Storage
            mappedBy: company

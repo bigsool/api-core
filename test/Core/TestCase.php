@@ -464,12 +464,12 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         if (!$instance) {
 
             $config =
-                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../doctrine/model/yml"), true,
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../model"), true,
                                                        __DIR__ . '/../../src/');
             $config->setSQLLogger(new DebugStack());
-            $tmpDir = sys_get_temp_dir();
+            $tmpDir = __DIR__.'/../../doctrine/';
             $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
-            $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
+            $tmpDB = $tmpDir. '/tmp.archiweb-proto.db.sqlite';
             if (file_exists($originalDb)) {
                 copy($originalDb, $tmpDB);
             }

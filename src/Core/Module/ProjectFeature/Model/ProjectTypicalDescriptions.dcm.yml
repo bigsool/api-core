@@ -1,10 +1,7 @@
-Core\Model\ProjectTypicalDescriptions:
+ProjectTypicalDescriptions:
     type: entity
     table: projectTypicalDescriptions
     indexes:
-        creator:
-            columns:
-                - creator
     id:
         id:
             type: integer

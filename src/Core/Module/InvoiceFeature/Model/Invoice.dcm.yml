@@ -1,4 +1,4 @@
-Core\Model\Invoice:
+Invoice:
     type: entity
     table: invoice
     id:
