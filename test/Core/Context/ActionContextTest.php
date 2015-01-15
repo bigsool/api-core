@@ -161,7 +161,10 @@ class ActionContextTest extends TestCase {
 
     }
 
-    public function testArrayObject () {
+    /**
+     * @expectedException \PHPUnit_Framework_Error_Notice
+     */
+    public function testNoticeArrayObject () {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
@@ -169,6 +172,15 @@ class ActionContextTest extends TestCase {
         $childCtx = new ActionContext($ctx);
 
         $this->assertNull($childCtx['qwe']);
+
+    }
+
+    public function testArrayObject () {
+
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $childCtx = new ActionContext($ctx);
 
         $ctx['qwe'] = 'mother';
         $this->assertSame('mother', $childCtx['qwe']);
