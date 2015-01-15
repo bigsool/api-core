@@ -28,7 +28,7 @@ class CompleteAccountTest extends WebTestCase {
         $this->assertArrayHasKey('email', $properties);
         $this->assertArrayHasKey('password', $properties);
         $this->assertEquals(1, $properties['id']);
-        $this->assertEquals($params['user']['email'], $properties['email']);
+        $this->assertEquals($params['email'], $properties['email']);
         $this->assertRegExp('/^[0-9a-f]{128}$/', $properties['password']);
 
     }
