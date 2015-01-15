@@ -11,6 +11,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
+use Core\Parameter\SafeParameter;
 use Core\Parameter\Parameter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
@@ -91,33 +92,43 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return ModelAspect[]
      */
     protected function getAspects() {
-
         return $this->modelAspects;
-
     }
 
+    /**
+     * @param ActionContext $ctx
+     * @return mixed
+     */
     public function magicalCreate (ActionContext $ctx) {
         return $this->magicalModify($ctx,'create');
     }
 
 
+    /**
+     * @param ActionContext $ctx
+     * @return mixed
+     */
     public function magicalUpdate (ActionContext $ctx) {
         return $this->magicalModify($ctx,'update');
     }
 
     /**
-     * @param Parameter[] $params
-     * @return Model[] models
+     * @param ActionContext $ctx
+     * @param string $action
+     * @return mixed
      */
     protected function magicalModify (ActionContext $ctx, $action) {
 
         $appCtx = ApplicationContext::getInstance();
+        $mainEntity = null;
 
         foreach ($this->modelAspects as $modelAspect) {
 
+            // TODO HANDLE ONETOMANY
             $params = $ctx->getParams();
 
             $actions = $modelAspect->getActions();
+
             $modifyAction = array_key_exists($action,$actions) ? $actions[$action] : 'none';
 
             if ($modifyAction != 'none' && $actions[$action] == NULL) continue;
@@ -137,10 +148,22 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
 
             $subContext = null;
+
             if ($params) {
+
                 $subContext = new ActionContext($ctx);
                 $subContext->setParams($params->getValue());
+
+                if (!$this->isMainEntity($modelAspect) && $action == 'update') {
+                    $fn = 'get'.$modelAspect->getModel();
+                    $entity = $mainEntity->$fn();
+                    if ($entity) {
+                        $subContext->setParam('id',new SafeParameter($entity->getId()));
+                    }
+                }
+
             }
+
 
             $result = $modifyAction->process($subContext ? $subContext : $ctx);
             $this->models[$modelAspect->getModel()] = $result;
@@ -152,8 +175,52 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         if (!isset($mainEntity)) return null;
 
+        $this->setRelationshipsFromMetadata();
+
+        $entities = $this->loadEntities($mainEntity);
+
+        return $entities;
+
+    }
+
+    /**
+     * @return mixed
+     */
+    private function loadEntities ($mainEntity) {
+
+        $appCtx = ApplicationContext::getInstance();
         $mainEntityName = $this->getMainEntityName();
 
+        $registry = $appCtx->getNewRegistry();
+
+        foreach ($this->models as $model) {
+            $registry->save($model);
+        }
+
+        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
+
+        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
+
+        foreach($this->modelAspects as $modelAspect) {
+            if (($keyPath = $modelAspect->getKeyPath())) {
+                $qryCtx->addKeyPath($keyPath);
+            }
+        }
+
+        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
+
+        $result = $registry->find($qryCtx,false);
+
+        return $result[0];
+
+    }
+
+
+    private function setRelationshipsFromMetadata () {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $mainEntityName = $this->getMainEntityName();
         $metadata = $appCtx->getClassMetadata('Core\Model\\'.$mainEntityName);
         $mapping = $metadata->getAssociationMappings();
 
@@ -191,29 +258,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        $registry = $appCtx->getNewRegistry();
-
-        foreach ($this->models as $model) {
-            $registry->save($model);
-        }
-
-        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
-
-        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
-
-        foreach($this->modelAspects as $modelAspect) {
-            if (($keyPath = $modelAspect->getKeyPath())) {
-                $qryCtx->addKeyPath($keyPath);
-            }
-        }
-
-        $qryCtx->addFilter(new StringFilter($mainEntityName,'bla','id = '.$mainEntity->getId()));
-
-        $result = $registry->find($qryCtx,false);
-
-        return $result[0];
-
     }
+
 
     protected function magicalFind ($keyPaths,$filters) {
 
@@ -239,6 +285,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+
     private function getMainEntityName () {
         foreach ($this->modelAspects as $modelAspect) {
             if ($modelAspect->getKeyPath() == '') {
@@ -248,6 +295,11 @@ abstract class MagicalModuleManager extends ModuleManager {
         return null;
     }
 
+
+    /**
+     * @param string   $modelAspect
+     * @return string
+     */
     private function isMainEntity ($modelAspect) {
         return !$modelAspect->getKeyPath();
     }

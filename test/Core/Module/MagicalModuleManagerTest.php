@@ -511,6 +511,21 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     *
+     * @return mixed
+     */
+    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($mgr, $args);
+
+    }
+
     public function testComplexMagicalCreate () {
 
         self::resetApplicationContext();
@@ -651,11 +666,16 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
+        return $app;
+
     }
 
-    public function testSimpleMagicalUpdate () {
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testSimpleMagicalUpdate ($app) {
 
-        self::resetApplicationContext();
+       self::resetApplicationContext();
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -693,23 +713,111 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     /**
-     * @param MagicalModuleManager $mgr
-     * @param array                $args
-     *
-     * @return mixed
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
-    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+    public function testComplexMagicalUpdate ($app) {
 
-        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
-        $method->setAccessible(true);
+        self::resetApplicationContext();
 
-        return $method->invokeArgs($mgr, $args);
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $this->addUserAspect($mgrUser);
+
+
+        $this->addAspect($mgrUser, [
+            'model'       => 'Company',
+            'prefix'      => 'company',
+            'keyPath'     => 'company',
+            'constraints' => [new Dictionary(), new NotBlank()],
+            'actions'     => ['update' => new ActionReference('Archipad\\Group', 'update')],
+        ]);
+
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
+        $this->addAspect($mgrCompany, [
+            'model' => 'Company',
+        ]);
+        $this->addAspect($mgrCompany, [
+            'model'   => 'Storage',
+            'keyPath' => 'storage',
+            'prefix'  => 'storage',
+        ]);
+
+        $app = $this->getMockApplication();
+        $app->method('getModuleManagers')
+            ->willReturn([$mgrCompany, $companyModuleManager, $userModuleManager, $mgrUser]);
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+        $self = $this;
+        $called = false;
+
+
+        $actionContext = $this->getActionContextWithParams(
+            ['id' => new SafeParameter(1),
+             'email'    => new SafeParameter('youpy@qwe.com'),
+             'name' => new SafeParameter('youpy'),
+             'firstname' => new SafeParameter('youpy'),
+             'password' => new SafeParameter('youpy'),
+             'company' => new UnsafeParameter(['name'    => 'bigsoole', 'storage' => ['url' =>'http://www.bigsoole.com']])
+            ]);
+
+        $this->defineAction($mgrCompany, ['update',
+                                          ['name' => [ERR_INVALID_NAME,
+                                                      [
+                                                          new Assert\NotBlank(),
+                                                      ]
+                                          ]
+                                          ],
+                                          function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
+
+                                              $params = $context->getParams();
+                                              $self->assertCount(3, $params);
+                                              $self->assertArrayHasKey('name', $params);
+                                              $self->assertSame('bigsoole', $params['name']->getValue());
+                                              $called = true;
+
+                                              return $self->magicalUpdate($mgrCompany, [$context]);
+
+                                          }]);
+        /*
+         * @var User $user
+         */
+        $user = $this->magicalUpdate($mgrUser, [$actionContext]);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('youpy@qwe.com', $user->getEmail());
+        $this->assertSame('youpy', $user->getName());
+        $this->assertSame('youpy', $user->getFirstname());
+        $this->assertSame('youpy', $user->getPassword());
+
+        $this->assertSame('bigsoole', $user->getCompany()->getName());
+
+
+        $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
 
     }
 
     protected function tearDown () {
 
-        $this->rollBackDatabase();
+        $whiteList = ['testMagicalCreateWithTwoMagicalModuleManager','testSimpleMagicalUpdate','testComplexMagicalUpdate'];
+        $currentTestFcName = $this->getName();
+        if (!in_array($currentTestFcName,$whiteList)) {
+            $this->rollBackDatabase();
+        }
+
 
     }
 

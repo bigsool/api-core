@@ -50,6 +50,9 @@ class BasicUpdateAction extends SimpleAction {
                 if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
+
+                unset($params['id']);
+
                 $helper->$method($context, $entities[0], $params);
 
                 return $context[$model];
