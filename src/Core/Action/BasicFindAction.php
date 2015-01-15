@@ -29,7 +29,7 @@ class BasicFindAction extends SimpleAction {
                 $helper = ApplicationContext::getInstance()->getHelper($helperName);
                 $reqCtx = $context->getRequestContext();
                 $method = 'find' . ucfirst($model);
-                if (is_callable([$helper, $method], false, $callableName)) {
+                if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
                 $helper->$method($context, $reqCtx->getReturnedKeyPaths(), [$reqCtx->getFilter()]);

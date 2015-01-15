@@ -47,7 +47,7 @@ class BasicUpdateAction extends SimpleAction {
                 }
 
                 $method = 'update' . ucfirst($model);
-                if (is_callable([$helper, $method], false, $callableName)) {
+                if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
                 $helper->$method($context, $entities[0], $params);
