@@ -161,4 +161,23 @@ class ActionContextTest extends TestCase {
 
     }
 
+    public function testArrayObject () {
+
+        $reqCtx = $this->getMockRequestContext();
+        $reqCtx->method('getParams')->willReturn([]);
+        $ctx = new ActionContext($reqCtx);
+        $childCtx = new ActionContext($ctx);
+
+        $this->assertNull($childCtx['qwe']);
+
+        $ctx['qwe'] = 'mother';
+        $this->assertSame('mother', $childCtx['qwe']);
+        $this->assertSame('mother', $ctx['qwe']);
+
+        $childCtx['qwe'] = 'child';
+        $this->assertSame('child', $childCtx['qwe']);
+        $this->assertSame('mother', $ctx['qwe']);
+
+    }
+
 } 

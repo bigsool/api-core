@@ -104,25 +104,6 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
-     *
-     */
-    public function clearParams () {
-
-        $this->params = [];
-        $this->clearVerifiedParams();
-
-    }
-
-    /**
-     *
-     */
-    public function clearVerifiedParams () {
-
-        $this->verifiedParams = [];
-
-    }
-
-    /**
      * @param mixed $key
      *
      * @return Parameter
@@ -139,6 +120,16 @@ class ActionContext extends \ArrayObject {
     public function getAuth () {
 
         return $this->auth;
+    }
+
+    /**
+     *
+     */
+    public function clearParams () {
+
+        $this->params = [];
+        $this->clearVerifiedParams();
+
     }
 
     /**
@@ -201,6 +192,15 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
+     *
+     */
+    public function clearVerifiedParams () {
+
+        $this->verifiedParams = [];
+
+    }
+
+    /**
      * @param string        $key
      * @param SafeParameter $value
      */
@@ -234,6 +234,19 @@ class ActionContext extends \ArrayObject {
     public function getParentContext () {
 
         return $this->parentContext;
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offsetGet ($index) {
+
+        if (!isset($this[$index]) && $this->getParentContext() instanceof ActionContext) {
+            return $this->getParentContext()->offsetGet($index);
+        }
+
+        return parent::offsetGet($index);
 
     }
 
