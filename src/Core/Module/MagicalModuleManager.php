@@ -139,12 +139,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $subContext = null;
             if ($params) {
                 $subContext = new ActionContext($ctx);
-                $subContext->clearParams();
-                $subContextParams = $params->getValue();
-                foreach ($subContextParams as &$subContextParam) {
-                    $subContextParam = new UnsafeParameter($subContextParam);
-                }
-                $subContext->setParams($subContextParams);
+                $subContext->setParams($params->getValue());
             }
 
             $result = $modifyAction->process($subContext ? $subContext : $ctx);
