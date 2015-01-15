@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="userProjectRole", indexes={@ORM\Index(name="hostedProject_id", columns={"hostedProject_id"}), @ORM\Index(name="role_id", columns={"role_id"}), @ORM\Index(name="IDX_6AFB5F0EA76ED395", columns={"user_id"})})
  * @ORM\Entity
  */
-class UserProjectRole
-{
+class UserProjectRole {
+
     /**
      * @var \Core\Model\ProjectRole
      *
@@ -48,39 +48,26 @@ class UserProjectRole
      */
     private $hostedProject;
 
+    /**
+     * Get projectRole
+     *
+     * @return \Core\Model\ProjectRole
+     */
+    public function getProjectRole () {
+
+        return $this->projectRole;
+    }
 
     /**
      * Set projectRole
      *
      * @param \Core\Model\ProjectRole $projectRole
+     *
      * @return UserProjectRole
      */
-    public function setProjectRole(\Core\Model\ProjectRole $projectRole)
-    {
+    public function setProjectRole (\Core\Model\ProjectRole $projectRole) {
+
         $this->projectRole = $projectRole;
-
-        return $this;
-    }
-
-    /**
-     * Get projectRole
-     *
-     * @return \Core\Model\ProjectRole 
-     */
-    public function getProjectRole()
-    {
-        return $this->projectRole;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \Core\Model\User $user
-     * @return UserProjectRole
-     */
-    public function setUser(\Core\Model\User $user)
-    {
-        $this->user = $user;
 
         return $this;
     }
@@ -88,22 +75,23 @@ class UserProjectRole
     /**
      * Get user
      *
-     * @return \Core\Model\User 
+     * @return \Core\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
     }
 
     /**
-     * Set hostedProject
+     * Set user
      *
-     * @param \Core\Model\HostedProject $hostedProject
+     * @param \Core\Model\User $user
+     *
      * @return UserProjectRole
      */
-    public function setHostedProject(\Core\Model\HostedProject $hostedProject)
-    {
-        $this->hostedProject = $hostedProject;
+    public function setUser (\Core\Model\User $user) {
+
+        $this->user = $user;
 
         return $this;
     }
@@ -111,10 +99,24 @@ class UserProjectRole
     /**
      * Get hostedProject
      *
-     * @return \Core\Model\HostedProject 
+     * @return \Core\Model\HostedProject
      */
-    public function getHostedProject()
-    {
+    public function getHostedProject () {
+
         return $this->hostedProject;
+    }
+
+    /**
+     * Set hostedProject
+     *
+     * @param \Core\Model\HostedProject $hostedProject
+     *
+     * @return UserProjectRole
+     */
+    public function setHostedProject (\Core\Model\HostedProject $hostedProject) {
+
+        $this->hostedProject = $hostedProject;
+
+        return $this;
     }
 }

@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="sharedHostedProject")
  * @ORM\Entity
  */
-class SharedHostedProject
-{
+class SharedHostedProject {
+
     /**
      * @var string
      *
@@ -43,39 +43,26 @@ class SharedHostedProject
      */
     private $hostedProject;
 
+    /**
+     * Get permission
+     *
+     * @return string
+     */
+    public function getPermission () {
+
+        return $this->permission;
+    }
 
     /**
      * Set permission
      *
      * @param string $permission
+     *
      * @return SharedHostedProject
      */
-    public function setPermission($permission)
-    {
+    public function setPermission ($permission) {
+
         $this->permission = $permission;
-
-        return $this;
-    }
-
-    /**
-     * Get permission
-     *
-     * @return string 
-     */
-    public function getPermission()
-    {
-        return $this->permission;
-    }
-
-    /**
-     * Set participant
-     *
-     * @param \Core\Model\User $participant
-     * @return SharedHostedProject
-     */
-    public function setParticipant(\Core\Model\User $participant)
-    {
-        $this->participant = $participant;
 
         return $this;
     }
@@ -83,22 +70,23 @@ class SharedHostedProject
     /**
      * Get participant
      *
-     * @return \Core\Model\User 
+     * @return \Core\Model\User
      */
-    public function getParticipant()
-    {
+    public function getParticipant () {
+
         return $this->participant;
     }
 
     /**
-     * Set hostedProject
+     * Set participant
      *
-     * @param \Core\Model\HostedProject $hostedProject
+     * @param \Core\Model\User $participant
+     *
      * @return SharedHostedProject
      */
-    public function setHostedProject(\Core\Model\HostedProject $hostedProject)
-    {
-        $this->hostedProject = $hostedProject;
+    public function setParticipant (\Core\Model\User $participant) {
+
+        $this->participant = $participant;
 
         return $this;
     }
@@ -106,10 +94,24 @@ class SharedHostedProject
     /**
      * Get hostedProject
      *
-     * @return \Core\Model\HostedProject 
+     * @return \Core\Model\HostedProject
      */
-    public function getHostedProject()
-    {
+    public function getHostedProject () {
+
         return $this->hostedProject;
+    }
+
+    /**
+     * Set hostedProject
+     *
+     * @param \Core\Model\HostedProject $hostedProject
+     *
+     * @return SharedHostedProject
+     */
+    public function setHostedProject (\Core\Model\HostedProject $hostedProject) {
+
+        $this->hostedProject = $hostedProject;
+
+        return $this;
     }
 }

@@ -520,7 +520,6 @@ class MagicalModuleManagerTest extends TestCase {
         // $this->addStorageAspect($mgr);
 
 
-
         $appCtx = ApplicationContext::getInstance();
         $appCtx->setProduct('Archipad');
 
@@ -712,7 +711,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
 
-        $appCtx =  $this->getApplicationContext();
+        $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
@@ -727,12 +726,14 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $actionContext = $this->getActionContextWithParams(
-            ['id' => new SafeParameter(1),
-             'email'    => new SafeParameter('youpy@qwe.com'),
-             'name' => new SafeParameter('youpy'),
+            ['id'        => new SafeParameter(1),
+             'email'     => new SafeParameter('youpy@qwe.com'),
+             'name'      => new SafeParameter('youpy'),
              'firstname' => new SafeParameter('youpy'),
-             'password' => new SafeParameter('youpy'),
-             'company' => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'), 'storage' => new SafeParameter(['url' =>new SafeParameter('http://www.bigsoole.com')])])
+             'password'  => new SafeParameter('youpy'),
+             'company'   => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'),
+                                                 'storage' => new SafeParameter(['url' => new SafeParameter('http://www.bigsoole.com')])
+                                                ])
             ]);
 
         $this->defineAction($mgrCompany, ['update',
@@ -752,7 +753,8 @@ class MagicalModuleManagerTest extends TestCase {
 
                                               return $self->magicalUpdate($mgrCompany, [$context]);
 
-                                          }]);
+                                          }
+        ]);
         /*
          * @var User $user
          */
@@ -772,15 +774,15 @@ class MagicalModuleManagerTest extends TestCase {
 
     protected function tearDown () {
 
-        $whiteList = ['testMagicalCreateWithTwoMagicalModuleManager','testSimpleMagicalUpdate','testComplexMagicalUpdate'];
+        $whiteList =
+            ['testMagicalCreateWithTwoMagicalModuleManager', 'testSimpleMagicalUpdate', 'testComplexMagicalUpdate'];
         $currentTestFcName = $this->getName();
-        if (!in_array($currentTestFcName,$whiteList)) {
+        if (!in_array($currentTestFcName, $whiteList)) {
             $this->rollBackDatabase();
         }
         else {
             $this->commitDB();
         }
-
 
     }
 

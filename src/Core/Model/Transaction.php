@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="transaction")
  * @ORM\Entity
  */
-class Transaction
-{
+class Transaction {
+
     /**
      * @var integer
      *
@@ -49,49 +49,36 @@ class Transaction
      */
     private $comment;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get timestamp
+     *
+     * @return \DateTime
+     */
+    public function getTimestamp () {
+
+        return $this->timestamp;
     }
 
     /**
      * Set timestamp
      *
      * @param \DateTime $timestamp
+     *
      * @return Transaction
      */
-    public function setTimestamp($timestamp)
-    {
+    public function setTimestamp ($timestamp) {
+
         $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    /**
-     * Get timestamp
-     *
-     * @return \DateTime 
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * Set invoicingstatus
-     *
-     * @param string $invoicingstatus
-     * @return Transaction
-     */
-    public function setInvoicingstatus($invoicingstatus)
-    {
-        $this->invoicingstatus = $invoicingstatus;
 
         return $this;
     }
@@ -99,22 +86,23 @@ class Transaction
     /**
      * Get invoicingstatus
      *
-     * @return string 
+     * @return string
      */
-    public function getInvoicingstatus()
-    {
+    public function getInvoicingstatus () {
+
         return $this->invoicingstatus;
     }
 
     /**
-     * Set paymentstatus
+     * Set invoicingstatus
      *
-     * @param string $paymentstatus
+     * @param string $invoicingstatus
+     *
      * @return Transaction
      */
-    public function setPaymentstatus($paymentstatus)
-    {
-        $this->paymentstatus = $paymentstatus;
+    public function setInvoicingstatus ($invoicingstatus) {
+
+        $this->invoicingstatus = $invoicingstatus;
 
         return $this;
     }
@@ -122,22 +110,23 @@ class Transaction
     /**
      * Get paymentstatus
      *
-     * @return string 
+     * @return string
      */
-    public function getPaymentstatus()
-    {
+    public function getPaymentstatus () {
+
         return $this->paymentstatus;
     }
 
     /**
-     * Set comment
+     * Set paymentstatus
      *
-     * @param string $comment
+     * @param string $paymentstatus
+     *
      * @return Transaction
      */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
+    public function setPaymentstatus ($paymentstatus) {
+
+        $this->paymentstatus = $paymentstatus;
 
         return $this;
     }
@@ -145,10 +134,24 @@ class Transaction
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
-    public function getComment()
-    {
+    public function getComment () {
+
         return $this->comment;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment
+     *
+     * @return Transaction
+     */
+    public function setComment ($comment) {
+
+        $this->comment = $comment;
+
+        return $this;
     }
 }

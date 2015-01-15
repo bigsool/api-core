@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="purchasedProduct", indexes={@ORM\Index(name="transaction_id", columns={"transaction_id"})})
  * @ORM\Entity
  */
-class PurchasedProduct
-{
+class PurchasedProduct {
+
     /**
      * @var integer
      *
@@ -69,49 +69,36 @@ class PurchasedProduct
      */
     private $product;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get realPrice
+     *
+     * @return float
+     */
+    public function getRealPrice () {
+
+        return $this->realPrice;
     }
 
     /**
      * Set realPrice
      *
      * @param float $realPrice
+     *
      * @return PurchasedProduct
      */
-    public function setRealPrice($realPrice)
-    {
+    public function setRealPrice ($realPrice) {
+
         $this->realPrice = $realPrice;
-
-        return $this;
-    }
-
-    /**
-     * Get realPrice
-     *
-     * @return float 
-     */
-    public function getRealPrice()
-    {
-        return $this->realPrice;
-    }
-
-    /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     * @return PurchasedProduct
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
 
         return $this;
     }
@@ -119,22 +106,23 @@ class PurchasedProduct
     /**
      * Get quantity
      *
-     * @return integer 
+     * @return integer
      */
-    public function getQuantity()
-    {
+    public function getQuantity () {
+
         return $this->quantity;
     }
 
     /**
-     * Set durationfactor
+     * Set quantity
      *
-     * @param integer $durationfactor
+     * @param integer $quantity
+     *
      * @return PurchasedProduct
      */
-    public function setDurationfactor($durationfactor)
-    {
-        $this->durationfactor = $durationfactor;
+    public function setQuantity ($quantity) {
+
+        $this->quantity = $quantity;
 
         return $this;
     }
@@ -142,22 +130,23 @@ class PurchasedProduct
     /**
      * Get durationfactor
      *
-     * @return integer 
+     * @return integer
      */
-    public function getDurationfactor()
-    {
+    public function getDurationfactor () {
+
         return $this->durationfactor;
     }
 
     /**
-     * Set enddate
+     * Set durationfactor
      *
-     * @param \DateTime $enddate
+     * @param integer $durationfactor
+     *
      * @return PurchasedProduct
      */
-    public function setEnddate($enddate)
-    {
-        $this->enddate = $enddate;
+    public function setDurationfactor ($durationfactor) {
+
+        $this->durationfactor = $durationfactor;
 
         return $this;
     }
@@ -165,22 +154,23 @@ class PurchasedProduct
     /**
      * Get enddate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getEnddate()
-    {
+    public function getEnddate () {
+
         return $this->enddate;
     }
 
     /**
-     * Set transaction
+     * Set enddate
      *
-     * @param \Core\Model\Transaction $transaction
+     * @param \DateTime $enddate
+     *
      * @return PurchasedProduct
      */
-    public function setTransaction(\Core\Model\Transaction $transaction)
-    {
-        $this->transaction = $transaction;
+    public function setEnddate ($enddate) {
+
+        $this->enddate = $enddate;
 
         return $this;
     }
@@ -188,22 +178,23 @@ class PurchasedProduct
     /**
      * Get transaction
      *
-     * @return \Core\Model\Transaction 
+     * @return \Core\Model\Transaction
      */
-    public function getTransaction()
-    {
+    public function getTransaction () {
+
         return $this->transaction;
     }
 
     /**
-     * Set product
+     * Set transaction
      *
-     * @param \Core\Model\Product $product
+     * @param \Core\Model\Transaction $transaction
+     *
      * @return PurchasedProduct
      */
-    public function setProduct(\Core\Model\Product $product)
-    {
-        $this->product = $product;
+    public function setTransaction (\Core\Model\Transaction $transaction) {
+
+        $this->transaction = $transaction;
 
         return $this;
     }
@@ -211,10 +202,24 @@ class PurchasedProduct
     /**
      * Get product
      *
-     * @return \Core\Model\Product 
+     * @return \Core\Model\Product
      */
-    public function getProduct()
-    {
+    public function getProduct () {
+
         return $this->product;
+    }
+
+    /**
+     * Set product
+     *
+     * @param \Core\Model\Product $product
+     *
+     * @return PurchasedProduct
+     */
+    public function setProduct (\Core\Model\Product $product) {
+
+        $this->product = $product;
+
+        return $this;
     }
 }

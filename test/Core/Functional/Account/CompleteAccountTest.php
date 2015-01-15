@@ -9,8 +9,9 @@ class CompleteAccountTest extends WebTestCase {
 
     public function testCreate () {
 
-        $params = ['email' => $email = 'test@bigsool.com', 'password' => 'qwe',
-                   'company' => ['name' => 'bigsool']
+        $params = ['email'    => $email = 'test@bigsool.com',
+                   'password' => 'qwe',
+                   'company'  => ['name' => 'bigsool']
         ];
         $return = $this->get('Account', 'create', $params, 'Account', ['id', 'email', 'password']);
         list($id, $result) = each($return);

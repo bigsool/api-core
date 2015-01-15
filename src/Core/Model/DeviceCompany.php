@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="deviceCompany", uniqueConstraints={@ORM\UniqueConstraint(name="device_id", columns={"device_id", "company_id"})}, indexes={@ORM\Index(name="IDX_AA21A64B94A4C7D4", columns={"device_id"})})
  * @ORM\Entity
  */
-class DeviceCompany
-{
+class DeviceCompany {
+
     /**
      * @var integer
      *
@@ -41,49 +41,36 @@ class DeviceCompany
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get device
+     *
+     * @return \Core\Model\Device
+     */
+    public function getDevice () {
+
+        return $this->device;
     }
 
     /**
      * Set device
      *
      * @param \Core\Model\Device $device
+     *
      * @return DeviceCompany
      */
-    public function setDevice(\Core\Model\Device $device)
-    {
+    public function setDevice (\Core\Model\Device $device) {
+
         $this->device = $device;
-
-        return $this;
-    }
-
-    /**
-     * Get device
-     *
-     * @return \Core\Model\Device 
-     */
-    public function getDevice()
-    {
-        return $this->device;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Core\Model\Company $company
-     * @return DeviceCompany
-     */
-    public function setCompany(\Core\Model\Company $company)
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -91,10 +78,24 @@ class DeviceCompany
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\Company $company
+     *
+     * @return DeviceCompany
+     */
+    public function setCompany (\Core\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

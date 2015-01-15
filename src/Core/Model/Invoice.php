@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="invoice")
  * @ORM\Entity
  */
-class Invoice
-{
+class Invoice {
+
     /**
      * @var integer
      *
@@ -42,49 +42,36 @@ class Invoice
      */
     private $url;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Invoice
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return Invoice
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
 
         return $this;
     }
@@ -92,22 +79,23 @@ class Invoice
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getDate()
-    {
+    public function getDate () {
+
         return $this->date;
     }
 
     /**
-     * Set url
+     * Set date
      *
-     * @param string $url
+     * @param \DateTime $date
+     *
      * @return Invoice
      */
-    public function setUrl($url)
-    {
-        $this->url = $url;
+    public function setDate ($date) {
+
+        $this->date = $date;
 
         return $this;
     }
@@ -115,10 +103,24 @@ class Invoice
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
-    public function getUrl()
-    {
+    public function getUrl () {
+
         return $this->url;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     *
+     * @return Invoice
+     */
+    public function setUrl ($url) {
+
+        $this->url = $url;
+
+        return $this;
     }
 }

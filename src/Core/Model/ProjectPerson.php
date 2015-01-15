@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="projectPerson", indexes={@ORM\Index(name="creator", columns={"creator"})})
  * @ORM\Entity
  */
-class ProjectPerson
-{
+class ProjectPerson {
+
     /**
      * @var integer
      *
@@ -87,49 +87,36 @@ class ProjectPerson
      */
     private $creator;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ProjectPerson
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return ProjectPerson
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -137,22 +124,23 @@ class ProjectPerson
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set phone
+     * Set address
      *
-     * @param string $phone
+     * @param string $address
+     *
      * @return ProjectPerson
      */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -160,22 +148,23 @@ class ProjectPerson
     /**
      * Get phone
      *
-     * @return string 
+     * @return string
      */
-    public function getPhone()
-    {
+    public function getPhone () {
+
         return $this->phone;
     }
 
     /**
-     * Set mobile
+     * Set phone
      *
-     * @param string $mobile
+     * @param string $phone
+     *
      * @return ProjectPerson
      */
-    public function setMobile($mobile)
-    {
-        $this->mobile = $mobile;
+    public function setPhone ($phone) {
+
+        $this->phone = $phone;
 
         return $this;
     }
@@ -183,22 +172,23 @@ class ProjectPerson
     /**
      * Get mobile
      *
-     * @return string 
+     * @return string
      */
-    public function getMobile()
-    {
+    public function getMobile () {
+
         return $this->mobile;
     }
 
     /**
-     * Set fax
+     * Set mobile
      *
-     * @param string $fax
+     * @param string $mobile
+     *
      * @return ProjectPerson
      */
-    public function setFax($fax)
-    {
-        $this->fax = $fax;
+    public function setMobile ($mobile) {
+
+        $this->mobile = $mobile;
 
         return $this;
     }
@@ -206,22 +196,23 @@ class ProjectPerson
     /**
      * Get fax
      *
-     * @return string 
+     * @return string
      */
-    public function getFax()
-    {
+    public function getFax () {
+
         return $this->fax;
     }
 
     /**
-     * Set email
+     * Set fax
      *
-     * @param string $email
+     * @param string $fax
+     *
      * @return ProjectPerson
      */
-    public function setEmail($email)
-    {
-        $this->email = $email;
+    public function setFax ($fax) {
+
+        $this->fax = $fax;
 
         return $this;
     }
@@ -229,22 +220,23 @@ class ProjectPerson
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail () {
+
         return $this->email;
     }
 
     /**
-     * Set company
+     * Set email
      *
-     * @param string $company
+     * @param string $email
+     *
      * @return ProjectPerson
      */
-    public function setCompany($company)
-    {
-        $this->company = $company;
+    public function setEmail ($email) {
+
+        $this->email = $email;
 
         return $this;
     }
@@ -252,22 +244,23 @@ class ProjectPerson
     /**
      * Get company
      *
-     * @return string 
+     * @return string
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
     }
 
     /**
-     * Set abbreviation
+     * Set company
      *
-     * @param string $abbreviation
+     * @param string $company
+     *
      * @return ProjectPerson
      */
-    public function setAbbreviation($abbreviation)
-    {
-        $this->abbreviation = $abbreviation;
+    public function setCompany ($company) {
+
+        $this->company = $company;
 
         return $this;
     }
@@ -275,22 +268,23 @@ class ProjectPerson
     /**
      * Get abbreviation
      *
-     * @return string 
+     * @return string
      */
-    public function getAbbreviation()
-    {
+    public function getAbbreviation () {
+
         return $this->abbreviation;
     }
 
     /**
-     * Set creator
+     * Set abbreviation
      *
-     * @param \Core\Model\User $creator
+     * @param string $abbreviation
+     *
      * @return ProjectPerson
      */
-    public function setCreator(\Core\Model\User $creator)
-    {
-        $this->creator = $creator;
+    public function setAbbreviation ($abbreviation) {
+
+        $this->abbreviation = $abbreviation;
 
         return $this;
     }
@@ -298,10 +292,24 @@ class ProjectPerson
     /**
      * Get creator
      *
-     * @return \Core\Model\User 
+     * @return \Core\Model\User
      */
-    public function getCreator()
-    {
+    public function getCreator () {
+
         return $this->creator;
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \Core\Model\User $creator
+     *
+     * @return ProjectPerson
+     */
+    public function setCreator (\Core\Model\User $creator) {
+
+        $this->creator = $creator;
+
+        return $this;
     }
 }

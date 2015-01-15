@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="deviceCompanyState", indexes={@ORM\Index(name="IDX_4816AACA39EDDC8", columns={"functionality_id"})})
  * @ORM\Entity
  */
-class DeviceCompanyState
-{
+class DeviceCompanyState {
+
     /**
      * @var boolean
      *
@@ -55,39 +55,26 @@ class DeviceCompanyState
      */
     private $device;
 
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled () {
+
+        return $this->enabled;
+    }
 
     /**
      * Set enabled
      *
      * @param boolean $enabled
+     *
      * @return DeviceCompanyState
      */
-    public function setEnabled($enabled)
-    {
+    public function setEnabled ($enabled) {
+
         $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Get enabled
-     *
-     * @return boolean 
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Core\Model\Company $company
-     * @return DeviceCompanyState
-     */
-    public function setCompany(\Core\Model\Company $company)
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -95,22 +82,23 @@ class DeviceCompanyState
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
     }
 
     /**
-     * Set functionality
+     * Set company
      *
-     * @param \Core\Model\Functionality $functionality
+     * @param \Core\Model\Company $company
+     *
      * @return DeviceCompanyState
      */
-    public function setFunctionality(\Core\Model\Functionality $functionality)
-    {
-        $this->functionality = $functionality;
+    public function setCompany (\Core\Model\Company $company) {
+
+        $this->company = $company;
 
         return $this;
     }
@@ -118,22 +106,23 @@ class DeviceCompanyState
     /**
      * Get functionality
      *
-     * @return \Core\Model\Functionality 
+     * @return \Core\Model\Functionality
      */
-    public function getFunctionality()
-    {
+    public function getFunctionality () {
+
         return $this->functionality;
     }
 
     /**
-     * Set device
+     * Set functionality
      *
-     * @param \Core\Model\Device $device
+     * @param \Core\Model\Functionality $functionality
+     *
      * @return DeviceCompanyState
      */
-    public function setDevice(\Core\Model\Device $device)
-    {
-        $this->device = $device;
+    public function setFunctionality (\Core\Model\Functionality $functionality) {
+
+        $this->functionality = $functionality;
 
         return $this;
     }
@@ -141,10 +130,24 @@ class DeviceCompanyState
     /**
      * Get device
      *
-     * @return \Core\Model\Device 
+     * @return \Core\Model\Device
      */
-    public function getDevice()
-    {
+    public function getDevice () {
+
         return $this->device;
+    }
+
+    /**
+     * Set device
+     *
+     * @param \Core\Model\Device $device
+     *
+     * @return DeviceCompanyState
+     */
+    public function setDevice (\Core\Model\Device $device) {
+
+        $this->device = $device;
+
+        return $this;
     }
 }

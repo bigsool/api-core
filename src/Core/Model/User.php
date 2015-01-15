@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="userEmail", columns={"email"})})
  * @ORM\Entity
  */
-class User
-{
+class User {
+
     /**
      * @var integer
      *
@@ -108,49 +108,36 @@ class User
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail () {
+
+        return $this->email;
     }
 
     /**
      * Set email
      *
      * @param string $email
+     *
      * @return User
      */
-    public function setEmail($email)
-    {
+    public function setEmail ($email) {
+
         $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string 
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -158,22 +145,23 @@ class User
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set name
+     * Set password
      *
-     * @param string $name
+     * @param string $password
+     *
      * @return User
      */
-    public function setName($name)
-    {
-        $this->name = $name;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -181,22 +169,23 @@ class User
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName () {
+
         return $this->name;
     }
 
     /**
-     * Set firstname
+     * Set name
      *
-     * @param string $firstname
+     * @param string $name
+     *
      * @return User
      */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = $firstname;
+    public function setName ($name) {
+
+        $this->name = $name;
 
         return $this;
     }
@@ -204,22 +193,23 @@ class User
     /**
      * Get firstname
      *
-     * @return string 
+     * @return string
      */
-    public function getFirstname()
-    {
+    public function getFirstname () {
+
         return $this->firstname;
     }
 
     /**
-     * Set lang
+     * Set firstname
      *
-     * @param string $lang
+     * @param string $firstname
+     *
      * @return User
      */
-    public function setLang($lang)
-    {
-        $this->lang = $lang;
+    public function setFirstname ($firstname) {
+
+        $this->firstname = $firstname;
 
         return $this;
     }
@@ -227,22 +217,23 @@ class User
     /**
      * Get lang
      *
-     * @return string 
+     * @return string
      */
-    public function getLang()
-    {
+    public function getLang () {
+
         return $this->lang;
     }
 
     /**
-     * Set salt
+     * Set lang
      *
-     * @param string $salt
+     * @param string $lang
+     *
      * @return User
      */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
+    public function setLang ($lang) {
+
+        $this->lang = $lang;
 
         return $this;
     }
@@ -250,22 +241,23 @@ class User
     /**
      * Get salt
      *
-     * @return string 
+     * @return string
      */
-    public function getSalt()
-    {
+    public function getSalt () {
+
         return $this->salt;
     }
 
     /**
-     * Set registerDate
+     * Set salt
      *
-     * @param \DateTime $registerDate
+     * @param string $salt
+     *
      * @return User
      */
-    public function setRegisterDate($registerDate)
-    {
-        $this->registerDate = $registerDate;
+    public function setSalt ($salt) {
+
+        $this->salt = $salt;
 
         return $this;
     }
@@ -273,22 +265,23 @@ class User
     /**
      * Get registerDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getRegisterDate()
-    {
+    public function getRegisterDate () {
+
         return $this->registerDate;
     }
 
     /**
-     * Set lastLoginDate
+     * Set registerDate
      *
-     * @param \DateTime $lastLoginDate
+     * @param \DateTime $registerDate
+     *
      * @return User
      */
-    public function setLastLoginDate($lastLoginDate)
-    {
-        $this->lastLoginDate = $lastLoginDate;
+    public function setRegisterDate ($registerDate) {
+
+        $this->registerDate = $registerDate;
 
         return $this;
     }
@@ -296,22 +289,23 @@ class User
     /**
      * Get lastLoginDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getLastLoginDate()
-    {
+    public function getLastLoginDate () {
+
         return $this->lastLoginDate;
     }
 
     /**
-     * Set knowsFrom
+     * Set lastLoginDate
      *
-     * @param string $knowsFrom
+     * @param \DateTime $lastLoginDate
+     *
      * @return User
      */
-    public function setKnowsFrom($knowsFrom)
-    {
-        $this->knowsFrom = $knowsFrom;
+    public function setLastLoginDate ($lastLoginDate) {
+
+        $this->lastLoginDate = $lastLoginDate;
 
         return $this;
     }
@@ -319,22 +313,23 @@ class User
     /**
      * Get knowsFrom
      *
-     * @return string 
+     * @return string
      */
-    public function getKnowsFrom()
-    {
+    public function getKnowsFrom () {
+
         return $this->knowsFrom;
     }
 
     /**
-     * Set confirmationKey
+     * Set knowsFrom
      *
-     * @param string $confirmationKey
+     * @param string $knowsFrom
+     *
      * @return User
      */
-    public function setConfirmationKey($confirmationKey)
-    {
-        $this->confirmationKey = $confirmationKey;
+    public function setKnowsFrom ($knowsFrom) {
+
+        $this->knowsFrom = $knowsFrom;
 
         return $this;
     }
@@ -342,22 +337,23 @@ class User
     /**
      * Get confirmationKey
      *
-     * @return string 
+     * @return string
      */
-    public function getConfirmationKey()
-    {
+    public function getConfirmationKey () {
+
         return $this->confirmationKey;
     }
 
     /**
-     * Set ownedCompany
+     * Set confirmationKey
      *
-     * @param \Core\Model\Company $ownedCompany
+     * @param string $confirmationKey
+     *
      * @return User
      */
-    public function setOwnedCompany(\Core\Model\Company $ownedCompany = null)
-    {
-        $this->ownedCompany = $ownedCompany;
+    public function setConfirmationKey ($confirmationKey) {
+
+        $this->confirmationKey = $confirmationKey;
 
         return $this;
     }
@@ -365,22 +361,23 @@ class User
     /**
      * Get ownedCompany
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getOwnedCompany()
-    {
+    public function getOwnedCompany () {
+
         return $this->ownedCompany;
     }
 
     /**
-     * Set company
+     * Set ownedCompany
      *
-     * @param \Core\Model\Company $company
+     * @param \Core\Model\Company $ownedCompany
+     *
      * @return User
      */
-    public function setCompany(\Core\Model\Company $company = null)
-    {
-        $this->company = $company;
+    public function setOwnedCompany (\Core\Model\Company $ownedCompany = NULL) {
+
+        $this->ownedCompany = $ownedCompany;
 
         return $this;
     }
@@ -388,10 +385,24 @@ class User
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\Company $company
+     *
+     * @return User
+     */
+    public function setCompany (\Core\Model\Company $company = NULL) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

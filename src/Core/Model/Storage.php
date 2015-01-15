@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="storage")
  * @ORM\Entity
  */
-class Storage
-{
+class Storage {
+
     /**
      * @var integer
      *
@@ -73,49 +73,36 @@ class Storage
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl () {
+
+        return $this->url;
     }
 
     /**
      * Set url
      *
      * @param string $url
+     *
      * @return Storage
      */
-    public function setUrl($url)
-    {
+    public function setUrl ($url) {
+
         $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string 
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set login
-     *
-     * @param string $login
-     * @return Storage
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
 
         return $this;
     }
@@ -123,22 +110,23 @@ class Storage
     /**
      * Get login
      *
-     * @return string 
+     * @return string
      */
-    public function getLogin()
-    {
+    public function getLogin () {
+
         return $this->login;
     }
 
     /**
-     * Set password
+     * Set login
      *
-     * @param string $password
+     * @param string $login
+     *
      * @return Storage
      */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+    public function setLogin ($login) {
+
+        $this->login = $login;
 
         return $this;
     }
@@ -146,22 +134,23 @@ class Storage
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set usedSpace
+     * Set password
      *
-     * @param integer $usedSpace
+     * @param string $password
+     *
      * @return Storage
      */
-    public function setUsedSpace($usedSpace)
-    {
-        $this->usedSpace = $usedSpace;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -169,22 +158,23 @@ class Storage
     /**
      * Get usedSpace
      *
-     * @return integer 
+     * @return integer
      */
-    public function getUsedSpace()
-    {
+    public function getUsedSpace () {
+
         return $this->usedSpace;
     }
 
     /**
-     * Set lastUsedSpaceUpdate
+     * Set usedSpace
      *
-     * @param \DateTime $lastUsedSpaceUpdate
+     * @param integer $usedSpace
+     *
      * @return Storage
      */
-    public function setLastUsedSpaceUpdate($lastUsedSpaceUpdate)
-    {
-        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
+    public function setUsedSpace ($usedSpace) {
+
+        $this->usedSpace = $usedSpace;
 
         return $this;
     }
@@ -192,22 +182,23 @@ class Storage
     /**
      * Get lastUsedSpaceUpdate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getLastUsedSpaceUpdate()
-    {
+    public function getLastUsedSpaceUpdate () {
+
         return $this->lastUsedSpaceUpdate;
     }
 
     /**
-     * Set isOutOfQuota
+     * Set lastUsedSpaceUpdate
      *
-     * @param boolean $isOutOfQuota
+     * @param \DateTime $lastUsedSpaceUpdate
+     *
      * @return Storage
      */
-    public function setIsOutOfQuota($isOutOfQuota)
-    {
-        $this->isOutOfQuota = $isOutOfQuota;
+    public function setLastUsedSpaceUpdate ($lastUsedSpaceUpdate) {
+
+        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
 
         return $this;
     }
@@ -215,22 +206,23 @@ class Storage
     /**
      * Get isOutOfQuota
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsOutOfQuota()
-    {
+    public function getIsOutOfQuota () {
+
         return $this->isOutOfQuota;
     }
 
     /**
-     * Set company
+     * Set isOutOfQuota
      *
-     * @param \Core\Model\Company $company
+     * @param boolean $isOutOfQuota
+     *
      * @return Storage
      */
-    public function setCompany(\Core\Model\Company $company = null)
-    {
-        $this->company = $company;
+    public function setIsOutOfQuota ($isOutOfQuota) {
+
+        $this->isOutOfQuota = $isOutOfQuota;
 
         return $this;
     }
@@ -238,10 +230,24 @@ class Storage
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\Company $company
+     *
+     * @return Storage
+     */
+    public function setCompany (\Core\Model\Company $company = NULL) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="sharedReport", uniqueConstraints={@ORM\UniqueConstraint(name="report", columns={"reportId", "projectId"})})
  * @ORM\Entity
  */
-class SharedReport
-{
+class SharedReport {
+
     /**
      * @var integer
      *
@@ -83,49 +83,36 @@ class SharedReport
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get reportid
+     *
+     * @return string
+     */
+    public function getReportid () {
+
+        return $this->reportid;
     }
 
     /**
      * Set reportid
      *
      * @param string $reportid
+     *
      * @return SharedReport
      */
-    public function setReportid($reportid)
-    {
+    public function setReportid ($reportid) {
+
         $this->reportid = $reportid;
-
-        return $this;
-    }
-
-    /**
-     * Get reportid
-     *
-     * @return string 
-     */
-    public function getReportid()
-    {
-        return $this->reportid;
-    }
-
-    /**
-     * Set projectid
-     *
-     * @param string $projectid
-     * @return SharedReport
-     */
-    public function setProjectid($projectid)
-    {
-        $this->projectid = $projectid;
 
         return $this;
     }
@@ -133,22 +120,23 @@ class SharedReport
     /**
      * Get projectid
      *
-     * @return string 
+     * @return string
      */
-    public function getProjectid()
-    {
+    public function getProjectid () {
+
         return $this->projectid;
     }
 
     /**
-     * Set projectname
+     * Set projectid
      *
-     * @param string $projectname
+     * @param string $projectid
+     *
      * @return SharedReport
      */
-    public function setProjectname($projectname)
-    {
-        $this->projectname = $projectname;
+    public function setProjectid ($projectid) {
+
+        $this->projectid = $projectid;
 
         return $this;
     }
@@ -156,22 +144,23 @@ class SharedReport
     /**
      * Get projectname
      *
-     * @return string 
+     * @return string
      */
-    public function getProjectname()
-    {
+    public function getProjectname () {
+
         return $this->projectname;
     }
 
     /**
-     * Set hash
+     * Set projectname
      *
-     * @param string $hash
+     * @param string $projectname
+     *
      * @return SharedReport
      */
-    public function setHash($hash)
-    {
-        $this->hash = $hash;
+    public function setProjectname ($projectname) {
+
+        $this->projectname = $projectname;
 
         return $this;
     }
@@ -179,22 +168,23 @@ class SharedReport
     /**
      * Get hash
      *
-     * @return string 
+     * @return string
      */
-    public function getHash()
-    {
+    public function getHash () {
+
         return $this->hash;
     }
 
     /**
-     * Set password
+     * Set hash
      *
-     * @param string $password
+     * @param string $hash
+     *
      * @return SharedReport
      */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+    public function setHash ($hash) {
+
+        $this->hash = $hash;
 
         return $this;
     }
@@ -202,22 +192,23 @@ class SharedReport
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set timestamp
+     * Set password
      *
-     * @param \DateTime $timestamp
+     * @param string $password
+     *
      * @return SharedReport
      */
-    public function setTimestamp($timestamp)
-    {
-        $this->timestamp = $timestamp;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -225,22 +216,23 @@ class SharedReport
     /**
      * Get timestamp
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getTimestamp()
-    {
+    public function getTimestamp () {
+
         return $this->timestamp;
     }
 
     /**
-     * Set user
+     * Set timestamp
      *
-     * @param \Core\Model\User $user
+     * @param \DateTime $timestamp
+     *
      * @return SharedReport
      */
-    public function setUser(\Core\Model\User $user)
-    {
-        $this->user = $user;
+    public function setTimestamp ($timestamp) {
+
+        $this->timestamp = $timestamp;
 
         return $this;
     }
@@ -248,22 +240,23 @@ class SharedReport
     /**
      * Get user
      *
-     * @return \Core\Model\User 
+     * @return \Core\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
     }
 
     /**
-     * Set company
+     * Set user
      *
-     * @param \Core\Model\Company $company
+     * @param \Core\Model\User $user
+     *
      * @return SharedReport
      */
-    public function setCompany(\Core\Model\Company $company)
-    {
-        $this->company = $company;
+    public function setUser (\Core\Model\User $user) {
+
+        $this->user = $user;
 
         return $this;
     }
@@ -271,10 +264,24 @@ class SharedReport
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\Company $company
+     *
+     * @return SharedReport
+     */
+    public function setCompany (\Core\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

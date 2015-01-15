@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="deviceClient", indexes={@ORM\Index(name="user_id", columns={"user_id"}), @ORM\Index(name="IDX_8C550D9894A4C7D4", columns={"device_id"})})
  * @ORM\Entity
  */
-class DeviceClient
-{
+class DeviceClient {
+
     /**
      * @var string
      *
@@ -70,39 +70,26 @@ class DeviceClient
      */
     private $device;
 
+    /**
+     * Get reseller
+     *
+     * @return string
+     */
+    public function getReseller () {
+
+        return $this->reseller;
+    }
 
     /**
      * Set reseller
      *
      * @param string $reseller
+     *
      * @return DeviceClient
      */
-    public function setReseller($reseller)
-    {
+    public function setReseller ($reseller) {
+
         $this->reseller = $reseller;
-
-        return $this;
-    }
-
-    /**
-     * Get reseller
-     *
-     * @return string 
-     */
-    public function getReseller()
-    {
-        return $this->reseller;
-    }
-
-    /**
-     * Set clientName
-     *
-     * @param string $clientName
-     * @return DeviceClient
-     */
-    public function setClientName($clientName)
-    {
-        $this->clientName = $clientName;
 
         return $this;
     }
@@ -110,22 +97,23 @@ class DeviceClient
     /**
      * Get clientName
      *
-     * @return string 
+     * @return string
      */
-    public function getClientName()
-    {
+    public function getClientName () {
+
         return $this->clientName;
     }
 
     /**
-     * Set clientVersion
+     * Set clientName
      *
-     * @param string $clientVersion
+     * @param string $clientName
+     *
      * @return DeviceClient
      */
-    public function setClientVersion($clientVersion)
-    {
-        $this->clientVersion = $clientVersion;
+    public function setClientName ($clientName) {
+
+        $this->clientName = $clientName;
 
         return $this;
     }
@@ -133,22 +121,23 @@ class DeviceClient
     /**
      * Get clientVersion
      *
-     * @return string 
+     * @return string
      */
-    public function getClientVersion()
-    {
+    public function getClientVersion () {
+
         return $this->clientVersion;
     }
 
     /**
-     * Set lastLogin
+     * Set clientVersion
      *
-     * @param \DateTime $lastLogin
+     * @param string $clientVersion
+     *
      * @return DeviceClient
      */
-    public function setLastLogin($lastLogin)
-    {
-        $this->lastLogin = $lastLogin;
+    public function setClientVersion ($clientVersion) {
+
+        $this->clientVersion = $clientVersion;
 
         return $this;
     }
@@ -156,22 +145,23 @@ class DeviceClient
     /**
      * Get lastLogin
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getLastLogin()
-    {
+    public function getLastLogin () {
+
         return $this->lastLogin;
     }
 
     /**
-     * Set user
+     * Set lastLogin
      *
-     * @param \Core\Model\User $user
+     * @param \DateTime $lastLogin
+     *
      * @return DeviceClient
      */
-    public function setUser(\Core\Model\User $user)
-    {
-        $this->user = $user;
+    public function setLastLogin ($lastLogin) {
+
+        $this->lastLogin = $lastLogin;
 
         return $this;
     }
@@ -179,22 +169,23 @@ class DeviceClient
     /**
      * Get user
      *
-     * @return \Core\Model\User 
+     * @return \Core\Model\User
      */
-    public function getUser()
-    {
+    public function getUser () {
+
         return $this->user;
     }
 
     /**
-     * Set device
+     * Set user
      *
-     * @param \Core\Model\Device $device
+     * @param \Core\Model\User $user
+     *
      * @return DeviceClient
      */
-    public function setDevice(\Core\Model\Device $device)
-    {
-        $this->device = $device;
+    public function setUser (\Core\Model\User $user) {
+
+        $this->user = $user;
 
         return $this;
     }
@@ -202,10 +193,24 @@ class DeviceClient
     /**
      * Get device
      *
-     * @return \Core\Model\Device 
+     * @return \Core\Model\Device
      */
-    public function getDevice()
-    {
+    public function getDevice () {
+
         return $this->device;
+    }
+
+    /**
+     * Set device
+     *
+     * @param \Core\Model\Device $device
+     *
+     * @return DeviceClient
+     */
+    public function setDevice (\Core\Model\Device $device) {
+
+        $this->device = $device;
+
+        return $this;
     }
 }

@@ -9,7 +9,7 @@ class RuntimeConstraintsProviderTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidKeyTypeConstructor() {
+    public function testInvalidKeyTypeConstructor () {
 
         new RuntimeConstraintsProvider([1 => []]);
 
@@ -18,7 +18,7 @@ class RuntimeConstraintsProviderTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidConstraintsTypeConstructor() {
+    public function testInvalidConstraintsTypeConstructor () {
 
         new RuntimeConstraintsProvider(['qwe' => 'qwe']);
 
@@ -27,7 +27,7 @@ class RuntimeConstraintsProviderTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidConstraintsObjectConstructor() {
+    public function testInvalidConstraintsObjectConstructor () {
 
         new RuntimeConstraintsProvider(['qwe' => [new \stdClass()]]);
 

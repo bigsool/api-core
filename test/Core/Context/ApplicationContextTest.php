@@ -191,7 +191,7 @@ class ApplicationContextTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testDuplicatedAction() {
+    public function testDuplicatedAction () {
 
         $appCtx = $this->getApplicationContext();
         $mockAction = $this->getMockAction();

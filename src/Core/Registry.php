@@ -275,6 +275,7 @@ class Registry implements EventSubscriber {
      * @param LifecycleEventArgs $args
      */
     public function prePersist (LifecycleEventArgs $args) {
+
         $this->preModification($args);
     }
 
@@ -282,6 +283,7 @@ class Registry implements EventSubscriber {
      * @param LifecycleEventArgs $args
      */
     public function preUpdate (LifecycleEventArgs $args) {
+
         $this->preModification($args);
     }
 

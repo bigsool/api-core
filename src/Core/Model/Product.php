@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="product", uniqueConstraints={@ORM\UniqueConstraint(name="productBundleId", columns={"bundleId"})})
  * @ORM\Entity
  */
-class Product
-{
+class Product {
+
     /**
      * @var integer
      *
@@ -94,8 +94,8 @@ class Product
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->purchasedProducts = new \Doctrine\Common\Collections\ArrayCollection();
         $this->productFunctionalities = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -103,45 +103,33 @@ class Product
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get duration
+     *
+     * @return integer
+     */
+    public function getDuration () {
+
+        return $this->duration;
     }
 
     /**
      * Set duration
      *
      * @param integer $duration
+     *
      * @return Product
      */
-    public function setDuration($duration)
-    {
+    public function setDuration ($duration) {
+
         $this->duration = $duration;
-
-        return $this;
-    }
-
-    /**
-     * Get duration
-     *
-     * @return integer 
-     */
-    public function getDuration()
-    {
-        return $this->duration;
-    }
-
-    /**
-     * Set bundleid
-     *
-     * @param string $bundleid
-     * @return Product
-     */
-    public function setBundleid($bundleid)
-    {
-        $this->bundleid = $bundleid;
 
         return $this;
     }
@@ -149,22 +137,23 @@ class Product
     /**
      * Get bundleid
      *
-     * @return string 
+     * @return string
      */
-    public function getBundleid()
-    {
+    public function getBundleid () {
+
         return $this->bundleid;
     }
 
     /**
-     * Set name
+     * Set bundleid
      *
-     * @param string $name
+     * @param string $bundleid
+     *
      * @return Product
      */
-    public function setName($name)
-    {
-        $this->name = $name;
+    public function setBundleid ($bundleid) {
+
+        $this->bundleid = $bundleid;
 
         return $this;
     }
@@ -172,22 +161,23 @@ class Product
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName () {
+
         return $this->name;
     }
 
     /**
-     * Set consumable
+     * Set name
      *
-     * @param boolean $consumable
+     * @param string $name
+     *
      * @return Product
      */
-    public function setConsumable($consumable)
-    {
-        $this->consumable = $consumable;
+    public function setName ($name) {
+
+        $this->name = $name;
 
         return $this;
     }
@@ -195,22 +185,23 @@ class Product
     /**
      * Get consumable
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getConsumable()
-    {
+    public function getConsumable () {
+
         return $this->consumable;
     }
 
     /**
-     * Set price
+     * Set consumable
      *
-     * @param float $price
+     * @param boolean $consumable
+     *
      * @return Product
      */
-    public function setPrice($price)
-    {
-        $this->price = $price;
+    public function setConsumable ($consumable) {
+
+        $this->consumable = $consumable;
 
         return $this;
     }
@@ -218,22 +209,23 @@ class Product
     /**
      * Get price
      *
-     * @return float 
+     * @return float
      */
-    public function getPrice()
-    {
+    public function getPrice () {
+
         return $this->price;
     }
 
     /**
-     * Set weight
+     * Set price
      *
-     * @param integer $weight
+     * @param float $price
+     *
      * @return Product
      */
-    public function setWeight($weight)
-    {
-        $this->weight = $weight;
+    public function setPrice ($price) {
+
+        $this->price = $price;
 
         return $this;
     }
@@ -241,22 +233,23 @@ class Product
     /**
      * Get weight
      *
-     * @return integer 
+     * @return integer
      */
-    public function getWeight()
-    {
+    public function getWeight () {
+
         return $this->weight;
     }
 
     /**
-     * Set available
+     * Set weight
      *
-     * @param boolean $available
+     * @param integer $weight
+     *
      * @return Product
      */
-    public function setAvailable($available)
-    {
-        $this->available = $available;
+    public function setWeight ($weight) {
+
+        $this->weight = $weight;
 
         return $this;
     }
@@ -264,22 +257,23 @@ class Product
     /**
      * Get available
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getAvailable()
-    {
+    public function getAvailable () {
+
         return $this->available;
     }
 
     /**
-     * Set vat
+     * Set available
      *
-     * @param float $vat
+     * @param boolean $available
+     *
      * @return Product
      */
-    public function setVat($vat)
-    {
-        $this->vat = $vat;
+    public function setAvailable ($available) {
+
+        $this->available = $available;
 
         return $this;
     }
@@ -287,21 +281,36 @@ class Product
     /**
      * Get vat
      *
-     * @return float 
+     * @return float
      */
-    public function getVat()
-    {
+    public function getVat () {
+
         return $this->vat;
+    }
+
+    /**
+     * Set vat
+     *
+     * @param float $vat
+     *
+     * @return Product
+     */
+    public function setVat ($vat) {
+
+        $this->vat = $vat;
+
+        return $this;
     }
 
     /**
      * Add purchasedProducts
      *
      * @param \Core\Model\PurchasedProduct $purchasedProducts
+     *
      * @return Product
      */
-    public function addPurchasedProduct(\Core\Model\PurchasedProduct $purchasedProducts)
-    {
+    public function addPurchasedProduct (\Core\Model\PurchasedProduct $purchasedProducts) {
+
         $this->purchasedProducts[] = $purchasedProducts;
 
         return $this;
@@ -312,18 +321,18 @@ class Product
      *
      * @param \Core\Model\PurchasedProduct $purchasedProducts
      */
-    public function removePurchasedProduct(\Core\Model\PurchasedProduct $purchasedProducts)
-    {
+    public function removePurchasedProduct (\Core\Model\PurchasedProduct $purchasedProducts) {
+
         $this->purchasedProducts->removeElement($purchasedProducts);
     }
 
     /**
      * Get purchasedProducts
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPurchasedProducts()
-    {
+    public function getPurchasedProducts () {
+
         return $this->purchasedProducts;
     }
 
@@ -331,10 +340,11 @@ class Product
      * Add productFunctionalities
      *
      * @param \Core\Model\ProductFunctionality $productFunctionalities
+     *
      * @return Product
      */
-    public function addProductFunctionality(\Core\Model\ProductFunctionality $productFunctionalities)
-    {
+    public function addProductFunctionality (\Core\Model\ProductFunctionality $productFunctionalities) {
+
         $this->productFunctionalities[] = $productFunctionalities;
 
         return $this;
@@ -345,18 +355,18 @@ class Product
      *
      * @param \Core\Model\ProductFunctionality $productFunctionalities
      */
-    public function removeProductFunctionality(\Core\Model\ProductFunctionality $productFunctionalities)
-    {
+    public function removeProductFunctionality (\Core\Model\ProductFunctionality $productFunctionalities) {
+
         $this->productFunctionalities->removeElement($productFunctionalities);
     }
 
     /**
      * Get productFunctionalities
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getProductFunctionalities()
-    {
+    public function getProductFunctionalities () {
+
         return $this->productFunctionalities;
     }
 }

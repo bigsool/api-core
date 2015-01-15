@@ -58,7 +58,7 @@ class BasicHelperTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testBasicSaveOnNotObject() {
+    public function testBasicSaveOnNotObject () {
 
         (new BasicHelper())->basicSave('qwe', []);
 
@@ -67,7 +67,7 @@ class BasicHelperTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testBasicSaveWithWrongParameter() {
+    public function testBasicSaveWithWrongParameter () {
 
         (new BasicHelper())->basicSave(new Company(), ['qwe' => 'qwe']);
 

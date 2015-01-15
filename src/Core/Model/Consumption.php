@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="consumption", indexes={@ORM\Index(name="product_id", columns={"functionality_id"}), @ORM\Index(name="company_id", columns={"company_id"})})
  * @ORM\Entity
  */
-class Consumption
-{
+class Consumption {
+
     /**
      * @var integer
      *
@@ -41,49 +41,36 @@ class Consumption
      */
     private $company;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get functionality
+     *
+     * @return \Core\Model\Functionality
+     */
+    public function getFunctionality () {
+
+        return $this->functionality;
     }
 
     /**
      * Set functionality
      *
      * @param \Core\Model\Functionality $functionality
+     *
      * @return Consumption
      */
-    public function setFunctionality(\Core\Model\Functionality $functionality)
-    {
+    public function setFunctionality (\Core\Model\Functionality $functionality) {
+
         $this->functionality = $functionality;
-
-        return $this;
-    }
-
-    /**
-     * Get functionality
-     *
-     * @return \Core\Model\Functionality 
-     */
-    public function getFunctionality()
-    {
-        return $this->functionality;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Core\Model\Company $company
-     * @return Consumption
-     */
-    public function setCompany(\Core\Model\Company $company)
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -91,10 +78,24 @@ class Consumption
     /**
      * Get company
      *
-     * @return \Core\Model\Company 
+     * @return \Core\Model\Company
      */
-    public function getCompany()
-    {
+    public function getCompany () {
+
         return $this->company;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\Company $company
+     *
+     * @return Consumption
+     */
+    public function setCompany (\Core\Model\Company $company) {
+
+        $this->company = $company;
+
+        return $this;
     }
 }

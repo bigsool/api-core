@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="productFunctionality")
  * @ORM\Entity
  */
-class ProductFunctionality
-{
+class ProductFunctionality {
+
     /**
      * @var integer
      *
@@ -43,39 +43,26 @@ class ProductFunctionality
      */
     private $product;
 
+    /**
+     * Get quantity
+     *
+     * @return integer
+     */
+    public function getQuantity () {
+
+        return $this->quantity;
+    }
 
     /**
      * Set quantity
      *
      * @param integer $quantity
+     *
      * @return ProductFunctionality
      */
-    public function setQuantity($quantity)
-    {
+    public function setQuantity ($quantity) {
+
         $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer 
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * Set functionality
-     *
-     * @param \Core\Model\Functionality $functionality
-     * @return ProductFunctionality
-     */
-    public function setFunctionality(\Core\Model\Functionality $functionality)
-    {
-        $this->functionality = $functionality;
 
         return $this;
     }
@@ -83,22 +70,23 @@ class ProductFunctionality
     /**
      * Get functionality
      *
-     * @return \Core\Model\Functionality 
+     * @return \Core\Model\Functionality
      */
-    public function getFunctionality()
-    {
+    public function getFunctionality () {
+
         return $this->functionality;
     }
 
     /**
-     * Set product
+     * Set functionality
      *
-     * @param \Core\Model\Product $product
+     * @param \Core\Model\Functionality $functionality
+     *
      * @return ProductFunctionality
      */
-    public function setProduct(\Core\Model\Product $product)
-    {
-        $this->product = $product;
+    public function setFunctionality (\Core\Model\Functionality $functionality) {
+
+        $this->functionality = $functionality;
 
         return $this;
     }
@@ -106,10 +94,24 @@ class ProductFunctionality
     /**
      * Get product
      *
-     * @return \Core\Model\Product 
+     * @return \Core\Model\Product
      */
-    public function getProduct()
-    {
+    public function getProduct () {
+
         return $this->product;
+    }
+
+    /**
+     * Set product
+     *
+     * @param \Core\Model\Product $product
+     *
+     * @return ProductFunctionality
+     */
+    public function setProduct (\Core\Model\Product $product) {
+
+        $this->product = $product;
+
+        return $this;
     }
 }

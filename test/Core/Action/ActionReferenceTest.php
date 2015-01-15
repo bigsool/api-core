@@ -27,8 +27,6 @@ class ActionReferenceTest extends TestCase {
 
     }
 
-
-
     public function testAuthorize () {
 
         $this->resetApplicationContext();
@@ -40,9 +38,10 @@ class ActionReferenceTest extends TestCase {
         $self = $this;
         $ctx = $this->getActionContext();
         ApplicationContext::getInstance()->addAction(
-            $action = new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
-                       $this->getTestedCallable($validateCalled, $self, $action, $ctx),
-                       $this->getTestedCallable($processCalled, $self, $action, $ctx)));
+            $action =
+                new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($validateCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($processCalled, $self, $action, $ctx)));
 
         (new ActionReference($module, $name))->authorize($ctx);
 
@@ -53,10 +52,10 @@ class ActionReferenceTest extends TestCase {
     }
 
     /**
-     * @param bool $called
+     * @param bool                $called
      * @param ActionReferenceTest $self
-     * @param Action $action
-     * @param ActionContext $ctx
+     * @param Action              $action
+     * @param ActionContext       $ctx
      *
      * @return callable
      */
@@ -87,9 +86,10 @@ class ActionReferenceTest extends TestCase {
         $self = $this;
         $ctx = $this->getActionContext();
         ApplicationContext::getInstance()->addAction(
-            $action = new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
-                                        $this->getTestedCallable($validateCalled, $self, $action, $ctx),
-                                        $this->getTestedCallable($processCalled, $self, $action, $ctx)));
+            $action =
+                new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($validateCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($processCalled, $self, $action, $ctx)));
 
         (new ActionReference($module, $name))->validate($ctx);
 
@@ -110,9 +110,10 @@ class ActionReferenceTest extends TestCase {
         $self = $this;
         $ctx = $this->getActionContext();
         ApplicationContext::getInstance()->addAction(
-            $action = new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
-                                        $this->getTestedCallable($validateCalled, $self, $action, $ctx),
-                                        $this->getTestedCallable($processCalled, $self, $action, $ctx)));
+            $action =
+                new GenericAction($module, $name, $this->getTestedCallable($authorizeCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($validateCalled, $self, $action, $ctx),
+                                  $this->getTestedCallable($processCalled, $self, $action, $ctx)));
 
         (new ActionReference($module, $name))->process($ctx);
 
@@ -125,7 +126,7 @@ class ActionReferenceTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testNotDefinedAction() {
+    public function testNotDefinedAction () {
 
         $this->resetApplicationContext();
         (new ActionReference('qwe', 'qwe'))->process($this->getActionContext());
