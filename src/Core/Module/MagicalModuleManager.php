@@ -181,7 +181,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->setRelationshipsFromMetadata();
 
-        $entities = $this->loadEntities();
+        $entities = $this->loadEntities($mainEntity);
 
         return $entities;
 
@@ -190,9 +190,10 @@ abstract class MagicalModuleManager extends ModuleManager {
     /**
      * @return mixed
      */
-    private function loadEntities () {
+    private function loadEntities ($mainEntity) {
 
         $appCtx = ApplicationContext::getInstance();
+        $mainEntityName = $this->getMainEntityName();
 
         $registry = $appCtx->getNewRegistry();
 
