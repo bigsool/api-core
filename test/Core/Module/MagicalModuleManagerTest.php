@@ -233,7 +233,7 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    public function testAddAspectOneToMany () {
+    public function AddAspectOneToMany () {
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -511,21 +511,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    /**
-     * @param MagicalModuleManager $mgr
-     * @param array                $args
-     *
-     * @return mixed
-     */
-    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
-
-        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($mgr, $args);
-
-    }
-
     public function testComplexMagicalCreate () {
 
         self::resetApplicationContext();
@@ -559,7 +544,7 @@ class MagicalModuleManagerTest extends TestCase {
                 'email'    => new SafeParameter('qwe@qwe.com'),
                 'name'     => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => new SafeParameter(['name' => 'bigsool'])
+                'company'  => new SafeParameter(['name' => new UnsafeParameter('bigsool')])
             ]);
 
         /**
@@ -627,9 +612,11 @@ class MagicalModuleManagerTest extends TestCase {
             ['email'    => new SafeParameter('qwe@qwe.com'),
              'name'     => new SafeParameter('thierry'),
              'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(['name'    => 'bigsool',
-                                                'storage' => ['url' => 'http://ddfd.fr'],
-                                               ]),
+             'company'  => new UnsafeParameter(
+                 ['name'    => new UnsafeParameter('bigsool'),
+                  'storage' => new UnsafeParameter(
+                      ['url' => new UnsafeParameter('http://ddfd.fr')]),
+                 ]),
             ]);
 
         $this->defineAction($mgrCompany, ['create',
@@ -687,11 +674,11 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
-            ['id' => new SafeParameter(1),
-             'email'    => new SafeParameter('youpy@qwe.com'),
-             'name' => new SafeParameter('youpy'),
+            ['id'        => new SafeParameter(1),
+             'email'     => new SafeParameter('youpy@qwe.com'),
+             'name'      => new SafeParameter('youpy'),
              'firstname' => new SafeParameter('youpy'),
-             'password' => new SafeParameter('youpy'),
+             'password'  => new SafeParameter('youpy'),
             ]);
 
         /**
@@ -703,6 +690,21 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('youpy', $user->getName());
         $this->assertSame('youpy', $user->getFirstname());
         $this->assertSame('youpy', $user->getPassword());
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     *
+     * @return mixed
+     */
+    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($mgr, $args);
+
     }
 
     protected function tearDown () {
