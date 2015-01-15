@@ -22,14 +22,14 @@ class ModuleManager extends MagicalModuleManager {
         $this->addAspect([
                              'model'       => 'Company',
                              'prefix'      => 'company',
-                             'keyPath'     => 'company',
+                             'keyPath'     => 'ownedCompany',
                              'constraints' => [new Dictionary(), new NotBlank()],
                          ]);
 
         $this->addAspect([
                              'model'       => 'Storage',
                              'prefix'      => 'storage',
-                             'keyPath'     => 'company.storage',
+                             'keyPath'     => 'ownedCompany.storage',
                              'constraints' => [new Blank()],
                          ]);
 
