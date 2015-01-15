@@ -470,9 +470,9 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $tmpDir = sys_get_temp_dir();
             $originalDb = $tmpDir . '/archiweb-proto.db.sqlite';
             $tmpDB = tempnam($tmpDir, 'archiweb-proto.db.sqlite');
-            if (file_exists($originalDb)) {
+            /*if (file_exists($originalDb)) {
                 copy($originalDb, $tmpDB);
-            }
+            }*/
 
             if ($conn == NULL) {
                 $conn = array(
