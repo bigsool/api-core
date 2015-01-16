@@ -17,6 +17,7 @@ use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 abstract class MagicalModuleManager extends ModuleManager {
 
@@ -29,6 +30,11 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @var array
      */
     private $models = [];
+
+    /**
+     * @var string
+     */
+    private $mainEntityName = NULL;
 
     /**
      * @param ActionContext $ctx
@@ -47,6 +53,10 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return mixed
      */
     protected function magicalModify (ActionContext $ctx, $action) {
+
+        if (!$this->mainEntityName) {
+            throw new RuntimeException('main entity undefined !');
+        }
 
         $appCtx = ApplicationContext::getInstance();
         $mainEntity = NULL;
@@ -224,7 +234,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function loadEntities ($mainEntity) {
 
         $appCtx = ApplicationContext::getInstance();
-        $mainEntityName = $this->getMainEntityName();
 
         $registry = $appCtx->getNewRegistry();
 
@@ -232,7 +241,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $registry->save($model);
         }
 
-        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
+        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
 
         $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
 
@@ -242,7 +251,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-        $qryCtx->addFilter(new StringFilter($mainEntityName, 'bla', 'id = ' . $mainEntity->getId()));
+        $qryCtx->addFilter(new StringFilter($this->mainEntityName, 'bla', 'id = ' . $mainEntity->getId()));
 
         $result = $registry->find($qryCtx, false);
 
@@ -357,9 +366,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $registry = $appCtx->getNewRegistry();
 
-        $mainEntityName = $this->getMainEntityName();
-
-        $qryCtx = new FindQueryContext($mainEntityName, new RequestContext());
+        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
 
         foreach ($keyPaths as $keyPath) {
             $qryCtx->addKeyPath($keyPath);
@@ -439,6 +446,16 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $modifyAction;
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function setMainEntity ($config) {
+
+        $this->addAspect($config);
+        $this->mainEntityName = $config['model'];
+
     }
 
 }

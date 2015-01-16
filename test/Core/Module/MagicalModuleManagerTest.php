@@ -71,6 +71,20 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $params
+     */
+    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
+        $method->setAccessible(true);
+
+        $method->invokeArgs($mgr, [$params]);
+
+    }
+
     /**
      * @param MagicalModuleManager $mgr
      *
@@ -453,7 +467,9 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager = new UserModuleManager();
 
-        $this->addUserAspect($mgr);
+        $this->setMainEntity($mgr, [
+            'model' => 'User',
+        ]);
 
 
         $appCtx = ApplicationContext::getInstance();
@@ -514,8 +530,9 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
-
-        $this->addUserAspect($mgr);
+        $this->setMainEntity($mgr, [
+            'model' => 'User',
+        ]);
         $this->addCompanyAspect($mgr);
         // $this->addStorageAspect($mgr);
 
@@ -559,7 +576,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
-        $this->addUserAspect($mgrUser);
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
+        ]);
+
 
         $this->addAspect($mgrUser, [
             'model'       => 'Company',
@@ -571,7 +591,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
-        $this->addAspect($mgrCompany, [
+        $this->setMainEntity($mgrCompany, [
             'model' => 'Company',
         ]);
         $this->addAspect($mgrCompany, [
@@ -647,8 +667,9 @@ class MagicalModuleManagerTest extends TestCase {
 
         $userModuleManager = new UserModuleManager();
 
-        $this->addUserAspect($mgr);
-
+        $this->setMainEntity($mgr, [
+            'model' => 'User',
+        ]);
 
         $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
@@ -688,7 +709,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
-        $this->addUserAspect($mgrUser);
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
+        ]);
 
 
         $this->addAspect($mgrUser, [
@@ -701,9 +725,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
-        $this->addAspect($mgrCompany, [
+        $this->setMainEntity($mgrCompany, [
             'model' => 'Company',
         ]);
+
         $this->addAspect($mgrCompany, [
             'model'   => 'Storage',
             'keyPath' => 'storage',
