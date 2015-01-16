@@ -71,7 +71,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-
     /**
      * @param MagicalModuleManager $mgr
      * @param array                $params

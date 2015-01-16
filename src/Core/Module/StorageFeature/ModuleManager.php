@@ -25,7 +25,7 @@ class ModuleManager extends AbstractModuleManager {
 
             $context->setParam('login', new SafeParameter(uniqid('login')));
             $context->setParam('password', new SafeParameter(uniqid('password')));
-            
+
         }));
 
         $context->addAction(new BasicUpdateAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [

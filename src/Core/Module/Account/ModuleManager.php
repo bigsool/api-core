@@ -19,8 +19,8 @@ class ModuleManager extends MagicalModuleManager {
     public function load (ApplicationContext &$context) {
 
         $this->setMainEntity([
-                             'model' => 'User',
-                         ]);
+                                 'model' => 'User',
+                             ]);
 
         $this->addAspect([
                              'model'       => 'Company',

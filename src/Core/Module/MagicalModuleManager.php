@@ -348,7 +348,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      *
      * @return ModelAspect
      */
-    protected function getModelAspectForModelName($modelName) {
+    protected function getModelAspectForModelName ($modelName) {
 
         foreach ($this->getAspects() as $modelAspect) {
             if ($modelAspect->getModel() == $modelName) {
@@ -428,7 +428,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param string $action
+     * @param string      $action
      * @param ModelAspect $modelAspect
      *
      * @return Action
