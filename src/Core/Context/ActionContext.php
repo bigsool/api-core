@@ -150,7 +150,7 @@ class ActionContext extends \ArrayObject {
         $verifiedParams = [];
 
         foreach ($this->getParams() as $key => $param) {
-            if ($param->isSafe() && (!$keys || in_array($key,$keys))) {
+            if ($param->isSafe() && (!$keys || in_array($key,$keys,true))) {
                 $verifiedParams[$key] = $param;
             }
         }
