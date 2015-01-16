@@ -5,10 +5,12 @@ namespace Core\Module\StorageFeature;
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
+use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
+use Core\Parameter\SafeParameter;
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -19,7 +21,12 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addAction(new BasicCreateAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [
             'url' => [ERR_INVALID_NAME, new StorageValidation()],
-        ]));
+        ], function (ActionContext $context) {
+
+            $context->setParam('login', new SafeParameter(uniqid('login')));
+            $context->setParam('password', new SafeParameter(uniqid('password')));
+            
+        }));
 
         $context->addAction(new BasicUpdateAction('Core\Storage', 'storage', 'StorageFeatureHelper', NULL, [
             'url' => [ERR_INVALID_NAME, new StorageValidation()],

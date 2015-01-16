@@ -160,7 +160,6 @@ class SimpleAction implements Action {
             else {
                 $safeParameter = new SafeParameter($value);
                 $context->setParam($field, $safeParameter);
-                $context->setVerifiedParam($field, $safeParameter);
             }
         }
         $errors = $errorManager->getErrors();
