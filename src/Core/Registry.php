@@ -11,6 +11,7 @@ use Core\Expression\NAryExpression;
 use Core\Operator\AndOperator;
 use Core\Parameter\Parameter;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
@@ -282,14 +283,6 @@ class Registry implements EventSubscriber {
     /**
      * @param LifecycleEventArgs $args
      */
-    public function preUpdate (LifecycleEventArgs $args) {
-
-        $this->preModification($args);
-    }
-
-    /**
-     * @param LifecycleEventArgs $args
-     */
     protected function preModification (LifecycleEventArgs $args) {
 
         $entity = $args->getEntity();
@@ -308,6 +301,28 @@ class Registry implements EventSubscriber {
             $entity->$setter($value->getValue());
         }
 
+    }
+
+    /**
+     * @param LifecycleEventArgs $args
+     */
+    public function preUpdate (LifecycleEventArgs $args) {
+
+        $this->preModification($args);
+    }
+
+    /**
+     * @param string|object $classOrObject
+     *
+     * @return boolean
+     */
+    public function isEntity ($classOrObject) {
+
+        if (is_object($classOrObject)) {
+            $classOrObject = ClassUtils::getClass($classOrObject);
+        }
+
+        return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
     }
 
 }
