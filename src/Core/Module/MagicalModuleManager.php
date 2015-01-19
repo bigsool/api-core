@@ -36,6 +36,8 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private $mainEntityName = NULL;
 
+    private $mainEntity = NULL;
+
     /**
      * @param ActionContext $ctx
      *
@@ -58,9 +60,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             throw new RuntimeException('main entity undefined !');
         }
 
-        $appCtx = ApplicationContext::getInstance();
-        $mainEntity = NULL;
-
         foreach ($this->modelAspects as $modelAspect) {
 
             // TODO HANDLE ONETOMANY
@@ -74,8 +73,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             if ($modifyAction != 'none' && $actions[$action] == NULL) {
                 continue;
             }
-
-
 
             if ($modelAspect->getKeyPath()) {
                 $keyPath = explode('.',$modelAspect->getKeyPath()->getValue());
@@ -104,8 +101,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $subContext->setParams($params->getValue());
 
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $models = explode('.',$modelAspect->getKeyPath()->getValue());
-                    $entity = $this->getEntityFromKeyPath($mainEntity,$models);
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
                     if ($entity) {
                         $subContext->setParam('id', new SafeParameter($entity->getId()));
                     }
@@ -113,11 +109,12 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
 
-
             $result = $modifyAction->process($subContext ? $subContext : $ctx);
+
             $this->models[$modelAspect->getModel()] = $result;
+
             if ($this->isMainEntity($modelAspect)) {
-                $mainEntity = $result;
+                $this->mainEntity = $result;
             }
 
             if ($subContext) {
@@ -133,19 +130,21 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        if (!isset($mainEntity)) {
+        if (!isset($this->mainEntity)) {
             return NULL;
         }
 
         $this->setRelationshipsFromMetadata();
 
-        $entities = $this->loadEntities($mainEntity);
+        $this->saveEntities();
 
-        return $entities;
+        return $this->formatResult();
 
     }
 
-    private function getEntityFromKeyPath ($entity,$models) {
+    private function getEntityFromKeyPath ($keyPath) {
+        $models = explode('.',$keyPath->getValue());
+        $entity = $this->mainEntity;
         foreach ($models as $model) {
             $fn = 'get'.ucfirst($model);
             $entity = $entity->$fn();
@@ -248,10 +247,8 @@ abstract class MagicalModuleManager extends ModuleManager {
         $this->models[$target]->$fn($this->models[$sourceModelName]);
     }
 
-    /**
-     * @return mixed
-     */
-    private function loadEntities ($mainEntity) {
+
+    private function saveEntities () {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -260,22 +257,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         foreach ($this->models as $model) {
             $registry->save($model);
         }
-
-        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
-
-        $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
-
-        foreach ($this->modelAspects as $modelAspect) {
-            if (($keyPath = $modelAspect->getKeyPath())) {
-                $qryCtx->addKeyPath($keyPath);
-            }
-        }
-
-        $qryCtx->addFilter(new StringFilter($this->mainEntityName, 'bla', 'id = ' . $mainEntity->getId()));
-
-        $result = $registry->find($qryCtx, false);
-
-        return $result[0];
 
     }
 
@@ -475,6 +456,19 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->addAspect($config);
         $this->mainEntityName = $config['model'];
+
+    }
+
+    public function formatResult () {
+
+        $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
+        foreach ($this->modelAspects as $modelAspect) {
+            if ( ($keyPath = $modelAspect->getKeyPath()) ) {
+                $entities[lcfirst($modelAspect->getModel())] = $this->getEntityFromKeyPath($keyPath);
+            }
+        }
+
+        return $entities;
 
     }
 

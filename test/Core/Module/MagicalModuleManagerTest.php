@@ -485,7 +485,8 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $user = $this->magicalCreate($mgr, [$actionContext]);
+        $result = $this->magicalCreate($mgr, [$actionContext]);
+        $user = $result['user'];
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe1.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
@@ -565,13 +566,15 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $user = $this->magicalCreate($mgr, [$actionContext]);
+        $result = $this->magicalCreate($mgr, [$actionContext]);
+        $user = $result['user'];
+        $company = $result['company'];
 
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $user->getCompany()->getName());
-        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+        $this->assertSame('bigsool', $company->getName());
+        $this->assertContainsOnly($user, $company->getUsers());
 
     }
 
@@ -645,8 +648,8 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertArrayHasKey('name', $params);
                                               $self->assertSame('bigsool', $params['name']->getValue());
                                               $called = true;
-
-                                              return $self->magicalCreate($mgrCompany, [$context]);
+                                              $result = $self->magicalCreate($mgrCompany, [$context]);
+                                              return $result['company'];
 
                                           }
         ]);
@@ -654,14 +657,17 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $user = $this->magicalCreate($mgrUser, [$actionContext]);
+        $result = $this->magicalCreate($mgrUser, [$actionContext]);
+
+        $user = $result['user'];
+        $company = $result['company'];
 
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $user->getCompany()->getName());
-        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+        $this->assertSame('bigsool', $company->getName());
+        $this->assertContainsOnly($user, $company->getUsers());
 
     }
 
@@ -695,7 +701,10 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $user = $this->magicalUpdate($mgr, [$actionContext]);
+        $result = $this->magicalUpdate($mgr, [$actionContext]);
+
+        $user = $result['user'];
+
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('youpy@qwe.com', $user->getEmail());
         $this->assertSame('youpy', $user->getName());
