@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Action\Action;
 use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
@@ -91,13 +92,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             if ($modifyAction == 'none') {
 
-                $product = $appCtx->getProduct();
-                try {
-                    $modifyAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), $action, []);
-                }
-                catch (\RuntimeException $e) {
-                    $modifyAction = $appCtx->getAction('Core\\' . $modelAspect->getModel(), $action, []);
-                }
+                $modifyAction = $this->getMagicalAction($action, $modelAspect);
 
             }
 
@@ -123,6 +118,17 @@ abstract class MagicalModuleManager extends ModuleManager {
             $this->models[$modelAspect->getModel()] = $result;
             if ($this->isMainEntity($modelAspect)) {
                 $mainEntity = $result;
+            }
+
+            if ($subContext) {
+                $iterator = $subContext->getIterator();
+                while ($iterator->valid()) {
+                    $key = $iterator->key();
+                    if (!isset($ctx[$key])) {
+                        $ctx[$key] = $iterator->current();
+                    }
+                    $iterator->next();
+                }
             }
 
         }
@@ -354,6 +360,24 @@ abstract class MagicalModuleManager extends ModuleManager {
     protected function getAspects () {
 
         return $this->modelAspects;
+
+    }
+
+    /**
+     * @param $modelName
+     *
+     * @return ModelAspect
+     */
+    protected function getModelAspectForModelName ($modelName) {
+
+        foreach ($this->getAspects() as $modelAspect) {
+            if ($modelAspect->getModel() == $modelName) {
+                return $modelAspect;
+            }
+        }
+
+        throw new \RuntimeException('ModelAspect not found');
+
     }
 
     protected function magicalFind ($keyPaths, $filters) {
@@ -421,6 +445,27 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $classNameExploded[count($classNameExploded) - 2];
 
+    }
+
+    /**
+     * @param string      $action
+     * @param ModelAspect $modelAspect
+     *
+     * @return Action
+     */
+    protected function getMagicalAction ($action, ModelAspect $modelAspect) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $product = $appCtx->getProduct();
+        try {
+            $modifyAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), $action, []);
+        }
+        catch (\RuntimeException $e) {
+            $modifyAction = $appCtx->getAction('Core\\' . $modelAspect->getModel(), $action, []);
+        }
+
+        return $modifyAction;
     }
 
     /**

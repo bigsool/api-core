@@ -6,7 +6,10 @@ namespace Core\Module\Account;
 use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Model\Company;
+use Core\Model\User;
 use Core\Module\MagicalModuleManager;
+use Core\Parameter\SafeParameter;
 use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints\Blank;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -15,22 +18,23 @@ class ModuleManager extends MagicalModuleManager {
 
     public function load (ApplicationContext &$context) {
 
-        $this->addAspect([
-                             'model' => 'User',
-                         ]);
+        $this->setMainEntity([
+                                 'model' => 'User',
+                             ]);
 
         $this->addAspect([
                              'model'       => 'Company',
                              'prefix'      => 'company',
-                             'keyPath'     => 'ownedCompany',
+                             'keyPath'     => 'company',
                              'constraints' => [new Dictionary(), new NotBlank()],
                          ]);
 
         $this->addAspect([
                              'model'       => 'Storage',
                              'prefix'      => 'storage',
-                             'keyPath'     => 'ownedCompany.storage',
+                             'keyPath'     => 'company.storage',
                              'constraints' => [new Blank()],
+                             'actions'     => ['create' => $this->getCreateStorageAction()]
                          ]);
 
         parent::load($context);
@@ -47,7 +51,15 @@ class ModuleManager extends MagicalModuleManager {
         $context->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
             function (ActionContext $context) use ($self) {
 
+                /**
+                 * @var User $user
+                 */
                 $user = $self->magicalCreate($context);
+
+                // The creator of the Account is the owner of the company
+                $user->setOwnedCompany($user->getCompany());
+                $user->getCompany()->setOwner($user);
+                ApplicationContext::getInstance()->getNewRegistry()->save($user);
 
                 return $user;
 
@@ -104,6 +116,25 @@ class ModuleManager extends MagicalModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
         // TODO: Implement loadRules() method.
+    }
+
+    protected function getCreateStorageAction () {
+
+        $self = $this;
+
+        return new SimpleAction('Account', 'createStorage', [], [], function (ActionContext $context) use (&$self) {
+
+            $company = $context['company'];
+            if (!($company instanceof Company)) {
+                throw new \RuntimeException('company must be defined in the context');
+            }
+
+            $context->setParams(['url' => new SafeParameter($company->getId() . '-' . $company->getName())]);
+
+            return $self->getMagicalAction('create', $self->getModelAspectForModelName('Storage'))->process($context);
+
+        });
+
     }
 
 }

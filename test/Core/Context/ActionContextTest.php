@@ -112,7 +112,7 @@ class ActionContextTest extends TestCase {
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
-        $ctx->setVerifiedParams($array);
+        $ctx->setParams($array);
 
         $this->assertSame($array, $ctx->getVerifiedParams());
         $this->assertSame($array[0], $ctx->getVerifiedParam(0));
@@ -124,40 +124,16 @@ class ActionContextTest extends TestCase {
 
         $this->assertNull($ctx->getVerifiedParam('qwe'));
         $qweParam = new SafeParameter('qwe');
-        $ctx->setVerifiedParam('qwe', $qweParam);
+        $ctx->setParam('qwe', $qweParam);
         $this->assertSame($qweParam, $ctx->getVerifiedParam('qwe'));
 
         $ctx->setParams([]);
         $this->assertEmpty($ctx->getVerifiedParams());
 
-        $ctx->setVerifiedParam('qwe', $qweParam);
+        $ctx->setParam('qwe', $qweParam);
 
-        $ctx->setVerifiedParams([]);
+        $ctx->clearVerifiedParams();
         $this->assertEmpty($ctx->getVerifiedParams());
-
-    }
-
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testVerifiedParamInvalidType () {
-
-        $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
-        $ctx->setVerifiedParams([new UnsafeParameter('qwe')]);
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testSetVerifiedParamInvalidType () {
-
-        $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
-        $ctx->setVerifiedParam(new \stdClass(), new SafeParameter('qwe'));
 
     }
 

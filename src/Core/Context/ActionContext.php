@@ -16,11 +16,6 @@ class ActionContext extends \ArrayObject {
     protected $params;
 
     /**
-     * @var SafeParameter[]
-     */
-    protected $verifiedParams = [];
-
-    /**
      * @var RequestContext|ActionContext
      */
     protected $parentContext;
@@ -128,7 +123,6 @@ class ActionContext extends \ArrayObject {
     public function clearParams () {
 
         $this->params = [];
-        $this->clearVerifiedParams();
 
     }
 
@@ -153,31 +147,15 @@ class ActionContext extends \ArrayObject {
      */
     public function getVerifiedParams (array $keys = NULL) {
 
-        if (isset($keys)) {
+        $verifiedParams = [];
 
-            $verifiedParams = [];
-            foreach ($keys as $key) {
-                $verifiedParams[$key] = $this->getVerifiedParam($key);
+        foreach ($this->getParams() as $key => $param) {
+            if ($param->isSafe() && (!$keys || in_array($key, $keys, true))) {
+                $verifiedParams[$key] = $param;
             }
-
-            return $verifiedParams;
-
         }
 
-        return $this->verifiedParams;
-    }
-
-    /**
-     * @param SafeParameter[] $verifiedParams
-     */
-    public function setVerifiedParams ($verifiedParams) {
-
-        $this->clearVerifiedParams();
-
-        foreach ($verifiedParams as $key => $value) {
-            $this->setVerifiedParam($key, $value);
-        }
-
+        return $verifiedParams;
     }
 
     /**
@@ -187,7 +165,9 @@ class ActionContext extends \ArrayObject {
      */
     public function getVerifiedParam ($key) {
 
-        return isset($this->verifiedParams[$key]) ? $this->verifiedParams[$key] : NULL;
+        $params = $this->getVerifiedParams();
+
+        return isset($params[$key]) ? $params[$key] : NULL;
 
     }
 
@@ -196,21 +176,11 @@ class ActionContext extends \ArrayObject {
      */
     public function clearVerifiedParams () {
 
-        $this->verifiedParams = [];
-
-    }
-
-    /**
-     * @param string        $key
-     * @param SafeParameter $value
-     */
-    public function setVerifiedParam ($key, SafeParameter $value) {
-
-        if (!is_scalar($key)) {
-            throw new \RuntimeException('invalid key type');
+        foreach ($this->params as $key => $param) {
+            if ($param->isSafe()) {
+                unset($this->params[$key]);
+            }
         }
-
-        $this->verifiedParams[$key] = $value;
 
     }
 

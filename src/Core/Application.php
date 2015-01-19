@@ -10,7 +10,6 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager;
@@ -259,7 +258,7 @@ class Application {
 
         $findCtx = new FindQueryContext('User');
         $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
-        $findCtx->addKeyPath(new FieldKeyPath('*'));
+        $findCtx->addKeyPath(new KeyPath('*'));
         $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
 
         return $user;
