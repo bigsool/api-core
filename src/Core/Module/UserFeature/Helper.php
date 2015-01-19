@@ -12,6 +12,7 @@ use Core\Filter\StringFilter;
 use Core\Model\User;
 use Core\Parameter\Parameter;
 use Core\Parameter\SafeParameter;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class Helper {
 
@@ -62,6 +63,10 @@ class Helper {
         $result = $registry->find($qryCtx, false);
 
         $user = $result[0];
+
+        if (!$user) {
+            throw new RuntimeException('entity not found !');
+        }
 
         if (isset($params['email'])) {
             $user->setEmail($params['email']);

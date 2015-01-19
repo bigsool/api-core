@@ -534,7 +534,13 @@ class MagicalModuleManagerTest extends TestCase {
             'model' => 'User',
         ]);
         $this->addCompanyAspect($mgr);
-        // $this->addStorageAspect($mgr);
+
+        $this->addAspect($mgr, [
+            'model'       => 'Storage',
+            'prefix'      => 'storage',
+            'keyPath'     => 'company.storage',
+            'constraints' => [new Null()],
+        ]);
 
 
         $appCtx = ApplicationContext::getInstance();
@@ -544,15 +550,17 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-        // $storageModuleManager->loadActions($appCtx);
-        // $storageModuleManager->loadHelpers($appCtx);
+         $storageModuleManager->loadActions($appCtx);
+         $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
                 'email'    => new SafeParameter('qwe@qwe2.com'),
                 'name'     => new SafeParameter('thierry'),
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => new SafeParameter(['name' => new UnsafeParameter('bigsool')])
+                'company'  => new SafeParameter(['name' => new UnsafeParameter('bigsool'),  'storage' => new UnsafeParameter(
+                    ['url' => new UnsafeParameter('http://ddfd.fr')]),
+                                                ])
             ]);
 
         /**
@@ -700,6 +708,80 @@ class MagicalModuleManagerTest extends TestCase {
      * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
     public function testComplexMagicalUpdate () {
+
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('UserModule');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'       => 'Company',
+            'prefix'      => 'company',
+            'keyPath'     => 'company',
+            'constraints' => [new Dictionary(), new NotBlank()],
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'       => 'Storage',
+            'prefix'      => 'storage',
+            'keyPath'     => 'company.storage',
+            'constraints' => [new Null()],
+        ]);
+
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+
+
+        $actionContext = $this->getActionContextWithParams(
+            ['id'        => new SafeParameter(1),
+             'email'     => new SafeParameter('youpy@qwe.com'),
+             'name'      => new SafeParameter('youpy'),
+             'firstname' => new SafeParameter('youpy'),
+             'password'  => new SafeParameter('youpy'),
+             'company'   => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'),
+                                                 'storage' => new SafeParameter(['url' => new SafeParameter('http://www.bigsoole.com')])
+                                                ])
+            ]);
+
+        /*
+         * @var User $user
+         */
+        $user = $this->magicalUpdate($mgrUser, [$actionContext]);
+        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertSame('youpy@qwe.com', $user->getEmail());
+        $this->assertSame('youpy', $user->getName());
+        $this->assertSame('youpy', $user->getFirstname());
+        $this->assertSame('youpy', $user->getPassword());
+
+        $this->assertSame('bigsoole', $user->getCompany()->getName());
+
+
+        $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
+
+    }
+
+
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testMagicalUpdateWithTwoMagicalModuleManager () {
 
 
         $userModuleManager = new UserModuleManager();

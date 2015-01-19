@@ -69,13 +69,25 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $modifyAction = array_key_exists($action, $actions) ? $actions[$action] : 'none';
 
+
             if ($modifyAction != 'none' && $actions[$action] == NULL) {
                 continue;
             }
 
-            $params =
-                $modelAspect->getPrefix() ? isset($params[$modelAspect->getPrefix()])
-                    ? $params[$modelAspect->getPrefix()] : NULL : [];
+
+
+            if ($modelAspect->getKeyPath()) {
+                $keyPath = explode('.',$modelAspect->getKeyPath()->getValue());
+                $paramCopy = $params;
+                foreach ($keyPath as $model) {
+                    $params = $paramCopy;
+                    $params = $params[$model];
+                    $paramCopy = $params->getValue();
+                }
+            }
+            else {
+                $params = $modelAspect->getPrefix() ? : [];
+            }
 
             if ($modifyAction == 'none') {
 
@@ -97,8 +109,8 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $subContext->setParams($params->getValue());
 
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $fn = 'get' . $modelAspect->getModel();
-                    $entity = $mainEntity->$fn();
+                    $models = explode('.',$modelAspect->getKeyPath()->getValue());
+                    $entity = $this->getEntityFromKeyPath($mainEntity,$models);
                     if ($entity) {
                         $subContext->setParam('id', new SafeParameter($entity->getId()));
                     }
@@ -125,6 +137,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $entities;
 
+    }
+
+    private function getEntityFromKeyPath ($entity,$models) {
+        foreach ($models as $model) {
+            $fn = 'get'.ucfirst($model);
+            $entity = $entity->$fn();
+        }
+        return $entity;
     }
 
     /**
