@@ -4,7 +4,6 @@
 namespace Core\Context;
 
 
-use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
 
@@ -35,7 +34,7 @@ class ActionContextTest extends TestCase {
     public function testActionContext () {
 
         $auth = $this->getMockAuth();
-        $params = ['a' => new UnsafeParameter(0), new SafeParameter('b'), new UnsafeParameter(new \stdClass())];
+        $params = ['a' => new UnsafeParameter(0), 'b', new UnsafeParameter(new \stdClass())];
         $actCtx = $this->getMockActionContext();
         $actCtx->method('getParams')->willReturn($params);
         $actCtx->method('getAuth')->willReturn($auth);
@@ -58,7 +57,7 @@ class ActionContextTest extends TestCase {
 
     public function testParams () {
 
-        $array = ['a' => new UnsafeParameter(0), new SafeParameter('b'), new UnsafeParameter(new \stdClass())];
+        $array = ['a' => new UnsafeParameter(0), 'b', new UnsafeParameter(new \stdClass())];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
@@ -83,18 +82,6 @@ class ActionContextTest extends TestCase {
     }
 
     /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testParamInvalidType () {
-
-        $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
-        $ctx->setParams(['qwe']);
-
-    }
-
-    /**
      * @expectedException \Exception
      */
     public function testSetParamInvalidType () {
@@ -108,7 +95,7 @@ class ActionContextTest extends TestCase {
 
     public function testVerifiedParams () {
 
-        $array = ['a' => new SafeParameter(0), new SafeParameter('b'), new SafeParameter(new \stdClass())];
+        $array = ['a' => 0, 'b', new \stdClass()];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
@@ -123,7 +110,7 @@ class ActionContextTest extends TestCase {
         $this->assertContains($array['a'], $ctx->getVerifiedParams([1, 'a']));
 
         $this->assertNull($ctx->getVerifiedParam('qwe'));
-        $qweParam = new SafeParameter('qwe');
+        $qweParam = 'qwe';
         $ctx->setParam('qwe', $qweParam);
         $this->assertSame($qweParam, $ctx->getVerifiedParam('qwe'));
 

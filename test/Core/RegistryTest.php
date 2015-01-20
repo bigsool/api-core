@@ -20,7 +20,6 @@ use Core\Model\Product;
 use Core\Model\Storage;
 use Core\Model\User;
 use Core\Operator\EqualOperator;
-use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\CallbackRule;
 use Core\Rule\FieldRule;
@@ -124,7 +123,7 @@ class RegistryTest extends TestCase {
         $product->setPrice($this->product['price']);
         $product->setWeight($this->product['weight']);
         $product->setAvailable($this->product['available']);
-        $product->setVat(new SafeParameter($this->product['vat']));
+        $product->setVat($this->product['vat']);
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);

@@ -5,83 +5,27 @@ namespace Core\Module\UserFeature;
 
 
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
-use Core\Field\KeyPath as FieldKeyPath;
-use Core\Filter\StringFilter;
 use Core\Model\User;
-use Core\Parameter\Parameter;
-use Core\Parameter\SafeParameter;
-use Symfony\Component\Yaml\Exception\RuntimeException;
+use Core\Module\BasicHelper;
+use Core\Parameter\UnsafeParameter;
 
-class Helper {
+class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actCtx
-     * @param Parameter[]   $params
+     * @param array         $params
      */
     public function createUser (ActionContext $actCtx, array $params) {
 
-        $registry = ApplicationContext::getInstance()->getNewRegistry();
-
-        $salt = self::createSalt();
-        $params['password'] = new SafeParameter(self::encryptPassword($salt, $params['password']->getValue()));
-
         $user = new User();
 
-        $user->setEmail($params['email']);
-        $user->setPassword($params['password']);
-        $user->setName($params['name']);
-        $user->setFirstname($params['firstname']);
-        $user->setLang($params['lang']);
-        $user->setKnowsFrom($params['knowsFrom']);
+        $salt = self::createSalt();
+        $params['password'] = self::encryptPassword($salt, UnsafeParameter::getFinalValue($params['password']));
         $user->setRegisterDate(new \DateTime());
         $user->setConfirmationKey(uniqid());
         $user->setSalt($salt);
 
-        $registry->save($user);
-
-        $actCtx['user'] = $user;
-
-    }
-
-    /**
-     * @param ActionContext $actCtx
-     * @param Parameter[]   $params
-     */
-    public function updateUser (ActionContext $actCtx, array $params) {
-
-        $registry = ApplicationContext::getInstance()->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('User', $actCtx->getRequestContext());
-
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
-
-        $qryCtx->setParams(['id' => $params['id']->getValue()]);
-
-        $qryCtx->addFilter(new StringFilter('User', '', 'id = :id'));
-        $result = $registry->find($qryCtx, false);
-
-        $user = $result[0];
-
-        if (!$user) {
-            throw new RuntimeException('entity not found !');
-        }
-
-        if (isset($params['email'])) {
-            $user->setEmail($params['email']);
-        }
-        if (isset($params['password'])) {
-            $user->setPassword($params['password']);
-        }
-        if (isset($params['name'])) {
-            $user->setName($params['name']);
-        }
-        if (isset($params['firstname'])) {
-            $user->setFirstname($params['firstname']);
-        }
-
-        $registry->save($user);
+        $this->basicSave($user, $params);
 
         $actCtx['user'] = $user;
 
@@ -110,6 +54,14 @@ class Helper {
         }
 
         return $hash;
+
+    }
+
+    public function updateUser (ActionContext $actCtx, User $user, array $params) {
+
+        $this->basicSave($user, $params);
+
+        $actCtx['user'] = $user;
 
     }
 

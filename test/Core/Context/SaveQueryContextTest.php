@@ -9,13 +9,12 @@ use Core\TestCase;
 
 class SaveQueryContextTest extends TestCase {
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 
         // ApplicationContext will defined EntityManager which is necessary for the SaveQueryContext
         self::getApplicationContext();
-
 
     }
 

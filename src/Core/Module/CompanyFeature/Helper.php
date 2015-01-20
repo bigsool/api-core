@@ -11,13 +11,12 @@ use Core\Field\KeyPath;
 use Core\Filter\Filter;
 use Core\Model\Company;
 use Core\Module\BasicHelper;
-use Core\Parameter\Parameter;
 
 class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actCtx
-     * @param Parameter[]   $params
+     * @param array         $params
      */
     public function createCompany (ActionContext $actCtx, array $params) {
 
@@ -32,7 +31,7 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actCtx
      * @param Company       $company
-     * @param Parameter[]   $params
+     * @param array         $params
      */
     public function updateCompany (ActionContext $actCtx, Company $company, array $params) {
 

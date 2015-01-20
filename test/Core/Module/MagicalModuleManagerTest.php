@@ -13,7 +13,6 @@ use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
 use Core\Module\StorageFeature\ModuleManager as StorageModuleManager;
 use Core\Module\UserFeature\Helper as UserHelper;
 use Core\Module\UserFeature\ModuleManager as UserModuleManager;
-use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\TestCase;
@@ -65,19 +64,6 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addAspect (MagicalModuleManager &$mgr, array $params) {
 
         $method = (new \ReflectionClass($mgr))->getMethod('addAspect');
-        $method->setAccessible(true);
-
-        $method->invokeArgs($mgr, [$params]);
-
-    }
-
-    /**
-     * @param MagicalModuleManager $mgr
-     * @param array                $params
-     */
-    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
-
-        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
         $method->setAccessible(true);
 
         $method->invokeArgs($mgr, [$params]);
@@ -392,7 +378,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(['param0' => new UnsafeParameter('qwe'),
                                                             'param1' => new UnsafeParameter('homme'),
-                                                            'param2' => new SafeParameter(new \DateTime())
+                                                            'param2' => new \DateTime()
                                                            ]);
 
         $action->process($actionContext);
@@ -478,7 +464,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
-            ['email'    => new SafeParameter('qwe@qwe1.com'),
+            ['email'    => 'qwe@qwe1.com',
              'password' => new UnsafeParameter('qwe')
             ]);
 
@@ -495,16 +481,14 @@ class MagicalModuleManagerTest extends TestCase {
 
     /**
      * @param MagicalModuleManager $mgr
-     * @param array                $args
-     *
-     * @return mixed
+     * @param array                $params
      */
-    protected function magicalCreate (MagicalModuleManager &$mgr, array $args = []) {
+    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
 
-        $method = (new \ReflectionClass($mgr))->getMethod('magicalCreate');
+        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
         $method->setAccessible(true);
 
-        return $method->invokeArgs($mgr, $args);
+        $method->invokeArgs($mgr, [$params]);
 
     }
 
@@ -514,9 +498,9 @@ class MagicalModuleManagerTest extends TestCase {
      *
      * @return mixed
      */
-    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+    protected function magicalCreate (MagicalModuleManager &$mgr, array $args = []) {
 
-        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalCreate');
         $method->setAccessible(true);
 
         return $method->invokeArgs($mgr, $args);
@@ -550,17 +534,20 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
-         $storageModuleManager->loadActions($appCtx);
-         $storageModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
-                'email'    => new SafeParameter('qwe@qwe2.com'),
-                'name'     => new SafeParameter('thierry'),
+                'email'    => 'qwe@qwe2.com',
+                'name'     => 'thierry',
                 'password' => new UnsafeParameter('qwe'),
-                'company'  => new SafeParameter(['name' => new UnsafeParameter('bigsool'),  'storage' => new UnsafeParameter(
+                'company'  => [
+                    'name' => new UnsafeParameter('bigsool')
+                ],
+                'storage'  => new UnsafeParameter(
                     ['url' => new UnsafeParameter('http://ddfd.fr')]),
-                                                ])
+
             ]);
 
         /**
@@ -624,14 +611,15 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
-            ['email'    => new SafeParameter('qwe@qwe.com'),
-             'name'     => new SafeParameter('thierry'),
+            ['email'    => 'qwe@qwe.com',
+             'name'     => 'thierry',
              'password' => new UnsafeParameter('qwe'),
              'company'  => new UnsafeParameter(
                  ['name'    => new UnsafeParameter('bigsool'),
                   'storage' => new UnsafeParameter(
                       ['url' => new UnsafeParameter('http://ddfd.fr')]),
                  ]),
+
             ]);
 
         $this->defineAction($mgrCompany, ['create',
@@ -646,9 +634,20 @@ class MagicalModuleManagerTest extends TestCase {
                                               $params = $context->getParams();
                                               $self->assertCount(2, $params);
                                               $self->assertArrayHasKey('name', $params);
-                                              $self->assertSame('bigsool', $params['name']->getValue());
+                                              $self->assertSame('bigsool', $params['name']);
+                                              $self->assertArrayHasKey('storage', $params);
+                                              $self->assertInstanceOf('\Core\Parameter\UnsafeParameter',
+                                                                      $params['storage']);
+                                              $storageParams = $params['storage']->getValue();
+                                              $self->assertInternalType('array', $storageParams);
+                                              $self->assertArrayHasKey('url', $storageParams);
+                                              $self->assertInstanceOf('\Core\Parameter\UnsafeParameter',
+                                                                      $storageParams['url']);
+                                              $self->assertSame('http://ddfd.fr', $storageParams['url']->getValue());
+
                                               $called = true;
                                               $result = $self->magicalCreate($mgrCompany, [$context]);
+
                                               return $result['company'];
 
                                           }
@@ -691,11 +690,11 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
-            ['id'        => new SafeParameter(1),
-             'email'     => new SafeParameter('youpy@qwe.com'),
-             'name'      => new SafeParameter('youpy'),
-             'firstname' => new SafeParameter('youpy'),
-             'password'  => new SafeParameter('youpy'),
+            ['id'        => 1,
+             'email'     => 'youpy@qwe.com',
+             'name'      => 'youpy',
+             'firstname' => 'youpy',
+             'password'  => 'youpy',
             ]);
 
         /**
@@ -710,6 +709,21 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('youpy', $user->getName());
         $this->assertSame('youpy', $user->getFirstname());
         $this->assertSame('youpy', $user->getPassword());
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $args
+     *
+     * @return mixed
+     */
+    protected function magicalUpdate (MagicalModuleManager &$mgr, array $args = []) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('magicalUpdate');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($mgr, $args);
+
     }
 
     /**
@@ -756,16 +770,14 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
 
-
         $actionContext = $this->getActionContextWithParams(
-            ['id'        => new SafeParameter(1),
-             'email'     => new SafeParameter('youpy@qwe.com'),
-             'name'      => new SafeParameter('youpy'),
-             'firstname' => new SafeParameter('youpy'),
-             'password'  => new SafeParameter('youpy'),
-             'company'   => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'),
-                                                 'storage' => new SafeParameter(['url' => new SafeParameter('http://www.bigsoole.com')])
-                                                ])
+            ['id'        => 1,
+             'email'     => 'youpy@qwe.com',
+             'name'      => 'youpy',
+             'firstname' => 'youpy',
+             'password'  => 'youpy',
+             'company'   => new UnsafeParameter(['name' => 'bigsoole',]),
+             'storage'   => ['url' => 'http://www.bigsoole.com'],
             ]);
 
         /*
@@ -784,7 +796,6 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
 
     }
-
 
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
@@ -841,14 +852,15 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $actionContext = $this->getActionContextWithParams(
-            ['id'        => new SafeParameter(1),
-             'email'     => new SafeParameter('youpy@qwe.com'),
-             'name'      => new SafeParameter('youpy'),
-             'firstname' => new SafeParameter('youpy'),
-             'password'  => new SafeParameter('youpy'),
-             'company'   => new UnsafeParameter(['name'    => new SafeParameter('bigsoole'),
-                                                 'storage' => new SafeParameter(['url' => new SafeParameter('http://www.bigsoole.com')])
-                                                ])
+            ['id'        => 1,
+             'email'     => 'youpy@qwe.com',
+             'name'      => 'youpy',
+             'firstname' => 'youpy',
+             'password'  => 'youpy',
+             'company'   => new UnsafeParameter(
+                 ['name'    => 'bigsoole',
+                  'storage' => ['url' => 'http://www.bigsoole.com']
+                 ]),
             ]);
 
         $this->defineAction($mgrCompany, ['update',
@@ -861,9 +873,15 @@ class MagicalModuleManagerTest extends TestCase {
                                           function (ActionContext $context) use (&$self, &$called, &$mgrCompany) {
 
                                               $params = $context->getParams();
+                                              // TODO: check parameter id
                                               $self->assertCount(3, $params);
                                               $self->assertArrayHasKey('name', $params);
-                                              $self->assertSame('bigsoole', $params['name']->getValue());
+                                              $self->assertSame('bigsoole', $params['name']);
+                                              $self->assertArrayHasKey('storage', $params);
+                                              $storageParams = $params['storage'];
+                                              $self->assertInternalType('array', $storageParams);
+                                              $self->assertArrayHasKey('url', $storageParams);
+                                              $self->assertSame('http://www.bigsoole.com', $storageParams['url']);
                                               $called = true;
 
                                               return $self->magicalUpdate($mgrCompany, [$context]);
@@ -884,49 +902,6 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
-
-    }
-
-    protected function tearDown () {
-
-        $whiteList =
-            ['testMagicalCreateWithTwoMagicalModuleManager', 'testSimpleMagicalUpdate', 'testComplexMagicalUpdate'];
-        $currentTestFcName = $this->getName();
-        if (!in_array($currentTestFcName, $whiteList)) {
-            $this->rollBackDatabase();
-        }
-        else {
-            $this->commitDB();
-        }
-
-    }
-
-    protected function commitDB () {
-
-        $appCtx = ApplicationContext::getInstance();
-        $prop = new \ReflectionProperty($appCtx, 'entityManager');
-        $prop->setAccessible(true);
-        /**
-         * @var EntityManager $em
-         */
-        $em = $prop->getValue($appCtx);
-        $em->commit();
-
-    }
-
-    protected function rollBackDatabase () {
-
-        $appCtx = ApplicationContext::getInstance();
-        $prop = new \ReflectionProperty($appCtx, 'entityManager');
-        $prop->setAccessible(true);
-
-        /**
-         * @var EntityManager $em
-         */
-        $em = $prop->getValue($appCtx);
-        if (isset($em)) {
-            $em->rollback();
-        }
 
     }
 
@@ -961,6 +936,49 @@ class MagicalModuleManagerTest extends TestCase {
 
         self::$doctrineConnectionSettings = $em->getConnection();
         self::resetDatabase($ctx);
+
+    }
+
+    protected function tearDown () {
+
+        $whiteList =
+            ['testMagicalCreateWithTwoMagicalModuleManager', 'testSimpleMagicalUpdate', 'testComplexMagicalUpdate'];
+        $currentTestFcName = $this->getName();
+        if (!in_array($currentTestFcName, $whiteList)) {
+            $this->rollBackDatabase();
+        }
+        else {
+            $this->commitDB();
+        }
+
+    }
+
+    protected function rollBackDatabase () {
+
+        $appCtx = ApplicationContext::getInstance();
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+
+        /**
+         * @var EntityManager $em
+         */
+        $em = $prop->getValue($appCtx);
+        if (isset($em)) {
+            $em->rollback();
+        }
+
+    }
+
+    protected function commitDB () {
+
+        $appCtx = ApplicationContext::getInstance();
+        $prop = new \ReflectionProperty($appCtx, 'entityManager');
+        $prop->setAccessible(true);
+        /**
+         * @var EntityManager $em
+         */
+        $em = $prop->getValue($appCtx);
+        $em->commit();
 
     }
 

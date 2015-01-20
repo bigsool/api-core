@@ -9,7 +9,6 @@ use Core\Context\ApplicationContext;
 use Core\Model\Company;
 use Core\Model\User;
 use Core\Module\MagicalModuleManager;
-use Core\Parameter\SafeParameter;
 use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints\Blank;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -129,7 +128,7 @@ class ModuleManager extends MagicalModuleManager {
                 throw new \RuntimeException('company must be defined in the context');
             }
 
-            $context->setParams(['url' => new SafeParameter($company->getId() . '-' . $company->getName())]);
+            $context->setParams(['url' => $company->getId() . '-' . $company->getName()]);
 
             return $self->getMagicalAction('create', $self->getModelAspectForModelName('Storage'))->process($context);
 

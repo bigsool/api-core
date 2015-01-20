@@ -9,7 +9,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
 use Core\Operator\AndOperator;
-use Core\Parameter\Parameter;
+use Core\Parameter\UnsafeParameter;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -290,15 +290,10 @@ class Registry implements EventSubscriber {
 
         foreach ($fields as $fieldName) {
             $getter = 'get' . ucfirst($fieldName);
-            $setter = 'set' . ucfirst($fieldName);
             $value = $entity->$getter();
-            if (!($value instanceof Parameter)) {
-                continue;
-            }
-            if (!$value->isSafe()) {
+            if ($value instanceof UnsafeParameter) {
                 throw new \RuntimeException('unsafe parameter ' . $fieldName . ' detected');
             }
-            $entity->$setter($value->getValue());
         }
 
     }

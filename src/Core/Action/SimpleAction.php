@@ -8,7 +8,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Parameter\SafeParameter;
+use Core\Parameter\UnsafeParameter;
 use Core\Validation\AbstractConstraintsProvider;
 use Core\Validation\ConstraintsProvider;
 
@@ -152,14 +152,13 @@ class SimpleAction implements Action {
              */
             $validator = $params['validator'];
             $param = $context->getParam($field);
-            $value = isset($param) ? $param->getValue() : NULL;
+            $value = isset($param) ? UnsafeParameter::getFinalValue($param) : NULL;
             $violations = $validator->validate($field, $value, $params['forceOptional']);
             if ($violations->count()) {
                 $errorManager->addError($params['error'], $field);
             }
             else {
-                $safeParameter = new SafeParameter($value);
-                $context->setParam($field, $safeParameter);
+                $context->setParam($field, $value);
             }
         }
         $errors = $errorManager->getErrors();

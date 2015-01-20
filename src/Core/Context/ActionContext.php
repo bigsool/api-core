@@ -4,14 +4,12 @@
 namespace Core\Context;
 
 use Core\Auth;
-use Core\Parameter\Parameter;
-use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
 
 class ActionContext extends \ArrayObject {
 
     /**
-     * @var Parameter[]
+     * @var array
      */
     protected $params;
 
@@ -67,7 +65,7 @@ class ActionContext extends \ArrayObject {
     /**
      * @param array $keys
      *
-     * @return Parameter[]
+     * @return array
      */
     public function getParams (array $keys = NULL) {
 
@@ -86,7 +84,7 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
-     * @param Parameter[] $params
+     * @param array $params
      */
     public function setParams ($params) {
 
@@ -101,7 +99,7 @@ class ActionContext extends \ArrayObject {
     /**
      * @param mixed $key
      *
-     * @return Parameter
+     * @return mixed
      */
     public function getParam ($key) {
 
@@ -127,10 +125,10 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
-     * @param string    $key
-     * @param Parameter $value
+     * @param string $key
+     * @param mixed  $value
      */
-    public function setParam ($key, Parameter $value) {
+    public function setParam ($key, $value) {
 
         if (!is_scalar($key)) {
             throw new \RuntimeException('invalid key type');
@@ -143,14 +141,14 @@ class ActionContext extends \ArrayObject {
     /**
      * @param array $keys
      *
-     * @return SafeParameter[]
+     * @return array
      */
     public function getVerifiedParams (array $keys = NULL) {
 
         $verifiedParams = [];
 
         foreach ($this->getParams() as $key => $param) {
-            if ($param->isSafe() && (!$keys || in_array($key, $keys, true))) {
+            if (!($param instanceof UnsafeParameter) && (!$keys || in_array($key, $keys, true))) {
                 $verifiedParams[$key] = $param;
             }
         }
@@ -161,7 +159,7 @@ class ActionContext extends \ArrayObject {
     /**
      * @param mixed $key
      *
-     * @return SafeParameter
+     * @return mixed
      */
     public function getVerifiedParam ($key) {
 
@@ -177,7 +175,7 @@ class ActionContext extends \ArrayObject {
     public function clearVerifiedParams () {
 
         foreach ($this->params as $key => $param) {
-            if ($param->isSafe()) {
+            if (!($param instanceof UnsafeParameter)) {
                 unset($this->params[$key]);
             }
         }

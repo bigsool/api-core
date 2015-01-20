@@ -13,7 +13,6 @@ use Core\Error\FormattedError;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager;
-use Core\Parameter\SafeParameter;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Doctrine\ORM\EntityManager;
@@ -153,11 +152,6 @@ class Application {
                      */
                     list($action, $params) = $queue->dequeue();
                     $ctx = new ActionContext($reqCtx);
-                    $params = array_map(function ($value) {
-
-                        return new SafeParameter($value);
-
-                    }, $params);
                     $ctx->setParams($params);
                     $action->process($ctx);
                 }
@@ -182,11 +176,6 @@ class Application {
                         $reqCtx = new RequestContext();
                     }
                     $ctx = new ActionContext($reqCtx);
-                    $params = array_map(function ($value) {
-
-                        return new SafeParameter($value);
-
-                    }, $params);
                     $ctx->setParams($params);
                     $action->process($ctx);
                 }
