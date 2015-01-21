@@ -73,19 +73,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     /**
      * @param MagicalModuleManager $mgr
-     * @param array                $params
-     */
-    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
-
-        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
-        $method->setAccessible(true);
-
-        $method->invokeArgs($mgr, [$params]);
-
-    }
-
-    /**
-     * @param MagicalModuleManager $mgr
      *
      * @return ModelAspect[]
      */
@@ -462,7 +449,12 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testSimpleMagicalCreate () {
 
-        $mgr = $this->getMockMagicalModuleManager();
+        $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
+        $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
+
+            return $this->getMainEntity($mgr);
+
+        }));
 
         $userModuleManager = new UserModuleManager();
 
@@ -493,6 +485,32 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     /**
+     * @param MagicalModuleManager $mgr
+     *
+     * @return mixed
+     */
+    protected function getMainEntity (MagicalModuleManager &$mgr) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('getMainEntity');
+        $method->setAccessible(true);
+
+        return $method->invoke($mgr);
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $params
+     */
+    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
+        $method->setAccessible(true);
+
+        $method->invokeArgs($mgr, [$params]);
+
+    }
+
+    /**
      * @param                      $action
      * @param MagicalModuleManager $mgr
      * @param array                $args
@@ -510,7 +528,12 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testComplexMagicalCreate () {
 
-        $mgr = $this->getMockMagicalModuleManager();
+        $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
+        $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
+
+            return $this->getMainEntity($mgr);
+
+        }));
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
@@ -571,8 +594,13 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
+
+            return $this->getMainEntity($mgrUser);
+
+        }));
         $this->setMainEntity($mgrUser, [
             'model' => 'User',
         ]);
@@ -586,8 +614,13 @@ class MagicalModuleManagerTest extends TestCase {
             'actions'     => ['create' => new ActionReference('Archipad\\Group', 'create')],
         ]);
 
-        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
+        $mgrCompany->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrCompany) {
+
+            return $this->getMainEntity($mgrCompany);
+
+        }));
         $this->setMainEntity($mgrCompany, [
             'model' => 'Company',
         ]);
@@ -673,7 +706,12 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testSimpleMagicalUpdate () {
 
-        $mgr = $this->getMockMagicalModuleManager();
+        $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
+        $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
+
+            return $this->getMainEntity($mgr);
+
+        }));
 
         $userModuleManager = new UserModuleManager();
 
@@ -718,8 +756,13 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
+
+            return $this->getMainEntity($mgrUser);
+
+        }));
 
         $this->setMainEntity($mgrUser, [
             'model' => 'User',
@@ -789,8 +832,13 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
+
+            return $this->getMainEntity($mgrUser);
+
+        }));
 
         $this->setMainEntity($mgrUser, [
             'model' => 'User',
@@ -805,8 +853,13 @@ class MagicalModuleManagerTest extends TestCase {
             'actions'     => ['update' => new ActionReference('Archipad\\Group', 'update')],
         ]);
 
-        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
+        $mgrCompany->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrCompany) {
+
+            return $this->getMainEntity($mgrCompany);
+
+        }));
         $this->setMainEntity($mgrCompany, [
             'model' => 'Company',
         ]);
@@ -899,8 +952,13 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
+        $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
+
+            return $this->getMainEntity($mgrUser);
+
+        }));
 
 
         $this->setMainEntity($mgrUser, [

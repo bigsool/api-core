@@ -55,7 +55,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param ActionContext $ctx
      * @param string        $action
      *
-     * @return mixed
+     * @return MagicalEntity
      */
     protected function magicalModify (ActionContext $ctx, $action) {
 
@@ -148,7 +148,26 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->saveEntities();
 
+        return $this->getMagicalEntityObject();
+
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getMainEntity() {
+
         return $this->mainEntity;
+
+    }
+
+    /**
+     * @return MagicalEntity
+     */
+    public function getMagicalEntityObject() {
+
+        $className = Registry::realModelClassName($this->getModuleName());
+        return new $className($this->mainEntity);
 
     }
 
