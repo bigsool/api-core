@@ -361,7 +361,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    protected function magicalFind ($keyPaths, $filters) {
+    protected function magicalFind ($values, $alias, $filters) {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -369,8 +369,22 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
 
-        foreach ($keyPaths as $keyPath) {
-            $qryCtx->addKeyPath($keyPath);
+        foreach ($values as $value) {
+            $valueArray = explode('.',$value);
+            $model = $valueArray[0];
+            $newValue = $valueArray[1];
+            foreach ($this->modelAspects as $modelAspect) {
+                if (!$modelAspect->getKeyPath()) continue;
+                $modeAspectKeyPath = explode('.',$modelAspect->getKeyPath()->getValue());
+                if ($modeAspectKeyPath[count($modeAspectKeyPath) - 1] == $model) {
+                    $newValue = $modelAspect->getKeyPath()->getValue();
+                    unset($valueArray[0]);
+                    foreach($valueArray as $keyPath)
+                        $newValue .= '.'.$keyPath;
+                }
+            }
+            $valueAlias = isset($alias[$value]) ? $alias[$value]: NULL;
+            $qryCtx->addKeyPath(new KeyPath($newValue),$valueAlias);
         }
 
         foreach ($filters as $filter) {
