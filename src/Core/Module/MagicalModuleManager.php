@@ -10,9 +10,9 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
+use Core\Expression\AbstractKeyPath;
 use Core\Field\KeyPath;
-use Core\Filter\StringFilter;
-use Core\Parameter\SafeParameter;
+use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -36,6 +36,9 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private $mainEntityName = NULL;
 
+    /**
+     * @var mixed
+     */
     private $mainEntity = NULL;
 
     /**
@@ -60,6 +63,10 @@ abstract class MagicalModuleManager extends ModuleManager {
             throw new RuntimeException('main entity undefined !');
         }
 
+        $prefixes = [];
+        foreach ($this->modelAspects as $modelAspect) {
+            $prefixes[] = $modelAspect->getPrefix();
+        }
         foreach ($this->modelAspects as $modelAspect) {
 
             // TODO HANDLE ONETOMANY
@@ -74,7 +81,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 continue;
             }
 
-            if ($modelAspect->getKeyPath()) {
+             if ($modelAspect->getKeyPath()) {
                 $keyPath = explode('.',$modelAspect->getKeyPath()->getValue());
                 $paramCopy = $params;
                 foreach ($keyPath as $model) {
@@ -98,15 +105,25 @@ abstract class MagicalModuleManager extends ModuleManager {
             if ($params) {
 
                 $subContext = new ActionContext($ctx);
-                $subContext->setParams($params->getValue());
-
+                // TODO: plz clean code: params is not an array of params but a param ? why s ?
+                $subContext->setParams(UnsafeParameter::getFinalValue($params));
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
                     $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
                     if ($entity) {
-                        $subContext->setParam('id', new SafeParameter($entity->getId()));
+                        $subContext->setParam('id', $entity->getId());
                     }
                 }
 
+            }
+            else {
+                // Create a new context and remove parameters which are used by model aspects
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+                foreach ($ctx->getParams() as $key => $value) {
+                    if (!in_array($key, $prefixes, true)) {
+                        $subContext->setParam($key, $value);
+                    }
+                }
             }
 
             $result = $modifyAction->process($subContext ? $subContext : $ctx);
@@ -142,14 +159,25 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function getEntityFromKeyPath ($keyPath) {
-        $models = explode('.',$keyPath->getValue());
-        $entity = $this->mainEntity;
-        foreach ($models as $model) {
-            $fn = 'get'.ucfirst($model);
-            $entity = $entity->$fn();
+    /**
+     * @param string      $action
+     * @param ModelAspect $modelAspect
+     *
+     * @return Action
+     */
+    protected function getMagicalAction ($action, ModelAspect $modelAspect) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $product = $appCtx->getProduct();
+        try {
+            $modifyAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), $action, []);
         }
-        return $entity;
+        catch (\RuntimeException $e) {
+            $modifyAction = $appCtx->getAction('Core\\' . $modelAspect->getModel(), $action, []);
+        }
+
+        return $modifyAction;
     }
 
     /**
@@ -160,6 +188,23 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function isMainEntity ($modelAspect) {
 
         return !$modelAspect->getKeyPath();
+    }
+
+    /**
+     * @param AbstractKeyPath $keyPath
+     *
+     * @return mixed
+     */
+    private function getEntityFromKeyPath (AbstractKeyPath $keyPath) {
+
+        $models = explode('.', $keyPath->getValue());
+        $entity = $this->mainEntity;
+        foreach ($models as $model) {
+            $fn = 'get' . ucfirst($model);
+            $entity = $entity->$fn();
+        }
+
+        return $entity;
     }
 
     private function setRelationshipsFromMetadata () {
@@ -247,7 +292,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         $this->models[$target]->$fn($this->models[$sourceModelName]);
     }
 
-
     private function saveEntities () {
 
         $appCtx = ApplicationContext::getInstance();
@@ -260,6 +304,19 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    public function formatResult () {
+
+        $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
+        foreach ($this->modelAspects as $modelAspect) {
+            if (($keyPath = $modelAspect->getKeyPath())) {
+                $entities[lcfirst($modelAspect->getModel())] = $this->getEntityFromKeyPath($keyPath);
+            }
+        }
+
+        return $entities;
+
+    }
+
     /**
      * @param ActionContext $ctx
      *
@@ -268,6 +325,152 @@ abstract class MagicalModuleManager extends ModuleManager {
     public function magicalUpdate (ActionContext $ctx) {
 
         return $this->magicalModify($ctx, 'update');
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function load (ApplicationContext &$context) {
+
+        $this->loadAspects();
+
+        parent::load($context);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public abstract function loadAspects ();
+
+    /**
+     * @param $modelName
+     *
+     * @return ModelAspect
+     */
+    protected function getModelAspectForModelName ($modelName) {
+
+        foreach ($this->getAspects() as $modelAspect) {
+            if ($modelAspect->getModel() == $modelName) {
+                return $modelAspect;
+            }
+        }
+
+        throw new \RuntimeException('ModelAspect not found');
+
+    }
+
+    /**
+     * @return ModelAspect[]
+     */
+    public function getAspects () {
+
+        return $this->modelAspects;
+
+    }
+
+    protected function magicalFind ($values, $alias, $filters) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
+
+        foreach ($values as $value) {
+            $valueArray = explode('.',$value);
+            $model = $valueArray[0];
+            $newValue = $valueArray[1];
+            foreach ($this->modelAspects as $modelAspect) {
+                if (!$modelAspect->getKeyPath()) continue;
+                $modeAspectKeyPath = explode('.',$modelAspect->getKeyPath()->getValue());
+                if ($modeAspectKeyPath[count($modeAspectKeyPath) - 1] == $model) {
+                    $newValue = $modelAspect->getKeyPath()->getValue();
+                    unset($valueArray[0]);
+                    foreach($valueArray as $keyPath)
+                        $newValue .= '.'.$keyPath;
+                }
+            }
+            $valueAlias = isset($alias[$value]) ? $alias[$value]: NULL;
+            $qryCtx->addKeyPath(new KeyPath($newValue),$valueAlias);
+        }
+
+        foreach ($filters as $filter) {
+            $qryCtx->addFilter($filter);
+        }
+
+        $result = $registry->find($qryCtx, false);
+
+        return $result;
+
+    }
+
+    /**
+     * @param string   $name
+     * @param array    $params
+     * @param callable $processFn
+     */
+    protected function defineAction ($name, Array $params, callable $processFn) {
+
+        foreach ($params as $key => $value) {
+            $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
+        }
+
+        $module = $this->getModuleName();
+        $appCtx = ApplicationContext::getInstance();
+        $modelAspects = $this->modelAspects;
+
+        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
+            function (ActionContext $actionContext) use ($processFn, &$modelAspects) {
+
+                $params = $actionContext->getParams();
+                $prefixes = [];
+                foreach ($modelAspects as $modelAspect) {
+                    if (!$modelAspect->getPrefix()) {
+                        continue;
+                    }
+                    $prefixes[] = $modelAspect->getPrefix();
+                    $param = $params[$modelAspect->getPrefix()];
+                    $constraintViolationList =
+                        Validation::createValidator()
+                                  ->validate(UnsafeParameter::getFinalValue($param), $modelAspect->getConstraints());
+                    if ($constraintViolationList->count()) {
+                        throw new \RuntimeException('constraint violation');
+                    }
+                }
+
+                /*  TODO: delete
+                $paramsWithoutParamsOfOtherModelAspects = [];
+                foreach ($params as $key => $value) {
+                    if (!in_array($key, $prefixes, true)) {
+                        $paramsWithoutParamsOfOtherModelAspects[$key] = $value;
+                    }
+                }
+                $actionContext->setParams($paramsWithoutParamsOfOtherModelAspects);*/
+
+                return $processFn($actionContext);
+
+            }));
+
+    }
+
+    protected function getModuleName () {
+
+        $className = get_called_class();
+        $classNameExploded = explode('\\', $className);
+
+        return $classNameExploded[count($classNameExploded) - 2];
+
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function setMainEntity ($config) {
+
+        $this->addAspect($config);
+        $this->mainEntityName = $config['model'];
+
     }
 
     /**
@@ -332,157 +535,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
-
-    }
-
-    /**
-     * @return ModelAspect[]
-     */
-    protected function getAspects () {
-
-        return $this->modelAspects;
-
-    }
-
-    /**
-     * @param $modelName
-     *
-     * @return ModelAspect
-     */
-    protected function getModelAspectForModelName ($modelName) {
-
-        foreach ($this->getAspects() as $modelAspect) {
-            if ($modelAspect->getModel() == $modelName) {
-                return $modelAspect;
-            }
-        }
-
-        throw new \RuntimeException('ModelAspect not found');
-
-    }
-
-    protected function magicalFind ($values, $alias, $filters) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
-
-        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
-
-        foreach ($values as $value) {
-            $valueArray = explode('.',$value);
-            $model = $valueArray[0];
-            $newValue = $valueArray[1];
-            foreach ($this->modelAspects as $modelAspect) {
-                if (!$modelAspect->getKeyPath()) continue;
-                $modeAspectKeyPath = explode('.',$modelAspect->getKeyPath()->getValue());
-                if ($modeAspectKeyPath[count($modeAspectKeyPath) - 1] == $model) {
-                    $newValue = $modelAspect->getKeyPath()->getValue();
-                    unset($valueArray[0]);
-                    foreach($valueArray as $keyPath)
-                        $newValue .= '.'.$keyPath;
-                }
-            }
-            $valueAlias = isset($alias[$value]) ? $alias[$value]: NULL;
-            $qryCtx->addKeyPath(new KeyPath($newValue),$valueAlias);
-        }
-
-        foreach ($filters as $filter) {
-            $qryCtx->addFilter($filter);
-        }
-
-        $result = $registry->find($qryCtx, false);
-
-        return $result;
-
-    }
-
-    /**
-     * @param string   $name
-     * @param array    $params
-     * @param callable $processFn
-     */
-    protected function defineAction ($name, Array $params, callable $processFn) {
-
-        foreach ($params as $key => $value) {
-            $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
-        }
-
-        $module = $this->getModuleName();
-        $appCtx = ApplicationContext::getInstance();
-        $modelAspects = $this->modelAspects;
-
-        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
-            function ($actionContext) use ($processFn, $modelAspects) {
-
-                $params = $actionContext->getParams();
-                foreach ($modelAspects as $modelAspect) {
-                    if (!$modelAspect->getPrefix()) {
-                        continue;
-                    }
-                    $param = $params[$modelAspect->getPrefix()];
-                    $constraintViolationList =
-                        Validation::createValidator()->validate($param->getValue(), $modelAspect->getConstraints());
-                    if ($constraintViolationList->count()) {
-                        throw new \RuntimeException('constraint violation');
-                    }
-                }
-
-                return $processFn($actionContext);
-            }));
-
-    }
-
-    protected function getModuleName () {
-
-        $className = get_called_class();
-        $classNameExploded = explode('\\', $className);
-
-        return $classNameExploded[count($classNameExploded) - 2];
-
-    }
-
-    /**
-     * @param string      $action
-     * @param ModelAspect $modelAspect
-     *
-     * @return Action
-     */
-    protected function getMagicalAction ($action, ModelAspect $modelAspect) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $product = $appCtx->getProduct();
-        try {
-            $modifyAction = $appCtx->getAction($product . '\\' . $modelAspect->getModel(), $action, []);
-        }
-        catch (\RuntimeException $e) {
-            $modifyAction = $appCtx->getAction('Core\\' . $modelAspect->getModel(), $action, []);
-        }
-
-        return $modifyAction;
-    }
-
-    /**
-     * @param array $config
-     */
-    protected function setMainEntity ($config) {
-
-        $this->addAspect($config);
-        $this->mainEntityName = $config['model'];
-
-    }
-
-    public function formatResult () {
-
-        $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
-        foreach ($this->modelAspects as $modelAspect) {
-            if ( ($keyPath = $modelAspect->getKeyPath()) ) {
-                $entities[lcfirst($modelAspect->getModel())] = $this->getEntityFromKeyPath($keyPath);
-            }
-        }
-
-        return $entities;
 
     }
 

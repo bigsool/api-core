@@ -15,12 +15,12 @@ use Core\Field\Field;
 use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
+use Core\Model\Account;
 use Core\Model\Company;
 use Core\Model\Product;
 use Core\Model\Storage;
 use Core\Model\User;
 use Core\Operator\EqualOperator;
-use Core\Parameter\SafeParameter;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\CallbackRule;
 use Core\Rule\FieldRule;
@@ -124,7 +124,7 @@ class RegistryTest extends TestCase {
         $product->setPrice($this->product['price']);
         $product->setWeight($this->product['weight']);
         $product->setAvailable($this->product['available']);
-        $product->setVat(new SafeParameter($this->product['vat']));
+        $product->setVat($this->product['vat']);
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($product);
@@ -435,6 +435,62 @@ class RegistryTest extends TestCase {
 
         $qryCtx = new FindQueryContext('Qwe');
         $this->appCtx->getNewRegistry()->find($qryCtx);
+
+    }
+
+    public function testSaveMagicalEntity() {
+
+        $company = new Company();
+        $company->setName('company name2');
+        $user = new User();
+        $user->setEmail('user2@email.com');
+        $user->setPassword('qwe');
+        $user->setRegisterDate(new \DateTime());
+        $company->setOwner($user);
+        $user->setOwnedCompany($company);
+
+        $storage = new Storage();
+        $storage->setUrl('url2');
+        $storage->setLogin('login2');
+        $storage->setPassword('qwe2');
+        $storage->setUsedspace(0);
+        $storage->setLastusedspaceupdate(new \DateTime());
+        $storage->setIsoutofquota(false);
+
+        $account = new Account($user);
+        $account->setCompany($company);
+        $account->setStorage($storage);
+
+        $registry = $this->appCtx->getNewRegistry();
+
+        $registry->save($account);
+
+        $em = $this->getEntityManager(self::$doctrineConnectionSettings);
+        $result =
+            $em->createQuery('SELECT c, s, o FROM \Core\Model\Company c INNER JOIN c.storage s INNER JOIN c.owner o WHERE c.id = 2')
+               ->getArrayResult();
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $excepted =
+            ['id'      => 2,
+             'name'    => 'company name2',
+             'storage' => ['id' => 2, 'url' => 'url2', 'login' => 'login2', 'password' => 'qwe2'],
+             'owner'   => ['id' => 2, 'email' => 'user2@email.com', 'password' => 'qwe']
+            ];
+        foreach ($excepted as $key => $value) {
+            $this->assertArrayHasKey($key, $result[0]);
+            if (!is_array($value)) {
+                $this->assertSame($value, $result[0][$key]);
+            }
+            else {
+                foreach ($value as $_key => $_value) {
+                    $this->assertArrayHasKey($_key, $result[0][$key]);
+                    $this->assertSame($_value, $result[0][$key][$_key]);
+                }
+            }
+        }
+
 
     }
 

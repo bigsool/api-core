@@ -10,7 +10,7 @@ require_once $file;
 
 $config =
     \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../model/"), true,
-                                                               __DIR__ . '/../src/');
+                                                               __DIR__ . '/../proxy/');
 $conn = array(
     'driver' => 'pdo_sqlite',
     'path'   => __DIR__ . '/archiweb-proto.db.sqlite',

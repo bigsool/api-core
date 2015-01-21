@@ -5,13 +5,12 @@ namespace Core\Module\StorageFeature;
 use Core\Context\ActionContext;
 use Core\Model\Storage;
 use Core\Module\BasicHelper;
-use Core\Parameter\Parameter;
 
 class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actCtx
-     * @param Parameter[]   $params
+     * @param array         $params
      */
     public function createStorage (ActionContext $actCtx, array $params) {
 
@@ -30,7 +29,7 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actCtx
      * @param Storage       $storage
-     * @param Parameter[]   $params
+     * @param array         $params
      */
     public function updateStorage (ActionContext $actCtx, Storage $storage, array $params) {
 

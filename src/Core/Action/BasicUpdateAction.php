@@ -37,7 +37,7 @@ class BasicUpdateAction extends SimpleAction {
                 $qryCtx = new FindQueryContext($model);
                 $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
                 $qryCtx->addFilter(new StringFilter($model, '', 'id = :id'));
-                $qryCtx->setParams(['id' => $params['id']->getValue()]);
+                $qryCtx->setParams(['id' => $params['id']]);
 
                 $helper = ApplicationContext::getInstance()->getHelper($helperName);
                 $entities = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx, false);

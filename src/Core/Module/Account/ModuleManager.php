@@ -9,37 +9,11 @@ use Core\Context\ApplicationContext;
 use Core\Model\Company;
 use Core\Model\User;
 use Core\Module\MagicalModuleManager;
-use Core\Parameter\SafeParameter;
 use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints\Blank;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ModuleManager extends MagicalModuleManager {
-
-    public function load (ApplicationContext &$context) {
-
-        $this->setMainEntity([
-                                 'model' => 'User',
-                             ]);
-
-        $this->addAspect([
-                             'model'       => 'Company',
-                             'prefix'      => 'company',
-                             'keyPath'     => 'company',
-                             'constraints' => [new Dictionary(), new NotBlank()],
-                         ]);
-
-        $this->addAspect([
-                             'model'       => 'Storage',
-                             'prefix'      => 'storage',
-                             'keyPath'     => 'company.storage',
-                             'constraints' => [new Blank()],
-                             'actions'     => ['create' => $this->getCreateStorageAction()]
-                         ]);
-
-        parent::load($context);
-
-    }
 
     /**
      * @param ApplicationContext $context
@@ -129,12 +103,34 @@ class ModuleManager extends MagicalModuleManager {
                 throw new \RuntimeException('company must be defined in the context');
             }
 
-            $context->setParams(['url' => new SafeParameter($company->getId() . '-' . $company->getName())]);
+            $context->setParams(['url' => $company->getId() . '-' . $company->getName()]);
 
             return $self->getMagicalAction('create', $self->getModelAspectForModelName('Storage'))->process($context);
 
         });
 
+    }
+
+    public function loadAspects () {
+
+        $this->setMainEntity([
+                                 'model' => 'User',
+                             ]);
+
+        $this->addAspect([
+                             'model'       => 'Company',
+                             'prefix'      => 'company',
+                             'keyPath'     => 'company',
+                             'constraints' => [new Dictionary(), new NotBlank()],
+                         ]);
+
+        $this->addAspect([
+                             'model'       => 'Storage',
+                             'prefix'      => 'storage',
+                             'keyPath'     => 'company.storage',
+                             'constraints' => [new Blank()],
+                             'actions'     => ['create' => $this->getCreateStorageAction()]
+                         ]);
     }
 
 }

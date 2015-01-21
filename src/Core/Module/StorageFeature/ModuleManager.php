@@ -10,7 +10,6 @@ use Core\Context\ApplicationContext;
 use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
-use Core\Parameter\SafeParameter;
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -23,8 +22,8 @@ class ModuleManager extends AbstractModuleManager {
             'url' => [ERR_INVALID_NAME, new StorageValidation()],
         ], function (ActionContext $context) {
 
-            $context->setParam('login', new SafeParameter(uniqid('login')));
-            $context->setParam('password', new SafeParameter(uniqid('password')));
+            $context->setParam('login', uniqid('login'));
+            $context->setParam('password', uniqid('password'));
 
         }));
 

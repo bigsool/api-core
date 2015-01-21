@@ -3,14 +3,13 @@
 
 namespace Core\Module\UserFeature;
 
-use Core\Action\SimpleAction as Action;
+use Core\Action\BasicCreateAction;
+use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
-use Core\Module\UserFeature\Helper as UserFeatureHelper;
-use Core\Parameter\SafeParameter;
 use Core\Validation\UserValidation;
 
 
@@ -21,7 +20,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new Action('Core\User', 'create', NULL, [
+        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
             'name'      => [ERR_INVALID_NAME, new UserValidation()],
             'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
             'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
@@ -29,36 +28,17 @@ class ModuleManager extends AbstractModuleManager {
             'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
         ], function (ActionContext $context) {
 
-            /**
-             * @var UserFeatureHelper $helper
-             */
-            $helper = ApplicationContext::getInstance()->getHelper('UserFeatureHelper');
-            $params = $context->getVerifiedParams();
-            $params['lang'] = new SafeParameter('fr');
-            $helper->createUser($context, $params);
-
-            return $context['user'];
+            $context->setParam('lang', 'fr');
 
         }));
 
-        $context->addAction(new Action('Core\User', 'update', NULL, [
-            'id'        => [ERR_INVALID_NAME, new UserValidation()],
-            'name'      => [ERR_INVALID_NAME, new UserValidation(), true],
-            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation(), true],
-            'firstname' => [ERR_PARAMS_INVALID, new UserValidation(), true],
-            'password'  => [ERR_INVALID_PASSWORD, new UserValidation(), true],
-        ], function (ActionContext $context) {
-
-            /**
-             * @var UserFeatureHelper $helper
-             */
-            $helper = ApplicationContext::getInstance()->getHelper('UserFeatureHelper');
-            $params = $context->getVerifiedParams();
-            $helper->updateUser($context, $params);
-
-            return $context['user'];
-
-        }));
+        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
+            'name'      => [ERR_INVALID_NAME, new UserValidation()],
+            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
+            'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
+            'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
+            'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
+        ]));
 
     }
 
