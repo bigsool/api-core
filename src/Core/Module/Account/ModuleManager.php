@@ -15,31 +15,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ModuleManager extends MagicalModuleManager {
 
-    public function load (ApplicationContext &$context) {
-
-        $this->setMainEntity([
-                                 'model' => 'User',
-                             ]);
-
-        $this->addAspect([
-                             'model'       => 'Company',
-                             'prefix'      => 'company',
-                             'keyPath'     => 'company',
-                             'constraints' => [new Dictionary(), new NotBlank()],
-                         ]);
-
-        $this->addAspect([
-                             'model'       => 'Storage',
-                             'prefix'      => 'storage',
-                             'keyPath'     => 'company.storage',
-                             'constraints' => [new Blank()],
-                             'actions'     => ['create' => $this->getCreateStorageAction()]
-                         ]);
-
-        parent::load($context);
-
-    }
-
     /**
      * @param ApplicationContext $context
      */
@@ -134,6 +109,28 @@ class ModuleManager extends MagicalModuleManager {
 
         });
 
+    }
+
+    public function loadAspects () {
+
+        $this->setMainEntity([
+                                 'model' => 'User',
+                             ]);
+
+        $this->addAspect([
+                             'model'       => 'Company',
+                             'prefix'      => 'company',
+                             'keyPath'     => 'company',
+                             'constraints' => [new Dictionary(), new NotBlank()],
+                         ]);
+
+        $this->addAspect([
+                             'model'       => 'Storage',
+                             'prefix'      => 'storage',
+                             'keyPath'     => 'company.storage',
+                             'constraints' => [new Blank()],
+                             'actions'     => ['create' => $this->getCreateStorageAction()]
+                         ]);
     }
 
 }

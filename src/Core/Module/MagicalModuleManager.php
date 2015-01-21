@@ -321,6 +321,22 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
+     * @param ApplicationContext $context
+     */
+    public function load (ApplicationContext &$context) {
+
+        $this->loadAspects();
+
+        parent::load($context);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public abstract function loadAspects ();
+
+    /**
      * @param $modelName
      *
      * @return ModelAspect
@@ -340,7 +356,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     /**
      * @return ModelAspect[]
      */
-    protected function getAspects () {
+    public function getAspects () {
 
         return $this->modelAspects;
 

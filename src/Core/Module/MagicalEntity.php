@@ -5,6 +5,6 @@ namespace Core\Module;
 
 abstract class MagicalEntity {
 
-    public abstract function getMainEntity();
+    public abstract function getMainEntity ();
 
 }
