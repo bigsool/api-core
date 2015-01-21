@@ -8,6 +8,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
+use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
 use Doctrine\Common\EventSubscriber;
@@ -81,6 +82,10 @@ class Registry implements EventSubscriber {
      * @return mixed
      */
     public function save ($model) {
+
+        if ($model instanceof MagicalEntity) {
+            $model = $model->getMainEntity();
+        }
 
         $saveQueryContext = new SaveQueryContext($model);
 
