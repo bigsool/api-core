@@ -2,7 +2,6 @@
 
 namespace Core\Model;
 
-
 use Core\Module\MagicalEntity;
 
 class Account extends MagicalEntity {
@@ -22,12 +21,11 @@ class Account extends MagicalEntity {
     }
 
     /**
-     * @param Company $company
+     * @return Company
      */
-    public function setCompany (Company $company) {
+    public function getCompany () {
 
-        $this->getUser()->setCompany($company);
-        $company->addUser($this->getUser());
+        return $this->getUser()->getCompany();
 
     }
 
@@ -50,21 +48,12 @@ class Account extends MagicalEntity {
     }
 
     /**
-     * @param Storage $storage
+     * @param Company $company
      */
-    public function setStorage (Storage $storage) {
+    public function setCompany (Company $company) {
 
-        $this->getCompany()->setStorage($storage);
-        $storage->setCompany($this->getCompany());
-
-    }
-
-    /**
-     * @return Company
-     */
-    public function getCompany () {
-
-        return $this->getUser()->getCompany();
+        $this->getUser()->setCompany($company);
+        $company->addUser($this->getUser());
 
     }
 
@@ -73,7 +62,17 @@ class Account extends MagicalEntity {
      */
     public function getStorage () {
 
-        return $this->getCompany()->getStorage();
+        return $this->getUser()->getCompany()->getStorage();
+
+    }
+
+    /**
+     * @param Storage $storage
+     */
+    public function setStorage (Storage $storage) {
+
+        $this->getUser()->getCompany()->setStorage($storage);
+        $storage->setCompany($this->getUser()->getCompany());
 
     }
 
