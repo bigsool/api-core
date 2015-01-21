@@ -485,8 +485,7 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $result = $this->magicalAction('Create',$mgr, [$actionContext]);
-        $user = $result['user'];
+        $user = $this->magicalAction('Create',$mgr, [$actionContext]);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe1.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
@@ -494,9 +493,8 @@ class MagicalModuleManagerTest extends TestCase {
     }
 
     /**
+     * @param                      $action
      * @param MagicalModuleManager $mgr
-     * @param array                $params
-     */
      * @param array                $args
      *
      * @return mixed
@@ -556,15 +554,14 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $result = $this->magicalAction('Create',$mgr, [$actionContext]);
-        $user = $result['user'];
-        $company = $result['company'];
+        $user = $this->magicalAction('Create',$mgr, [$actionContext]);
+
 
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $company->getName());
-        $this->assertContainsOnly($user, $company->getUsers());
+        $this->assertSame('bigsool', $user->getCompany()->getName());
+        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
     }
 
@@ -646,12 +643,12 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertArrayHasKey('url', $storageParams);
                                               $self->assertInstanceOf('\Core\Parameter\UnsafeParameter',
                                                                       $storageParams['url']);
-                                              $self->assertSame('http://ddfd.fr', $storageParams['url']->getValue());
+                                              $self->assertSame('http://www.bigsool.com', $storageParams['url']->getValue());
 
                                               $called = true;
-                                              $result = $self->magicalAction('Create',$mgrCompany, [$context]);
+                                              $company = $self->magicalAction('Create',$mgrCompany, [$context]);
 
-                                              return $result['company'];
+                                              return $company;
 
                                           }
         ]);
@@ -659,17 +656,14 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $result = $this->magicalAction('Create',$mgrUser, [$actionContext]);
-
-        $user = $result['user'];
-        $company = $result['company'];
+        $user = $this->magicalAction('Create',$mgrUser, [$actionContext]);
 
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('thomas@bigsool.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $company->getName());
-        $this->assertContainsOnly($user, $company->getUsers());
+        $this->assertSame('bigsool', $user->getCompany()->getName());
+        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
     }
 
@@ -703,9 +697,7 @@ class MagicalModuleManagerTest extends TestCase {
         /**
          * @var User $user
          */
-        $result = $this->magicalAction('Update',$mgr, [$actionContext]);
-
-        $user = $result['user'];
+        $user = $this->magicalAction('Update',$mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('thierry@bigsool.com', $user->getEmail());

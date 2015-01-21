@@ -81,18 +81,11 @@ abstract class MagicalModuleManager extends ModuleManager {
                 continue;
             }
 
-             if ($modelAspect->getKeyPath()) {
-                $keyPath = explode('.',$modelAspect->getKeyPath()->getValue());
-                $paramCopy = $params;
-                foreach ($keyPath as $model) {
-                    $params = $paramCopy;
-                    $params = $params[$model];
-                    $paramCopy = $params->getValue();
-                }
-            }
-            else {
-                $params = $modelAspect->getPrefix() ? : [];
-            }
+            $params = $modelAspect->getPrefix()
+                ? (isset($params[$modelAspect->getPrefix()])
+                    ? $params[$modelAspect->getPrefix()]
+                    : NULL)
+                : [];
 
             if ($modifyAction == 'none') {
 
@@ -155,7 +148,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->saveEntities();
 
-        return $this->formatResult();
+        return $this->mainEntity;
 
     }
 
