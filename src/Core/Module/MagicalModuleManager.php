@@ -55,7 +55,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param ActionContext $ctx
      * @param string        $action
      *
-     * @return mixed
+     * @return MagicalEntity
      */
     protected function magicalModify (ActionContext $ctx, $action) {
 
@@ -148,7 +148,26 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->saveEntities();
 
+        return $this->getMagicalEntityObject();
+
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getMainEntity() {
+
         return $this->mainEntity;
+
+    }
+
+    /**
+     * @return MagicalEntity
+     */
+    public function getMagicalEntityObject() {
+
+        $className = Registry::realModelClassName($this->getModuleName());
+        return new $className($this->mainEntity);
 
     }
 
@@ -371,21 +390,24 @@ abstract class MagicalModuleManager extends ModuleManager {
         $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
 
         foreach ($values as $value) {
-            $valueArray = explode('.',$value);
+            $valueArray = explode('.', $value);
             $model = $valueArray[0];
             $newValue = $valueArray[1];
             foreach ($this->modelAspects as $modelAspect) {
-                if (!$modelAspect->getKeyPath()) continue;
-                $modeAspectKeyPath = explode('.',$modelAspect->getKeyPath()->getValue());
+                if (!$modelAspect->getKeyPath()) {
+                    continue;
+                }
+                $modeAspectKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
                 if ($modeAspectKeyPath[count($modeAspectKeyPath) - 1] == $model) {
                     $newValue = $modelAspect->getKeyPath()->getValue();
                     unset($valueArray[0]);
-                    foreach($valueArray as $keyPath)
-                        $newValue .= '.'.$keyPath;
+                    foreach ($valueArray as $keyPath) {
+                        $newValue .= '.' . $keyPath;
+                    }
                 }
             }
-            $valueAlias = isset($alias[$value]) ? $alias[$value]: NULL;
-            $qryCtx->addKeyPath(new KeyPath($newValue),$valueAlias);
+            $valueAlias = isset($alias[$value]) ? $alias[$value] : NULL;
+            $qryCtx->addKeyPath(new KeyPath($newValue), $valueAlias);
         }
 
         foreach ($filters as $filter) {

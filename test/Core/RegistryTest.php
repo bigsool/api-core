@@ -438,7 +438,7 @@ class RegistryTest extends TestCase {
 
     }
 
-    public function testSaveMagicalEntity() {
+    public function testSaveMagicalEntity () {
 
         $company = new Company();
         $company->setName('company name2');
@@ -490,7 +490,6 @@ class RegistryTest extends TestCase {
                 }
             }
         }
-
 
     }
 

@@ -152,9 +152,14 @@ class Registry implements EventSubscriber {
      */
     public static function realModelClassName ($entity) {
 
-        $class = '\Core\Model\\' . $entity;
+        $product = ApplicationContext::getInstance()->getProduct();
+
+        $class = '\\'.$product.'\Model\\' . $entity;
         if (!class_exists($class)) {
-            throw new \RuntimeException('entity not found');
+            $class = '\Core\Model\\' . $entity;
+            if (!class_exists($class)) {
+                throw new \RuntimeException('entity not found');
+            }
         }
 
         return $class;

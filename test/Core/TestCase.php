@@ -465,7 +465,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
             $config =
                 Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../model"), true,
-                                                       __DIR__ . '/../../src/');
+                                                       __DIR__ . '/../../proxy/');
             $config->setSQLLogger(new DebugStack());
             $tmpDir = __DIR__ . '/../../doctrine/';
             $originalDb = $tmpDir . 'archiweb-proto.db.sqlite';
