@@ -890,7 +890,7 @@ class MagicalModuleManagerTest extends TestCase {
     public function testMagicalFind () {
 
 
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'thomas\'')];
+        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
         $keyPaths = ['user.name','company.name','storage.url'];
         $alias = ['user.name' => 'userName', 'company.name' => 'companyName'];
 
@@ -934,8 +934,8 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
         $this->assertEquals('wozniak',$result['userName']);
-        $this->assertEquals('bigsool',$result['companyName']);
-        $this->assertEquals('http://ddfd.fr',$result['url']);
+        $this->assertEquals('bigsoolee',$result['companyName']);
+        $this->assertEquals('http://www.bigsoolee.com',$result['url']);
 
 
     }
