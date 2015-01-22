@@ -231,6 +231,8 @@ class Registry implements EventSubscriber {
             throw new \RuntimeException('fields are required');
         }
 
+        // TODO: Implement partial objects
+        // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
             if ($keyPath->getAlias()) {
