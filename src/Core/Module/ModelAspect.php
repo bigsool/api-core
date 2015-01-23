@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Action\Action;
 use Core\Expression\AbstractKeyPath;
 use Core\Validation\ConstraintsProvider;
 
@@ -20,7 +21,7 @@ class ModelAspect {
     private $prefix;
 
     /**
-     * @var ConstraintsProvider[]|null
+     * @var ConstraintsProvider[][]
      */
     private $constraints;
 
@@ -30,16 +31,16 @@ class ModelAspect {
     private $keyPath;
 
     /**
-     * @var Action[]|null
+     * @var Action[]
      */
     private $actions;
 
     /**
-     * @param string                $model
-     * @param string                $prefix
-     * @param ConstraintsProvider[] $constraints
-     * @param Action[]              $actions
-     * @param AbstractKeyPath       $keyPath
+     * @param string                  $model
+     * @param string                  $prefix
+     * @param ConstraintsProvider[][] $constraints
+     * @param Action[]                $actions
+     * @param AbstractKeyPath         $keyPath
      */
     public function __construct ($model, $prefix, array $constraints, array $actions, $keyPath) {
 
@@ -67,11 +68,18 @@ class ModelAspect {
     }
 
     /**
-     * @return ConstraintsProvider[]|null
+     * @param null $actionName
+     *
+     * @return ConstraintsProvider[]|ConstraintsProvider[][]
      */
-    public function getConstraints () {
+    public function getConstraints ($actionName = NULL) {
 
-        return $this->constraints;
+        return isset($actionName)
+            ? (isset($this->constraints[$actionName])
+                ? $this->constraints[$actionName]
+                : [])
+            : $this->constraints;
+
     }
 
     /**
@@ -88,6 +96,16 @@ class ModelAspect {
     public function getActions () {
 
         return $this->actions;
+    }
+
+    /**
+     * @param $actionName
+     *
+     * @return Action|null
+     */
+    public function getAction ($actionName) {
+
+        return isset($this->actions[$actionName]) ? $this->actions[$actionName] : NULL;
     }
 
 } 

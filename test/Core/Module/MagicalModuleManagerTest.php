@@ -130,8 +130,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'       => 'User',
-            'constraints' => [new \stdClass()],
+            'model'  => 'User',
+            'create' => [
+                'constraints' => [new \stdClass()],
+            ]
         ]);
 
     }
@@ -143,8 +145,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'   => 'User',
-            'actions' => ['create' => new \stdClass()],
+            'model'  => 'User',
+            'create' => [
+                'action' => new \stdClass(),
+            ]
         ]);
 
     }
@@ -188,7 +192,7 @@ class MagicalModuleManagerTest extends TestCase {
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
         $this->assertSame('company', $keyPath->getValue());
-        $validators = $modelAspect->getConstraints();
+        $validators = $modelAspect->getConstraints('create');
         $this->assertInternalType('array', $validators);
         $this->assertContainsOnlyInstancesOf('\Symfony\Component\Validator\Constraint', $validators);
         $this->assertCount(2, $validators);
@@ -201,7 +205,7 @@ class MagicalModuleManagerTest extends TestCase {
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
         $this->assertSame('company.storage', $keyPath->getValue());
-        $validators = $modelAspect->getConstraints();
+        $validators = $modelAspect->getConstraints('create');
         $this->assertInternalType('array', $validators);
         $this->assertContainsOnlyInstancesOf('\Symfony\Component\Validator\Constraint', $validators);
         $this->assertCount(1, $validators);
@@ -215,10 +219,15 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addCompanyAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
-            'model'       => 'Company',
-            'prefix'      => 'company',
-            'keyPath'     => 'company',
-            'constraints' => [new Dictionary(), new NotBlank()],
+            'model'   => 'Company',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'create'  => [
+                'constraints' => [new Dictionary(), new NotBlank()],
+            ],
+            'update'  => [
+                'constraints' => [new Dictionary(), new NotBlank()],
+            ]
         ]);
 
     }
@@ -229,11 +238,13 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addStorageAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
-            'model'       => 'Storage',
-            'prefix'      => 'storage',
-            'keyPath'     => 'company.storage',
-            'constraints' => [new Null()],
-            'actions'     => ['create' => NULL],
+            'model'   => 'Storage',
+            'prefix'  => 'storage',
+            'keyPath' => 'company.storage',
+            'create'  => [
+                'constraints' => [new Null()],
+                'action'      => NULL,
+            ]
         ]);
 
     }
@@ -544,10 +555,12 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addCompanyAspect($mgr);
 
         $this->addAspect($mgr, [
-            'model'       => 'Storage',
-            'prefix'      => 'storage',
-            'keyPath'     => 'company.storage',
-            'constraints' => [new Null()],
+            'model'   => 'Storage',
+            'prefix'  => 'storage',
+            'keyPath' => 'company.storage',
+            'create'  => [
+                'constraints' => [new Null()],
+            ]
         ]);
 
 
@@ -594,7 +607,7 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName', 'getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
         $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
 
@@ -607,14 +620,16 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $this->addAspect($mgrUser, [
-            'model'       => 'Company',
-            'prefix'      => 'company',
-            'keyPath'     => 'company',
-            'constraints' => [new Dictionary(), new NotBlank()],
-            'actions'     => ['create' => new ActionReference('Archipad\\Group', 'create')],
+            'model'   => 'Company',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'create'  => [
+                'constraints' => [new Dictionary(), new NotBlank()],
+                'action'      => new ActionReference('Archipad\\Group', 'create'),
+            ]
         ]);
 
-        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName', 'getMagicalEntityObject']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
         $mgrCompany->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrCompany) {
 
@@ -699,20 +714,6 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
-        $actionContext = $this->getActionContextWithParams(
-            ['email'    => 'thsomas@bigsool.com',
-             'name'     => 'thomas',
-             'password' => new UnsafeParameter('qwe'),
-             'company'  => new UnsafeParameter(
-                 ['name'    => new UnsafeParameter('bigsool'),
-                  'storage' => new UnsafeParameter(
-                      ['url' => new UnsafeParameter('http://www.bigsool.com')]),
-                 ]),
-
-            ]);
-
-        $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
-
     }
 
     /**
@@ -770,7 +771,7 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName', 'getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
         $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
 
@@ -783,17 +784,21 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'       => 'Company',
-            'prefix'      => 'company',
-            'keyPath'     => 'company',
-            'constraints' => [new Dictionary(), new NotBlank()],
+            'model'   => 'Company',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'update'  => [
+                'constraints' => [new Dictionary(), new NotBlank()],
+            ]
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'       => 'Storage',
-            'prefix'      => 'storage',
-            'keyPath'     => 'company.storage',
-            'constraints' => [new Null()],
+            'model'   => 'Storage',
+            'prefix'  => 'storage',
+            'keyPath' => 'company.storage',
+            'update'  => [
+                'constraints' => [new Null()],
+            ]
         ]);
 
 
@@ -846,7 +851,7 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName', 'getMagicalEntityObject']);
         $mgrUser->method('getModuleName')->willReturn('UserModule');
         $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
 
@@ -860,14 +865,16 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $this->addAspect($mgrUser, [
-            'model'       => 'Company',
-            'prefix'      => 'company',
-            'keyPath'     => 'company',
-            'constraints' => [new Dictionary(), new NotBlank()],
-            'actions'     => ['update' => new ActionReference('Archipad\\Group', 'update')],
+            'model'   => 'Company',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'update'  => [
+                'constraints' => [new Dictionary(), new NotBlank()],
+                'action'      => new ActionReference('Archipad\\Group', 'update'),
+            ]
         ]);
 
-        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName', 'getMagicalEntityObject']);
         $mgrCompany->method('getModuleName')->willReturn('Archipad\Group');
         $mgrCompany->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrCompany) {
 

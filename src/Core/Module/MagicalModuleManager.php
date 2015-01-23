@@ -16,6 +16,7 @@ use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
@@ -98,7 +99,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             if ($params) {
 
                 $subContext = new ActionContext($ctx);
-                // TODO: plz clean code: params is not an array of params but a param ? why s ?
                 $subContext->setParams(UnsafeParameter::getFinalValue($params));
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
                     $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
@@ -316,6 +316,26 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @return MagicalEntity
+     */
+    public function getMagicalEntityObject () {
+
+        $className = Registry::realModelClassName($this->getModuleName());
+
+        return new $className($this->mainEntity);
+
+    }
+
+    protected function getModuleName () {
+
+        $className = get_called_class();
+        $classNameExploded = explode('\\', $className);
+
+        return $classNameExploded[count($classNameExploded) - 2];
+
+    }
+
     public function formatResult () {
 
         $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
@@ -354,6 +374,89 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return mixed
      */
     public abstract function loadAspects ();
+
+    /**
+     * @return mixed
+     */
+    protected function getMainEntity () {
+
+        return $this->mainEntity;
+
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function setMainEntity ($config) {
+
+        $this->addAspect($config);
+        $this->mainEntityName = $config['model'];
+
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function addAspect (array $config) {
+
+        $prefix = NULL;
+        if (isset($config['prefix'])) {
+            $prefix = $config['prefix'];
+            if (!is_string($prefix)) {
+                throw new \RuntimeException('invalid model');
+            }
+        }
+
+        $model = NULL;
+        if (isset($config['model'])) {
+            $model = $config['model'];
+            Registry::realModelClassName($model);
+            if (!is_string($model)) {
+                throw new \RuntimeException('invalid model');
+            }
+        }
+
+        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
+        if (!$keyPath) {
+            foreach ($this->modelAspects as $modelAspect) {
+                if (!$modelAspect->getKeyPath()) {
+                    throw new \RuntimeException('two main entities');
+                }
+            }
+        }
+
+        $actionNames = ['create', 'find', 'update', 'delete'];
+        $constraints = [];
+        $actions = [];
+        foreach ($actionNames as $actionName) {
+            if (!isset($config[$actionName])) {
+                continue;
+            }
+            $configOfTheAction = $config[$actionName];
+
+            if (isset($configOfTheAction['constraints'])) {
+                $constraints[$actionName] = $configOfTheAction['constraints'];
+                if (!is_array($configOfTheAction['constraints'])) {
+                    throw new \RuntimeException('invalid constraints');
+                }
+                foreach ($constraints[$actionName] as $constraint) {
+                    if (!($constraint instanceof Constraint)) {
+                        throw new \RuntimeException('invalid constraint');
+                    }
+                }
+            }
+
+            if (isset($configOfTheAction['action'])) {
+                $actions[$actionName] = $configOfTheAction['action'];
+                if ($configOfTheAction['action'] && !is_a($configOfTheAction['action'], 'Core\Action\Action')) {
+                    throw new \RuntimeException('invalid action');
+                }
+            }
+        }
+
+        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
+
+    }
 
     /**
      * @param $modelName
@@ -457,7 +560,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $modelAspects = $this->modelAspects;
 
         $appCtx->addAction(new SimpleAction($module, $name, [], $params,
-            function (ActionContext $actionContext) use ($processFn, &$modelAspects) {
+            function (ActionContext $actionContext) use ($processFn, &$modelAspects, &$name) {
 
                 $params = $actionContext->getParams();
                 $prefixes = [];
@@ -468,21 +571,12 @@ abstract class MagicalModuleManager extends ModuleManager {
                     $prefixes[] = $modelAspect->getPrefix();
                     $param = $params[$modelAspect->getPrefix()];
                     $constraintViolationList =
-                        Validation::createValidator()
-                                  ->validate(UnsafeParameter::getFinalValue($param), $modelAspect->getConstraints());
+                        Validation::createValidator()->validate(UnsafeParameter::getFinalValue($param),
+                                                                $modelAspect->getConstraints($name));
                     if ($constraintViolationList->count()) {
                         throw new \RuntimeException('constraint violation');
                     }
                 }
-
-                /*  TODO: delete
-                $paramsWithoutParamsOfOtherModelAspects = [];
-                foreach ($params as $key => $value) {
-                    if (!in_array($key, $prefixes, true)) {
-                        $paramsWithoutParamsOfOtherModelAspects[$key] = $value;
-                    }
-                }
-                $actionContext->setParams($paramsWithoutParamsOfOtherModelAspects);*/
 
                 return $processFn($actionContext);
 
