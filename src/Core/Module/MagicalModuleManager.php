@@ -152,24 +152,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getMainEntity() {
-
-        return $this->mainEntity;
-
-    }
-
-    /**
-     * @return MagicalEntity
-     */
-    public function getMagicalEntityObject($entity) {
-
-        $className = Registry::realModelClassName($this->getModuleName());
-        return new $className($entity);
-
-    }
 
     /**
      * @param string      $action
@@ -319,11 +301,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     /**
      * @return MagicalEntity
      */
-    public function getMagicalEntityObject () {
+    public function getMagicalEntityObject ($entity) {
 
         $className = Registry::realModelClassName($this->getModuleName());
 
-        return new $className($this->mainEntity);
+        return new $className($entity);
 
     }
 
@@ -484,6 +466,13 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param String[] $values
+     * @param String[] $alias
+     * @param Filter[] $filters
+     * @param Boolean $hydrateArray
+     * @return mixed
+     */
     protected function magicalFind ($values, $alias, $filters, $hydrateArray = false) {
 
         $appCtx = ApplicationContext::getInstance();
@@ -523,6 +512,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param Filter[] $filters
+     * @return mixed
+     */
     public function magicalDelete ($filters) {
 
         $appCtx = ApplicationContext::getInstance();
@@ -584,6 +577,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param Array   $result
+     * @return Array
+     */
     protected function formatFindResult ($result) {
         $entities = [];
         foreach ($result as $elem) {
@@ -597,88 +594,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         return $entities;
     }
 
-    protected function getModuleName () {
 
-        $className = get_called_class();
-        $classNameExploded = explode('\\', $className);
-
-        return $classNameExploded[count($classNameExploded) - 2];
-
-    }
-
-    /**
-     * @param array $config
-     */
-    protected function setMainEntity ($config) {
-
-        $this->addAspect($config);
-        $this->mainEntityName = $config['model'];
-
-    }
-
-    /**
-     * @param array $config
-     */
-    protected function addAspect (array $config) {
-
-        $prefix = NULL;
-        if (isset($config['prefix'])) {
-            $prefix = $config['prefix'];
-            if (!is_string($prefix)) {
-                throw new \RuntimeException('invalid model');
-            }
-        }
-
-        $model = NULL;
-        if (isset($config['model'])) {
-            $model = $config['model'];
-            Registry::realModelClassName($model);
-            if (!is_string($model)) {
-                throw new \RuntimeException('invalid model');
-            }
-        }
-
-
-        $constraints = [];
-        if (isset($config['constraints'])) {
-            $constraints = $config['constraints'];
-            if (!is_array($config['constraints'])) {
-                throw new \RuntimeException('invalid constraints');
-            }
-            foreach ($constraints as $constraint) {
-                if (!is_a($constraint, 'Symfony\Component\Validator\Constraint')
-                    && !is_a($constraint, 'Core\Validation\Constraints\Dictionary')
-                ) {
-                    throw new \RuntimeException('invalid constraints');
-                }
-            }
-        }
-
-        $actions = [];
-        if (isset($config['actions'])) {
-            if (!is_array($config['actions'])) {
-                throw new \RuntimeException('invalid constraints');
-            }
-            foreach ($config['actions'] as $action) {
-                if ($action && !is_a($action, 'Core\Action\Action')) {
-                    throw new \RuntimeException('invalid action');
-                }
-            }
-            $actions = $config['actions'];
-        }
-
-        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
-
-        if (!$keyPath) {
-            foreach ($this->modelAspects as $modelAspect) {
-                if (!$modelAspect->getKeyPath()) {
-                    throw new \RuntimeException('two main entities');
-                }
-            }
-        }
-
-        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
-
-    }
 
 }
