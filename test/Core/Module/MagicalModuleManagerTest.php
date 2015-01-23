@@ -699,6 +699,20 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsool', $user->getCompany()->getName());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
+        $actionContext = $this->getActionContextWithParams(
+            ['email'    => 'thsomas@bigsool.com',
+             'name'     => 'thomas',
+             'password' => new UnsafeParameter('qwe'),
+             'company'  => new UnsafeParameter(
+                 ['name'    => new UnsafeParameter('bigsool'),
+                  'storage' => new UnsafeParameter(
+                      ['url' => new UnsafeParameter('http://www.bigsool.com')]),
+                 ]),
+
+            ]);
+
+        $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+
     }
 
     /**
@@ -941,24 +955,15 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
-    public function testMagicalFind () {
-
-
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
-        $keyPaths = ['user.name','company.name','storage.url'];
-        $alias = ['user.name' => 'userName', 'company.name' => 'companyName'];
+    public function testMagicalFindObject () {
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName','getMagicalEntityObject']);
-        $mgrUser->method('getModuleName')->willReturn('UserModule');
-        $mgrUser->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgrUser) {
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('Account');
 
-            return $this->getMainEntity($mgrUser);
-
-        }));
 
 
         $this->setMainEntity($mgrUser, [
@@ -987,15 +992,107 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadActions($appCtx);
         $storageModuleManager->loadHelpers($appCtx);
 
-        $result = $this->magicalAction('Find', $mgrUser, [$keyPaths, $alias, $filters]);
 
+        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+        $values = ['user.*','company.*','storage.*'];
+        $alias = []; //[ 'company.name' => 'companyName'];
+
+        $result = $this->magicalAction('Find', $mgrUser, [$values, $alias, $filters]);
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) == 1);
+        $account = $result[0];
+        $this->assertInstanceOf('\Core\Model\Account',$account);
+        $this->assertInstanceOf('\Core\Model\Company',$account->getCompany());
+        $this->assertEquals('wozniak',$account->getUser()->getName());
+        $this->assertEquals('bigsoolee',$account->getCompany()->getName());
+        $this->assertEquals('http://www.bigsoolee.com',$account->getStorage()->getUrl());
+
+
+    }
+
+
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testMagicalFindArray () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('Account');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'Company',
+            'keyPath' => 'company',
+            'prefix'  => 'company',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'Storage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'storage',
+        ]);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+
+        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+        $values = ['user.*','company.*','storage.*'];
+        $alias = []; //[ 'company.name' => 'companyName'];
+
+        $result = $this->magicalAction('Find', $mgrUser, [$values, $alias, $filters,true]);
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
-        $this->assertEquals('wozniak',$result['userName']);
-        $this->assertEquals('bigsoolee',$result['companyName']);
-        $this->assertEquals('http://www.bigsoolee.com',$result['url']);
+        $this->assertTrue(is_array($result));
+        $this->assertEquals('wozniak',$result['name']);
+        $this->assertEquals('bigsoolee',$result['company']['name']);
+        $this->assertEquals('http://www.bigsoolee.com',$result['company']['storage']['url']);
 
+    }
+
+    /**
+     * @depends testMagicalCreateWithTwoMagicalModuleManager
+     */
+    public function testMagicalDelete () {
+
+        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('Account');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'Company',
+            'keyPath' => 'company',
+            'prefix'  => 'company',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'Storage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'storage',
+        ]);
+
+
+        $user = $this->magicalAction('Delete', $mgrUser, [$filters]);
 
     }
 

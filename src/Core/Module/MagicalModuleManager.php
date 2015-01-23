@@ -148,7 +148,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->saveEntities();
 
-        return $this->getMagicalEntityObject();
+        return $this->getMagicalEntityObject($this->mainEntity);
 
     }
 
@@ -164,10 +164,10 @@ abstract class MagicalModuleManager extends ModuleManager {
     /**
      * @return MagicalEntity
      */
-    public function getMagicalEntityObject() {
+    public function getMagicalEntityObject($entity) {
 
         $className = Registry::realModelClassName($this->getModuleName());
-        return new $className($this->mainEntity);
+        return new $className($entity);
 
     }
 
@@ -381,7 +381,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    protected function magicalFind ($values, $alias, $filters) {
+    protected function magicalFind ($values, $alias, $filters, $hydrateArray = false) {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -414,9 +414,30 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addFilter($filter);
         }
 
+        $result = $registry->find($qryCtx, $hydrateArray);
+
+        return $hydrateArray ? $result : $this->formatFindResult($result);
+
+    }
+
+    public function magicalDelete ($filters) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('User', new RequestContext());
+
+        $qryCtx->addKeyPath(new KeyPath('*'));
+        foreach ($this->modelAspects as $modelAspect) {
+            if ($modelAspect->getKeyPath()) $qryCtx->addKeyPath($modelAspect->getKeyPath());
+        }
+
+        foreach ($filters as $filter) $qryCtx->addFilter($filter);
+
         $result = $registry->find($qryCtx, false);
 
-        return $result;
+        $registry->delete($result[0]);
 
     }
 
@@ -467,6 +488,19 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }));
 
+    }
+
+    protected function formatFindResult ($result) {
+        $entities = [];
+        foreach ($result as $elem) {
+            if (is_array($elem)) {
+                $entities[] = $this->getMagicalEntityObject($elem[0]);
+            }
+            else {
+                $entities[] = $this->getMagicalEntityObject($elem);
+            }
+        }
+        return $entities;
     }
 
     protected function getModuleName () {

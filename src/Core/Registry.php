@@ -260,6 +260,13 @@ class Registry implements EventSubscriber {
 
     }
 
+    public function delete ($model) {
+
+        $this->entityManager->remove($model);
+        $this->entityManager->flush();
+
+    }
+
     /**
      * @param string $entity
      *
