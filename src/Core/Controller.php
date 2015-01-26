@@ -4,6 +4,7 @@
 namespace Core;
 
 
+use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 
@@ -20,13 +21,37 @@ class Controller {
     protected $actionName;
 
     /**
-     * @param string $module
-     * @param string $actionName
+     * @var Action
      */
-    public function __construct ($module, $actionName) {
+    protected $action;
+
+    /**
+     * @param string|Action $action
+     * @param string        $module
+     */
+    public function __construct ($action, $module = NULL) {
 
         $this->module = $module;
-        $this->actionName = $actionName;
+        if (is_string($action)) {
+            if (is_null($module)) {
+                throw new \RuntimeException('if action is a string, module must be provided');
+            }
+            $this->actionName = $action;
+        }
+        elseif ($action instanceof Action) {
+            $this->action = $action;
+        }
+        else {
+            throw new \RuntimeException('invalid action type');
+        }
+
+    }
+
+    protected function getAction () {
+
+        return isset($this->action)
+            ? $this->action
+            : ApplicationContext::getInstance()->getAction($this->module, $this->actionName);
 
     }
 
@@ -37,7 +62,7 @@ class Controller {
      */
     public function apply (ActionContext $context) {
 
-        return ApplicationContext::getInstance()->getAction($this->module, $this->actionName)->process($context);
+        return $this->getAction()->process($context);
 
     }
 

@@ -25,7 +25,7 @@ class ControllerTest extends TestCase {
 
         }));
 
-        (new Controller('module', 'name'))->apply($context);
+        (new Controller('name', 'module'))->apply($context);
 
         $this->assertTrue($called);
 
