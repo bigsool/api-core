@@ -46,11 +46,6 @@ abstract class AbstractLogger implements LoggerInterface {
             */
             $level = MLogger::DEBUG;
 
-            // TODO: should be done in a different way
-            // To be sure that ROOT_DIR exist, refer to Application
-            // because ROOT_DIR is define in the head of Application class
-            class_exists('\Core\Application');
-
             $stream = new RotatingFileHandler(ROOT_DIR . '/logs/' . $channel . '.log', 0, $level);
             $stream->setFormatter(new LineFormatter($this->getFormat(), $this->getDateFormat()));
             $this->mLogger->pushHandler($stream);

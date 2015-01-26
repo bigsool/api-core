@@ -7,20 +7,18 @@ namespace Core;
 use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
-use Core\Filter\StringFilter;
+use Core\Logger\TraceLogger;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
-
-define('ROOT_DIR', __DIR__ . '/../..');
 
 class Application {
 
@@ -36,7 +34,20 @@ class Application {
 
     public function __construct () {
 
+        self::defineRootDir();
         $this->appCtx = $this->createApplicationContext();
+
+    }
+
+    /**
+     * Define ROOT_DIR constant which is used by other files
+     * This method is static for testing purpose
+     */
+    public static function defineRootDir () {
+
+        if (!defined('ROOT_DIR')) {
+            define('ROOT_DIR', dirname((new \ReflectionClass(get_called_class()))->getFileName()) . '/../..');
+        }
 
     }
 
@@ -121,17 +132,8 @@ class Application {
                 }, $rpcHandler->getReturnedFields()));
 
                 $traceLogger->trace('request parsed');
+                $controller = $this->getController($matcher, $rpcHandler, $traceLogger);
 
-                /**
-                 * @var Controller $controller
-                 */
-                try {
-                    $controller = $matcher->match($rpcHandler->getPath())['controller'];
-                    $traceLogger->trace('controller found');
-                }
-                catch (\Exception $e) {
-                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
-                }
                 $actCtx = new ActionContext($reqCtx);
 
                 $result = $controller->apply($actCtx);
@@ -228,14 +230,11 @@ class Application {
      */
     public function getModuleManagers () {
 
-        //*
         $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
-        /*/
-        $modules = ['Account','UserFeature','CompanyFeature','StorageFeature'];
-        /**/
+        $product = $this->appCtx->getProduct();
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
-            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+            $className = "\\$product\\Module\\$moduleName\\ModuleManager";
             $moduleManagers[] = new $className;
         }
 
@@ -243,15 +242,28 @@ class Application {
 
     }
 
-    protected function getAuth ($name) {
+    /**
+     * @param UrlMatcherInterface $matcher
+     * @param Handler             $rpcHandler
+     * @param TraceLogger         $traceLogger
+     *
+     * @return Controller
+     * @throws FormattedError
+     */
+    protected function getController (UrlMatcherInterface $matcher, Handler $rpcHandler, TraceLogger $traceLogger) {
 
-        $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
-        $findCtx->addKeyPath(new KeyPath('*'));
-        $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
+        /**
+         * @var Controller $controller
+         */
+        try {
+            $controller = $matcher->match($rpcHandler->getPath())['controller'];
+            $traceLogger->trace('controller found');
+        }
+        catch (\Exception $e) {
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
+        }
 
-        return $user;
-
+        return $controller;
     }
 
 } 

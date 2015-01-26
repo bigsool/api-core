@@ -6,6 +6,7 @@ namespace Core\Module\Account;
 use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Model\Account;
 use Core\Model\Company;
 use Core\Model\User;
 use Core\Module\MagicalModuleManager;
@@ -26,16 +27,16 @@ class ModuleManager extends MagicalModuleManager {
             function (ActionContext $context) use ($self) {
 
                 /**
-                 * @var User $user
+                 * @var Account $account
                  */
-                $user = $self->magicalCreate($context);
+                $account = $self->magicalCreate($context);
 
                 // The creator of the Account is the owner of the company
-                $user->setOwnedCompany($user->getCompany());
-                $user->getCompany()->setOwner($user);
-                ApplicationContext::getInstance()->getNewRegistry()->save($user);
+                $account->getUser()->setOwnedCompany($account->getCompany());
+                $account->getCompany()->setOwner($account->getUser());
+                ApplicationContext::getInstance()->getNewRegistry()->save($account);
 
-                return $user;
+                return $account;
 
             }));
 
