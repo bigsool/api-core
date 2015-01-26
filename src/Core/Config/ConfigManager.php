@@ -42,9 +42,16 @@ class ConfigManager {
 
         $configs = [];
         foreach ($yamlFilePaths as $yamlFilePath) {
+            if (!file_exists($yamlFilePath)) {
+                throw new \RuntimeException('config file not found');
+            }
+            if (!filesize($yamlFilePath)) {
+                // don't try to load empty file
+                continue;
+            }
             $config = Yaml::parse($yamlFilePath);
             if (!is_array($config)) {
-                // empty config file
+                throw new \RuntimeException('invalid config file');
                 continue;
             }
             $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);

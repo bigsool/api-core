@@ -62,12 +62,13 @@ class Application {
         // This will log routes
         $this->appCtx->getConfigManager();
 
+        // We should use require_once but some tests will fail if we do that
         require ROOT_DIR . '/doctrine/config.php';
         if (file_exists($errorFile = ROOT_DIR . '/vendor/api/core/config/errors.php')) {
-            require_once $errorFile;
+            require $errorFile;
         }
         if (file_exists($errorFile = ROOT_DIR . '/config/errors.php')) {
-            require_once $errorFile;
+            require $errorFile;
         }
 
 
