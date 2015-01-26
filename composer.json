@@ -29,7 +29,7 @@
   "bin": [
     "bin/doctrine-generate-database",
     "bin/doctrine-generate-yml",
-    "bin/generac-doc",
+    "bin/generate-doc",
     "bin/phpunit-coverage",
     "bin/phpunit-test"
   ],
