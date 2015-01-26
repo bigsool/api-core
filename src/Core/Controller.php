@@ -33,8 +33,8 @@ class Controller {
 
         $this->module = $module;
         if (is_string($action)) {
-            if (is_null($module)) {
-                throw new \RuntimeException('if action is a string, module must be provided');
+            if (!is_string($module)) {
+                throw new \RuntimeException('invalid module type');
             }
             $this->actionName = $action;
         }
