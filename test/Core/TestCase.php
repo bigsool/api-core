@@ -32,6 +32,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
+Application::defineRootDir();
+
 class TestCase extends \PHPUnit_Framework_TestCase {
 
     /**

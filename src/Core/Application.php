@@ -7,11 +7,9 @@ namespace Core;
 use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
-use Core\Filter\StringFilter;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
@@ -19,8 +17,6 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
-
-define('ROOT_DIR', __DIR__ . '/../..');
 
 class Application {
 
@@ -36,7 +32,20 @@ class Application {
 
     public function __construct () {
 
+        self::defineRootDir();
         $this->appCtx = $this->createApplicationContext();
+
+    }
+
+    /**
+     * Define ROOT_DIR constant which is used by other files
+     * This method is static for testing purpose
+     */
+    public static function defineRootDir () {
+
+        if (!defined('ROOT_DIR')) {
+            define('ROOT_DIR', dirname((new \ReflectionClass(get_called_class()))->getFileName()) . '/../..');
+        }
 
     }
 
@@ -228,29 +237,15 @@ class Application {
      */
     public function getModuleManagers () {
 
-        //*
         $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
-        /*/
-        $modules = ['Account','UserFeature','CompanyFeature','StorageFeature'];
-        /**/
+        $product = $this->appCtx->getProduct();
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
-            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+            $className = "\\$product\\Module\\$moduleName\\ModuleManager";
             $moduleManagers[] = new $className;
         }
 
         return $moduleManagers;
-
-    }
-
-    protected function getAuth ($name) {
-
-        $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
-        $findCtx->addKeyPath(new KeyPath('*'));
-        $user = $this->appCtx->getNewRegistry()->find($findCtx, false);
-
-        return $user;
 
     }
 
