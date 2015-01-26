@@ -490,7 +490,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $ctx->setRuleProcessor($ruleMgr);
             $ctx->setEntityManager($em);
 
-            require_once __DIR__ . '/../../config/errors.php';
+            require __DIR__ . '/../../config/errors.php';
 
         }
 
