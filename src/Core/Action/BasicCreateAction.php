@@ -8,6 +8,15 @@ use Core\Context\ApplicationContext;
 
 class BasicCreateAction extends SimpleAction {
 
+    /**
+     * @param string   $module
+     * @param string   $model
+     * @param string   $helperName
+     * @param array    $minRights
+     * @param array    $params
+     * @param callable $preUpdateCallable
+     * @param callable $postUpdateCallable
+     */
     public function __construct ($module, $model, $helperName, $minRights, array $params,
                                  callable $preUpdateCallable = NULL, callable $postUpdateCallable = NULL) {
 
@@ -36,7 +45,7 @@ class BasicCreateAction extends SimpleAction {
 
                 $postUpdateCallable($context);
 
-                return $context[$model];
+                return $context[lcfirst($model)];
 
             });
 
