@@ -9,7 +9,19 @@
                 <directory>src/Core/Model/</directory>
                 <directory>src/Core/Module/UserFeature</directory>
                 <directory>src/Core/Module/CompanyFeature</directory>
-                <directory>src/Core/Module/User2CompanyConnector</directory>
+                <directory>src/Core/Module/Account</directory>
+                <directory>src/Core/Module/BillingAddressFeature</directory>
+                <directory>src/Core/Module/ConsumptionFeature</directory>
+                <directory>src/Core/Module/DeviceFeature</directory>
+                <directory>src/Core/Module/HostedProjectFeature</directory>
+                <directory>src/Core/Module/InvoiceFeature</directory>
+                <directory>src/Core/Module/PaymentFeature</directory>
+                <directory>src/Core/Module/ProductFeature</directory>
+                <directory>src/Core/Module/ProjectFeature</directory>
+                <directory>src/Core/Module/ReportTemplateFeature</directory>
+                <directory>src/Core/Module/SharedReportFeature</directory>
+                <directory>src/Core/Module/StorageFeature</directory>
+                <directory>src/Core/Module/TransactionFeature</directory>
                 <file>src/Core/Validation/UserValidation.php</file>
                 <file>src/Core/Validation/CompanyValidation.php</file>
                 <file>src/Core/Validation/User2CompanyValidation.php</file>
