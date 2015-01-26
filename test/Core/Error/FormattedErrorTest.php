@@ -144,4 +144,25 @@ class FormattedErrorTest extends TestCase {
 
     }
 
+    public function testFormattedErrorWithChildInArray () {
+
+        $errorArray = ['code'    => 123,
+                       'message' => 'message 123',
+                       'errors'  => [
+                           ['code'    => 456,
+                            'message' => 'message 456',
+                            'errors'  => [
+                                ['code' => 789, 'message' => 'message 789'],
+                                ['code' => 101112, 'message' => 'message 101112']
+                            ]
+                           ],
+                           ['code' => 131415, 'message' => 'message 131415']
+                       ]
+        ];
+
+        $formattedError = new FormattedError($errorArray);
+        $this->assertSame($errorArray, $formattedError->toArray());
+
+    }
+
 }
