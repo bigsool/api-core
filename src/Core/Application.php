@@ -63,8 +63,11 @@ class Application {
         $this->appCtx->getConfigManager();
 
         require ROOT_DIR . '/doctrine/config.php';
-        if (require_once ROOT_DIR . '/config/errors.php') {
-            loadErrors($this->appCtx->getErrorManager());
+        if (file_exists($errorFile = ROOT_DIR . '/vendor/api/core/config/errors.php')) {
+            require_once $errorFile;
+        }
+        if (file_exists($errorFile = ROOT_DIR . '/config/errors.php')) {
+            require_once $errorFile;
         }
 
 
@@ -230,8 +233,8 @@ class Application {
      */
     public function getModuleManagers () {
 
-        $modules = array_map('basename', glob(__DIR__ . '/Module/*', GLOB_ONLYDIR));
         $product = $this->appCtx->getProduct();
+        $modules = array_map('basename', glob(ROOT_DIR . 'src/'.$product.'/Module/*', GLOB_ONLYDIR));
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
             $className = "\\$product\\Module\\$moduleName\\ModuleManager";

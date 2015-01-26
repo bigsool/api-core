@@ -113,11 +113,11 @@ class RequestContext {
     }
 
     /**
-     * @param string $returnedRootEntity
+     * @param string|NULL $returnedRootEntity
      */
-    public function setReturnedRootEntity ($returnedRootEntity) {
+    public function setReturnedRootEntity ($returnedRootEntity = NULL) {
 
-        if (!is_string($returnedRootEntity)) {
+        if (!is_string($returnedRootEntity) && !is_null($returnedRootEntity)) {
             throw new \RuntimeException('invalid $returnedRootEntity');
         }
 

@@ -4,6 +4,7 @@ namespace Core\Config;
 
 use Core\Context\ApplicationContext;
 use Core\Controller;
+use Core\Util\ArrayExtra;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Yaml\Yaml;
 
@@ -43,9 +44,10 @@ class ConfigManager {
         foreach ($yamlFilePaths as $yamlFilePath) {
             $config = Yaml::parse($yamlFilePath);
             if (!is_array($config)) {
-                throw new \Exception('config yaml file can\'t be found');
+                // empty config file
+                continue;
             }
-            $configs = array_merge_recursive($configs, $config);
+            $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
         }
         $this->config = $configs;
 

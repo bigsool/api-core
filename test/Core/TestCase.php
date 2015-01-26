@@ -491,7 +491,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $ctx->setEntityManager($em);
 
             require_once __DIR__ . '/../../config/errors.php';
-            loadErrors($ctx->getErrorManager());
 
         }
 

@@ -20,7 +20,6 @@ use Core\RuleProcessor;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Validator\Exception\RuntimeException;
 
 class ApplicationContext {
 
@@ -542,22 +541,33 @@ class ApplicationContext {
     public function getConfigManager () {
 
         if (!isset($this->configManager)) {
-            // load config
-            $coreConfDir = ROOT_DIR . '/config/';
-            $configFiles = [$coreConfDir . 'default.yml'];
-            switch ($this->getEnv()) {
-                case LOCAL_ENV:
-                    $configFiles[] = $coreConfDir . 'env/local.yml';
-                    break;
-                case DEV_ENV:
-                    $configFiles[] = $coreConfDir . 'env/dev.yml';
-                    break;
-                case STAGE_ENV:
-                    $configFiles[] = $coreConfDir . 'env/stage.yml';
-                    break;
-                case PROD_ENV:
-                    $configFiles[] = $coreConfDir . 'env/prod.yml';
-                    break;
+            $configFiles = [];
+            foreach ([ROOT_DIR . '/vendor/api/core/config/', ROOT_DIR . '/config/'] as $coreConfDir) {
+                if (file_exists($configFile = $coreConfDir . 'default.yml')) {
+                    $configFiles[] = $configFile;
+                }
+                switch ($this->getEnv()) {
+                    case LOCAL_ENV:
+                        if (file_exists($configFile = $coreConfDir . 'env/local.yml')) {
+                            $configFiles[] = $configFile;
+                        }
+                        break;
+                    case DEV_ENV:
+                        if (file_exists($configFile = $coreConfDir . 'env/dev.yml')) {
+                            $configFiles[] = $configFile;
+                        }
+                        break;
+                    case STAGE_ENV:
+                        if (file_exists($configFile = $coreConfDir . 'env/stage.yml')) {
+                            $configFiles[] = $configFile;
+                        }
+                        break;
+                    case PROD_ENV:
+                        if (file_exists($configFile = $coreConfDir . 'env/prod.yml')) {
+                            $configFiles[] = $configFile;
+                        }
+                        break;
+                }
             }
 
             $routesFile = ROOT_DIR . '/config/routes.yml';

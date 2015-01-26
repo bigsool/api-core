@@ -84,6 +84,12 @@ class FormattedError extends \Exception {
 
         $this->field = isset($error['field']) ? $error['field'] : $field;
 
+        if (isset($error['errors']) && is_array($error['errors'])) {
+            foreach ($error['errors'] as $errorArray) {
+                $this->addChildError(new FormattedError($errorArray));
+            }
+        }
+
     }
 
     /**
