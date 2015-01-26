@@ -52,7 +52,6 @@ class ConfigManager {
             $config = Yaml::parse($yamlFilePath);
             if (!is_array($config)) {
                 throw new \RuntimeException('invalid config file');
-                continue;
             }
             $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
         }
