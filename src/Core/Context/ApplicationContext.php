@@ -20,6 +20,7 @@ use Core\RuleProcessor;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Validator\Exception\RuntimeException;
 
 class ApplicationContext {
 
@@ -123,7 +124,15 @@ class ApplicationContext {
      */
     protected function __construct () {
 
+        $this->loadConstants();
+
         $this->routes = new RouteCollection();
+
+    }
+
+    protected function loadConstants () {
+
+        require __DIR__ . '/../../../config/constants.php';
 
     }
 
@@ -489,11 +498,68 @@ class ApplicationContext {
 
     }
 
+    public function getEnv () {
+
+        if (isset($_SERVER['SERVER_NAME'])) {
+            // php called by apache
+            if ($_SERVER['SERVER_NAME'] == 'localhost'
+                || $_SERVER['SERVER_NAME'] == '127.0.0.1'
+                || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
+                || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
+            ) {
+                return LOCAL_ENV;
+            }
+            elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
+                return DEV_ENV;
+            }
+            elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
+                return STAGE_ENV;
+            }
+            else {
+                return PROD_ENV;
+            }
+        }
+        else {
+            $product = $this->getProduct();
+            $sep = DIRECTORY_SEPARATOR;
+            // php called from the command line
+            if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
+                return LOCAL_ENV;
+            }
+            elseif (strpos(__DIR__, 'dev-api') !== false) {
+                return DEV_ENV;
+            }
+            elseif (strpos(__DIR__, 'stage-api') !== false) {
+                return STAGE_ENV;
+            }
+            else {
+                return PROD_ENV;
+            }
+        }
+
+    }
+
     public function getConfigManager () {
 
         if (!isset($this->configManager)) {
             // load config
-            $configFiles = [ROOT_DIR . '/config/default.yml'];
+            $coreConfDir = ROOT_DIR . '/config/';
+            $configFiles = [$coreConfDir . 'default.yml'];
+            switch ($this->getEnv()) {
+                case LOCAL_ENV:
+                    $configFiles[] = $coreConfDir . 'env/local.yml';
+                    break;
+                case DEV_ENV:
+                    $configFiles[] = $coreConfDir . 'env/dev.yml';
+                    break;
+                case STAGE_ENV:
+                    $configFiles[] = $coreConfDir . 'env/stage.yml';
+                    break;
+                case PROD_ENV:
+                    $configFiles[] = $coreConfDir . 'env/prod.yml';
+                    break;
+            }
+
             $routesFile = ROOT_DIR . '/config/routes.yml';
 
             $this->configManager = new ConfigManager($configFiles, $routesFile);
