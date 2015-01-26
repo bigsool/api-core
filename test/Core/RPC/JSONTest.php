@@ -11,6 +11,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class JSONTest extends TestCase {
 
+    public static function setUpBeforeClass() {
+
+        self::getApplicationContext();
+
+    }
+
     public function testParse () {
 
         /**
