@@ -10,12 +10,14 @@ use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
+use Core\Logger\TraceLogger;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
 
 class Application {
@@ -130,17 +132,8 @@ class Application {
                 }, $rpcHandler->getReturnedFields()));
 
                 $traceLogger->trace('request parsed');
+                $controller = $this->getController($matcher, $rpcHandler, $traceLogger);
 
-                /**
-                 * @var Controller $controller
-                 */
-                try {
-                    $controller = $matcher->match($rpcHandler->getPath())['controller'];
-                    $traceLogger->trace('controller found');
-                }
-                catch (\Exception $e) {
-                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
-                }
                 $actCtx = new ActionContext($reqCtx);
 
                 $result = $controller->apply($actCtx);
@@ -247,6 +240,30 @@ class Application {
 
         return $moduleManagers;
 
+    }
+
+    /**
+     * @param UrlMatcherInterface $matcher
+     * @param Handler             $rpcHandler
+     * @param TraceLogger         $traceLogger
+     *
+     * @return Controller
+     * @throws FormattedError
+     */
+    protected function getController (UrlMatcherInterface $matcher, Handler $rpcHandler, TraceLogger $traceLogger) {
+
+        /**
+         * @var Controller $controller
+         */
+        try {
+            $controller = $matcher->match($rpcHandler->getPath())['controller'];
+            $traceLogger->trace('controller found');
+        }
+        catch (\Exception $e) {
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
+        }
+
+        return $controller;
     }
 
 } 
