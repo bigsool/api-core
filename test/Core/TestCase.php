@@ -74,6 +74,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $cmf = $em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
+        // TODO: instead of doing that i should backup and empty and copy it when i want to reset database
         $em->getConnection()->query('PRAGMA foreign_keys = OFF');
         $schemaTool->dropDatabase();
         $schemaTool->createSchema($classes);
