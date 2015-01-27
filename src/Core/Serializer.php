@@ -30,7 +30,7 @@ class Serializer {
     }
 
     /**
-     * @param mixed $result
+     * @param mixed $data
      *
      * @return Serializer
      */
