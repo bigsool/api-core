@@ -39,6 +39,16 @@ interface Handler {
     /**
      * @return string
      */
+    public function getService ();
+
+    /**
+     * @return string
+     */
+    public function getMethod ();
+
+    /**
+     * @return string
+     */
     public function getClientName ();
 
     /**

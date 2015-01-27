@@ -4,6 +4,7 @@ namespace Core\Config;
 
 use Core\Context\ApplicationContext;
 use Core\Controller;
+use Core\Util\ArrayExtra;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Yaml\Yaml;
 
@@ -41,11 +42,18 @@ class ConfigManager {
 
         $configs = [];
         foreach ($yamlFilePaths as $yamlFilePath) {
+            if (!file_exists($yamlFilePath)) {
+                throw new \RuntimeException('config file not found');
+            }
+            if (!filesize($yamlFilePath)) {
+                // don't try to load empty file
+                continue;
+            }
             $config = Yaml::parse($yamlFilePath);
             if (!is_array($config)) {
-                throw new \Exception('config yaml file can\'t be found');
+                throw new \RuntimeException('invalid config file');
             }
-            $configs = array_merge_recursive($configs, $config);
+            $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
         }
         $this->config = $configs;
 
@@ -64,8 +72,8 @@ class ConfigManager {
         }
         foreach ($parse['routes'] as $name => $value) {
             $this->appCtx->addRoute($name, new Route($value['path'], [
-                'controller' => new Controller(ApplicationContext::getInstance()->getProduct() . '\\'
-                                               . $value['controller'], $value['method'])
+                'controller' => new Controller($value['method'], ApplicationContext::getInstance()->getProduct() . '\\'
+                                                                 . $value['controller'])
             ]));
         }
 

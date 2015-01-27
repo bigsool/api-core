@@ -11,6 +11,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class JSONTest extends TestCase {
 
+    public static function setUpBeforeClass () {
+
+        self::getApplicationContext();
+
+    }
+
     public function testParse () {
 
         /**
@@ -30,6 +36,8 @@ class JSONTest extends TestCase {
         $this->assertSame('en', $JSON->getLocale());
         $this->assertNull($JSON->getReturnedRootEntity());
         $this->assertSame([], $JSON->getReturnedFields());
+        $this->assertSame('service', $JSON->getService());
+        $this->assertSame('method', $JSON->getMethod());
 
 
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
@@ -49,6 +57,8 @@ class JSONTest extends TestCase {
         $this->assertSame('fr', $JSON->getLocale());
         $this->assertSame($entity, $JSON->getReturnedRootEntity());
         $this->assertSame($fields, $JSON->getReturnedFields());
+        $this->assertSame('service', $JSON->getService());
+        $this->assertSame('method', $JSON->getMethod());
 
         $response = $JSON->getSuccessResponse(new Serializer(new RequestContext()), 'qwe');
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);

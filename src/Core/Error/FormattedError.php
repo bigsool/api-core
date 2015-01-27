@@ -84,14 +84,11 @@ class FormattedError extends \Exception {
 
         $this->field = isset($error['field']) ? $error['field'] : $field;
 
-    }
-
-    /**
-     * @param string $lang
-     */
-    static public function setLang ($lang) {
-
-        self::$lang = $lang;
+        if (isset($error['errors']) && is_array($error['errors'])) {
+            foreach ($error['errors'] as $errorArray) {
+                $this->addChildError(new FormattedError($errorArray));
+            }
+        }
 
     }
 
@@ -101,6 +98,15 @@ class FormattedError extends \Exception {
     public function addChildError (FormattedError $childError) {
 
         $this->childErrors[] = $childError;
+
+    }
+
+    /**
+     * @param string $lang
+     */
+    static public function setLang ($lang) {
+
+        self::$lang = $lang;
 
     }
 

@@ -4,7 +4,6 @@
 namespace Core\Expression;
 
 
-use Core\Field\KeyPath;
 use Core\Model\HostedProject;
 use Core\TestCase;
 
@@ -60,10 +59,15 @@ class KeyPathTest extends TestCase {
 
         $this->assertEquals('hostedProjectCreatorCompanyStorage.url', $resolve1);
 
-        $param1 = new KeyPath('name');
-        $resolve1 = $param1->resolve($registry, $context);
+        $param2 = new KeyPath('name');
+        $resolve2 = $param2->resolve($registry, $context);
 
-        $this->assertEquals('hostedProject.name', $resolve1);
+        $this->assertEquals('hostedProject.name', $resolve2);
+
+        $param3 = new KeyPath('creator.company.storage');
+        $resolve3 = $param3->resolve($registry, $context);
+
+        $this->assertEquals('hostedProjectCreatorCompany.storage', $resolve3);
     }
 
     /**
@@ -108,22 +112,6 @@ class KeyPathTest extends TestCase {
         $context = $this->getFindQueryContext('HostedProject');
 
         (new KeyPath('creator.*.name'))->resolve($registry, $context);
-    }
-
-    /**
-     *
-     */
-    public function testResolveEntity () {
-
-        $registry = $this->getRegistry('HostedProject');
-        $context = $this->getFindQueryContext('HostedProject');
-
-        $param = 'creator.company.storage';
-
-        $param1 = new KeyPath($param);
-        $resolve1 = $param1->resolve($registry, $context);
-
-        $this->assertEquals('hostedProjectCreatorCompanyStorage', $resolve1);
     }
 
     /**

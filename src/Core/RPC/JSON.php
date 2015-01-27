@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class JSON implements Handler {
 
+    protected $service;
+
+    protected $method;
+
     /**
      * @var string
      */
@@ -186,14 +190,14 @@ class JSON implements Handler {
         if (!isset($explodedPathInfo[2])) {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_SERVICE_NOT_FOUND);
         }
-        $service = $explodedPathInfo[2];
+        $this->service = $explodedPathInfo[2];
 
-        $method = $request->query->get('method');
-        if (!isset($method) || !is_string($method)) {
+        $this->method = $request->query->get('method');
+        if (!isset($this->method) || !is_string($this->method)) {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
         }
 
-        $this->path = '/' . $service . '/' . $method;
+        $this->path = '/' . $this->service . '/' . $this->method;
 
         $this->params = $request->query->get('params') ?: [];
 
@@ -210,6 +214,24 @@ class JSON implements Handler {
     public function getId () {
 
         return $this->id;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getService () {
+
+        return $this->service;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod () {
+
+        return $this->method;
 
     }
 }

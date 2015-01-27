@@ -25,9 +25,43 @@ class ControllerTest extends TestCase {
 
         }));
 
-        (new Controller('module', 'name'))->apply($context);
+        (new Controller('name', 'module'))->apply($context);
 
         $this->assertTrue($called);
+
+    }
+
+    public function testConstructorWithAction () {
+
+        $context = $this->getMockActionContext();
+        $called = false;
+
+        $action = $this->getMockAction();
+        $action->method('process')->will($this->returnCallback(function (ActionContext $ctx) use (&$context, &$called) {
+
+            $this->assertSame($context, $ctx);
+            $called = true;
+
+        }));
+        (new Controller($action))->apply($context);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testConstructorWithInvalidType () {
+
+        new Controller(123);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testConstructorWithInvalidModule () {
+
+        new Controller('qwe', 123);
 
     }
 

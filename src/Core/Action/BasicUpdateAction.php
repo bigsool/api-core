@@ -55,7 +55,9 @@ class BasicUpdateAction extends SimpleAction {
 
                 $helper->$method($context, $entities[0], $params);
 
-                return $context[$model];
+                $postUpdateCallable($context);
+
+                return $context[lcfirst($model)];
 
             });
 

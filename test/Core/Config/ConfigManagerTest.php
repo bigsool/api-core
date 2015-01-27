@@ -50,6 +50,32 @@ class ConfigManagerTest extends TestCase {
     /**
      * @expectedException \Exception
      */
+    public function testLoadConfigMalFormattedYamlFile () {
+
+        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+
+        $meth = new \ReflectionMethod($configManager, 'loadConfig');
+        $meth->setAccessible(true);
+        $meth->invokeArgs($configManager, array(array(__DIR__ . '/malformatted.yml')));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testLoadConfigMalFormatted2YamlFile () {
+
+        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+
+        $meth = new \ReflectionMethod($configManager, 'loadConfig');
+        $meth->setAccessible(true);
+        $meth->invokeArgs($configManager, array(array(__DIR__ . '/malformatted2.yml')));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
     public function testLoadRouteWithBadYamlFile () {
 
         $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);

@@ -4,6 +4,7 @@
 namespace Core;
 
 use Core\Context\ApplicationContext;
+use Core\Error\FormattedError;
 
 class V1Proxy {
 
@@ -16,7 +17,7 @@ class V1Proxy {
 
         $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
 
-        require_once ROOT_DIR . '/' . $this->config['path'] . '/archiweb/include/lib/dispatcher/localDispatcher.php';
+        require_once ROOT_DIR . '/' . $this->config['path'] . '/include/lib/dispatcher/localDispatcher.php';
 
     }
 
@@ -26,10 +27,16 @@ class V1Proxy {
      * @param $params
      *
      * @return mixed
+     * @throws FormattedError
      */
     public function call ($service, $method, $params) {
 
-        return callLocalAPI($service, $method, $params)->getResult();
+        try {
+            return callLocalAPI($service, $method, $params)->getResult();
+        }
+        catch (\ArchiwebException $e) {
+            throw new FormattedError($e->getErrorArray());
+        }
 
     }
 

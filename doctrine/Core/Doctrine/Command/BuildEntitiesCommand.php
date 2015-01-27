@@ -230,7 +230,7 @@ class BuildEntitiesCommand extends Command {
 
     /**
      * @param MagicalModuleManager[] $magicalModuleManagers
-     * @param string $rootDir
+     * @param string                 $rootDir
      */
     protected function generateMagicalEntities ($magicalModuleManagers, $rootDir) {
 
@@ -257,7 +257,7 @@ class BuildEntitiesCommand extends Command {
             $class .= $this->createMagicalClassFooter();
 
             $product = ApplicationContext::getInstance()->getProduct();
-            file_put_contents($rootDir.'/src/'.$product.'/Model/'.$magicalEntityName.'.php', $class);
+            file_put_contents($rootDir . '/src/' . $product . '/Model/' . $magicalEntityName . '.php', $class);
 
         }
     }
