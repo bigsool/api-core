@@ -93,20 +93,20 @@ class FormattedError extends \Exception {
     }
 
     /**
-     * @param string $lang
-     */
-    static public function setLang ($lang) {
-
-        self::$lang = $lang;
-
-    }
-
-    /**
      * @param FormattedError $childError
      */
     public function addChildError (FormattedError $childError) {
 
         $this->childErrors[] = $childError;
+
+    }
+
+    /**
+     * @param string $lang
+     */
+    static public function setLang ($lang) {
+
+        self::$lang = $lang;
 
     }
 

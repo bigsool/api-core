@@ -61,7 +61,7 @@ class ControllerTest extends TestCase {
      */
     public function testConstructorWithInvalidModule () {
 
-        new Controller('qwe',123);
+        new Controller('qwe', 123);
 
     }
 

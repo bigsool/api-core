@@ -152,7 +152,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
     /**
      * @param string      $action
      * @param ModelAspect $modelAspect
@@ -470,7 +469,8 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param String[] $values
      * @param String[] $alias
      * @param Filter[] $filters
-     * @param Boolean $hydrateArray
+     * @param Boolean  $hydrateArray
+     *
      * @return mixed
      */
     protected function magicalFind ($values, $alias, $filters, $hydrateArray = false) {
@@ -514,6 +514,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param Filter[] $filters
+     *
      * @return mixed
      */
     public function magicalDelete ($filters) {
@@ -526,10 +527,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->addKeyPath(new KeyPath('*'));
         foreach ($this->modelAspects as $modelAspect) {
-            if ($modelAspect->getKeyPath()) $qryCtx->addKeyPath($modelAspect->getKeyPath());
+            if ($modelAspect->getKeyPath()) {
+                $qryCtx->addKeyPath($modelAspect->getKeyPath());
+            }
         }
 
-        foreach ($filters as $filter) $qryCtx->addFilter($filter);
+        foreach ($filters as $filter) {
+            $qryCtx->addFilter($filter);
+        }
 
         $result = $registry->find($qryCtx, false);
 
@@ -578,10 +583,12 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param Array   $result
+     * @param Array $result
+     *
      * @return Array
      */
     protected function formatFindResult ($result) {
+
         $entities = [];
         foreach ($result as $elem) {
             if (is_array($elem)) {
@@ -591,9 +598,8 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $entities[] = $this->getMagicalEntityObject($elem);
             }
         }
+
         return $entities;
     }
-
-
 
 }

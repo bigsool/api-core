@@ -8,7 +8,6 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Model\Account;
 use Core\Model\Company;
-use Core\Model\User;
 use Core\Module\MagicalModuleManager;
 use Core\Validation\Constraints\Dictionary;
 use Symfony\Component\Validator\Constraints\Blank;

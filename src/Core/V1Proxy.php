@@ -33,7 +33,8 @@ class V1Proxy {
 
         try {
             return callLocalAPI($service, $method, $params)->getResult();
-        } catch (\ArchiwebException $e) {
+        }
+        catch (\ArchiwebException $e) {
             throw new FormattedError($e->getErrorArray());
         }
 

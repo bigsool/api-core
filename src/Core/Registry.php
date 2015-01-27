@@ -154,7 +154,7 @@ class Registry implements EventSubscriber {
 
         $product = ApplicationContext::getInstance()->getProduct();
 
-        $class = '\\'.$product.'\Model\\' . $entity;
+        $class = '\\' . $product . '\Model\\' . $entity;
         if (!class_exists($class)) {
             $class = '\Core\Model\\' . $entity;
             if (!class_exists($class)) {

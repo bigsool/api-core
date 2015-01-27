@@ -4,9 +4,9 @@
 namespace Core\Action;
 
 use Core\Model\User;
+use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
 use Core\Module\UserFeature\Helper as UserHelper;
 use Core\Module\UserFeature\ModuleManager as UserModuleManager;
-use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
@@ -53,7 +53,7 @@ class BasicUpdateActionTest extends TestCase {
         });
 
         $actCtx = $this->getActionContext();
-        $actCtx->setParams(['id' => $createdUser->getId(),'email' => 'qwe2@qwe.com']);
+        $actCtx->setParams(['id' => $createdUser->getId(), 'email' => 'qwe2@qwe.com']);
         /**
          * @var User $user
          */

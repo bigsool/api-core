@@ -972,7 +972,6 @@ class MagicalModuleManagerTest extends TestCase {
         $mgrUser->method('getModuleName')->willReturn('Account');
 
 
-
         $this->setMainEntity($mgrUser, [
             'model' => 'User',
         ]);
@@ -1000,23 +999,21 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
 
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
-        $values = ['user.*','company.*','storage.*'];
+        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
+        $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
         $result = $this->magicalAction('Find', $mgrUser, [$values, $alias, $filters]);
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
         $account = $result[0];
-        $this->assertInstanceOf('\Core\Model\Account',$account);
-        $this->assertInstanceOf('\Core\Model\Company',$account->getCompany());
-        $this->assertEquals('wozniak',$account->getUser()->getName());
-        $this->assertEquals('bigsoolee',$account->getCompany()->getName());
-        $this->assertEquals('http://www.bigsoolee.com',$account->getStorage()->getUrl());
-
+        $this->assertInstanceOf('\Core\Model\Account', $account);
+        $this->assertInstanceOf('\Core\Model\Company', $account->getCompany());
+        $this->assertEquals('wozniak', $account->getUser()->getName());
+        $this->assertEquals('bigsoolee', $account->getCompany()->getName());
+        $this->assertEquals('http://www.bigsoolee.com', $account->getStorage()->getUrl());
 
     }
-
 
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
@@ -1057,18 +1054,18 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
 
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
-        $values = ['user.*','company.*','storage.*'];
+        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
+        $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
-        $result = $this->magicalAction('Find', $mgrUser, [$values, $alias, $filters,true]);
+        $result = $this->magicalAction('Find', $mgrUser, [$values, $alias, $filters, true]);
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
         $this->assertTrue(is_array($result));
-        $this->assertEquals('wozniak',$result['name']);
-        $this->assertEquals('bigsoolee',$result['company']['name']);
-        $this->assertEquals('http://www.bigsoolee.com',$result['company']['storage']['url']);
+        $this->assertEquals('wozniak', $result['name']);
+        $this->assertEquals('bigsoolee', $result['company']['name']);
+        $this->assertEquals('http://www.bigsoolee.com', $result['company']['storage']['url']);
 
     }
 
@@ -1077,7 +1074,7 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testMagicalDelete () {
 
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('Account');
