@@ -131,6 +131,10 @@ class SerializerTest extends TestCase {
         $user->setEmail('qw1@qwe.com');
         $user->setPassword('qWe');
         $user->setRegisterDate(new \DateTime());
+        $user2 = new User();
+        $user2->setEmail('qw2@qwe.com');
+        $user2->setPassword('qw3');
+        $user2->setRegisterDate(new \DateTime());
         $storage = new Storage();
         $storage->setUrl('qweeeeee.qwe.q.w.e');
         $storage->setLogin('login');
@@ -142,7 +146,9 @@ class SerializerTest extends TestCase {
         $company->setStorage($storage);
         $storage->setCompany($company);
         $company->addUser($user);
+        $company->addUser($user2);
         $user->setCompany($company);
+        $user2->setCompany($company);
         $company->setOwner($user);
         $user->setOwnedCompany($company);
 
@@ -162,38 +168,59 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
 
         $qryCtx = new FindQueryContext('User', $reqCtx);
-        $qryCtx->addFilter(new StringFilter('User', 'userEqualUser', 'id = :userId'));
+        $qryCtx->addFilter(new StringFilter('User', 'usersFromCompany', 'company = :company'));
         $qryCtx->addKeyPath(new KeyPath('*'));
         $qryCtx->addKeyPath(new KeyPath('company'));
         $qryCtx->addKeyPath(new KeyPath('company.storage'));
-        $qryCtx->setParams(['userId' => $user->getId()]);
-        $userArray = $registry->find($qryCtx)[0];
+        $qryCtx->setParams(['company' => $company]);
+        $usersArray = $registry->find($qryCtx);
 
         $expected = [
-            'name'    => $user->getName(),
-            'email'   => $user->getEmail(),
-            'company' => [
-                'name'    => $company->getName(),
-                'storage' => [
-                    'url'                 => $storage->getUrl(),
-                    'lastUsedSpaceUpdate' => $storage->getLastUsedSpaceUpdate(),
+            [
+                'name'    => $user->getName(),
+                'email'   => $user->getEmail(),
+                'company' => [
+                    'name'    => $company->getName(),
+                    'storage' => [
+                        'url'                 => $storage->getUrl(),
+                        'lastUsedSpaceUpdate' => $storage->getLastUsedSpaceUpdate(),
+                    ]
+                ]
+            ],
+            [
+                'name'    => $user2->getName(),
+                'email'   => $user2->getEmail(),
+                'company' => [
+                    'name'    => $company->getName(),
+                    'storage' => [
+                        'url'                 => $storage->getUrl(),
+                        'lastUsedSpaceUpdate' => $storage->getLastUsedSpaceUpdate(),
+                    ]
                 ]
             ]
 
         ];
 
-        // try with object
-        $serializer->serialize($user);
+        // several entities as object
+        $serializer->serialize([$user, $user2]);
         $this->assertSame($expected, $serializer->get());
 
-        // try with array
-        $serializer->serialize($userArray);
+        // several entities as array
+        $serializer->serialize($usersArray);
         $this->assertSame($expected, $serializer->get());
+
+        // 1 entity as object
+        $serializer->serialize($user);
+        $this->assertSame($expected[0], $serializer->get());
+
+        // 1 entity as array
+        $serializer->serialize($usersArray[0]);
+        $this->assertSame($expected[0], $serializer->get());
 
         // try without RootEntity
         $reqCtx->setReturnedRootEntity(NULL);
-        $serializer->serialize($userArray);
-        $this->assertSame($userArray, $serializer->get());
+        $serializer->serialize($usersArray);
+        $this->assertSame($usersArray, $serializer->get());
 
     }
 
