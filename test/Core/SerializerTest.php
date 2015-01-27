@@ -2,15 +2,67 @@
 
 namespace Core;
 
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
+use Core\Model\Account;
 use Core\Model\Company;
 use Core\Model\Storage;
 use Core\Model\User;
 
 class SerializerTest extends TestCase {
+
+    /**
+     * @var array
+     */
+    protected static $usersArray;
+
+    /**
+     * @var array
+     */
+    protected static $expectedAccount;
+
+    /**
+     * @var array
+     */
+    protected static $expected;
+
+    /**
+     * @var Company
+     */
+    protected static $company1;
+
+    /**
+     * @var User
+     */
+    protected static $user1;
+
+    /**
+     * @var User
+     */
+    protected static $user2;
+
+    /**
+     * @var User
+     */
+    protected static $user3;
+
+    /**
+     * @var Account
+     */
+    protected static $account1;
+
+    /**
+     * @var Account
+     */
+    protected static $account2;
+
+    /**
+     * @var Storage
+     */
+    protected static $storage;
 
     public static function setUpBeforeClass () {
 
@@ -18,49 +70,106 @@ class SerializerTest extends TestCase {
 
         self::resetDatabase(self::getApplicationContext());
 
+        self::$company1 = new Company();
+        self::$company1->setName('Bigsool');
+        self::$user1 = new User();
+        self::$user1->setEmail('thierry@bigsool.com');
+        self::$user1->setPassword('qwe');
+        self::$user1->setCompany(self::$company1);
+        self::$user1->setRegisterDate(new \DateTime());
+        self::$user2 = new User();
+        self::$user2->setEmail('julien@bigsool.com');
+        self::$user2->setCompany(self::$company1);
+        self::$user2->setPassword('qwe');
+        self::$user2->setRegisterDate(new \DateTime());
+        self::$user3 = new User();
+        self::$user3->setEmail('thomas@bigsool.com');
+        self::$user3->setCompany(self::$company1);
+        self::$user3->setPassword('qwe');
+        self::$user3->setRegisterDate(new \DateTime());
+        self::$company1->setOwner(self::$user3);
+
+        self::$storage = new Storage();
+        self::$storage->setUrl('http://www.amazon.com/');
+        self::$storage->setCompany(self::$company1);
+        self::$storage->setLogin('login');
+        self::$storage->setPassword('qwe');
+        self::$storage->setUsedspace(0);
+        self::$storage->setLastusedspaceupdate(new \DateTime());
+        self::$storage->setIsoutofquota(false);
+        self::$company1->setStorage(self::$storage);
+        self::$company1->addUser(self::$user1);
+        self::$company1->addUser(self::$user2);
+        self::$company1->addUser(self::$user3);
+
+        self::$account1 = new Account(self::$user1);
+        self::$account2 = new Account(self::$user2);
+
+        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry->save(self::$user1);
+        $registry->save(self::$user2);
+        $registry->save(self::$user3);
+        $registry->save(self::$company1);
+        $registry->save(self::$storage);
+
+        self::$expected = [
+            [
+                'name'    => self::$user1->getName(),
+                'email'   => self::$user1->getEmail(),
+                'company' => [
+                    'name'    => self::$company1->getName(),
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                        'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                    ]
+                ]
+            ],
+            [
+                'name'    => self::$user2->getName(),
+                'email'   => self::$user2->getEmail(),
+                'company' => [
+                    'name'    => self::$company1->getName(),
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                        'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                    ]
+                ]
+            ]
+        ];
+
+        self::$expectedAccount = [
+            [
+                'name'    => self::$account1->getUser()->getName(),
+                'email'   => self::$account1->getUser()->getEmail(),
+                'company' => [
+                    'name' => self::$account1->getCompany()->getName(),
+                ],
+                'storage' => [
+                    'url'                 => self::$account1->getStorage()->getUrl(),
+                    'lastUsedSpaceUpdate' => self::$account1->getStorage()->getLastUsedSpaceUpdate(),
+                ]
+
+            ],
+            [
+                'name'    => self::$account2->getUser()->getName(),
+                'email'   => self::$account2->getUser()->getEmail(),
+                'company' => [
+                    'name' => self::$account2->getCompany()->getName(),
+                ],
+                'storage' => [
+                    'url'                 => self::$account2->getStorage()->getUrl(),
+                    'lastUsedSpaceUpdate' => self::$account2->getStorage()->getLastUsedSpaceUpdate(),
+                ]
+
+            ]
+
+        ];
+
     }
 
     public function testSerialize () {
 
-        $company1 = new Company();
-        $company1->setName('Bigsool');
-        $user1 = new User();
-        $user1->setEmail('thierry@bigsool.com');
-        $user1->setPassword('qwe');
-        $user1->setCompany($company1);
-        $user1->setRegisterDate(new \DateTime());
-        $user2 = new User();
-        $user2->setEmail('julien@bigsool.com');
-        $user2->setCompany($company1);
-        $user2->setPassword('qwe');
-        $user2->setRegisterDate(new \DateTime());
-        $user3 = new User();
-        $user3->setEmail('thomas@bigsool.com');
-        $user3->setCompany($company1);
-        $user3->setPassword('qwe');
-        $user3->setRegisterDate(new \DateTime());
-        $company1->setOwner($user3);
-
-        $storage = new Storage();
-        $storage->setUrl('http://www.amazon.com/');
-        $storage->setCompany($company1);
-        $storage->setLogin('login');
-        $storage->setPassword('qwe');
-        $storage->setUsedspace(0);
-        $storage->setLastusedspaceupdate(new \DateTime());
-        $storage->setIsoutofquota(false);
-        $company1->setStorage($storage);
-        $company1->addUser($user1);
-        $company1->addUser($user2);
-        $company1->addUser($user3);
-        $result = [$user1, $user2, $user3];
-
-        $registry = self::getApplicationContext()->getNewRegistry();
-        $registry->save($user1);
-        $registry->save($user2);
-        $registry->save($user3);
-        $registry->save($company1);
-        $registry->save($storage);
+        $result = [self::$user1, self::$user2, self::$user3];
 
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('User');
@@ -76,7 +185,6 @@ class SerializerTest extends TestCase {
         $this->assertEquals(json_encode($resultExpected), $result);
 
 
-        $result = [$user1, $user2, $user3];
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.users.password')]);
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
@@ -101,6 +209,7 @@ class SerializerTest extends TestCase {
         $result = $serializer->serialize(true)->get();
 
         $this->assertEquals($result, "1");
+
     }
 
     public function testSerializeArray () {
@@ -123,37 +232,7 @@ class SerializerTest extends TestCase {
 
     }
 
-    public function testSerializeReturnOnlyRequestedFields () {
-
-        $company = new Company();
-        $company->setName('Qwe SA');
-        $user = new User();
-        $user->setEmail('qw1@qwe.com');
-        $user->setPassword('qWe');
-        $user->setRegisterDate(new \DateTime());
-        $user2 = new User();
-        $user2->setEmail('qw2@qwe.com');
-        $user2->setPassword('qw3');
-        $user2->setRegisterDate(new \DateTime());
-        $storage = new Storage();
-        $storage->setUrl('qweeeeee.qwe.q.w.e');
-        $storage->setLogin('login');
-        $storage->setPassword('QwE');
-        $storage->setUsedspace(0);
-        $storage->setLastusedspaceupdate(new \DateTime());
-        $storage->setIsoutofquota(false);
-
-        $company->setStorage($storage);
-        $storage->setCompany($company);
-        $company->addUser($user);
-        $company->addUser($user2);
-        $user->setCompany($company);
-        $user2->setCompany($company);
-        $company->setOwner($user);
-        $user->setOwnedCompany($company);
-
-        $registry = self::getApplicationContext()->getNewRegistry();
-        $registry->save($user);
+    public function testSeveralEntitiesAsObject () {
 
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('User');
@@ -167,60 +246,126 @@ class SerializerTest extends TestCase {
 
         $serializer = new Serializer($reqCtx);
 
+        $serializer->serialize([self::$user1, self::$user2]);
+        $this->assertSame(self::$expected, $serializer->get());
+
+    }
+
+    public function testSeveralEntitiesAsArray () {
+
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedKeyPaths([
+                                         new KeyPath('name'),
+                                         new KeyPath('email'),
+                                         new KeyPath('company.name'),
+                                         new KeyPath('company.storage.url'),
+                                         new KeyPath('company.storage.lastUsedSpaceUpdate'),
+                                     ]);
+
+        $serializer = new Serializer($reqCtx);
+
+        $serializer->serialize($this->getUserArray($reqCtx));
+        $this->assertSame(self::$expected, $serializer->get());
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     *
+     * @return array
+     * @throws Error\FormattedError
+     */
+    public function getUserArray (RequestContext $reqCtx) {
+
         $qryCtx = new FindQueryContext('User', $reqCtx);
         $qryCtx->addFilter(new StringFilter('User', 'usersFromCompany', 'company = :company'));
         $qryCtx->addKeyPath(new KeyPath('*'));
         $qryCtx->addKeyPath(new KeyPath('company'));
         $qryCtx->addKeyPath(new KeyPath('company.storage'));
-        $qryCtx->setParams(['company' => $company]);
-        $usersArray = $registry->find($qryCtx);
+        $qryCtx->setParams(['company' => self::$company1]);
 
-        $expected = [
-            [
-                'name'    => $user->getName(),
-                'email'   => $user->getEmail(),
-                'company' => [
-                    'name'    => $company->getName(),
-                    'storage' => [
-                        'url'                 => $storage->getUrl(),
-                        'lastUsedSpaceUpdate' => $storage->getLastUsedSpaceUpdate(),
-                    ]
-                ]
-            ],
-            [
-                'name'    => $user2->getName(),
-                'email'   => $user2->getEmail(),
-                'company' => [
-                    'name'    => $company->getName(),
-                    'storage' => [
-                        'url'                 => $storage->getUrl(),
-                        'lastUsedSpaceUpdate' => $storage->getLastUsedSpaceUpdate(),
-                    ]
-                ]
-            ]
+        return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
 
-        ];
+    }
 
-        // several entities as object
-        $serializer->serialize([$user, $user2]);
-        $this->assertSame($expected, $serializer->get());
+    public function testOneEntityAsObject () {
 
-        // several entities as array
-        $serializer->serialize($usersArray);
-        $this->assertSame($expected, $serializer->get());
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedKeyPaths([
+                                         new KeyPath('name'),
+                                         new KeyPath('email'),
+                                         new KeyPath('company.name'),
+                                         new KeyPath('company.storage.url'),
+                                         new KeyPath('company.storage.lastUsedSpaceUpdate'),
+                                     ]);
 
-        // 1 entity as object
-        $serializer->serialize($user);
-        $this->assertSame($expected[0], $serializer->get());
+        $serializer = new Serializer($reqCtx);
 
-        // 1 entity as array
-        $serializer->serialize($usersArray[0]);
-        $this->assertSame($expected[0], $serializer->get());
+        $serializer->serialize(self::$user1);
+        $this->assertSame(self::$expected[0], $serializer->get());
 
-        // try without RootEntity
+    }
+
+    public function testOneEntityAsArray () {
+
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedKeyPaths([
+                                         new KeyPath('name'),
+                                         new KeyPath('email'),
+                                         new KeyPath('company.name'),
+                                         new KeyPath('company.storage.url'),
+                                         new KeyPath('company.storage.lastUsedSpaceUpdate'),
+                                     ]);
+
+        $serializer = new Serializer($reqCtx);
+
+        $serializer->serialize($this->getUserArray($reqCtx)[0]);
+        $this->assertSame(self::$expected[0], $serializer->get());
+
+    }
+
+    public function testArrayWithoutRootEntity () {
+
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedKeyPaths([
+                                         new KeyPath('name'),
+                                         new KeyPath('email'),
+                                         new KeyPath('company.name'),
+                                         new KeyPath('company.storage.url'),
+                                         new KeyPath('company.storage.lastUsedSpaceUpdate'),
+                                     ]);
+
+        $serializer = new Serializer($reqCtx);
+
         $reqCtx->setReturnedRootEntity(NULL);
-        $serializer->serialize($usersArray);
-        $this->assertSame($usersArray, $serializer->get());
+        $serializer->serialize($this->getUserArray($reqCtx));
+        $this->assertSame($this->getUserArray($reqCtx), $serializer->get());
+
+    }
+
+    public function testMagicalEntity () {
+
+        $reqCtx = new RequestContext();
+        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedKeyPaths([
+                                         new KeyPath('name'),
+                                         new KeyPath('email'),
+                                         new KeyPath('company.name'),
+                                         new KeyPath('storage.url'),
+                                         new KeyPath('storage.lastUsedSpaceUpdate'),
+                                     ]);
+
+        $serializer = new Serializer($reqCtx);
+
+        $serializer->serialize([self::$account1, self::$account2]);
+        $this->assertSame(self::$expectedAccount, $serializer->get());
+
+        $serializer->serialize(self::$account1);
+        $this->assertSame(self::$expectedAccount[0], $serializer->get());
 
     }
 
