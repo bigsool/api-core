@@ -707,6 +707,10 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
 
+        $user->setOwnedCompany($user->getCompany());
+        $user->getCompany()->setOwner($user);
+        ApplicationContext::getInstance()->getNewRegistry()->save($user);
+
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
         $this->assertSame('thomas@bigsool.com', $user->getEmail());
@@ -1086,20 +1090,48 @@ class MagicalModuleManagerTest extends TestCase {
             'model' => 'User',
         ]);
 
-        $this->addAspect($mgrUser, [
-            'model'   => 'Company',
-            'keyPath' => 'company',
-            'prefix'  => 'company',
+        $this->magicalAction('Delete', $mgrUser, [$filters]);
+
+        $userModuleManager = new UserModuleManager();
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('Account');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'User',
         ]);
 
-        $this->addAspect($mgrUser, [
-            'model'   => 'Storage',
-            'keyPath' => 'company.storage',
-            'prefix'  => 'storage',
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+
+        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+
+        $result = $this->magicalAction('Find', $mgrUser, [['user.*'], [], $filters,true]);
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) == 0);
+
+        $companyModuleManager = new CompanyModuleManager();
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany->method('getModuleName')->willReturn('Account');
+
+        $this->setMainEntity($mgrCompany, [
+            'model' => 'Company',
         ]);
 
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
 
-        $user = $this->magicalAction('Delete', $mgrUser, [$filters]);
+        $filters = [new StringFilter('Company','bla','id = 1')];
+
+        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [], $filters,true]);
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) == 0);
+
 
     }
 

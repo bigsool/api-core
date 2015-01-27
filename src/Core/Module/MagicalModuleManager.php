@@ -522,12 +522,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('User', new RequestContext());
+        $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
 
         $qryCtx->addKeyPath(new KeyPath('*'));
-        foreach ($this->modelAspects as $modelAspect) {
-            if ($modelAspect->getKeyPath()) $qryCtx->addKeyPath($modelAspect->getKeyPath());
-        }
 
         foreach ($filters as $filter) $qryCtx->addFilter($filter);
 
