@@ -5,7 +5,6 @@ namespace Core;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
-use Core\Field\StarField;
 use Core\Filter\StringFilter;
 use Core\Model\Company;
 use Core\Model\Storage;
@@ -190,6 +189,32 @@ class SerializerTest extends TestCase {
         // try with array
         $serializer->serialize($userArray);
         $this->assertSame($expected, $serializer->get());
+
+        // try without RootEntity
+        $reqCtx->setReturnedRootEntity(NULL);
+        $serializer->serialize($userArray);
+        $this->assertSame($userArray, $serializer->get());
+
+    }
+
+    public function testSerializeScalar () {
+
+        $reqCtx = new RequestContext();
+        $serializer = new Serializer($reqCtx);
+
+        $string = 'qwe';
+        $int = 123;
+        $float = 123.456;
+        $true = true;
+        $false = false;
+        $null = NULL;
+
+        $this->assertSame($string, $serializer->serialize($string)->get());
+        $this->assertSame($int, $serializer->serialize($int)->get());
+        $this->assertSame($float, $serializer->serialize($float)->get());
+        $this->assertSame($true, $serializer->serialize($true)->get());
+        $this->assertSame($false, $serializer->serialize($false)->get());
+        $this->assertSame($null, $serializer->serialize($null)->get());
 
     }
 
