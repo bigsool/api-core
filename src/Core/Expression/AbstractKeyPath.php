@@ -125,7 +125,7 @@ abstract class AbstractKeyPath extends Value {
 
         $exploded = explode('.', $this->getValue());
 
-        $entity = '\Core\Model\\' . $this->getEntity($ctx);
+        $entity = Registry::realModelClassName($this->getEntity($ctx));
 
         for ($i = 0; $i < count($exploded); ++$i) {
 
