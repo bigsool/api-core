@@ -24,11 +24,12 @@ use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
-use Core\Parameter\Parameter;
 use Core\Rule\Rule;
 use Core\Validation\AbstractConstraintsProvider;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
@@ -79,6 +80,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $schemaTool->dropDatabase();
         $schemaTool->createSchema($classes);
         $em->getConnection()->query('PRAGMA foreign_keys = ON');
+
     }
 
     /**
@@ -467,15 +469,10 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         if (!$instance) {
 
             $config =
-                Setup::createYAMLMetadataConfiguration(array(__DIR__ . "/../../model"), true,
-                                                       __DIR__ . '/../../proxy/');
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true,
+                                                       __DIR__ . '/../proxy');
             $config->setSQLLogger(new DebugStack());
-            $tmpDir = __DIR__ . '/../../doctrine/';
-            $originalDb = $tmpDir . 'archiweb-proto.db.sqlite';
-            $tmpDB = $tmpDir . 'tmp.archiweb-proto.db.sqlite';
-            /*if (file_exists($originalDb)) {
-                copy($originalDb, $tmpDB);
-            }*/
+            $tmpDB = __DIR__ . '/../test.archiweb-proto.db.sqlite';
 
             if ($conn == NULL) {
                 $conn = array(
@@ -484,6 +481,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
                 );
             }
             $em = EntityManager::create($conn, $config);
+            self::generateEntities($em);
             $em->getConnection()->query('PRAGMA foreign_keys = ON');
 
             $ctx = ApplicationContext::getInstance();
@@ -496,6 +494,25 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         }
 
         return ApplicationContext::getInstance();
+
+    }
+
+    public static function generateEntities (EntityManager $em) {
+
+        $cmf = new DisconnectedClassMetadataFactory();
+        $cmf->setEntityManager($em);
+        
+        foreach ($cmf->getAllMetadata() as $metadata) {
+
+            $generator = new EntityGenerator();
+            $generator->setBackupExisting(false);
+            $generator->setGenerateAnnotations(true);
+            $generator->setGenerateStubMethods(true);
+            $generator->setRegenerateEntityIfExists(true);
+            $generator->setUpdateEntityIfExists(true);
+            $generator->generate(array($metadata), __DIR__ . '/..');
+
+        }
 
     }
 

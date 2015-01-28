@@ -1,8 +1,9 @@
 <?php
 
 
-namespace Core\Validation;
+namespace Core\Module\Test\User;
 
+use Core\Validation\AbstractConstraintsProvider;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserValidation extends AbstractConstraintsProvider {

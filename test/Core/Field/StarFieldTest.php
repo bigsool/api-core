@@ -10,7 +10,7 @@ class StarFieldTest extends TestCase {
 
     public function testName () {
 
-        $field = new StarField('Company');
+        $field = new StarField('TestCompany');
         $this->assertSame('*', $field->getName());
 
     }

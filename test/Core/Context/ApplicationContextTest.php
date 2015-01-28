@@ -96,10 +96,10 @@ class ApplicationContextTest extends TestCase {
 
     public function testGetClassMetadata () {
 
-        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Core\Model\Company');
+        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Core\Model\TestCompany');
 
         $this->assertInstanceOf('\Doctrine\ORM\Mapping\ClassMetadata', $classMetadata);
-        $this->assertSame('Core\Model\Company', $classMetadata->getName());
+        $this->assertSame('Core\Model\TestCompany', $classMetadata->getName());
 
     }
 
@@ -107,17 +107,17 @@ class ApplicationContextTest extends TestCase {
 
         $ctx = $this->getApplicationContext();
 
-        $this->assertEmpty($ctx->getFieldsByEntity('Company'));
+        $this->assertEmpty($ctx->getFieldsByEntity('TestCompany'));
 
         $fields[] = $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('Company');
+        $field->method('getEntity')->willReturn('TestCompany');
         $ctx->addField($field);
-        $this->assertSame($fields, $ctx->getFieldsByEntity('Company'));
+        $this->assertSame($fields, $ctx->getFieldsByEntity('TestCompany'));
 
         $field = $this->getMockField();
         $field->method('getEntity')->willReturn('Product');
         $ctx->addField($field);
-        $this->assertSame($fields, $ctx->getFieldsByEntity('Company'));
+        $this->assertSame($fields, $ctx->getFieldsByEntity('TestCompany'));
         $this->assertSame([$field], $ctx->getFieldsByEntity('Product'));
 
     }
@@ -127,10 +127,10 @@ class ApplicationContextTest extends TestCase {
         $ctx = $this->getApplicationContext();
 
         $fields[] = $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('Company');
+        $field->method('getEntity')->willReturn('TestCompany');
         $field->method('getName')->willReturn('name');
         $ctx->addField($field);
-        $this->assertSame($field, $ctx->getFieldByEntityAndName('Company', 'name'));
+        $this->assertSame($field, $ctx->getFieldByEntityAndName('TestCompany', 'name'));
 
     }
 
@@ -139,10 +139,10 @@ class ApplicationContextTest extends TestCase {
         $ctx = $this->getApplicationContext();
 
         $filters[] = $filter = $this->getMockFilter();
-        $filter->method('getEntity')->willReturn('Company');
+        $filter->method('getEntity')->willReturn('TestCompany');
         $filter->method('getName')->willReturn('name');
         $ctx->addFilter($filter);
-        $this->assertSame($filter, $ctx->getFilterByEntityAndName('Company', 'name'));
+        $this->assertSame($filter, $ctx->getFilterByEntityAndName('TestCompany', 'name'));
 
     }
 
@@ -151,7 +151,7 @@ class ApplicationContextTest extends TestCase {
      */
     public function testGetFieldByEntityAndNameNotFound () {
 
-        $this->getApplicationContext()->getFieldByEntityAndName('Company', 'name');
+        $this->getApplicationContext()->getFieldByEntityAndName('TestCompany', 'name');
 
     }
 
@@ -160,7 +160,7 @@ class ApplicationContextTest extends TestCase {
      */
     public function testGetFilterByEntityAndNameNotFound () {
 
-        $this->getApplicationContext()->getFilterByEntityAndName('Company', 'name');
+        $this->getApplicationContext()->getFilterByEntityAndName('TestCompany', 'name');
 
     }
 

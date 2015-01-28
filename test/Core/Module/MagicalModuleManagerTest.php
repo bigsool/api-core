@@ -10,10 +10,10 @@ use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Filter\StringFilter;
 use Core\Model\User;
-use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
-use Core\Module\StorageFeature\ModuleManager as StorageModuleManager;
-use Core\Module\UserFeature\Helper as UserHelper;
-use Core\Module\UserFeature\ModuleManager as UserModuleManager;
+use Core\Module\Test\Company\ModuleManager as CompanyModuleManager;
+use Core\Module\Test\Storage\ModuleManager as StorageModuleManager;
+use Core\Module\Test\User\Helper as UserHelper;
+use Core\Module\Test\User\ModuleManager as UserModuleManager;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\TestCase;
@@ -44,7 +44,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $modelAspect = $modelAspects[0];
         $this->assertNull($modelAspect->getPrefix());
-        $this->assertSame('User', $modelAspect->getModel());
+        $this->assertSame('TestUser', $modelAspect->getModel());
         $this->assertSame([], $modelAspect->getConstraints());
         $this->assertNull($modelAspect->getKeyPath());
 
@@ -53,7 +53,7 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addUserAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
     }
@@ -104,7 +104,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'  => 'User',
+            'model'  => 'TestUser',
             'prefix' => new \stdClass(),
         ]);
 
@@ -117,7 +117,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'   => 'User',
+            'model'   => 'TestUser',
             'keyPath' => 'qwe qwe',
         ]);
 
@@ -130,7 +130,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'  => 'User',
+            'model'  => 'TestUser',
             'create' => [
                 'constraints' => [new \stdClass()],
             ]
@@ -145,7 +145,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model'  => 'User',
+            'model'  => 'TestUser',
             'create' => [
                 'action' => new \stdClass(),
             ]
@@ -160,10 +160,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         $mgr = $this->getMockMagicalModuleManager();
         $this->addAspect($mgr, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
         $this->addAspect($mgr, [
-            'model' => 'Company',
+            'model' => 'TestCompany',
         ]);
 
     }
@@ -182,13 +182,13 @@ class MagicalModuleManagerTest extends TestCase {
 
         $modelAspect = $modelAspects[0];
         $this->assertNull($modelAspect->getPrefix());
-        $this->assertSame('User', $modelAspect->getModel());
+        $this->assertSame('TestUser', $modelAspect->getModel());
         $this->assertSame([], $modelAspect->getConstraints());
         $this->assertNull($modelAspect->getKeyPath());
 
         $modelAspect = $modelAspects[1];
         $this->assertSame('company', $modelAspect->getPrefix());
-        $this->assertSame('Company', $modelAspect->getModel());
+        $this->assertSame('TestCompany', $modelAspect->getModel());
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
         $this->assertSame('company', $keyPath->getValue());
@@ -201,7 +201,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $modelAspect = $modelAspects[2];
         $this->assertSame('storage', $modelAspect->getPrefix());
-        $this->assertSame('Storage', $modelAspect->getModel());
+        $this->assertSame('TestStorage', $modelAspect->getModel());
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
         $this->assertSame('company.storage', $keyPath->getValue());
@@ -219,7 +219,7 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addCompanyAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'prefix'  => 'company',
             'keyPath' => 'company',
             'create'  => [
@@ -238,7 +238,7 @@ class MagicalModuleManagerTest extends TestCase {
     protected function addStorageAspect (MagicalModuleManager &$mgr) {
 
         $this->addAspect($mgr, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'prefix'  => 'storage',
             'keyPath' => 'company.storage',
             'create'  => [
@@ -257,10 +257,10 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
 
         $this->addAspect($mgr, [
-            'model' => 'Company',
+            'model' => 'TestCompany',
         ]);
         $this->addAspect($mgr, [
-            'model'   => 'User',
+            'model'   => 'TestUser',
             'keyPath' => 'users',
             'prefix'  => 'users',
         ]);
@@ -470,7 +470,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager = new UserModuleManager();
 
         $this->setMainEntity($mgr, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
 
@@ -489,7 +489,7 @@ class MagicalModuleManagerTest extends TestCase {
          * @var User $user
          */
         $user = $this->magicalAction('Create', $mgr, [$actionContext]);
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe1.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
 
@@ -550,12 +550,12 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
         $this->setMainEntity($mgr, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
         $this->addCompanyAspect($mgr);
 
         $this->addAspect($mgr, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'prefix'  => 'storage',
             'keyPath' => 'company.storage',
             'create'  => [
@@ -593,7 +593,7 @@ class MagicalModuleManagerTest extends TestCase {
         $user = $this->magicalAction('Create', $mgr, [$actionContext]);
 
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
@@ -615,12 +615,12 @@ class MagicalModuleManagerTest extends TestCase {
 
         }));
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'prefix'  => 'company',
             'keyPath' => 'company',
             'create'  => [
@@ -637,10 +637,10 @@ class MagicalModuleManagerTest extends TestCase {
 
         }));
         $this->setMainEntity($mgrCompany, [
-            'model' => 'Company',
+            'model' => 'TestCompany',
         ]);
         $this->addAspect($mgrCompany, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'keyPath' => 'storage',
             'prefix'  => 'storage',
         ]);
@@ -712,7 +712,7 @@ class MagicalModuleManagerTest extends TestCase {
         ApplicationContext::getInstance()->getNewRegistry()->save($user);
 
         $this->assertTrue($called);
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('thomas@bigsool.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
         $this->assertSame('bigsool', $user->getCompany()->getName());
@@ -735,7 +735,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager = new UserModuleManager();
 
         $this->setMainEntity($mgr, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $appCtx = $this->getApplicationContext();
@@ -757,7 +757,7 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $user = $this->magicalAction('Update', $mgr, [$actionContext]);
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('thierry@bigsool.com', $user->getEmail());
         $this->assertSame('sambussy', $user->getName());
         $this->assertSame('thierry', $user->getFirstname());
@@ -784,11 +784,11 @@ class MagicalModuleManagerTest extends TestCase {
         }));
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'prefix'  => 'company',
             'keyPath' => 'company',
             'update'  => [
@@ -797,7 +797,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'prefix'  => 'storage',
             'keyPath' => 'company.storage',
             'update'  => [
@@ -828,10 +828,10 @@ class MagicalModuleManagerTest extends TestCase {
             ]);
 
         /*
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Update', $mgrUser, [$actionContext]);
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('julien@bigsool.com', $user->getEmail());
         $this->assertSame('ferrier', $user->getName());
         $this->assertSame('julien', $user->getFirstname());
@@ -864,12 +864,12 @@ class MagicalModuleManagerTest extends TestCase {
         }));
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'prefix'  => 'company',
             'keyPath' => 'company',
             'update'  => [
@@ -886,11 +886,11 @@ class MagicalModuleManagerTest extends TestCase {
 
         }));
         $this->setMainEntity($mgrCompany, [
-            'model' => 'Company',
+            'model' => 'TestCompany',
         ]);
 
         $this->addAspect($mgrCompany, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'keyPath' => 'storage',
             'prefix'  => 'storage',
         ]);
@@ -947,10 +947,10 @@ class MagicalModuleManagerTest extends TestCase {
                                           }
         ]);
         /*
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Update', $mgrUser, [$actionContext]);
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('laurent@bigsool.com', $user->getEmail());
         $this->assertSame('wozniak', $user->getName());
         $this->assertSame('laurent', $user->getFirstname());
@@ -973,21 +973,21 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrUser->method('getModuleName')->willReturn('Account');
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
 
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'keyPath' => 'company',
             'prefix'  => 'company',
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
             'prefix'  => 'storage',
         ]);
@@ -1003,7 +1003,8 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
 
-        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
         $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
@@ -1011,8 +1012,8 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
         $account = $result[0];
-        $this->assertInstanceOf('\Core\Model\Account', $account);
-        $this->assertInstanceOf('\Core\Model\Company', $account->getCompany());
+        $this->assertInstanceOf('\Core\Model\TestAccount', $account);
+        $this->assertInstanceOf('\Core\Model\TestCompany', $account->getCompany());
         $this->assertEquals('wozniak', $account->getUser()->getName());
         $this->assertEquals('bigsoolee', $account->getCompany()->getName());
         $this->assertEquals('http://www.bigsoolee.com', $account->getStorage()->getUrl());
@@ -1029,20 +1030,20 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager = new StorageModuleManager();
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrUser->method('getModuleName')->willReturn('Account');
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Company',
+            'model'   => 'TestCompany',
             'keyPath' => 'company',
             'prefix'  => 'company',
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'Storage',
+            'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
             'prefix'  => 'storage',
         ]);
@@ -1058,7 +1059,8 @@ class MagicalModuleManagerTest extends TestCase {
         $storageModuleManager->loadHelpers($appCtx);
 
 
-        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
         $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
@@ -1078,13 +1080,14 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testMagicalDelete () {
 
-        $filters = [new StringFilter('User', 'bla', 'id = 1'), new StringFilter('User', 'bla', 'name = \'wozniak\'')];
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrUser->method('getModuleName')->willReturn('Account');
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $this->magicalAction('Delete', $mgrUser, [$filters]);
@@ -1092,10 +1095,10 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager = new UserModuleManager();
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrUser->method('getModuleName')->willReturn('Account');
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
 
         $this->setMainEntity($mgrUser, [
-            'model' => 'User',
+            'model' => 'TestUser',
         ]);
 
         $appCtx = $this->getApplicationContext();
@@ -1104,31 +1107,31 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
 
-        $filters = [new StringFilter('User','bla','id = 1'),new StringFilter('User','bla','name = \'wozniak\'')];
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
 
-        $result = $this->magicalAction('Find', $mgrUser, [['user.*'], [], $filters,true]);
+        $result = $this->magicalAction('Find', $mgrUser, [['user.*'], [], $filters, true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
 
         $companyModuleManager = new CompanyModuleManager();
         $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
-        $mgrCompany->method('getModuleName')->willReturn('Account');
+        $mgrCompany->method('getModuleName')->willReturn('TestAccount');
 
         $this->setMainEntity($mgrCompany, [
-            'model' => 'Company',
+            'model' => 'TestCompany',
         ]);
 
         $companyModuleManager->loadActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
 
-        $filters = [new StringFilter('Company','bla','id = 1')];
+        $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
-        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [], $filters,true]);
+        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [], $filters, true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
-
 
     }
 

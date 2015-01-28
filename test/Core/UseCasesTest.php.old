@@ -14,11 +14,11 @@ use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Filter\StringFilter;
-use Core\Model\Company;
+use Core\Model\TestCompany;
 use Core\Model\HostedProject;
 use Core\Model\SharedHostedProject;
-use Core\Model\Storage;
-use Core\Model\User;
+use Core\Model\TestStorage;
+use Core\Model\TestUser;
 use Core\Operator\EqualOperator;
 use Core\Operator\MemberOf;
 use Core\Operator\OrOperator;
@@ -40,11 +40,11 @@ class UseCasesTest extends TestCase {
         self::$appCtx = self::getApplicationContext();
         self::resetDatabase(self::$appCtx);
 
-        self::$appCtx->addField(new StarField('User'));
+        self::$appCtx->addField(new StarField('TestUser'));
         self::$appCtx->addField($hostedProjectStarField = new StarField('HostedProject'));
-        self::$appCtx->addField(new StarField('Storage'));
+        self::$appCtx->addField(new StarField('TestStorage'));
 
-        self::$appCtx->addFilter(new StringFilter('Storage', 'notOutOfQuota', 'isOutOfQuota = 0'));
+        self::$appCtx->addFilter(new StringFilter('TestStorage', 'notOutOfQuota', 'isOutOfQuota = 0'));
 
         self::$appCtx->addFilter(new StringFilter('HostedProject', 'withSharedProject',
                                                   'sharedHostedProjects.participant = :authUser'));
@@ -149,7 +149,7 @@ class UseCasesTest extends TestCase {
             $this->assertTrue($param->isSafe());
         }
 
-        $company = new Company();
+        $company = new TestCompany();
         $company->setName($params['name']->getValue());
         $company->setAddress($params['address']->getValue());
         $company->setZipCode($params['zipCode']->getValue());
@@ -170,7 +170,7 @@ class UseCasesTest extends TestCase {
 
         $registry = ApplicationContext::getInstance()->getNewRegistry();
 
-        $storage = new Storage();
+        $storage = new TestStorage();
         $storage->setUrl(uniqid($prefix));
         $storage->setLogin('IAM LOGIN');
         $storage->setPassword('IAM PASSWORD');
@@ -205,7 +205,7 @@ class UseCasesTest extends TestCase {
             $this->assertTrue($param->isSafe());
         }
 
-        $user = new User();
+        $user = new TestUser();
         $user->setEmail($params['email']->getValue());
         $user->setPassword($params['password']->getValue());
         $user->setName($params['name']->getValue());
@@ -233,15 +233,15 @@ class UseCasesTest extends TestCase {
         $reqCtx->setReturnedKeyPaths([new FieldKeyPath('*'), new FieldKeyPath('creator.company.storage')]);
 
         $actCtx = $reqCtx->getNewActionContext();
-        $result = $this->getUser('User 1');
+        $result = $this->getUser('TestUser 1');
         $this->assertCount(1, $result);
         $actCtx['authUser'] = $result[0];
-        $this->assertInstanceOf('\Core\Model\User', $actCtx['authUser']);
-        $this->assertSame('User 1', $actCtx['authUser']->getName());
+        $this->assertInstanceOf('\Core\Model\TestUser', $actCtx['authUser']);
+        $this->assertSame('TestUser 1', $actCtx['authUser']->getName());
 
         $qryCtx = new FindQueryContext('HostedProject', $reqCtx);
         $qryCtx->setParams(['authUser' => $actCtx['authUser']]);
-        $qryCtx->addFilter(self::$appCtx->getFilterByEntityAndName('Storage', 'notOutOfQuota'));
+        $qryCtx->addFilter(self::$appCtx->getFilterByEntityAndName('TestStorage', 'notOutOfQuota'));
 
         $registry = self::$appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -269,14 +269,14 @@ class UseCasesTest extends TestCase {
 
     protected function createSomeUsersAndProjects () {
 
-        $user1 = $this->createUser(['name' => 'User 1']);
-        $company1 = $this->createCompany(['name' => 'Company 1']);
-        $storage1 = $this->createStorage(['login' => 'Storage 1', 'url' => 'URL']);
+        $user1 = $this->createUser(['name' => 'TestUser 1']);
+        $company1 = $this->createCompany(['name' => 'TestCompany 1']);
+        $storage1 = $this->createStorage(['login' => 'TestStorage 1', 'url' => 'URL']);
         $this->setUserToCompany($user1, $company1, $storage1);
 
-        $user2 = $this->createUser(['name' => 'User 2']);
-        $company2 = $this->createCompany(['name' => 'Company 2']);
-        $storage2 = $this->createStorage(['login' => 'Storage 2', 'url' => 'URL']);
+        $user2 = $this->createUser(['name' => 'TestUser 2']);
+        $company2 = $this->createCompany(['name' => 'TestCompany 2']);
+        $storage2 = $this->createStorage(['login' => 'TestStorage 2', 'url' => 'URL']);
         $this->setUserToCompany($user2, $company2, $storage2);
 
         $this->createProject('Projet de 1', $user1);
@@ -289,11 +289,11 @@ class UseCasesTest extends TestCase {
     /**
      * @param array $params
      *
-     * @return User
+     * @return TestUser
      */
     protected function createUser (array $params = []) {
 
-        $user = new User();
+        $user = new TestUser();
         $user->setEmail($this->d($params, 'email', uniqid()));
         $user->setPassword($this->d($params, 'password'));
         $user->setName($this->d($params, 'name'));
@@ -327,11 +327,11 @@ class UseCasesTest extends TestCase {
     /**
      * @param array $params
      *
-     * @return Company
+     * @return TestCompany
      */
     protected function createCompany (array $params = []) {
 
-        $company = new Company();
+        $company = new TestCompany();
         $company->setName($this->d($params, 'name'));
         $company->setAddress($this->d($params, 'address'));
         $company->setZipCode($this->d($params, 'zipCode'));
@@ -351,11 +351,11 @@ class UseCasesTest extends TestCase {
     /**
      * @param array $params
      *
-     * @return Storage
+     * @return TestStorage
      */
     protected function createStorage (array $params = []) {
 
-        $storage = new Storage();
+        $storage = new TestStorage();
         $storage->setUrl($this->d($params, 'url'));
         $storage->setLogin($this->d($params, 'login'));
         $storage->setPassword($this->d($params, 'password'));
@@ -370,11 +370,11 @@ class UseCasesTest extends TestCase {
     }
 
     /**
-     * @param User    $user
-     * @param Company $company
-     * @param Storage $storage
+     * @param TestUser    $user
+     * @param TestCompany $company
+     * @param TestStorage $storage
      */
-    protected function setUserToCompany (User &$user, Company &$company, Storage &$storage) {
+    protected function setUserToCompany (TestUser &$user, TestCompany &$company, TestStorage &$storage) {
 
         $user->setCompany($company);
         $user->setOwnedCompany($company);
@@ -389,12 +389,12 @@ class UseCasesTest extends TestCase {
 
     /**
      * @param        $name
-     * @param User   $owner
-     * @param User[] $participants
+     * @param TestUser   $owner
+     * @param TestUser[] $participants
      *
      * @return HostedProject
      */
-    protected function createProject ($name, User $owner, array $participants = []) {
+    protected function createProject ($name, TestUser $owner, array $participants = []) {
 
         $project = new HostedProject();
         $project->setName($name);
@@ -433,8 +433,8 @@ class UseCasesTest extends TestCase {
      */
     protected function getUser ($name) {
 
-        $findCtx = new FindQueryContext('User');
-        $findCtx->addFilter(new StringFilter('User', '', 'name = "' . $name . '"'));
+        $findCtx = new FindQueryContext('TestUser');
+        $findCtx->addFilter(new StringFilter('TestUser', '', 'name = "' . $name . '"'));
         $findCtx->addKeyPath(new FieldKeyPath('*'));
         $user = self::$appCtx->getNewRegistry()->find($findCtx, false);
 

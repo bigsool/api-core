@@ -1,8 +1,8 @@
 <?php
 
+namespace Core\Module\Test\Company;
 
-namespace Core\Validation;
-
+use Core\Validation\AbstractConstraintsProvider;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CompanyValidation extends AbstractConstraintsProvider {

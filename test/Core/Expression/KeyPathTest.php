@@ -3,8 +3,7 @@
 
 namespace Core\Expression;
 
-
-use Core\Model\HostedProject;
+use Core\Model\TestCompany;
 use Core\TestCase;
 
 class KeyPathTest extends TestCase {
@@ -49,25 +48,26 @@ class KeyPathTest extends TestCase {
      */
     public function testResolveField () {
 
-        $registry = $this->getRegistry('HostedProject');
-        $context = $this->getFindQueryContext('HostedProject');
+        $registry = $this->getRegistry('TestCompany');
+        $context = $this->getFindQueryContext('TestCompany');
 
-        $param = 'creator.company.storage.url';
+        $param = 'owner.company.storage.url';
 
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $this->assertEquals('hostedProjectCreatorCompanyStorage.url', $resolve1);
+        $this->assertEquals('testCompanyOwnerCompanyStorage.url', $resolve1);
 
+        $registry = $this->getRegistry('TestCompany');
         $param2 = new KeyPath('name');
         $resolve2 = $param2->resolve($registry, $context);
 
-        $this->assertEquals('hostedProject.name', $resolve2);
+        $this->assertEquals('testCompany.name', $resolve2);
 
-        $param3 = new KeyPath('creator.company.storage');
+        $param3 = new KeyPath('owner.company.storage');
         $resolve3 = $param3->resolve($registry, $context);
 
-        $this->assertEquals('hostedProjectCreatorCompany.storage', $resolve3);
+        $this->assertEquals('testCompanyOwnerCompany.storage', $resolve3);
     }
 
     /**
@@ -76,9 +76,9 @@ class KeyPathTest extends TestCase {
     public function testInvalidContext () {
 
         $registry = $this->getRegistry();
-        $context = $this->getSaveQueryContext(new HostedProject());
+        $context = $this->getSaveQueryContext(new TestCompany());
 
-        (new KeyPath('creator.company.storage.url'))->resolve($registry, $context);
+        (new KeyPath('owner.company.storage.url'))->resolve($registry, $context);
     }
 
     /**
@@ -87,9 +87,9 @@ class KeyPathTest extends TestCase {
     public function testFieldIsFieldNotEntity () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('HostedProject');
+        $context = $this->getFindQueryContext('TestCompany');
 
-        (new KeyPath('creator.name.company.storage.url'))->resolve($registry, $context);
+        (new KeyPath('owner.name.company.storage.url'))->resolve($registry, $context);
     }
 
     /**
@@ -98,9 +98,9 @@ class KeyPathTest extends TestCase {
     public function testFieldNotFound () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('HostedProject');
+        $context = $this->getFindQueryContext('TestCompany');
 
-        (new KeyPath('creator.qweqwe'))->resolve($registry, $context);
+        (new KeyPath('owner.qweqwe'))->resolve($registry, $context);
     }
 
     /**
@@ -109,9 +109,9 @@ class KeyPathTest extends TestCase {
     public function testStarFieldNotAtTheEnd () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('HostedProject');
+        $context = $this->getFindQueryContext('TestCompany');
 
-        (new KeyPath('creator.*.name'))->resolve($registry, $context);
+        (new KeyPath('owner.*.name'))->resolve($registry, $context);
     }
 
     /**
@@ -119,8 +119,8 @@ class KeyPathTest extends TestCase {
      */
     public function testAliasNotFound () {
 
-        $registry = $this->getRegistry('HostedProject');
-        $context = $this->getFindQueryContext('Product');
+        $registry = $this->getRegistry('TestCompany');
+        $context = $this->getFindQueryContext('TestUser');
 
         $param = '*';
 
@@ -133,14 +133,14 @@ class KeyPathTest extends TestCase {
      */
     public function testMoreThanOneAliasFound () {
 
-        $registry = $this->getRegistry('HostedProject');
-        $context = $this->getFindQueryContext('HostedProject');
+        $registry = $this->getRegistry('TestCompany');
+        $context = $this->getFindQueryContext('TestCompany');
 
-        (new KeyPath('creator'))->resolve($registry, $context);
-        (new KeyPath('sharedHostedProjects.participant'))->resolve($registry, $context);
+        (new KeyPath('owner'))->resolve($registry, $context);
+        (new KeyPath('users'))->resolve($registry, $context);
 
         $keyPath = new KeyPath('name');
-        $keyPath->setRootEntity('User');
+        $keyPath->setRootEntity('TestUser');
         $keyPath->resolve($registry, $context);
 
     }

@@ -3,8 +3,7 @@
 
 namespace Core\Context;
 
-
-use Core\Model\Company;
+use Core\Model\TestCompany;
 use Core\TestCase;
 
 class SaveQueryContextTest extends TestCase {
@@ -38,9 +37,9 @@ class SaveQueryContextTest extends TestCase {
 
     public function testGetEntity () {
 
-        $ctx = new SaveQueryContext(new Company());
+        $ctx = new SaveQueryContext(new TestCompany());
 
-        $this->assertSame('Company', $ctx->getEntity());
+        $this->assertSame('TestCompany', $ctx->getEntity());
 
     }
 

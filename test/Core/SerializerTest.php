@@ -7,10 +7,10 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
-use Core\Model\Account;
-use Core\Model\Company;
-use Core\Model\Storage;
-use Core\Model\User;
+use Core\Model\TestAccount;
+use Core\Model\TestCompany;
+use Core\Model\TestStorage;
+use Core\Model\TestUser;
 
 class SerializerTest extends TestCase {
 
@@ -30,37 +30,37 @@ class SerializerTest extends TestCase {
     protected static $expected;
 
     /**
-     * @var Company
+     * @var \Core\Model\TestCompany
      */
     protected static $company1;
 
     /**
-     * @var User
+     * @var \Core\Model\TestUser
      */
     protected static $user1;
 
     /**
-     * @var User
+     * @var \Core\Model\TestUser
      */
     protected static $user2;
 
     /**
-     * @var User
+     * @var \Core\Model\TestUser
      */
     protected static $user3;
 
     /**
-     * @var Account
+     * @var TestAccount
      */
     protected static $account1;
 
     /**
-     * @var Account
+     * @var TestAccount
      */
     protected static $account2;
 
     /**
-     * @var Storage
+     * @var \Core\Model\TestStorage
      */
     protected static $storage;
 
@@ -70,26 +70,26 @@ class SerializerTest extends TestCase {
 
         self::resetDatabase(self::getApplicationContext());
 
-        self::$company1 = new Company();
+        self::$company1 = new TestCompany();
         self::$company1->setName('Bigsool');
-        self::$user1 = new User();
+        self::$user1 = new TestUser();
         self::$user1->setEmail('thierry@bigsool.com');
         self::$user1->setPassword('qwe');
         self::$user1->setCompany(self::$company1);
         self::$user1->setRegisterDate(new \DateTime());
-        self::$user2 = new User();
+        self::$user2 = new TestUser();
         self::$user2->setEmail('julien@bigsool.com');
         self::$user2->setCompany(self::$company1);
         self::$user2->setPassword('qwe');
         self::$user2->setRegisterDate(new \DateTime());
-        self::$user3 = new User();
+        self::$user3 = new TestUser();
         self::$user3->setEmail('thomas@bigsool.com');
         self::$user3->setCompany(self::$company1);
         self::$user3->setPassword('qwe');
         self::$user3->setRegisterDate(new \DateTime());
         self::$company1->setOwner(self::$user3);
 
-        self::$storage = new Storage();
+        self::$storage = new TestStorage();
         self::$storage->setUrl('http://www.amazon.com/');
         self::$storage->setCompany(self::$company1);
         self::$storage->setLogin('login');
@@ -102,8 +102,8 @@ class SerializerTest extends TestCase {
         self::$company1->addUser(self::$user2);
         self::$company1->addUser(self::$user3);
 
-        self::$account1 = new Account(self::$user1);
-        self::$account2 = new Account(self::$user2);
+        self::$account1 = new TestAccount(self::$user1);
+        self::$account2 = new TestAccount(self::$user2);
 
         $registry = self::getApplicationContext()->getNewRegistry();
         $registry->save(self::$user1);
@@ -172,14 +172,14 @@ class SerializerTest extends TestCase {
         $result = [self::$user1, self::$user2, self::$user3];
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.storage.url')]);
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
-            ['email' => 'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'julien@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'thomas@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]]
+            ['email' => 'thierry@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'julien@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'thomas@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]]
         ];
 
         $this->assertEquals(json_encode($resultExpected), $result);
@@ -190,13 +190,13 @@ class SerializerTest extends TestCase {
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
             ['email'   => 'thierry@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ],
             ['email'   => 'julien@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ],
             ['email'   => 'thomas@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ]
         ];
 
@@ -235,7 +235,7 @@ class SerializerTest extends TestCase {
     public function testSeveralEntitiesAsObject () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
@@ -254,7 +254,7 @@ class SerializerTest extends TestCase {
     public function testSeveralEntitiesAsArray () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
@@ -278,8 +278,8 @@ class SerializerTest extends TestCase {
      */
     public function getUserArray (RequestContext $reqCtx) {
 
-        $qryCtx = new FindQueryContext('User', $reqCtx);
-        $qryCtx->addFilter(new StringFilter('User', 'usersFromCompany', 'company = :company'));
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+        $qryCtx->addFilter(new StringFilter('TestUser', 'usersFromCompany', 'company = :company'));
         $qryCtx->addKeyPath(new KeyPath('*'));
         $qryCtx->addKeyPath(new KeyPath('company'));
         $qryCtx->addKeyPath(new KeyPath('company.storage'));
@@ -292,7 +292,7 @@ class SerializerTest extends TestCase {
     public function testOneEntityAsObject () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
@@ -311,7 +311,7 @@ class SerializerTest extends TestCase {
     public function testOneEntityAsArray () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
@@ -330,7 +330,7 @@ class SerializerTest extends TestCase {
     public function testArrayWithoutRootEntity () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
@@ -350,7 +350,7 @@ class SerializerTest extends TestCase {
     public function testMagicalEntity () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('User');
+        $reqCtx->setReturnedRootEntity('TestUser');
         $reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),

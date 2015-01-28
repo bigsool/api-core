@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\UserFeature;
+namespace Core\Module\Test\User;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
@@ -19,7 +19,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
+        $context->addAction(new BasicCreateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
             'name'      => [ERR_INVALID_NAME, new UserValidation()],
             'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
             'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
@@ -31,7 +31,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
+        $context->addAction(new BasicUpdateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
             'name'      => [ERR_INVALID_NAME, new UserValidation()],
             'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
             'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
@@ -46,10 +46,10 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFields (ApplicationContext &$context) {
 
-        $context->addField(new StarField('User'));
-        $context->addField(new Field('User', 'email'));
-        $context->addField(new Field('User', 'password'));
-        $context->addField(new Field('User', 'name'));
+        $context->addField(new StarField('TestUser'));
+        $context->addField(new Field('TestUser', 'email'));
+        $context->addField(new Field('TestUser', 'password'));
+        $context->addField(new Field('TestUser', 'name'));
 
     }
 

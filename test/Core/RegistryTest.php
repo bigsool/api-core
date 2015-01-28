@@ -15,11 +15,10 @@ use Core\Field\Field;
 use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
-use Core\Model\Account;
-use Core\Model\Company;
-use Core\Model\Product;
-use Core\Model\Storage;
-use Core\Model\User;
+use Core\Model\TestAccount;
+use Core\Model\TestCompany;
+use Core\Model\TestStorage;
+use Core\Model\TestUser;
 use Core\Operator\EqualOperator;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\CallbackRule;
@@ -42,15 +41,17 @@ class RegistryTest extends TestCase {
     /**
      * @var array
      */
-    private $product = ['id'         => 1,
-                        'duration'   => NULL,
-                        'bundleid'   => 'the product bundle id',
-                        'name'       => 'produit 1',
-                        'consumable' => true,
-                        'price'      => 12.5,
-                        'weight'     => 2,
-                        'available'  => true,
-                        'vat'        => 13.5
+    private $company = [
+        'id'      => 1,
+        'name'    => 'the company 1',
+        'address' => 'My Address !!',
+        'zipCode' => '75845',
+        'city'    => 'Qaris',
+        'state'   => 'SomeWhere',
+        'country' => 'SomeCountry',
+        'tel'     => '0125478++',
+        'fax'     => NULL,
+        'tva'     => 'SC785412547'
     ];
 
     public function setUp () {
@@ -60,17 +61,17 @@ class RegistryTest extends TestCase {
         self::resetApplicationContext();
 
         $this->appCtx = $this->getApplicationContext(self::$doctrineConnectionSettings);
-        $this->appCtx->addField(new StarField('Product'));
-        $this->appCtx->addField(new Field('Product', 'name'));
-        $this->appCtx->addField(new Field('Product', 'price'));
+        $this->appCtx->addField(new StarField('TestCompany'));
+        $this->appCtx->addField(new Field('TestCompany', 'name'));
+        $this->appCtx->addField(new Field('TestCompany', 'zipCode'));
 
-        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('consumable'), new Value(1));
-        $funcConsumableFilter = new ExpressionFilter('Functionality', 'consumable', $expression);
-        $this->appCtx->addFilter($funcConsumableFilter);
+        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('confirmationKey'), new Value(1));
+        $userConfKeyFilter = new ExpressionFilter('TestUser', 'confirmationKey', $expression);
+        $this->appCtx->addFilter($userConfKeyFilter);
 
-        $funcStarField = new StarField('Functionality');
-        $this->appCtx->addField($funcStarField);
-        $this->appCtx->addRule(new FieldRule($funcStarField, $funcConsumableFilter));
+        $userStarField = new StarField('TestUser');
+        $this->appCtx->addField($userStarField);
+        $this->appCtx->addRule(new FieldRule($userStarField, $userConfKeyFilter));
 
     }
 
@@ -107,29 +108,31 @@ class RegistryTest extends TestCase {
      */
     public function testSaveWithoutRequiredParams () {
 
-        $product = new Product();
-        $product->setName('produit 1');
+        $company = new TestCompany();
+        $company->setAddress('company address 1');
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->save($product);
+        $registry->save($company);
 
     }
 
     public function testSaveWithRequiredParams () {
 
-        $product = new Product();
-        $product->setName($this->product['name']);
-        $product->setBundleid($this->product['bundleid']);
-        $product->setConsumable($this->product['consumable']);
-        $product->setPrice($this->product['price']);
-        $product->setWeight($this->product['weight']);
-        $product->setAvailable($this->product['available']);
-        $product->setVat($this->product['vat']);
+        $company = new TestCompany();
+        $company->setName($this->company['name']);
+        $company->setAddress($this->company['address']);
+        $company->setCity($this->company['city']);
+        $company->setCountry($this->company['country']);
+        $company->setFax($this->company['fax']);
+        $company->setTel($this->company['tel']);
+        $company->setTva($this->company['tva']);
+        $company->setZipCode($this->company['zipCode']);
+        $company->setState($this->company['state']);
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->save($product);
+        $registry->save($company);
 
-        $this->assertEquals(1, $product->getId());
+        $this->assertEquals(1, $company->getId());
 
     }
 
@@ -138,34 +141,29 @@ class RegistryTest extends TestCase {
      */
     public function testSaveWithUnsafeParameter () {
 
-        $product = new Product();
-        $product->setName($this->product['name']);
-        $product->setBundleid($this->product['bundleid']);
-        $product->setConsumable($this->product['consumable']);
-        $product->setPrice($this->product['price']);
-        $product->setWeight($this->product['weight']);
-        $product->setAvailable($this->product['available']);
-        $product->setVat(new UnsafeParameter($this->product['vat']));
+        $company = new TestCompany();
+        $company->setName($this->company['name']);
+        $company->setAddress(new UnsafeParameter($this->company['address']));
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->save($product);
+        $registry->save($company);
 
-        $this->assertEquals(1, $product->getId());
+        $this->assertEquals(1, $company->getId());
 
     }
 
     public function testSaveWithDependencies () {
 
-        $company = new Company();
+        $company = new TestCompany();
         $company->setName('company name');
-        $user = new User();
+        $user = new TestUser();
         $user->setEmail('user@email.com');
         $user->setPassword('qwe');
         $user->setRegisterDate(new \DateTime());
         $company->setOwner($user);
         $user->setOwnedCompany($company);
 
-        $storage = new Storage();
+        $storage = new TestStorage();
         $storage->setUrl('url');
         $storage->setLogin('login');
         $storage->setPassword('qwe');
@@ -184,13 +182,13 @@ class RegistryTest extends TestCase {
 
         $em = $this->getEntityManager(self::$doctrineConnectionSettings);
         $result =
-            $em->createQuery('SELECT c, s, o FROM \Core\Model\Company c INNER JOIN c.storage s INNER JOIN c.owner o')
+            $em->createQuery('SELECT c, s, o FROM \Core\Model\TestCompany c INNER JOIN c.storage s INNER JOIN c.owner o')
                ->getArrayResult();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $excepted =
-            ['id'      => 1,
+            ['id'      => 2,
              'name'    => 'company name',
              'storage' => ['id' => 1, 'url' => 'url', 'login' => 'login', 'password' => 'qwe'],
              'owner'   => ['id' => 1, 'email' => 'user@email.com', 'password' => 'qwe']
@@ -238,7 +236,7 @@ class RegistryTest extends TestCase {
 
         $callbackRule = new CallbackRule('blabla', function (QueryContext $ctx) {
 
-            if ($ctx->getEntity() == "Product") {
+            if ($ctx->getEntity() == "TestCompany") {
                 return true;
             }
 
@@ -250,19 +248,13 @@ class RegistryTest extends TestCase {
 
         $this->appCtx->addRule($callbackRule);
 
-        $product = new Product();
-        $product->setName('the new product');
-        $product->setBundleid('the new product bundle id');
-        $product->setConsumable($this->product['consumable']);
-        $product->setPrice($this->product['price']);
-        $product->setWeight($this->product['weight']);
-        $product->setAvailable($this->product['available']);
-        $product->setVat($this->product['vat']);
+        $company = new TestCompany();
+        $company->setName('the new company');
 
         $registry = $this->appCtx->getNewRegistry();
         $exceptionThrow = false;
         try {
-            $registry->save($product);
+            $registry->save($company);
         }
         catch (\RuntimeException $e) {
             $this->assertEquals($e->getCode(), 2014);
@@ -271,7 +263,7 @@ class RegistryTest extends TestCase {
         $this->assertTrue($exceptionThrow);
         $em = $this->getEntityManager(self::$doctrineConnectionSettings);
         $result =
-            $em->createQuery('SELECT p FROM \Core\Model\Product p WHERE p.name = \'the new product\'')
+            $em->createQuery('SELECT c FROM \Core\Model\TestCompany c WHERE c.name = \'the new company\'')
                ->getArrayResult();
         $this->assertCount(0, $result);
 
@@ -282,15 +274,15 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFilterAsArray () {
 
-        $qryCtx = new FindQueryContext('Product');
+        $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
-        $this->assertCount(1, $result);
-        $this->assertSame($this->product, $result[0]);
+        $this->assertCount(2, $result);
+        $this->assertSame($this->company, $result[0]);
         // TODO: improve test
 
     }
@@ -300,17 +292,17 @@ class RegistryTest extends TestCase {
      */
     public function testFindFieldsWithoutFilter () {
 
-        $qryCtx = new FindQueryContext('Product');
+        $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addKeyPath(new FieldKeyPath('name'));
-        $qryCtx->addKeyPath(new FieldKeyPath('price'));
+        $qryCtx->addKeyPath(new FieldKeyPath('tva'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
-        $this->assertCount(1, $result);
-        $this->assertSame(['name'  => $this->product['name'],
-                           'price' => $this->product['price']
+        $this->assertCount(2, $result);
+        $this->assertSame(['name' => $this->company['name'],
+                           'tva'  => $this->company['tva']
                           ], $result[0]);
         // TODO: improve test
 
@@ -321,23 +313,23 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFilterAsObject () {
 
-        $qryCtx = new FindQueryContext('Product');
+        $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
 
         $this->assertInternalType('array', $result);
-        $this->assertCount(1, $result);
-        $this->assertInstanceOf('\Core\Model\Product', $result[0]);
-        $this->assertSame($this->product['bundleid'], $result[0]->getBundleId());
-        $this->assertSame($this->product['name'], $result[0]->getName());
-        $this->assertSame($this->product['price'], $result[0]->getPrice());
-        $this->assertSame($this->product['weight'], $result[0]->getWeight());
-        $this->assertSame($this->product['vat'], $result[0]->getVat());
-        $this->assertTrue($result[0]->getAvailable());
-        $this->assertTrue($result[0]->getConsumable());
-        $this->assertSame('SELECT product FROM \Core\Model\Product product', $registry->getLastExecutedQuery());
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf('\Core\Model\TestCompany', $result[0]);
+
+        $this->assertSame($this->company['address'], $result[0]->getAddress());
+        $this->assertSame($this->company['name'], $result[0]->getName());
+        $this->assertSame($this->company['zipCode'], $result[0]->getZipCode());
+        $this->assertSame($this->company['tel'], $result[0]->getTel());
+        $this->assertSame($this->company['tva'], $result[0]->getTva());
+        $this->assertSame('SELECT testCompany FROM \Core\Model\TestCompany testCompany',
+                          $registry->getLastExecutedQuery());
 
     }
 
@@ -346,28 +338,28 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithFilters () {
 
-        $qryCtx = new FindQueryContext('Product');
+        $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addKeyPath(new FieldKeyPath('*'));
 
-        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('price'), new Value(17));
-        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', $expression));
+        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('tva'), new Value(17));
+        $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
-        $dql = 'SELECT product ' .
-               'FROM \Core\Model\Product product ' .
-               'WHERE ((product.price = 17))';
+        $dql = 'SELECT testCompany ' .
+               'FROM \Core\Model\TestCompany testCompany ' .
+               'WHERE ((testCompany.tva = 17))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
-        $parameter = new Parameter(':price');
-        $expression = new BinaryExpression(new EqualOperator(), $parameter, new ExpressionKeyPath('price'));
-        $qryCtx->setParams(['price' => 126]);
-        $qryCtx->addFilter(new ExpressionFilter('Product', 'myStringFilter', $expression));
+        $parameter = new Parameter(':tva');
+        $expression = new BinaryExpression(new EqualOperator(), $parameter, new ExpressionKeyPath('tva'));
+        $qryCtx->setParams(['tva' => 126]);
+        $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
-        $dql = 'SELECT product ' .
-               'FROM \Core\Model\Product product ' .
-               'WHERE ((product.price = 17) ' .
-               'AND (' . $parameter->getRealName() . ' = product.price))';
+        $dql = 'SELECT testCompany ' .
+               'FROM \Core\Model\TestCompany testCompany ' .
+               'WHERE ((testCompany.tva = 17) ' .
+               'AND (' . $parameter->getRealName() . ' = testCompany.tva))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -380,16 +372,16 @@ class RegistryTest extends TestCase {
         $fieldKeyPath = new FieldKeyPath('*');
         $reqCtx = $this->getRequestContext();
         $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
-        $reqCtx->setReturnedRootEntity('Functionality');
-        $qryCtx = new FindQueryContext('Functionality', $reqCtx);
+        $reqCtx->setReturnedRootEntity('TestUser');
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
         $qryCtx->addKeyPath($fieldKeyPath);
 
         $registry = $this->appCtx->getNewRegistry();
-        $result = $registry->find($qryCtx, false);
+        $registry->find($qryCtx, false);
 
-        $dql = 'SELECT functionality ' .
-               'FROM \Core\Model\Functionality functionality ' .
-               'WHERE ((functionality.consumable = 1))';
+        $dql = 'SELECT testUser ' .
+               'FROM \Core\Model\TestUser testUser ' .
+               'WHERE ((testUser.confirmationKey = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -399,11 +391,11 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithAlias () {
 
-        $this->appCtx->addField(new Field('User', 'email'));
-        $this->appCtx->addField(new Field('User', 'name'));
-        $this->appCtx->addField(new Field('Company', 'name'));
+        $this->appCtx->addField(new Field('TestUser', 'email'));
+        $this->appCtx->addField(new Field('TestUser', 'name'));
+        $this->appCtx->addField(new Field('TestCompany', 'name'));
 
-        $qryCtx = new FindQueryContext('User');
+        $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
         $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
@@ -411,9 +403,9 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT user.email, user.name AS userName, userCompany.name AS companyName ' .
-               'FROM \Core\Model\User user ' .
-               'INNER JOIN user.company userCompany';
+        $dql = 'SELECT testUser.email, testUser.name AS userName, testUserCompany.name AS companyName ' .
+               'FROM \Core\Model\TestUser testUser ' .
+               'INNER JOIN testUser.company testUserCompany';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -423,7 +415,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithoutFields () {
 
-        $qryCtx = new FindQueryContext('Product');
+        $qryCtx = new FindQueryContext('TestCompany');
         $this->appCtx->getNewRegistry()->find($qryCtx);
 
     }
@@ -440,16 +432,16 @@ class RegistryTest extends TestCase {
 
     public function testSaveMagicalEntity () {
 
-        $company = new Company();
+        $company = new TestCompany();
         $company->setName('company name2');
-        $user = new User();
+        $user = new TestUser();
         $user->setEmail('user2@email.com');
         $user->setPassword('qwe');
         $user->setRegisterDate(new \DateTime());
         $company->setOwner($user);
         $user->setOwnedCompany($company);
 
-        $storage = new Storage();
+        $storage = new TestStorage();
         $storage->setUrl('url2');
         $storage->setLogin('login2');
         $storage->setPassword('qwe2');
@@ -457,7 +449,7 @@ class RegistryTest extends TestCase {
         $storage->setLastusedspaceupdate(new \DateTime());
         $storage->setIsoutofquota(false);
 
-        $account = new Account($user);
+        $account = new TestAccount($user);
         $account->setCompany($company);
         $account->setStorage($storage);
 
@@ -467,16 +459,16 @@ class RegistryTest extends TestCase {
 
         $em = $this->getEntityManager(self::$doctrineConnectionSettings);
         $result =
-            $em->createQuery('SELECT c, s, o FROM \Core\Model\Company c INNER JOIN c.storage s INNER JOIN c.owner o WHERE c.id = 2')
+            $em->createQuery('SELECT c, s, o FROM \Core\Model\TestCompany c INNER JOIN c.storage s INNER JOIN c.owner o WHERE c.id = '.$company->getId())
                ->getArrayResult();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $excepted =
-            ['id'      => 2,
+            ['id'      => $company->getId(),
              'name'    => 'company name2',
-             'storage' => ['id' => 2, 'url' => 'url2', 'login' => 'login2', 'password' => 'qwe2'],
-             'owner'   => ['id' => 2, 'email' => 'user2@email.com', 'password' => 'qwe']
+             'storage' => ['id' => $storage->getId(), 'url' => 'url2', 'login' => 'login2', 'password' => 'qwe2'],
+             'owner'   => ['id' => $user->getId(), 'email' => 'user2@email.com', 'password' => 'qwe']
             ];
         foreach ($excepted as $key => $value) {
             $this->assertArrayHasKey($key, $result[0]);

@@ -99,7 +99,7 @@ class RequestContextTest extends TestCase {
     public function testRootEntity () {
 
         $ctx = $this->getRequestContext();
-        $entity = 'Company';
+        $entity = 'TestCompany';
         $ctx->setReturnedRootEntity($entity);
         $this->assertSame($entity, $ctx->getReturnedRootEntity());
 

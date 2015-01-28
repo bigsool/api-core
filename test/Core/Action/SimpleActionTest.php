@@ -17,7 +17,7 @@ class SimpleActionTest extends TestCase {
 
     public function testGetModule () {
 
-        $module = 'User';
+        $module = 'TestUser';
         $action = new SimpleAction($module, 'qwe', NULL, [], $this->getCallable());
         $this->assertSame($module, $action->getModule());
 

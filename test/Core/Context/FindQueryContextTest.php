@@ -26,7 +26,7 @@ class FindQueryContextTest extends TestCase {
      */
     public function testEntity () {
 
-        $entity = 'Company';
+        $entity = 'TestCompany';
         $ctx = $this->getFindQueryContext($entity);
 
         $this->assertSame($entity, $ctx->getEntity());
@@ -39,7 +39,7 @@ class FindQueryContextTest extends TestCase {
     public function testFilters () {
 
         // empty rule list
-        $ctx = $this->getFindQueryContext('Company');
+        $ctx = $this->getFindQueryContext('TestCompany');
         $this->assertSame([], $ctx->getFilters());
 
         // only one rule
@@ -66,7 +66,7 @@ class FindQueryContextTest extends TestCase {
     public function testKeyPaths () {
 
         // empty keyPath list
-        $ctx = $this->getFindQueryContext('Company');
+        $ctx = $this->getFindQueryContext('TestCompany');
         $this->assertSame([], $ctx->getKeyPaths());
 
         // only one keyPath
@@ -104,7 +104,7 @@ class FindQueryContextTest extends TestCase {
      */
     public function testParams () {
 
-        $ctx = $this->getFindQueryContext('Company');
+        $ctx = $this->getFindQueryContext('TestCompany');
 
         $array = ['a', 'b' => 2, ['c']];
 
@@ -119,7 +119,7 @@ class FindQueryContextTest extends TestCase {
 
     public function testAddJoinedEntities () {
 
-        $ctx = $this->getFindQueryContext('Company');
+        $ctx = $this->getFindQueryContext('TestCompany');
         $joinedEntity = 'qwe';
         $ctx->addJoinedEntity($joinedEntity);
 
