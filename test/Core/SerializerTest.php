@@ -68,9 +68,9 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
-            ['email' => 'thierry@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'julien@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'thomas@bigsool.com', 'Company' => ['Storage' => ['url' => 'http://www.amazon.com/']]]
+            ['email' => 'thierry@bigsool.com', 'company' => ['storage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'julien@bigsool.com', 'company' => ['storage' => ['url' => 'http://www.amazon.com/']]],
+            ['email' => 'thomas@bigsool.com', 'company' => ['storage' => ['url' => 'http://www.amazon.com/']]]
         ];
 
         $this->assertEquals(json_encode($resultExpected), $result);
@@ -82,13 +82,13 @@ class SerializerTest extends TestCase {
         $result = $serializer->serialize($result)->getJSON();
         $resultExpected = [
             ['email'   => 'thierry@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'company' => ['user' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ],
             ['email'   => 'julien@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'company' => ['user' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ],
             ['email'   => 'thomas@bigsool.com',
-             'Company' => ['User' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+             'company' => ['user' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
             ]
         ];
 
@@ -220,7 +220,7 @@ class SerializerTest extends TestCase {
         // try without RootEntity
         $reqCtx->setReturnedRootEntity(NULL);
         $serializer->serialize($usersArray);
-        $this->assertSame($usersArray, $serializer->get());
+        $this->assertSame($expected, $serializer->get());
 
     }
 

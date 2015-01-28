@@ -36,38 +36,7 @@ class Serializer {
      */
     public function serialize ($data) {
 
-        $dataToSerialized = [];
-        $dataAlreadySerialized = [];
-
-        if (is_array($data)) {
-
-            foreach ($data as $value) {
-                if (is_object($value)) {
-                    $dataToSerialized[] = $value;
-                }
-                else {
-                    foreach ($value as $elem) {
-                        if (is_object($elem)) {
-                            $dataToSerialized[] = $elem;
-                        }
-                    }
-                }
-            }
-
-            $dataSerialized = $this->getSerializedData($dataToSerialized);
-            $dataSerialized = array_merge($dataAlreadySerialized, $dataSerialized);
-
-        }
-        else {
-            if (is_object($data)) {
-                $dataSerialized = $this->getSerializedData($data);
-            }
-            else {
-                $dataSerialized = (string)$data;
-            }
-        }
-
-        $this->dataSerialized = $dataSerialized;
+        $this->dataSerialized = $this->isDataObject($data) ? $this->serializeObject($data) : $this->serializeArray($data);
 
         return $this;
 
@@ -78,19 +47,102 @@ class Serializer {
      *
      * @return array
      */
-    private function getSerializedData ($data) {
+    private function serializeObject ($data) {
 
-        $entities = is_array($data) ? $data : array($data);
-        $resultSerialized = [];
-        foreach ($entities as $entity) {
-            $entitySerialized = [];
-            foreach ($this->keyPathArrays as $keyPathArray) {
-                $entitySerialized = array_merge($entitySerialized, $this->parseKeyPath($entity, $keyPathArray));
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $dataSerialized[$key] = $this->getSerializedData($value);
             }
-            $resultSerialized[] = $entitySerialized;
+        }
+        else {
+            $dataSerialized =  $this->getSerializedData($data);
         }
 
-        return is_array($data) ? $resultSerialized : $resultSerialized[0];
+        return $dataSerialized;
+
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return array
+     */
+    private function serializeArray ($data) {
+
+        if (is_array($data) && $this->keyPathArrays) {
+            if (array_key_exists(1,$data)) {
+                foreach ($data as $key => $value) {
+                    $dataSerialized[] = $this->getSerializedDataArray($this->keyPathArrays,0,$value[0]);
+                }
+            }
+            else {
+                $dataSerialized = $this->getSerializedDataArray($this->keyPathArrays,0,$data[0]);
+            }
+            return $dataSerialized;
+        }
+        else {
+            return $data;
+        }
+
+    }
+
+
+    private function getSerializedDataArray ($keyPathArrays,$level,$data) {
+
+        $dataSerialized = [];
+
+        foreach ($keyPathArrays as $keyPathArray) {
+
+            if (is_array($data[$keyPathArray[$level]])) {
+
+                $newDataSerialized = $this->getSerializedDataArray([$keyPathArray],$level + 1,$data[$keyPathArray[$level]]);
+
+                if (array_key_exists($keyPathArray[$level],$dataSerialized)) {
+                    $dataSerialized[$keyPathArray[$level]] = array_merge_recursive($dataSerialized[$keyPathArray[$level]],$newDataSerialized);
+                }
+                else {
+                    $dataSerialized[$keyPathArray[$level]] = $newDataSerialized;
+                }
+
+            }
+            else {
+
+                $dataSerialized[$keyPathArray[$level]] = $data[$keyPathArray[$level]];
+
+            }
+
+        }
+
+        return $dataSerialized;
+
+    }
+
+
+    /**
+     * @param mixed $data
+     *
+     * @return array
+     */
+    private function getSerializedData ($data) {
+
+
+        if(!$this->keyPathArrays) throw new \Exception('serialization impossible');
+
+        $entitySerialized = [];
+
+        foreach ($this->keyPathArrays as $keyPathArray) {
+            $bla = $this->parseKeyPath($data, $keyPathArray);
+            $entitySerialized = array_merge_recursive($entitySerialized, $bla);
+        }
+
+        return $entitySerialized;
+
+    }
+
+
+    private function isDataObject ($data) {
+
+        return (is_object($data) || (is_array($data) && is_object($data[0])));
 
     }
 
@@ -121,9 +173,9 @@ class Serializer {
             }
         }
         else {
-            if (is_object($object)) {
+            array_shift($keyPathArray);
+            if (is_object($object) && $keyPathArray) {
                 $entityName = $this->getEntityNameFromKeyPath($object);
-                array_shift($keyPathArray);
                 $result[$entityName] = $this->parseKeyPath($object, $keyPathArray);
             }
             else {
@@ -143,7 +195,7 @@ class Serializer {
         $entityPath = get_class($keyPath);
         $entityPathExploded = explode('\\', $entityPath);
 
-        return $entityPathExploded[count($entityPathExploded) - 1];
+        return lcfirst($entityPathExploded[count($entityPathExploded) - 1]);
 
     }
 
