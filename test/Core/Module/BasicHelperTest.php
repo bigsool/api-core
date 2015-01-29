@@ -4,8 +4,7 @@
 namespace Core\Module;
 
 
-use Core\Model\Company;
-use Core\Model\Product;
+use Core\Model\TestUser;
 use Core\Registry;
 use Core\TestCase;
 
@@ -25,33 +24,31 @@ class BasicHelperTest extends TestCase {
 
         $basicHelper = new BasicHelper();
 
-        $product = $basicHelper->basicSave(new Product, [
-            'duration'   => NULL,
-            'bundleid'   => 'bundle id',
-            'name'       => 'produit',
-            'consumable' => true,
-            'price'      => 12.5,
-            'weight'     => 2,
-            'available'  => true,
-            'vat'        => 13.5
+        $user = $basicHelper->basicSave(new TestUser(), [
+            'email'        => 'qweqwe@qweqwe.com',
+            'password'     => 'OhMyQweqwe',
+            'name'         => 'AzeEn',
+            'firstname'    => 'QweFr',
+            'lang'         => 'fr',
+            'salt'         => uniqid('',true),
+            'registerDate' => new \DateTime(),
         ], false);
 
-        $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
-        $this->assertNull($product->getId());
+        $this->assertInstanceOf(Registry::realModelClassName('testUser'), $user);
+        $this->assertNull($user->getId());
 
-        $product = $basicHelper->basicSave(new Product, [
-            'duration'   => NULL,
-            'bundleid'   => 'bundle id',
-            'name'       => 'produit',
-            'consumable' => true,
-            'price'      => 12.5,
-            'weight'     => 2,
-            'available'  => true,
-            'vat'        => 13.5
+        $user = $basicHelper->basicSave(new TestUser, [
+            'email'        => 'qweqwe2@qweqwe.com',
+            'password'     => 'OhMy2ndQwe',
+            'name'         => 'QsdEn',
+            'firstname'    => 'WxcFr',
+            'lang'         => 'en',
+            'salt'         => uniqid('',true),
+            'registerDate' => new \DateTime(),
         ]);
 
-        $this->assertInstanceOf(Registry::realModelClassName('product'), $product);
-        $this->assertSame(1, $product->getId());
+        $this->assertInstanceOf(Registry::realModelClassName('testUser'), $user);
+        $this->assertSame(1, $user->getId());
 
     }
 
@@ -69,7 +66,7 @@ class BasicHelperTest extends TestCase {
      */
     public function testBasicSaveWithWrongParameter () {
 
-        (new BasicHelper())->basicSave(new Company(), ['qwe' => 'qwe']);
+        (new BasicHelper())->basicSave(new TestUser(), ['qwe' => 'qwe']);
 
     }
 

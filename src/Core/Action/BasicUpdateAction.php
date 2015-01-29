@@ -7,7 +7,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Filter\StringFilter;
-use Core\Validation\CompanyValidation;
+use Core\Module\CompanyFeature\CompanyValidation;
 
 class BasicUpdateAction extends SimpleAction {
 

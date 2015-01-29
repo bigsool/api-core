@@ -41,7 +41,7 @@ class ParameterTest extends TestCase {
     public function testResolve () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('Company');
+        $context = $this->getFindQueryContext('TestCompany');
         $context->setParams(['company' => new Company()]);
 
         $param = ':company';
@@ -66,7 +66,7 @@ class ParameterTest extends TestCase {
     public function testGetRealName () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('Company');
+        $context = $this->getFindQueryContext('TestCompany');
         $context->setParams(['company' => new Company()]);
 
         $param = ':company';
@@ -82,7 +82,7 @@ class ParameterTest extends TestCase {
      */
     public function testGetRealNameBeforeResolve () {
 
-        $context = $this->getFindQueryContext('Company');
+        $context = $this->getFindQueryContext('TestCompany');
         $context->setParams(['company' => new Company()]);
 
         $param = ':company';
@@ -113,7 +113,7 @@ class ParameterTest extends TestCase {
     public function testParameterNotFound () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('Company');
+        $context = $this->getFindQueryContext('TestCompany');
 
         $param = ':company';
 

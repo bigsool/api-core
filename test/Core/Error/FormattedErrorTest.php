@@ -27,7 +27,7 @@ class FormattedErrorTest extends TestCase {
 
         $error = $this->getMockError();
         $error->method('getFrMessage')->willReturn('Id utilisateur invalide');
-        $error->method('getEnMessage')->willReturn('User id invalid');
+        $error->method('getEnMessage')->willReturn('TestUser id invalid');
         $error->method('getCode')->willReturn(201);
         $error->method('getParentCode')->willReturn(200);
         $error->method('getField')->willReturn("userId");

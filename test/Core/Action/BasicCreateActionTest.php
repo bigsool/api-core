@@ -4,7 +4,7 @@
 namespace Core\Action;
 
 
-use Core\Module\UserFeature\ModuleManager as UserModuleManager;
+use Core\Module\Test\User\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
@@ -29,7 +29,7 @@ class BasicCreateActionTest extends TestCase {
         $preCalled = false;
         $postCalled = false;
 
-        $action = new BasicCreateAction('module', 'User', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        $action = new BasicCreateAction('module', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 
@@ -43,8 +43,8 @@ class BasicCreateActionTest extends TestCase {
         $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);
         $user = $action->process($actCtx);
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame($user, $actCtx['user']);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
+        $this->assertSame($user, $actCtx['testUser']);
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);
@@ -62,7 +62,7 @@ class BasicCreateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        (new BasicCreateAction('module', 'Company', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicCreateAction('module', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 

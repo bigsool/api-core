@@ -10,7 +10,7 @@ use Core\Context\SaveQueryContext;
 use Core\Field\Field;
 use Core\Field\KeyPath;
 use Core\Field\StarField;
-use Core\Model\Company;
+use Core\Model\TestCompany;
 use Core\TestCase;
 
 class FieldRuleTest extends TestCase {
@@ -22,7 +22,7 @@ class FieldRuleTest extends TestCase {
 
         $rule = new FieldRule($this->getMockCompanyNameField(), $this->getMockFilter());
 
-        $this->assertSame('companyNameFieldRule', $rule->getName());
+        $this->assertSame('testCompanyNameFieldRule', $rule->getName());
 
     }
 
@@ -32,7 +32,7 @@ class FieldRuleTest extends TestCase {
     protected function getMockCompanyNameField () {
 
         $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('Company');
+        $field->method('getEntity')->willReturn('TestCompany');
         $field->method('getName')->willReturn('name');
 
         return $field;
@@ -70,25 +70,25 @@ class FieldRuleTest extends TestCase {
     public function testShouldApply () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->addField($field = new Field('Company', 'name'));
-        $appCtx->addField(new Field('User', 'name'));
-        $appCtx->addField($starField = new StarField('Company'));
-        $appCtx->addField(new Field('Company', 'city'));
+        $appCtx->addField($field = new Field('TestCompany', 'name'));
+        $appCtx->addField(new Field('TestUser', 'name'));
+        $appCtx->addField($starField = new StarField('TestCompany'));
+        $appCtx->addField(new Field('TestCompany', 'city'));
 
         $rule = new FieldRule($field, $this->getMockFilter());
-        $this->assertFalse($rule->shouldApply(new SaveQueryContext(new Company())));
+        $this->assertFalse($rule->shouldApply(new SaveQueryContext(new TestCompany())));
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('Company');
+        $reqCtx->setReturnedRootEntity('TestCompany');
 
         $reqUserCtx = new RequestContext();
-        $reqUserCtx->setReturnedRootEntity('User');
-        $qryCtx = new FindQueryContext('User', $reqUserCtx);
+        $reqUserCtx->setReturnedRootEntity('TestUser');
+        $qryCtx = new FindQueryContext('TestUser', $reqUserCtx);
         $reqUserCtx->setReturnedKeyPaths([new KeyPath('name')]);
         $qryCtx->addKeyPath(new KeyPath('name'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
-        $qryCtx = new FindQueryContext('Company', $reqCtx);
+        $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
         $reqCtx->setReturnedKeyPaths([new KeyPath('city')]);
         $qryCtx->addKeyPath(new KeyPath('city'));
         $this->assertFalse($rule->shouldApply($qryCtx));
@@ -105,17 +105,17 @@ class FieldRuleTest extends TestCase {
     public function testApply () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->addField($field = new Field('Company', 'name'));
+        $appCtx->addField($field = new Field('TestCompany', 'name'));
 
         $filter = $this->getMockFilter();
 
         $rule = new FieldRule($field, $filter);
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('Company');
+        $reqCtx->setReturnedRootEntity('TestCompany');
         $reqCtx->setReturnedKeyPaths([new KeyPath('name')]);
 
-        $qryCtx = new FindQueryContext('Company', $reqCtx);
+        $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
         $qryCtx->addKeyPath(new KeyPath('name'));
 
         $filters = $qryCtx->getFilters();
@@ -134,7 +134,7 @@ class FieldRuleTest extends TestCase {
      */
     public function testInvalidContextApply () {
 
-        (new FieldRule($this->getMockField(), $this->getMockFilter()))->apply(new SaveQueryContext(new Company()));
+        (new FieldRule($this->getMockField(), $this->getMockFilter()))->apply(new SaveQueryContext(new TestCompany()));
 
     }
 

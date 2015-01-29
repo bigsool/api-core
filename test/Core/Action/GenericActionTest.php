@@ -12,7 +12,7 @@ class GenericActionTest extends TestCase {
 
     public function testGetModule () {
 
-        $module = 'User';
+        $module = 'TestUser';
         $action = new Action($module, 'qwe', $this->getCallable(), $this->getCallable(), $this->getCallable());
         $this->assertSame($module, $action->getModule());
 

@@ -4,9 +4,9 @@
 namespace Core\Action;
 
 use Core\Model\User;
-use Core\Module\CompanyFeature\ModuleManager as CompanyModuleManager;
-use Core\Module\UserFeature\Helper as UserHelper;
-use Core\Module\UserFeature\ModuleManager as UserModuleManager;
+use Core\Module\Test\Company\ModuleManager as CompanyModuleManager;
+use Core\Module\Test\User\Helper as UserHelper;
+use Core\Module\Test\User\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
@@ -33,16 +33,16 @@ class BasicUpdateActionTest extends TestCase {
          */
         $helper = $appCtx->getHelper('UserFeatureHelper');
         $createActCtx = $this->getActionContext();
-        $helper->createUser($createActCtx, ['email' => 'qwe@qwe.com', 'password' => 'qwe']);
+        $helper->createTestUser($createActCtx, ['email' => 'qwe@qwe.com', 'password' => 'qwe']);
         /**
          * @var User $createdUser
          */
-        $createdUser = $createActCtx['user'];
+        $createdUser = $createActCtx['testUser'];
 
         $preCalled = false;
         $postCalled = false;
 
-        $action = new BasicUpdateAction('module', 'User', 'UserFeatureHelper', NULL, [], function () use (&$preCalled) {
+        $action = new BasicUpdateAction('module', 'TestUser', 'UserFeatureHelper', NULL, [], function () use (&$preCalled) {
 
             $preCalled = true;
 
@@ -59,8 +59,8 @@ class BasicUpdateActionTest extends TestCase {
          */
         $user = $action->process($actCtx);
 
-        $this->assertInstanceOf(Registry::realModelClassName('User'), $user);
-        $this->assertSame($user, $actCtx['user']);
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
+        $this->assertSame($user, $actCtx['testUser']);
         $this->assertSame('qwe2@qwe.com', $user->getEmail());
         $this->assertSame($createdUser->getId(), $user->getId());
 
@@ -84,7 +84,7 @@ class BasicUpdateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => 1]);
 
-        (new BasicUpdateAction('module', 'User', 'CompanyFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicUpdateAction('module', 'TestUser', 'CompanyFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 
@@ -110,7 +110,7 @@ class BasicUpdateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => 567435453]);
 
-        (new BasicUpdateAction('module', 'User', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicUpdateAction('module', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 

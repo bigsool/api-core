@@ -12,7 +12,7 @@ class ErrorTest extends TestCase {
     public function setUp () {
 
         parent::setUp();
-        $this->error = new Error(201, "Id utilisateur invalide", "User id invalid", 200, "userId");
+        $this->error = new Error(201, "Id utilisateur invalide", "TestUser id invalid", 200, "userId");
 
     }
 
@@ -30,7 +30,7 @@ class ErrorTest extends TestCase {
 
     public function testGetEnMessage () {
 
-        $this->assertEquals("User id invalid", $this->error->getEnMessage());
+        $this->assertEquals("TestUser id invalid", $this->error->getEnMessage());
 
     }
 

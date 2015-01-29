@@ -16,7 +16,7 @@ class CompleteAccountTest extends WebTestCase {
                    'password' => 'qwe',
                    'company'  => ['name' => 'bigsool']
         ];
-        $return = $this->get('Account', 'create', $params, 'Account', ['id', 'email', 'password']);
+        $return = $this->get('TestAccount', 'create', $params, 'TestAccount', ['id', 'email', 'password']);
         list($id, $result) = each($return);
 
         $this->assertSuccess($result, $id);
@@ -57,7 +57,7 @@ class CompleteAccountTest extends WebTestCase {
                    'password' => 'qwe',
                    'company'  => ['name' => 'bigsool']
         ];
-        $return = $this->get('Account', 'create', $params, 'Account', ['id', 'email', 'password']);
+        $return = $this->get('TestAccount', 'create', $params, 'TestAccount', ['id', 'email', 'password']);
         list($id, $result) = each($return);
 
         $this->assertSuccess($result, $id);

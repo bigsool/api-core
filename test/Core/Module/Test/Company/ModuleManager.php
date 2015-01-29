@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\CompanyFeature;
+namespace Core\Module\Test\Company;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicFindAction;
@@ -26,15 +26,15 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+        $context->addAction(new BasicCreateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
             'name' => [ERR_INVALID_NAME, new CompanyValidation()],
         ]));
 
-        $context->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+        $context->addAction(new BasicUpdateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
             'name' => [ERR_INVALID_NAME, new CompanyValidation()],
         ]));
 
-        $context->addAction(new BasicFindAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+        $context->addAction(new BasicFindAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
         ]));
 
     }
@@ -44,11 +44,10 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFields (ApplicationContext &$context) {
 
-        $context->addField(new StarField('Company'));
-        $context->addField(new Field('Company', 'id'));
-        $context->addField(new Field('Company', 'name'));
-        $context->addField(new StarField('Storage'));
-
+        $context->addField(new StarField('TestCompany'));
+        $context->addField(new Field('TestCompany', 'id'));
+        $context->addField(new Field('TestCompany', 'name'));
+        $context->addField(new StarField('TestStorage'));
     }
 
     /**
@@ -57,7 +56,7 @@ class ModuleManager extends AbstractModuleManager {
     public function loadFilters (ApplicationContext &$context) {
 
         $expression = new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('users'));
-        $context->addFilter(new ExpressionFilter('Company', 'mee', $expression));
+        $context->addFilter(new ExpressionFilter('TestCompany', 'mee', $expression));
 
     }
 
@@ -79,7 +78,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-        $context->addRule(new FieldRule(new StarField('Company'), new FilterReference($context, 'Company', 'mee')));
+        $context->addRule(new FieldRule(new StarField('TestCompany'), new FilterReference($context, 'TestCompany', 'mee')));
 
     }
 
