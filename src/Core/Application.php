@@ -119,10 +119,14 @@ class Application {
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
                 $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
-                $rpcHandler = $this->getRPCHandlerForProtocol($protocol);
-                if (!($rpcHandler instanceof Handler)) {
+
+                // we can't override $rpcHandler var until we're sure that the new value is a valid RPCHandler
+                // because we require an RPCHandler to send an error
+                $tmpRPCHandler = $this->getRPCHandlerForProtocol($protocol);
+                if (!($tmpRPCHandler instanceof Handler)) {
                     throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
                 }
+                $rpcHandler = $tmpRPCHandler;
 
                 $rpcHandler->parse($request);
 
