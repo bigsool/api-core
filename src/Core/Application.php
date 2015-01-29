@@ -112,15 +112,10 @@ class Application {
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
                 $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
-                $rpcClassName = '\Core\RPC\\' . $protocol;
-                if (!$protocol || !class_exists($rpcClassName)) {
+                $rpcHandler = $this->getRPCHandlerForProtocol($protocol);
+                if (!($rpcHandler instanceof Handler)) {
                     throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
                 }
-
-                $rpcHandler = new $rpcClassName();
-                /**
-                 * @var Handler $rpcHandler
-                 */
 
                 $rpcHandler->parse($request);
 
@@ -270,4 +265,19 @@ class Application {
         return $controller;
     }
 
-} 
+    /**
+     * @param string $protocol
+     *
+     * @return null|Handler
+     */
+    protected function getRPCHandlerForProtocol ($protocol) {
+
+        $rpcClassName = '\Core\RPC\\' . $protocol;
+        if (!$protocol || !class_exists($rpcClassName)) {
+            return NULL;
+        }
+
+        return new $rpcClassName();
+    }
+
+}
