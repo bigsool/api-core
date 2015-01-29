@@ -71,6 +71,9 @@ class Application {
             require $errorFile;
         }
 
+        set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
+        set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
+
 
         /**
          * @var EntityManager $entityManager ;
@@ -89,7 +92,11 @@ class Application {
      */
     public function run () {
 
+        ob_start();
+
         $traceLogger = $this->appCtx->getTraceLogger();
+
+        $logger = $this->appCtx->getLogger()->getMLogger();
 
         $traceLogger->trace('start run');
 
@@ -205,6 +212,12 @@ class Application {
 
             $this->appCtx->getQueryLogger()->logResponse($response);
 
+            if (ob_get_length()) {
+                $logger->addWarning(ob_get_contents());
+            }
+
+            ob_end_clean();
+
             $response->send();
 
             $traceLogger->trace('response sent');
@@ -212,10 +225,12 @@ class Application {
         }
         catch (\Exception $e) {
 
-            $this->appCtx->getLogger()->getMLogger()->addEmergency(json_encode(['code'       => $e->getCode(),
-                                                                                'message'    => $e->getMessage(),
-                                                                                'stackTrace' => $e->getTraceAsString()
-                                                                               ]));
+            $logger->addEmergency(json_encode(['code'       => $e->getCode(),
+                                               'message'    => $e->getMessage(),
+                                               'stackTrace' => $e->getTraceAsString()
+                                              ]));
+
+            ob_end_clean();
 
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
@@ -242,6 +257,21 @@ class Application {
     }
 
     /**
+     * @param string $protocol
+     *
+     * @return null|Handler
+     */
+    protected function getRPCHandlerForProtocol ($protocol) {
+
+        $rpcClassName = '\Core\RPC\\' . $protocol;
+        if (!$protocol || !class_exists($rpcClassName)) {
+            return NULL;
+        }
+
+        return new $rpcClassName();
+    }
+
+    /**
      * @param UrlMatcherInterface $matcher
      * @param Handler             $rpcHandler
      * @param TraceLogger         $traceLogger
@@ -263,21 +293,6 @@ class Application {
         }
 
         return $controller;
-    }
-
-    /**
-     * @param string $protocol
-     *
-     * @return null|Handler
-     */
-    protected function getRPCHandlerForProtocol ($protocol) {
-
-        $rpcClassName = '\Core\RPC\\' . $protocol;
-        if (!$protocol || !class_exists($rpcClassName)) {
-            return NULL;
-        }
-
-        return new $rpcClassName();
     }
 
 }
