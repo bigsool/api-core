@@ -1,5 +1,6 @@
 <?php
 
+// TODO: move to Archipad
 
 namespace Core;
 
@@ -32,7 +33,13 @@ class V1Proxy {
     public function call ($service, $method, $params) {
 
         try {
-            return callLocalAPI($service, $method, $params)->getResult();
+            $result = callLocalAPI($service, $method, $params)->getResult();
+
+            if (is_object($result) && is_callable([$result,'toArray'])) {
+                $result = $result->toArray();
+            }
+
+            return $result;
         }
         catch (\ArchiwebException $e) {
             throw new FormattedError($e->getErrorArray());
