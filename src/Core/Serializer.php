@@ -142,7 +142,7 @@ class Serializer {
 
     private function isDataObject ($data) {
 
-        return (is_object($data) || (is_array($data) && is_object($data[0])));
+        return (is_object($data) || (is_array($data) && array_key_exists(0,$data) && is_object($data[0])));
 
     }
 
