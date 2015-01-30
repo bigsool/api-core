@@ -30,6 +30,11 @@ class SerializerTest extends TestCase {
     protected static $expected;
 
     /**
+     * @var array
+     */
+    protected static $expected2;
+
+    /**
      * @var \Core\Model\TestCompany
      */
     protected static $company1;
@@ -112,6 +117,14 @@ class SerializerTest extends TestCase {
         $registry->save(self::$company1);
         $registry->save(self::$storage);
 
+
+        self::$user1->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user2->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user3->setRegisterDate((new \DateTime())->getTimestamp());
+
+        self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
+
+
         self::$expected = [
             [
                 'name'    => self::$user1->getName(),
@@ -124,6 +137,42 @@ class SerializerTest extends TestCase {
                     ]
                 ]
             ],
+            [
+                'name'    => self::$user2->getName(),
+                'email'   => self::$user2->getEmail(),
+                'company' => [
+                    'name'    => self::$company1->getName(),
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                        'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                    ]
+                ]
+            ]
+        ];
+
+        self::$expected2 = [
+            [
+                'name'    => self::$user1->getName(),
+                'email'   => self::$user1->getEmail(),
+                'company' => [
+                    'name'    => self::$company1->getName(),
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                        'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                    ]
+                ]
+            ],
+            [
+            'name'    => self::$user3->getName(),
+            'email'   => self::$user3->getEmail(),
+            'company' => [
+                'name'    => self::$company1->getName(),
+                'storage' => [
+                    'url'                 => self::$storage->getUrl(),
+                    'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                ]
+            ]
+        ],
             [
                 'name'    => self::$user2->getName(),
                 'email'   => self::$user2->getEmail(),
@@ -176,28 +225,32 @@ class SerializerTest extends TestCase {
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.storage.url')]);
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
+        
         $resultExpected = [
-            ['email' => 'thierry@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'julien@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]],
-            ['email' => 'thomas@bigsool.com', 'TestCompany' => ['TestStorage' => ['url' => 'http://www.amazon.com/']]]
-        ];
-
-        $this->assertEquals(json_encode($resultExpected), $result);
-
-
-        $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.users.password')]);
-        $serializer = new Serializer($reqCtx);
-        $result = $serializer->serialize($result)->getJSON();
-        $resultExpected = [
-            ['email'       => 'thierry@bigsool.com',
-             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+            [
+                'email'   => self::$user1->getEmail(),
+                'company' => [
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                    ]
+                ]
             ],
-            ['email'       => 'julien@bigsool.com',
-             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
+            [
+                'email'   => self::$user2->getEmail(),
+                'company' => [
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                    ]
+                ]
             ],
-            ['email'       => 'thomas@bigsool.com',
-             'TestCompany' => ['TestUser' => [['password' => 'qwe'], ['password' => 'qwe'], ['password' => 'qwe']]]
-            ]
+            [
+                'email'   => self::$user3->getEmail(),
+                'company' => [
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                    ]
+                ]
+            ],
         ];
 
         $this->assertEquals(json_encode($resultExpected), $result);
@@ -266,7 +319,7 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
 
         $serializer->serialize($this->getUserArray($reqCtx));
-        $this->assertSame(self::$expected, $serializer->get());
+        $this->assertSame(self::$expected2, $serializer->get());
 
     }
 
@@ -327,17 +380,17 @@ class SerializerTest extends TestCase {
 
     }
 
-    public function testArrayWithoutRootEntity () {
+    public function testArrayWithoutKeyPath () {
 
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('TestUser');
-        $reqCtx->setReturnedKeyPaths([
+        /*$reqCtx->setReturnedKeyPaths([
                                          new KeyPath('name'),
                                          new KeyPath('email'),
                                          new KeyPath('company.name'),
                                          new KeyPath('company.storage.url'),
                                          new KeyPath('company.storage.lastUsedSpaceUpdate'),
-                                     ]);
+                                     ]);*/
 
         $serializer = new Serializer($reqCtx);
 
