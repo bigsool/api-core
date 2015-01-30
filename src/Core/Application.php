@@ -59,6 +59,10 @@ class Application {
         $this->appCtx = ApplicationContext::getInstance();
         $this->appCtx->setProduct(strstr(get_class($this), '\\', true));
 
+        set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
+        set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
+        register_shutdown_function($this->appCtx->getErrorLogger()->getShutdownFunction());
+
         // This will log routes
         $this->appCtx->getConfigManager();
 
@@ -70,10 +74,6 @@ class Application {
         if (file_exists($errorFile = ROOT_DIR . '/config/errors.php')) {
             require $errorFile;
         }
-
-        set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
-        set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
-        register_shutdown_function($this->appCtx->getErrorLogger()->getShutdownFunction());
 
         /**
          * @var EntityManager $entityManager ;
