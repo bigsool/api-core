@@ -71,6 +71,9 @@ class Application {
             require $errorFile;
         }
 
+        set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
+        set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
+
 
         /**
          * @var EntityManager $entityManager ;
@@ -89,7 +92,11 @@ class Application {
      */
     public function run () {
 
+        ob_start();
+
         $traceLogger = $this->appCtx->getTraceLogger();
+
+        $logger = $this->appCtx->getLogger()->getMLogger();
 
         $traceLogger->trace('start run');
 
@@ -112,15 +119,14 @@ class Application {
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
                 $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
-                $rpcClassName = '\Core\RPC\\' . $protocol;
-                if (!$protocol || !class_exists($rpcClassName)) {
+
+                // we can't override $rpcHandler var until we're sure that the new value is a valid RPCHandler
+                // because we require an RPCHandler to send an error
+                $tmpRPCHandler = $this->getRPCHandlerForProtocol($protocol);
+                if (!($tmpRPCHandler instanceof Handler)) {
                     throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
                 }
-
-                $rpcHandler = new $rpcClassName();
-                /**
-                 * @var Handler $rpcHandler
-                 */
+                $rpcHandler = $tmpRPCHandler;
 
                 $rpcHandler->parse($request);
 
@@ -210,6 +216,12 @@ class Application {
 
             $this->appCtx->getQueryLogger()->logResponse($response);
 
+            if (ob_get_length()) {
+                $logger->addWarning(ob_get_contents());
+            }
+
+            ob_end_clean();
+
             $response->send();
 
             $traceLogger->trace('response sent');
@@ -217,10 +229,12 @@ class Application {
         }
         catch (\Exception $e) {
 
-            $this->appCtx->getLogger()->getMLogger()->addEmergency(json_encode(['code'       => $e->getCode(),
-                                                                                'message'    => $e->getMessage(),
-                                                                                'stackTrace' => $e->getTraceAsString()
-                                                                               ]));
+            $logger->addEmergency(json_encode(['code'       => $e->getCode(),
+                                               'message'    => $e->getMessage(),
+                                               'stackTrace' => $e->getTraceAsString()
+                                              ]));
+
+            ob_end_clean();
 
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
@@ -247,6 +261,21 @@ class Application {
     }
 
     /**
+     * @param string $protocol
+     *
+     * @return null|Handler
+     */
+    protected function getRPCHandlerForProtocol ($protocol) {
+
+        $rpcClassName = '\Core\RPC\\' . $protocol;
+        if (!$protocol || !class_exists($rpcClassName)) {
+            return NULL;
+        }
+
+        return new $rpcClassName();
+    }
+
+    /**
      * @param UrlMatcherInterface $matcher
      * @param Handler             $rpcHandler
      * @param TraceLogger         $traceLogger
@@ -270,4 +299,4 @@ class Application {
         return $controller;
     }
 
-} 
+}

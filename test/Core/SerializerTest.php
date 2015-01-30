@@ -443,6 +443,24 @@ class SerializerTest extends TestCase {
 
     }
 
+    public function testSerializeArrayWithoutKey0 () {
 
+        $reqCtx = new RequestContext();
+        $serializer = new Serializer($reqCtx);
+
+        $array1 =
+            ['serverVersion'   => '1.2',
+             'secureAPIURL'    => 'http:\/\/10.0.1.116\/archiweb\/www\/',
+             'clientIP'        => '1.2.3.4',
+             'serverTimestamp' => 1422521613,
+             'archipadVersion' => '0.0.0',
+             'capabilities'    => ['archiweb' => ['backup' => true]]
+            ];
+        $array2 = [1 => 'qwe'];
+
+        $this->assertSame($array1, $serializer->serialize($array1)->get());
+        $this->assertSame($array2, $serializer->serialize($array2)->get());
+
+    }
 
 }

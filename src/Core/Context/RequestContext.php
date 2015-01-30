@@ -214,14 +214,14 @@ class RequestContext {
 
         if (isset($params['auth'])) {
             // TODO: replace that part by the real authentication system
-            $findCtx = new FindQueryContext('User', $this);
+            /*$findCtx = new FindQueryContext('User', $this);
             $findCtx->addFilter(new StringFilter('User', '', 'id = :id'));
             $findCtx->addKeyPath(new KeyPath('*'));
             $findCtx->setParams(['id' => $params['auth']]);
             $users = ApplicationContext::getInstance()->getNewRegistry()->find($findCtx, false);
             if (count($users) == 1) {
                 $this->getAuth()->setUser($users[0]);
-            }
+            }*/
             unset($params['auth']);
         }
 

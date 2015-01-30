@@ -10,6 +10,7 @@ use Core\Config\ConfigManager;
 use Core\Error\ErrorManager;
 use Core\Field\Field;
 use Core\Filter\Filter;
+use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
 use Core\Logger\QueryLogger;
 use Core\Logger\SQLLogger;
@@ -77,6 +78,11 @@ class ApplicationContext {
      * @var QueryLogger
      */
     protected $queryLogger;
+
+    /**
+     * @var ErrorLogger
+     */
+    protected $errorLogger;
 
     /**
      * @var SQLLogger
@@ -175,6 +181,20 @@ class ApplicationContext {
         }
 
         return $this->logger;
+
+    }
+
+    /**
+     * @return ErrorLogger
+     */
+    public function getErrorLogger () {
+
+        if (!isset($this->errorLogger)) {
+            $this->errorLogger = new ErrorLogger();
+            $this->errorLogger->setSessionId($this->getSessionId());
+        }
+
+        return $this->errorLogger;
 
     }
 
