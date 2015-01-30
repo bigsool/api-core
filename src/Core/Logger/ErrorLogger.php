@@ -17,6 +17,11 @@ class ErrorLogger extends AbstractLogger {
     protected $exceptionHandler;
 
     /**
+     * @var callable
+     */
+    protected $shutdownFunction;
+
+    /**
      * @return string
      */
     public function getChannel () {
@@ -55,13 +60,43 @@ class ErrorLogger extends AbstractLogger {
 
             $this->exceptionHandler = function (\Exception $e) {
 
-                $this->getMLogger()->addError('Uncaught '.strval($e));
+                $this->getMLogger()->addError('Uncaught ' . strval($e));
 
             };
 
         }
 
         return $this->exceptionHandler;
+
+    }
+
+    /**
+     * @return callable
+     */
+    public function getShutdownFunction () {
+
+        if (!isset($this->shutdownFunction)) {
+
+            $this->shutdownFunction = function () {
+
+                $lastError = error_get_last();
+
+                if (is_array($lastError)) {
+
+                    $type = isset($lastError['type']) ? $lastError['type'] : '-';
+                    $message = isset($lastError['message']) ? $lastError['message'] : '-';
+                    $file = isset($lastError['file']) ? $lastError['file'] : '-';
+                    $line = isset($lastError['line']) ? $lastError['line'] : '-';
+
+                    $this->getMLogger()->addError("Shutdown with error $type: $message ($file : $line)");
+
+                }
+
+            };
+
+        }
+
+        return $this->shutdownFunction;
 
     }
 

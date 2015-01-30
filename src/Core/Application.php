@@ -73,7 +73,7 @@ class Application {
 
         set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
         set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
-
+        register_shutdown_function($this->appCtx->getErrorLogger()->getShutdownFunction());
 
         /**
          * @var EntityManager $entityManager ;
