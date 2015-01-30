@@ -12,7 +12,7 @@ use Core\Field\Field;
 use Core\Filter\Filter;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
-use Core\Logger\QueryLogger;
+use Core\Logger\RequestLogger;
 use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
 use Core\Registry;
@@ -75,7 +75,7 @@ class ApplicationContext {
     protected $configManager;
 
     /**
-     * @var QueryLogger
+     * @var RequestLogger
      */
     protected $queryLogger;
 
@@ -600,12 +600,12 @@ class ApplicationContext {
     }
 
     /**
-     * @return QueryLogger
+     * @return RequestLogger
      */
     public function getQueryLogger () {
 
         if (!isset($this->queryLogger)) {
-            $this->queryLogger = new QueryLogger();
+            $this->queryLogger = new RequestLogger();
             $this->queryLogger->setSessionId($this->getSessionId());
         }
 

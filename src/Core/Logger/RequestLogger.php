@@ -6,7 +6,7 @@ namespace Core\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class QueryLogger extends AbstractLogger {
+class RequestLogger extends AbstractLogger {
 
     /**
      * @param Request $request
@@ -17,7 +17,7 @@ class QueryLogger extends AbstractLogger {
         $method = $request->getMethod();
         $uri = $request->getUri();
         $get = json_encode($request->query->all());
-        $post = json_encode($request->request);
+        $post = json_encode($request->request->all());
         $server = json_encode($request->server->all());
 
         $this->getMLogger()->addInfo("<-- {$ip} {$method} {$uri} {$get} {$post} {$server}");
@@ -41,7 +41,7 @@ class QueryLogger extends AbstractLogger {
      */
     public function getChannel () {
 
-        return 'queries';
+        return 'requests';
 
     }
 }
