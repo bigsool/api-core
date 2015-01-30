@@ -12,8 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class JSON implements Handler {
 
+    /**
+     * @var string
+     */
     protected $service;
 
+    /**
+     * @var string
+     */
     protected $method;
 
     /**
@@ -30,6 +36,11 @@ class JSON implements Handler {
      * @var string
      */
     protected $locale;
+
+    /**
+     * @var string
+     */
+    protected $ipAddress;
 
     /**
      * @var string
@@ -203,6 +214,8 @@ class JSON implements Handler {
 
         $this->id = $request->query->get('id');
 
+        $this->ipAddress = $request->getClientIp();
+
         $this->returnedRootEntity = $request->query->get('entity');
         $this->setReturnedFields($request->query->get('fields'));
 
@@ -234,4 +247,14 @@ class JSON implements Handler {
         return $this->method;
 
     }
+
+    /**
+     * @return string
+     */
+    public function getIpAddress () {
+
+        return $this->ipAddress;
+
+    }
+
 }
