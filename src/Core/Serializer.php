@@ -106,9 +106,8 @@ class Serializer {
 
             }
             else {
-
-                $dataSerialized[$keyPathArray[$level]] = $data[$keyPathArray[$level]];
-
+                $newDataSerialized = $data[$keyPathArray[$level]];
+                $dataSerialized[$keyPathArray[$level]] = is_a($newDataSerialized, 'DateTime')  ? $this->formatDateTime($newDataSerialized) : $newDataSerialized;
             }
 
         }
@@ -132,7 +131,8 @@ class Serializer {
 
         foreach ($this->keyPathArrays as $keyPathArray) {
             $bla = $this->parseKeyPath($data, $keyPathArray);
-            $entitySerialized = array_merge_recursive($entitySerialized, $bla);
+            $bla = is_array($bla) ? $bla : [$bla];
+            $entitySerialized = array_merge_recursive($entitySerialized,$bla);
         }
 
         return $entitySerialized;
@@ -160,42 +160,28 @@ class Serializer {
         $getter = "get" . ucfirst($currentElemKeyPath);
 
         if (!method_exists($entity, $getter)) {
-            return $result;
+            if (is_a($entity,'Core\Module\MagicalEntity')) {
+                $entity = $entity->getMainEntity();
+                if (!method_exists($entity, $getter)) {
+                    return $result;
+                }
+            }
+            else {
+                return $result;
+            }
         }
 
         $object = $entity->$getter();
 
-        if ($object instanceof \Traversable) {
-            array_shift($keyPathArray);
-            foreach ($object as $elem) {
-                $entityName = $this->getEntityNameFromKeyPath($elem);
-                $result[$entityName][] = $this->parseKeyPath($elem, $keyPathArray);
-            }
+        array_shift($keyPathArray);
+        if (is_object($object) && $keyPathArray) {
+            $result[$currentElemKeyPath] = $this->parseKeyPath($object, $keyPathArray);
         }
         else {
-            array_shift($keyPathArray);
-            if (is_object($object) && $keyPathArray) {
-                $entityName = $this->getEntityNameFromKeyPath($object);
-                $result[$entityName] = $this->parseKeyPath($object, $keyPathArray);
-            }
-            else {
-                $result[$currentElemKeyPath] = $object;
-            }
+            $result[$currentElemKeyPath] = is_a($object,'DateTime') ? $this->formatDateTime($object) : $object;
         }
 
         return $result;
-
-    }
-
-    /**
-     * @param KeyPath $keyPath
-     */
-    private function getEntityNameFromKeyPath ($keyPath) {
-
-        $entityPath = get_class($keyPath);
-        $entityPathExploded = explode('\\', $entityPath);
-
-        return lcfirst($entityPathExploded[count($entityPathExploded) - 1]);
 
     }
 
@@ -214,6 +200,12 @@ class Serializer {
     public function get () {
 
         return $this->dataSerialized;
+
+    }
+
+    public function formatDateTime ($dateTime) {
+
+        return $dateTime->getTimestamp();
 
     }
 
