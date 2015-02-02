@@ -9,6 +9,9 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Filter\StringFilter;
+use Core\Model\TestCompany;
+use Core\Model\TestStorage;
+use Core\Model\TestUser;
 use Core\Model\User;
 use Core\Module\Test\Company\ModuleManager as CompanyModuleManager;
 use Core\Module\Test\Storage\ModuleManager as StorageModuleManager;
@@ -31,6 +34,100 @@ class MagicalModuleManagerTest extends TestCase {
      * @var Connection
      */
     protected static $doctrineConnectionSettings;
+
+    /**
+     * @var \Core\Model\TestCompany
+     */
+     private static $company1;
+
+    /**
+     * @var \Core\Model\TestUser
+     */
+    private static $user1;
+
+    /**
+     * @var \Core\Model\TestUser
+     */
+    private static $user2;
+
+    /**
+     * @var \Core\Model\TestUser
+     */
+    private static $user3;
+
+     /**
+      * @var \Core\Model\TestStorage
+      */
+    private static $storage;
+
+
+    public static function setUpBeforeClass () {
+
+        parent::setUpBeforeClass();
+
+        $ctx = self::getApplicationContext();
+
+
+        $prop = new \ReflectionProperty($ctx, 'entityManager');
+        $prop->setAccessible(true);
+
+        $em = $prop->getValue($ctx);
+
+        self::$doctrineConnectionSettings = $em->getConnection();
+        self::resetDatabase($ctx);
+
+        self::$company1 = new TestCompany();
+        self::$company1->setName('Bigsool');
+        self::$user1 = new TestUser();
+        self::$user1->setEmail('u1@bigsool.com');
+        self::$user1->setPassword('qwe');
+        self::$user1->setCompany(self::$company1);
+        self::$user1->setRegisterDate(new \DateTime());
+        self::$user2 = new TestUser();
+        self::$user2->setEmail('u2@bigsool.com');
+        self::$user2->setCompany(self::$company1);
+        self::$user2->setPassword('qwe');
+        self::$user2->setRegisterDate(new \DateTime());
+        self::$user3 = new TestUser();
+        self::$user3->setEmail('u3@bigsool.com');
+        self::$user3->setCompany(self::$company1);
+        self::$user3->setPassword('qwe');
+        self::$user3->setRegisterDate(new \DateTime());
+        self::$company1->setOwner(self::$user3);
+
+        self::$storage = new TestStorage();
+        self::$storage->setUrl('http://www.amazon.com/');
+        self::$storage->setCompany(self::$company1);
+        self::$storage->setLogin('login');
+        self::$storage->setPassword('qwe');
+        self::$storage->setUsedspace(0);
+        self::$storage->setLastusedspaceupdate(new \DateTime());
+        self::$storage->setIsoutofquota(false);
+        self::$company1->setStorage(self::$storage);
+        self::$company1->addUser(self::$user1);
+        self::$company1->addUser(self::$user2);
+        self::$company1->addUser(self::$user3);
+
+        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry->save(self::$user1);
+        $registry->save(self::$user2);
+        $registry->save(self::$user3);
+        $registry->save(self::$company1);
+        $registry->save(self::$storage);
+
+
+        self::$user1->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user2->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user3->setRegisterDate((new \DateTime())->getTimestamp());
+
+        self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
+
+
+    }
+
+
+
+
 
     public function testMinimalAddAspect () {
 
@@ -720,9 +817,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    /**
-     * @depends testMagicalCreateWithTwoMagicalModuleManager
-     */
     public function testSimpleMagicalUpdate () {
 
         $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
@@ -764,9 +858,6 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('qweqwe', $user->getPassword());
     }
 
-    /**
-     * @depends testMagicalCreateWithTwoMagicalModuleManager
-     */
     public function testComplexMagicalUpdate () {
 
 
@@ -844,9 +935,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    /**
-     * @depends testMagicalCreateWithTwoMagicalModuleManager
-     */
     public function testMagicalUpdateWithTwoMagicalModuleManager () {
 
 
@@ -963,9 +1051,7 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    /**
-     * @depends testMagicalCreateWithTwoMagicalModuleManager
-     */
+
     public function testMagicalFindObject () {
 
         $userModuleManager = new UserModuleManager();
@@ -1004,7 +1090,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $filters =
-            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
+            [new StringFilter('TestUser', 'bla', 'id = 1')];
         $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
@@ -1014,15 +1100,12 @@ class MagicalModuleManagerTest extends TestCase {
         $account = $result[0];
         $this->assertInstanceOf('\Core\Model\TestAccount', $account);
         $this->assertInstanceOf('\Core\Model\TestCompany', $account->getCompany());
-        $this->assertEquals('wozniak', $account->getUser()->getName());
-        $this->assertEquals('bigsoolee', $account->getCompany()->getName());
-        $this->assertEquals('http://www.bigsoolee.com', $account->getStorage()->getUrl());
+        $this->assertEquals('u1@bigsool.com', $account->getUser()->getEmail());
+        $this->assertEquals('Bigsool', $account->getCompany()->getName());
+        $this->assertEquals('http://www.amazon.com/', $account->getStorage()->getUrl());
 
     }
 
-    /**
-     * @depends testMagicalCreateWithTwoMagicalModuleManager
-     */
     public function testMagicalFindArray () {
 
         $userModuleManager = new UserModuleManager();
@@ -1060,7 +1143,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $filters =
-            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
+            [new StringFilter('TestUser', 'bla', 'id = 1')];
         $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
@@ -1069,19 +1152,17 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
         $this->assertTrue(is_array($result));
-        $this->assertEquals('wozniak', $result['name']);
-        $this->assertEquals('bigsoolee', $result['company']['name']);
-        $this->assertEquals('http://www.bigsoolee.com', $result['company']['storage']['url']);
+        $this->assertEquals('Bigsool', $result['company']['name']);
+        $this->assertEquals('http://www.amazon.com/', $result['company']['storage']['url']);
 
     }
 
     /**
      * @depends testMagicalCreateWithTwoMagicalModuleManager
      */
-    public function testMagicalDelete () {
+    public function testMagicalDeleteOneToOne () {
 
-        $filters =
-            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
+        $filters = [new StringFilter('TestUser', 'bla', 'id = 2')];
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('TestAccount');
@@ -1107,8 +1188,51 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
 
-        $filters =
-            [new StringFilter('TestUser', 'bla', 'id = 1'), new StringFilter('TestUser', 'bla', 'name = \'wozniak\'')];
+        $result = $this->magicalAction('Find', $mgrUser, [['user.*'], [], $filters, true]);
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) == 0);
+
+        $companyModuleManager = new CompanyModuleManager();
+        $mgrCompany = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrCompany->method('getModuleName')->willReturn('TestAccount');
+
+        $this->setMainEntity($mgrCompany, [
+            'model' => 'TestCompany',
+        ]);
+
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+
+        $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
+
+        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [],[], true]);
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) == 0);
+
+    }
+
+
+    public function testMagicalDeleteOneToMany () {
+
+        $filters = [new StringFilter('TestUser', 'bla', 'id = 3')];
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'TestUser',
+        ]);
+
+        $this->magicalAction('Delete', $mgrUser, [$filters]);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager = new UserModuleManager();
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
 
         $result = $this->magicalAction('Find', $mgrUser, [['user.*'], [], $filters, true]);
 
@@ -1131,8 +1255,8 @@ class MagicalModuleManagerTest extends TestCase {
         $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [], $filters, true]);
 
         $this->assertTrue(is_array($result));
-        $this->assertTrue(count($result) == 0);
-
+        $this->assertTrue(count($result) == 1);
+        $this->assertEquals('Bigsool', $result[0]['name']);
     }
 
     public function setUp () {
@@ -1152,32 +1276,12 @@ class MagicalModuleManagerTest extends TestCase {
         $em->beginTransaction();
     }
 
-    public static function setUpBeforeClass () {
 
-        parent::setUpBeforeClass();
-
-        $ctx = self::getApplicationContext();
-
-
-        $prop = new \ReflectionProperty($ctx, 'entityManager');
-        $prop->setAccessible(true);
-
-        $em = $prop->getValue($ctx);
-
-        self::$doctrineConnectionSettings = $em->getConnection();
-        self::resetDatabase($ctx);
-
-    }
 
     protected function tearDown () {
 
         $whiteList =
-            ['testMagicalCreateWithTwoMagicalModuleManager',
-             'testSimpleMagicalUpdate',
-             'testComplexMagicalUpdate',
-             'testMagicalUpdateWithTwoMagicalModuleManager',
-             'testMagicalFind'
-            ];
+            [];
         $currentTestFcName = $this->getName();
         if (!in_array($currentTestFcName, $whiteList)) {
             $this->rollBackDatabase();

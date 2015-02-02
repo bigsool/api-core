@@ -3,23 +3,21 @@ Core\Model\TestCompany:
         owner:
             targetEntity: Core\Model\TestUser
             inversedBy: ownedCompany
-            cascade:
-                - persist
+            cascade: ["persist"]
             joinColumns:
                 owner_id:
                     referencedColumnName: id
                     nullable: true
+                    onDelete: CASCADE
         storage:
             targetEntity: Core\Model\TestStorage
             mappedBy: company
-            cascade:
-                - persist
+            cascade: ["persist"]
     oneToMany:
         users:
             targetEntity: Core\Model\TestUser
             mappedBy: company
-            cascade:
-                - persist
+            cascade: ["persist"]
     type: entity
     table: company
     id:
