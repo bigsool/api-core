@@ -76,4 +76,9 @@ interface Handler {
      */
     public function getReturnedFields ();
 
+    /**
+     * @return string
+     */
+    public function getIpAddress ();
+
 } 
