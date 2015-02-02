@@ -97,6 +97,10 @@ class RequestContext {
             if (!($returnedKeyPath instanceof KeyPath)) {
                 throw new \RuntimeException('invalid $returnedKeyPath');
             }
+            $value = $returnedKeyPath->getValue();
+            if (!is_string($value) || $value == '*') {
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
+            }
         }
 
         $this->returnedKeyPaths = $returnedKeyPaths;

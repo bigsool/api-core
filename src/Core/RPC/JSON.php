@@ -143,11 +143,6 @@ class JSON implements Handler {
     protected function setReturnedFields (array $fields = NULL) {
 
         $fields = (array)$fields;
-        foreach ($fields as $field) {
-            if (!is_string($field) || $field == '*') {
-                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
-            }
-        }
 
         $this->returnedFields = $fields;
 
