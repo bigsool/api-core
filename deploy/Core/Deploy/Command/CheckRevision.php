@@ -38,6 +38,8 @@ class CheckRevision extends Base {
 
         $this->areYouSureYouWantToContinue();
 
+        $this->checkIfUncommittedChangesExists();
+
         $revision = $this->checkRevision();
 
         $this->checkIfRevisionAlreadyPushed($revision);
@@ -46,12 +48,27 @@ class CheckRevision extends Base {
 
     }
 
+    protected function checkIfUncommittedChangesExists () {
+
+        if (Helper::hasUncommittedFiles($this->paths['root'])) {
+
+            $this->getOutput()->writeln(sprintf("<warning>------ UNCOMMITTED CHANGES WILL BE PUSHED</warning>",
+                                                strtoupper($this->getEnv())));
+            if (!$this->confirm("<warning>------ ARE YOU SURE YOU WANT TO CONTINUE ?\n[Y/n] </warning>")) {
+                $this->abort('Checking revision aborted by user');
+            }
+
+            $this->getOutput()->writeln('');
+
+        }
+
+    }
+
     protected function areYouSureYouWantToContinue () {
 
-        $this->getOutput()->writeln(sprintf("------ WARNING"));
-        $this->getOutput()->writeln(sprintf("------ THIS SCRIPT WILL PUSH THE SPECIFIED FOLDER TO <env>%s</env>",
+        $this->getOutput()->writeln(sprintf("------ This script will push the specified folder to <env>%s</env>",
                                             strtoupper($this->getEnv())));
-        if (!$this->confirm("------ ARE YOU SURE YOU WANT TO CONTINUE ?\n[Y/n] ")) {
+        if (!$this->confirm("------ Are you sure you want to continue ?\n[Y/n] ")) {
             $this->abort('Checking revision aborted by user');
         }
 
@@ -105,7 +122,7 @@ class CheckRevision extends Base {
             $this->getOutput()->writeln(sprintf("------ The remote folder <info>%s</info> exists !",
                                                 $completeOutputPath));
             $this->getOutput()
-                 ->writeln(sprintf("<options=bold;fg=magenta>You are pretty likely doing something stupid.</option=bold;fg=magenta>"));
+                 ->writeln(sprintf("<warning>You are pretty likely doing something stupid.</warning>"));
             if (!$this->confirm("------ Are you sure you want to continue ?\n[Y/n] ")) {
                 $this->abort('Checking revision aborted by user');
             }
@@ -122,7 +139,7 @@ class CheckRevision extends Base {
 
         if (strlen($currentRev) == 0) {
             $this->getOutput()
-                 ->writeln("<options=bold;fg=magenta>No revision found on server.</options=bold;fg=magenta>");
+                 ->writeln("<warning>No revision found on server.</warning>");
             if (!$this->confirm("Is It your first commit ?\n[Y/n] ")) {
                 $this->abort('Checking revision aborted by user');
             }

@@ -4,11 +4,11 @@ namespace Core\Deploy\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Helper\QuestionHelper;
 
 abstract class Base extends Command {
 
@@ -35,6 +35,78 @@ abstract class Base extends Command {
     }
 
     /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     */
+    protected function execute (InputInterface $input, OutputInterface $output) {
+
+        $this->setInput($input);
+        $this->setOutput($output);
+        $this->setEnv($input->getArgument('env'));
+        $this->setQuestion($this->getHelper('dialog'));
+
+    }
+
+    /**
+     *
+     * @param string $why
+     *
+     * @throws \RunTimeException
+     */
+    protected function abort ($why = NULL) {
+
+        throw new \RunTimeException($why);
+
+    }
+
+    protected function isStageOrProd () {
+
+        return in_array($this->getEnv(), array('prod', 'stage'));
+
+    }
+
+    /**
+     *
+     * @return string
+     */
+    protected function getEnv () {
+
+        return $this->env;
+
+    }
+
+    /**
+     *
+     * @param string $env
+     *
+     * @throws \RunTimeException
+     */
+    protected function setEnv ($env) {
+
+        $env = strtolower($env);
+        if (!in_array($env, array('dev', 'stage', 'prod'))) {
+            $this->abort(sprintf('Wrong environment : %s - expected once of these value : dev, stage, prod', $env));
+        }
+
+        $this->env = $env;
+
+    }
+
+    /**
+     *
+     * @param string $msg
+     *
+     * @return bool
+     */
+    protected function confirm ($msg) {
+
+        return $this->getQuestion()->ask($this->getInput(), $this->getOutput(), new ConfirmationQuestion($msg, false));
+
+    }
+
+    /**
      *
      * @return QuestionHelper
      */
@@ -51,16 +123,6 @@ abstract class Base extends Command {
     protected function setQuestion (QuestionHelper $question) {
 
         $this->question = $question;
-
-    }
-
-    /**
-     *
-     * @return string
-     */
-    protected function getEnv () {
-
-        return $this->env;
 
     }
 
@@ -105,69 +167,10 @@ abstract class Base extends Command {
         $output->getFormatter()->setStyle('env', $envStyle);
         $output->getFormatter()->setStyle('rev', $revStyle);
 
+        $warningStyle = new OutputFormatterStyle('red', NULL, array('bold'));
+        $output->getFormatter()->setStyle('warning', $warningStyle);
+
         $this->output = $output;
-
-    }
-
-    /**
-     *
-     * @param string $why
-     *
-     * @throws \RunTimeException
-     */
-    protected function abort ($why = NULL) {
-
-        throw new \RunTimeException($why);
-
-    }
-
-    protected function isStageOrProd () {
-
-        return in_array($this->getEnv(), array('prod', 'stage'));
-
-    }
-
-    /**
-     *
-     * @param string $env
-     *
-     * @throws \RunTimeException
-     */
-    protected function setEnv ($env) {
-
-        $env = strtolower($env);
-        if (!in_array($env, array('dev', 'stage', 'prod'))) {
-            $this->abort(sprintf('Wrong environment : %s - expected once of these value : dev, stage, prod', $env));
-        }
-
-        $this->env = $env;
-
-    }
-
-    /**
-     *
-     * @param string $msg
-     *
-     * @return bool
-     */
-    protected function confirm ($msg) {
-
-        return $this->getQuestion()->ask($this->getInput(), $this->getOutput(), new ConfirmationQuestion($msg, false));
-
-    }
-
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     */
-    protected function execute (InputInterface $input, OutputInterface $output) {
-
-        $this->setInput($input);
-        $this->setOutput($output);
-        $this->setEnv($input->getArgument('env'));
-        $this->setQuestion($this->getHelper('dialog'));
 
     }
 

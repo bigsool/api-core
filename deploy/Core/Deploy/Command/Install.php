@@ -270,7 +270,7 @@ class Install extends Base {
                 return true;
             }
             $this->getOutput()
-                 ->writeln("<options=bold;fg=magenta>No revision found on server.</options=bold;fg=magenta>");
+                 ->writeln("<warning>No revision found on server.</warning>");
             if (!$this->confirm("Is It your first commit ?\n[Y/n] ")) {
                 $this->abort('Installation aborted by user');
             }
