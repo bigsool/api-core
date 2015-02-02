@@ -19,6 +19,7 @@
     "psr-0": {
       "Core": "src/",
       "Core\\Doctrine": "doctrine/",
+      "Core\\Deploy": "deploy/",
       "Core\\Sami": "sami/"
     }
   },

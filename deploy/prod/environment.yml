@@ -1,0 +1,7 @@
+env: 'stage'
+git_tag: 'stage-deployed'
+source_dir: '../..'
+dest_dir: '/var/www/archiweb2/stage-api'
+host: 'localhost'
+user: 'bigsool'
+key: '../../../../../../../../../../../../../home/bigsool/.ssh/id_rsa'
