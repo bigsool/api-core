@@ -92,6 +92,9 @@ abstract class Base extends Command {
 
         $this->env = $env;
 
+        $this->paths['env'] = $this->paths['root'] . '/' . $this->getEnv() . '/';
+        $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
+
     }
 
     /**

@@ -19,15 +19,6 @@ class Deploy extends Base {
 
     }
 
-    protected function setEnv ($env) {
-
-        parent::setEnv($env);
-
-        $this->paths['env'] = $this->paths['root'] . '/deploy/' . $this->getEnv() . '/';
-        $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
-
-    }
-
     protected function execute (InputInterface $input, OutputInterface $output) {
 
         parent::execute($input, $output);
@@ -52,9 +43,16 @@ class Deploy extends Base {
 
         $config = Yaml::parse($this->paths['environmentFile']);
         $cmdInstall =
-            "ssh -t -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} 'php {$config['dest_dir']}-{$revision}/deploy/deploy.php install {$this->getEnv()}'";
+            "ssh -t -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
+            . "'php {$config['dest_dir']}{$this->getEnv()}-{$revision}/deploy/deploy.php install {$this->getEnv()}'";
 
         passthru($cmdInstall);
+
+    }
+
+    protected function setEnv ($env) {
+
+        parent::setEnv($env);
 
     }
 

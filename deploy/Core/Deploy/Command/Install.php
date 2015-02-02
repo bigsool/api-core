@@ -51,93 +51,6 @@ class Install extends Base {
     }
 
     /**
-     * @return array
-     */
-    protected function getEnvConf () {
-
-        if (!isset($this->envConf)) {
-            $this->envConf = Yaml::parse($this->paths['environmentFile']);
-        }
-
-        return $this->envConf;
-    }
-
-    /**
-     *
-     * @param string $env
-     *
-     * @throws \RunTimeException
-     */
-    protected function setEnv ($env) {
-
-        parent::setEnv($env);
-
-        $this->paths['env'] = $this->paths['root'] . '/deploy/' . $this->getEnv() . '/';
-        $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
-
-        $config = $this->getEnvConf();
-
-        $this->deployDestDir = $config['dest_dir'];
-
-    }
-
-    protected function setDown () {
-
-        $this->setIsDown(true);
-
-    }
-
-    protected function setUp () {
-
-        $this->setIsDown(false);
-
-    }
-
-    protected function setIsDown ($isDown) {
-
-        if ($isDown) {
-
-            $this->getOutput()->write('Setting env as DOWN ... ');
-
-            if (!copy($this->setDownPath, $this->isDownPath)) {
-
-                $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
-
-                $this->setIsDown(false);
-
-                $content = file_get_contents($this->isDownPath);
-                if ($content) {
-                    $this->getOutput()->writeln('<error>WARNING ! Below is content of config.isDown.php<error>');
-                    $this->getOutput()
-                         ->writeln('<error>You might want to check that because ENV might be down !<error>');
-                    $this->getOutput()->writeln($content, OutputInterface::OUTPUT_RAW);
-                    $this->getOutput()->writeln('<error>aborting... !</error>');
-                    $this->abort();
-                }
-
-            }
-
-        }
-        else {
-
-            $this->getOutput()->write('Setting env as UP ... ');
-
-            if (false === file_put_contents($this->isDownPath, '')) {
-
-                $this->getOutput()->writeln("\n<error>/!\\ /!\\ /!\\ /!\\ CRITICAL ERROR /!\\ /!\\ /!\\ /!\\</error>");
-                $this->getOutput()->writeln('<error>ERROR WHILE RE-UPPING ENV !!</error>');
-                $this->getOutput()->writeln('<error>YOUR ENV IS DOWN AND YOU NEED TO FIX IT BY YOURSELF !!</error>');
-                $this->abort();
-
-            }
-
-        }
-
-        $this->getOutput()->writeln("OK\n");
-
-    }
-
-    /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
@@ -195,69 +108,19 @@ class Install extends Base {
 
     }
 
-    protected function changeTheLink () {
+    /**
+     *
+     * @param string $env
+     *
+     * @throws \RunTimeException
+     */
+    protected function setEnv ($env) {
 
-        if (!$this->confirm("Symlink will be updated. Are you ready for that ?\n[Y/n] ")) {
-            $this->abort('Installation aborted by user');
-        }
+        parent::setEnv($env);
 
-        $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
+        $config = $this->getEnvConf();
 
-        if (!$this->isFirstInstall()) {
-
-            $backupLink = $this->deployDestDir . '.old';
-            if (!rename($this->deployDestDir, $backupLink)) {
-                $this->abort('Unable to rename current ' . $this->getEnv() . ' link to .old');
-            }
-
-            $this->getOutput()->writeln("OK\n");
-
-        }
-        else {
-
-            $this->getOutput()->writeln("Not applicable (first install)\n");
-
-        }
-
-        $this->getOutput()->write(sprintf('Creating <env>%s</env> link ... ', $this->getEnv()));
-
-        if (!symlink(realpath(__DIR__ . '/../../../'), $this->deployDestDir)) {
-
-            $this->getOutput()->writeln("<error>Unable to create new link</error>");
-
-            if (!$this->isFirstInstall()) {
-
-                $this->getOutput()->writeln("Rollbacking to old folder");
-
-                if (!rename($backupLink, $this->deployDestDir)) {
-
-                    $this->getOutput()->writeln("<error>UNABLE TO ROLLBACK !!!</error>");
-                    $this->getOutput()
-                         ->writeln(sprintf("<error>You're in deep shit, no <env>%s</env> anymore !!</error>",
-                                           $this->getEnv()));
-                    $this->abort('Please fix manually');
-
-                }
-
-            }
-
-            $this->abort(sprintf('WARNING, unable to upgrade %s, setting back up OLD %s', $this->getEnv(),
-                                 $this->getEnv()));
-
-        }
-
-        $this->getOutput()->writeln("OK\n");
-
-    }
-
-    protected function waitForTransactionsFinish () {
-
-        $this->getOutput()->write('Waiting a bit to transactions finish .');
-        for ($i = 0; $i < 5; ++$i) {
-            sleep(1);
-            $this->getOutput()->write('.');
-        }
-        $this->getOutput()->writeln(" OK\n");
+        $this->deployDestDir = $config['dest_dir'];
 
     }
 
@@ -280,6 +143,18 @@ class Install extends Base {
 
     }
 
+    /**
+     * @return array
+     */
+    protected function getEnvConf () {
+
+        if (!isset($this->envConf)) {
+            $this->envConf = Yaml::parse($this->paths['environmentFile']);
+        }
+
+        return $this->envConf;
+    }
+
     protected function checkIfConfigFilesExists () {
 
         $this->getOutput()->write("Checking if config files exist ... ");
@@ -294,20 +169,6 @@ class Install extends Base {
         }
 
         $this->getOutput()->writeln("OK\n");
-
-    }
-
-    protected function loadDBConfig ($file) {
-
-        if (!file_exists($file)) {
-            $this->abort(sprintf('Config file %s cannot be found.', $file));
-        }
-        require $file;
-        if (!isset($Config) || !isset($Config['database'])) {
-            $this->abort(sprintf('Config cannot be found in the file %s', $file));
-        }
-
-        return $Config['database'];
 
     }
 
@@ -376,6 +237,20 @@ class Install extends Base {
 
     }
 
+    protected function loadDBConfig ($file) {
+
+        if (!file_exists($file)) {
+            $this->abort(sprintf('Config file %s cannot be found.', $file));
+        }
+        require $file;
+        if (!isset($Config) || !isset($Config['database'])) {
+            $this->abort(sprintf('Config cannot be found in the file %s', $file));
+        }
+
+        return $Config['database'];
+
+    }
+
     protected function confirmNextDBName () {
 
         $output = $this->getOutput();
@@ -401,7 +276,9 @@ class Install extends Base {
         $answer = $this->getQuestion()->ask(
             $this->getInput(),
             $output,
-            new Question(sprintf("Are you sure you want to continue ? All current data on <info>%s@%s</info> will be lost !\n[next <env>%s</env> database name] ",
+            new Question(sprintf("Are you sure you want to continue ? "
+                                 . "All current data on <info>%s@%s</info> will be lost !"
+                                 . "\n[next <env>%s</env> database name] ",
                                  $nextDBName, $nextDBHost, $this->env))
         );
         if ($answer != $nextDBName) {
@@ -411,6 +288,122 @@ class Install extends Base {
         }
 
         $this->getOutput()->writeln('');
+
+    }
+
+    protected function createConfigLink () {
+
+        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> ... ', $this->dbConfigRealPath));
+
+        $success = symlink($this->nextDBConfigRealPath, $this->nextDBConfigPath);
+
+        if (!$success) {
+            $this->abort('Unable to create config symlink, aborting...');
+        }
+
+        $this->getOutput()->writeln('OK');
+
+    }
+
+    protected function runSanityChecks () {
+
+        clearstatcache();
+
+        // folder www
+        $this->getOutput()->write('Checking the folder <info>www</info> ... ');
+        $perms = fileperms($this->paths['root'] . '/www');
+        if (($perms & 0x0004) != 0x0004) {
+            $this->abort('www folder is not world readable');
+        }
+        $this->getOutput()->writeln('OK');
+
+        // TODO : check tmp folder
+
+        // folder Core/Logs
+        $this->getOutput()->write('Checking the folder <info>Log</info> ... ');
+        $logPath = $this->paths['root'] . '/include/logs';
+        if (!file_exists($logPath)) {
+            if (!mkdir($logPath)) {
+                $this->abort('unable to create the folder Log');
+            }
+            if (!chmod($logPath, 0777)) {
+                $this->abort('unable to make the folder Log world writeable');
+            }
+        }
+        $perms = fileperms($logPath);
+        if (($perms & 0x0004) != 0x0004 || ($perms & 0x0002) != 0x0002) {
+            $this->abort('logs folder is not world o+rw');
+        }
+        $this->getOutput()->writeln('OK');
+
+        // symlink config
+        $this->getOutput()->write('Checking the <info>config</info> file ... ');
+        $configFile = $this->isStageOrProd() ? $this->nextDBConfigRealPath : $this->dbConfigRealPath;
+        $perms = fileperms($configFile);
+        if (($perms & 0x0020) != 0x0020) {
+            $this->abort(sprintf('%s file is not group readable', $this->dbConfigRealPath));
+        }
+        $this->getOutput()->writeln("OK");
+    }
+
+    protected function setDown () {
+
+        $this->setIsDown(true);
+
+    }
+
+    protected function setIsDown ($isDown) {
+
+        if ($isDown) {
+
+            $this->getOutput()->write('Setting env as DOWN ... ');
+
+            if (!copy($this->setDownPath, $this->isDownPath)) {
+
+                $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
+
+                $this->setIsDown(false);
+
+                $content = file_get_contents($this->isDownPath);
+                if ($content) {
+                    $this->getOutput()->writeln('<error>WARNING ! Below is content of config.isDown.php<error>');
+                    $this->getOutput()
+                         ->writeln('<error>You might want to check that because ENV might be down !<error>');
+                    $this->getOutput()->writeln($content, OutputInterface::OUTPUT_RAW);
+                    $this->getOutput()->writeln('<error>aborting... !</error>');
+                    $this->abort();
+                }
+
+            }
+
+        }
+        else {
+
+            $this->getOutput()->write('Setting env as UP ... ');
+
+            if (false === file_put_contents($this->isDownPath, '')) {
+
+                $this->getOutput()->writeln("\n<error>/!\\ /!\\ /!\\ /!\\ CRITICAL ERROR /!\\ /!\\ /!\\ /!\\</error>");
+                $this->getOutput()->writeln('<error>ERROR WHILE RE-UPPING ENV !!</error>');
+                $this->getOutput()->writeln('<error>YOUR ENV IS DOWN AND YOU NEED TO FIX IT BY YOURSELF !!</error>');
+                $this->abort();
+
+            }
+
+        }
+
+        $this->getOutput()->writeln("OK\n");
+
+    }
+
+    protected function waitForTransactionsFinish () {
+
+        $this->getOutput()->write('Waiting a bit to transactions finish .');
+        for ($i = 0; $i < 5; ++$i) {
+            sleep(1);
+            $this->getOutput()->write('.');
+        }
+        $this->getOutput()->writeln(" OK\n");
 
     }
 
@@ -440,23 +433,6 @@ class Install extends Base {
         $this->getOutput()->writeln("OK\n");
 
         return $prodDumpPath;
-
-    }
-
-    protected function runUpgradeScripts () {
-
-        $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
-
-        $doctrineFolder = $this->paths['root'] . '/doctrine/';
-        $returnCode = NULL;
-        $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
-        system($cmd, $returnCode);
-
-        if ($returnCode != 0) {
-            $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
-        }
-
-        $this->getOutput()->writeln("\nOK\n");
 
     }
 
@@ -528,59 +504,82 @@ class Install extends Base {
 
     }
 
-    protected function createConfigLink () {
+    protected function runUpgradeScripts () {
 
-        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> ... ', $this->dbConfigRealPath));
+        $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
 
-        $success = symlink($this->nextDBConfigRealPath, $this->nextDBConfigPath);
+        $doctrineFolder = $this->paths['root'] . '/doctrine/';
+        $returnCode = NULL;
+        $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
+        system($cmd, $returnCode);
 
-        if (!$success) {
-            $this->abort('Unable to create config symlink, aborting...');
+        if ($returnCode != 0) {
+            $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
         }
 
-        $this->getOutput()->writeln('OK');
+        $this->getOutput()->writeln("\nOK\n");
 
     }
 
-    protected function runSanityChecks () {
+    protected function changeTheLink () {
 
-        clearstatcache();
-
-        // folder www
-        $this->getOutput()->write('Checking the folder <info>www</info> ... ');
-        $perms = fileperms($this->paths['root'] . '/www');
-        if (($perms & 0x0004) != 0x0004) {
-            $this->abort('www folder is not world readable');
+        if (!$this->confirm("Symlink will be updated. Are you ready for that ?\n[Y/n] ")) {
+            $this->abort('Installation aborted by user');
         }
-        $this->getOutput()->writeln('OK');
 
-        // TODO : check tmp folder
+        $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
 
-        // folder Core/Logs
-        $this->getOutput()->write('Checking the folder <info>Log</info> ... ');
-        $logPath = $this->paths['root'] . '/include/logs';
-        if (!file_exists($logPath)) {
-            if (!mkdir($logPath)) {
-                $this->abort('unable to create the folder Log');
+        if (!$this->isFirstInstall()) {
+
+            $backupLink = $this->deployDestDir . '.old';
+            if (!rename($this->deployDestDir, $backupLink)) {
+                $this->abort('Unable to rename current ' . $this->getEnv() . ' link to .old');
             }
-            if (!chmod($logPath, 0777)) {
-                $this->abort('unable to make the folder Log world writeable');
-            }
-        }
-        $perms = fileperms($logPath);
-        if (($perms & 0x0004) != 0x0004 || ($perms & 0x0002) != 0x0002) {
-            $this->abort('logs folder is not world o+rw');
-        }
-        $this->getOutput()->writeln('OK');
 
-        // symlink config
-        $this->getOutput()->write('Checking the <info>config</info> file ... ');
-        $configFile = $this->isStageOrProd() ? $this->nextDBConfigRealPath : $this->dbConfigRealPath;
-        $perms = fileperms($configFile);
-        if (($perms & 0x0020) != 0x0020) {
-            $this->abort(sprintf('%s file is not group readable', $this->dbConfigRealPath));
+            $this->getOutput()->writeln("OK\n");
+
         }
-        $this->getOutput()->writeln("OK");
+        else {
+
+            $this->getOutput()->writeln("Not applicable (first install)\n");
+
+        }
+
+        $this->getOutput()->write(sprintf('Creating <env>%s</env> link ... ', $this->getEnv()));
+
+        if (!symlink(realpath(__DIR__ . '/../../../'), $this->deployDestDir)) {
+
+            $this->getOutput()->writeln("<error>Unable to create new link</error>");
+
+            if (!$this->isFirstInstall()) {
+
+                $this->getOutput()->writeln("Rollbacking to old folder");
+
+                if (!rename($backupLink, $this->deployDestDir)) {
+
+                    $this->getOutput()->writeln("<error>UNABLE TO ROLLBACK !!!</error>");
+                    $this->getOutput()
+                         ->writeln(sprintf("<error>You're in deep shit, no <env>%s</env> anymore !!</error>",
+                                           $this->getEnv()));
+                    $this->abort('Please fix manually');
+
+                }
+
+            }
+
+            $this->abort(sprintf('WARNING, unable to upgrade %s, setting back up OLD %s', $this->getEnv(),
+                                 $this->getEnv()));
+
+        }
+
+        $this->getOutput()->writeln("OK\n");
+
+    }
+
+    protected function setUp () {
+
+        $this->setIsDown(false);
+
     }
 
 }

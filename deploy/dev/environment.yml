@@ -1,7 +1,7 @@
 env: 'dev'
 git_tag: 'dev-deployed'
 source_dir: '../..'
-dest_dir: '/var/www/test-deploy/dev-api/dev-'
+dest_dir: '/var/www/test-deploy/dev-api/'
 host: '10.0.1.67'
 user: 'julien'
 key: 'id_rsa'

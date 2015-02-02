@@ -21,15 +21,6 @@ class CheckRevision extends Base {
 
     }
 
-    protected function setEnv ($env) {
-
-        parent::setEnv($env);
-
-        $this->paths['env'] = $this->paths['root'] . '/' . $this->getEnv() . '/';
-        $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
-
-    }
-
     protected function execute (InputInterface $input, OutputInterface $output) {
 
         $output->writeln('');
@@ -48,6 +39,24 @@ class CheckRevision extends Base {
 
     }
 
+    protected function setEnv ($env) {
+
+        parent::setEnv($env);
+
+    }
+
+    protected function areYouSureYouWantToContinue () {
+
+        $this->getOutput()->writeln(sprintf("------ This script will push the specified folder to <env>%s</env>",
+                                            strtoupper($this->getEnv())));
+        if (!$this->confirm("------ Are you sure you want to continue ?\n[Y/n] ")) {
+            $this->abort('Checking revision aborted by user');
+        }
+
+        $this->getOutput()->writeln('');
+
+    }
+
     protected function checkIfUncommittedChangesExists () {
 
         if (Helper::hasUncommittedFiles($this->paths['root'])) {
@@ -61,18 +70,6 @@ class CheckRevision extends Base {
             $this->getOutput()->writeln('');
 
         }
-
-    }
-
-    protected function areYouSureYouWantToContinue () {
-
-        $this->getOutput()->writeln(sprintf("------ This script will push the specified folder to <env>%s</env>",
-                                            strtoupper($this->getEnv())));
-        if (!$this->confirm("------ Are you sure you want to continue ?\n[Y/n] ")) {
-            $this->abort('Checking revision aborted by user');
-        }
-
-        $this->getOutput()->writeln('');
 
     }
 
@@ -108,9 +105,9 @@ class CheckRevision extends Base {
     protected function checkIfRevisionAlreadyPushed ($revision) {
 
         $config = Yaml::parse($this->paths['environmentFile']);
-        $completeOutputPath = $config['dest_dir'] . '-' . $revision;
-        $cmd =
-            "ssh -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} 'ls \"{$completeOutputPath}\" 2> /dev/null'";
+        $completeOutputPath = $config['dest_dir'] . $this->getEnv() . '-' . substr($revision, 0, 7);
+        $cmd = "ssh -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
+               . "'ls \"{$completeOutputPath}\" 2> /dev/null'";
 
         $result = exec($cmd);
 

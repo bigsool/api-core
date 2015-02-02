@@ -20,16 +20,6 @@ class Send extends Base {
 
     }
 
-    protected function setEnv ($env) {
-
-        parent::setEnv($env);
-
-        $this->paths['env'] = $this->paths['root'] . '/' . $this->getEnv() . '/';
-        $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
-        $this->paths['rsync-excludeFile'] = $this->paths['env'] . 'rsync-exclude';
-
-    }
-
     protected function execute (InputInterface $input, OutputInterface $output) {
 
         $output->writeln('');
@@ -45,6 +35,14 @@ class Send extends Base {
         $this->getCurrentRevisionOnTheServer();
 
         $this->rsync();
+
+    }
+
+    protected function setEnv ($env) {
+
+        parent::setEnv($env);
+
+        $this->paths['rsync-excludeFile'] = $this->paths['root'] . '/rsync-exclude';
 
     }
 
@@ -71,7 +69,8 @@ class Send extends Base {
 
         $cmd =
             'cd ' . $this->paths['env'] . ' && rsync -axv --delete --exclude-from="' . $this->paths['rsync-excludeFile']
-            . "\" -e \"ssh -i {$config['key']}\" {$config['source_dir']} {$config['user']}@{$config['host']}:{$config['dest_dir']}-"
+            . "\" -e \"ssh -i {$config['key']}\" {$config['source_dir']} "
+            . "{$config['user']}@{$config['host']}:{$config['dest_dir']}{$this->getEnv()}-"
             . $this->getInput()->getArgument('revision');
 
         system($cmd);

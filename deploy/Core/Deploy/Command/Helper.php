@@ -17,8 +17,8 @@ class Helper {
 
         $config = Yaml::parse($envFile);
 
-        $cmd =
-            "ssh -i {$envPath}{$config['key']} {$config['user']}@{$config['host']} 'ls -la \"{$config['dest_dir']}\" 2> /dev/null'";
+        $cmd = "ssh -i {$envPath}{$config['key']} {$config['user']}@{$config['host']} "
+               . "'ls -l \"{$config['dest_dir']}\" 2> /dev/null'";
         $result = exec($cmd);
 
         return substr($result, strrpos($result, '-') + 1);
@@ -36,7 +36,7 @@ class Helper {
         $short = $short ? '--short' : '';
 
         return trim(`cd {$rootPath} && git rev-parse {$short} HEAD`);
-        
+
     }
 
     /**
