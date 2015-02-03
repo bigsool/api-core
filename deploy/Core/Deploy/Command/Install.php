@@ -118,17 +118,13 @@ class Install extends Base {
 
         $this->dbConfigDirectory = $this->paths['root'] . '/' . $this->dbConfigDirectory;
 
-        $config = $this->getEnvConf();
-
         $this->deployDestDir = Helper::getRemoteDestLink($this->paths['environmentFile']);
 
     }
 
-    protected function isFirstInstall (&$deployDestDir = NULL, $verbose = false) {
+    protected function isFirstInstall ($verbose = false) {
 
-        $config = $this->getEnvConf();
-
-        if (!file_exists($config['dest_dir'])) {
+        if (!file_exists(Helper::getRemoteDestLink($this->paths['environmentFile']))) {
             if (!$verbose) {
                 return true;
             }
@@ -427,6 +423,9 @@ class Install extends Base {
         $cmd =
             'mysqldump -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' > '
             . escapeshellarg($prodDumpPath);
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
         $returnCode = NULL;
         $unused = NULL;
         exec($cmd, $unused, $returnCode);
@@ -457,10 +456,12 @@ class Install extends Base {
 
         $returnCode = NULL;
         $_unused = NULL;
-        //$cmd = 'mysqldump -h '.$host.' -u '.$user.' '.$passwordCmd.' --add-drop-table --no-data '.$dbname.' | grep ^DROP | mysql -h '.$host.' -u '.$user.' '.$passwordCmd.' '.$dbname.'';
         $cmd =
             'mysqldump -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' --add-drop-table --no-data ' . $dbname
             . ' | grep ^DROP >> ' . escapeshellarg($cleanDatabaseFile);
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
         system($cmd, $returnCode);
 
         // Normally, exit status is 0 if selected lines are found and 1 otherwise.
@@ -475,6 +476,9 @@ class Install extends Base {
         $cmd =
             'mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' < '
             . escapeshellarg($cleanDatabaseFile);
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
         exec($cmd, $_unused, $returnCode);
 
         if ($returnCode != 0) {
@@ -498,7 +502,9 @@ class Install extends Base {
         $returnCode = NULL;
         $_unused = NULL;
         $cmd = 'mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' < ' . $prodDumpPath;
-
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
         exec($cmd, $_unused, $returnCode);
 
         if ($returnCode != 0) {
@@ -525,6 +531,9 @@ class Install extends Base {
             $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
             $returnCode = NULL;
             $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+            }
             system($cmd, $returnCode);
 
             if ($returnCode != 0) {
@@ -554,6 +563,16 @@ class Install extends Base {
 
             $this->getOutput()->writeln("OK\n");
 
+        } elseif(!$this->isFirstInstall()) {
+
+            $this->getOutput()->write(sprintf("\nRemoving <env>%s</env> link ... ", $this->getEnv()));
+
+            if (!unlink($this->deployDestDir)) {
+                $this->abort('Unable to removing current ' . $this->getEnv() . ' link');
+            }
+
+            $this->getOutput()->writeln("OK\n");
+
         }
 
         $this->getOutput()->write(sprintf('Creating <env>%s</env> link ... ', $this->getEnv()));
@@ -562,7 +581,7 @@ class Install extends Base {
 
             $this->getOutput()->writeln("<error>Unable to create new link</error>");
 
-            if (!$this->isFirstInstall()) {
+            if (!$this->isFirstInstall() && $this->isStageOrProd()) {
 
                 $this->getOutput()->writeln("Rollbacking to old folder");
 

@@ -9,6 +9,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class Send extends Base {
 
+    protected $revOnTheServer;
+
     protected function configure () {
 
         parent::configure();
@@ -34,6 +36,9 @@ class Send extends Base {
 
         $this->getCurrentRevisionOnTheServer();
 
+        $this->copyPreviousRev();
+
+
         $this->rsync();
 
     }
@@ -50,14 +55,53 @@ class Send extends Base {
 
         $this->getOutput()->write("Retrieving current revision on the server ... ");
 
-        $revision = Helper::getRevisionOnTheServer($this->paths['env'], $this->paths['environmentFile']);
-        if ($revision == $this->getInput()->getArgument('revision')) {
-            $this->abort(sprintf('Current server revision is already <rev>%s</rev>. Aborting', $revision));
+        $this->revOnTheServer =
+            Helper::getRevisionOnTheServer($this->getInput(), $this->getOutput(), $this->paths['env'],
+                                           $this->paths['environmentFile']);
+        if ($this->revOnTheServer == $this->getInput()->getArgument('revision')) {
+            $this->abort(sprintf('Current server revision is already <rev>%s</rev>. Aborting', $this->revOnTheServer));
         }
 
         $this->getOutput()->writeln("OK\n");
 
-        return $revision;
+        return $this->revOnTheServer;
+
+    }
+
+    protected function copyPreviousRev () {
+
+        $shouldCopy = false;
+        $revision = substr($this->getInput()->getArgument('revision'), 0, 7);
+        if ($this->revOnTheServer) {
+
+            if ($this->confirm(sprintf("Should we copy the previous revision folder <info>%s</info>\n" .
+                                       "to the new revision folder <info>%s</info> ?\n[Y/n] ",
+                                       $this->revOnTheServer, $revision))
+            ) {
+                $shouldCopy = true;
+            }
+
+        }
+
+        if ($shouldCopy) {
+
+            $config = Yaml::parse($this->paths['environmentFile']);
+            $remotePrevFolder =
+                Helper::getRemoteDestLink($this->paths['environmentFile']) . '-' . $this->revOnTheServer;
+            $remoteNextFolder = Helper::getRemoteDestLink($this->paths['environmentFile']) . '-' . $revision;
+
+            $this->getOutput()->write("Copying previous revision folder ... ");
+
+            $cmd = "ssh -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
+                   . "'cp -r \"{$remotePrevFolder}\" \"{$remoteNextFolder}\"'";
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+            }
+            system($cmd);
+
+            $this->getOutput()->writeln("OK\n");
+
+        }
 
     }
 
@@ -72,7 +116,9 @@ class Send extends Base {
             . "\" -e \"ssh -i {$config['key']}\" {$config['source_dir']} "
             . "{$config['user']}@{$config['host']}:{$config['dest_dir']}{$this->getEnv()}-"
             . $this->getInput()->getArgument('revision');
-
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
         system($cmd);
 
         $this->getOutput()->writeln("OK\n");

@@ -32,7 +32,7 @@ class Deploy extends Base {
         );
         $checkRevisionCmd->run(new ArrayInput($checkRevisionArgs), $output);
 
-        $revision = Helper::getLocalRevision($this->paths['root']);
+        $revision = Helper::getLocalRevision($this->getInput(), $this->getOutput(), $this->paths['root']);
 
         $sendArgs = array(
             'command'  => 'send',
@@ -46,6 +46,9 @@ class Deploy extends Base {
             "ssh -t -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
             . "'php {$config['dest_dir']}{$this->getEnv()}-{$revision}/deploy/deploy.php install {$this->getEnv()}'";
 
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmdInstall));
+        }
         passthru($cmdInstall);
 
     }
