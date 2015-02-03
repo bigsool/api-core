@@ -43,11 +43,6 @@ class Install extends Base {
             ->setName('install')
             ->setDescription('Installing Command');
 
-        $this->setDownPath = $this->paths['root'] . '/include/config/config.setDown.php';
-        $this->isDownPath = $this->paths['root'] . '/include/config/config.isDown.php';
-
-        $this->dbConfigDirectory = __DIR__ . '/' . $this->dbConfigDirectory;
-
     }
 
     /**
@@ -117,6 +112,11 @@ class Install extends Base {
     protected function setEnv ($env) {
 
         parent::setEnv($env);
+
+        $this->setDownPath = $this->paths['root'] . '/include/config/config.setDown.php';
+        $this->isDownPath = $this->paths['root'] . '/include/config/config.isDown.php';
+
+        $this->dbConfigDirectory = $this->paths['root'] . '/' . $this->dbConfigDirectory;
 
         $config = $this->getEnvConf();
 
@@ -552,7 +552,7 @@ class Install extends Base {
 
         $this->getOutput()->write(sprintf('Creating <env>%s</env> link ... ', $this->getEnv()));
 
-        if (!symlink(realpath(__DIR__ . '/../../../'), $this->deployDestDir)) {
+        if (!symlink(realpath($this->paths['root'] . '/../../../'), $this->deployDestDir)) {
 
             $this->getOutput()->writeln("<error>Unable to create new link</error>");
 
