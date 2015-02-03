@@ -120,7 +120,7 @@ class Install extends Base {
 
         $config = $this->getEnvConf();
 
-        $this->deployDestDir = $config['dest_dir'];
+        $this->deployDestDir = Helper::getRemoteDestLink($this->paths['environmentFile']);
 
     }
 
@@ -543,9 +543,9 @@ class Install extends Base {
             $this->abort('Installation aborted by user');
         }
 
-        $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
+        if (!$this->isFirstInstall() && $this->isStageOrProd()) {
 
-        if (!$this->isFirstInstall()) {
+            $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
 
             $backupLink = $this->deployDestDir . '.old';
             if (!rename($this->deployDestDir, $backupLink)) {
@@ -555,15 +555,10 @@ class Install extends Base {
             $this->getOutput()->writeln("OK\n");
 
         }
-        else {
-
-            $this->getOutput()->writeln("Not applicable (first install)\n");
-
-        }
 
         $this->getOutput()->write(sprintf('Creating <env>%s</env> link ... ', $this->getEnv()));
 
-        if (!symlink(realpath($this->paths['root'] . '/../../../'), $this->deployDestDir)) {
+        if (!symlink($this->paths['root'], $this->deployDestDir)) {
 
             $this->getOutput()->writeln("<error>Unable to create new link</error>");
 
