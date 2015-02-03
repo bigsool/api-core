@@ -16,9 +16,9 @@ class Install extends Base {
 
     protected $envConf;
 
-    protected $dbConfigRealPath;
+    protected $dbConfigLinkName;
 
-    protected $nextDBConfigPath;
+    protected $dbConfigRealPath;
 
     protected $nextDBConfigRealPath;
 
@@ -28,12 +28,17 @@ class Install extends Base {
 
     protected $deployDestDir;
 
-    protected $dbConfigDirectory = '../../../../../CONFIG';
+    protected $dbConfigDirectory = '../CONFIG';
 
     protected $dbConfigFilenames = array(
-        'config_db_1.php',
-        'config_db_2.php',
+        'db.1.yml',
+        'db.2.yml',
     );
+
+    /**
+     * @var string
+     */
+    protected $configDir;
 
     protected function configure () {
 
@@ -91,9 +96,9 @@ class Install extends Base {
                 $this->waitForTransactionsFinish();
             }
 
-            $prodDumpPath = $this->dumpProdDB();
+            $dumpPath = $this->dumpProdDB();
             $this->clearNextDB();
-            $this->copyDataToNextDB($prodDumpPath);
+            $this->copyDataToNextDB($dumpPath);
 
         }
 
@@ -115,10 +120,13 @@ class Install extends Base {
 
         $this->setDownPath = $this->paths['root'] . '/include/config/config.setDown.php';
         $this->isDownPath = $this->paths['root'] . '/include/config/config.isDown.php';
+        $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
 
         $this->dbConfigDirectory = $this->paths['root'] . '/' . $this->dbConfigDirectory;
 
         $this->deployDestDir = Helper::getRemoteDestLink($this->paths['environmentFile']);
+
+        $this->dbConfigLinkName = $this->configDir . '/db.yml';
 
     }
 
@@ -137,18 +145,6 @@ class Install extends Base {
 
         return false;
 
-    }
-
-    /**
-     * @return array
-     */
-    protected function getEnvConf () {
-
-        if (!isset($this->envConf)) {
-            $this->envConf = Yaml::parse($this->paths['environmentFile']);
-        }
-
-        return $this->envConf;
     }
 
     protected function checkIfConfigFilesExists () {
@@ -176,7 +172,7 @@ class Install extends Base {
 
         if (!$isFirstInstall) {
 
-            $this->dbConfigRealPath = $this->deployDestDir . '/include/config/envs/config.php';
+            $this->dbConfigRealPath = $this->dbConfigLinkName;
             $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
 
             $this->getOutput()->writeln("OK");
@@ -196,8 +192,6 @@ class Install extends Base {
 
             $this->getOutput()->write("Loading next config ... ");
 
-            $this->nextDBConfigPath = $this->paths['root'] . '/include/config/envs/config.php';
-
             if ($isFirstInstall) {
 
                 $this->nextDBConfigRealPath =
@@ -208,7 +202,7 @@ class Install extends Base {
             else {
 
                 if (!is_link($this->dbConfigRealPath)) {
-                    $this->abort(sprintf('The config file %s must be a link, but it is not', $this->paths['dbConfig']));
+                    $this->abort(sprintf('The config file %s must be a link, but it is not', $this->dbConfigRealPath));
                 }
 
                 $dbConfigPath = realpath($this->dbConfigRealPath);
@@ -238,12 +232,14 @@ class Install extends Base {
         if (!file_exists($file)) {
             $this->abort(sprintf('Config file %s cannot be found.', $file));
         }
-        require $file;
-        if (!isset($Config) || !isset($Config['database'])) {
+
+        $config = Yaml::parse($file);
+
+        if (!isset($config) || !isset($config['db'])) {
             $this->abort(sprintf('Config cannot be found in the file %s', $file));
         }
 
-        return $Config['database'];
+        return $config['db'];
 
     }
 
@@ -265,7 +261,7 @@ class Install extends Base {
                              $this->env, $nextDBName, $nextDBHost
                          ));
         $output->writeln(sprintf(
-                             "Next <env>%s</env> DB will be TOTALLY ERASEN !\n",
+                             "<warning>Next <env>%s</env> DB will be TOTALLY ERASED !</warning>\n",
                              $this->env
                          ));
 
@@ -289,9 +285,10 @@ class Install extends Base {
 
     protected function createConfigLink () {
 
-        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> ... ', $this->dbConfigRealPath));
+        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
+                                          $this->nextDBConfigRealPath, $this->dbConfigLinkName));
 
-        $success = symlink($this->nextDBConfigRealPath, $this->nextDBConfigPath);
+        $success = symlink($this->nextDBConfigRealPath, $this->dbConfigLinkName);
 
         if (!$success) {
             $this->abort('Unable to create config symlink, aborting...');
@@ -412,7 +409,7 @@ class Install extends Base {
 
         $this->getOutput()->write(sprintf('Dumping current <env>%s</env> DB ... ', $this->getEnv()));
 
-        $prodDumpPath = sys_get_temp_dir() . '/' . uniqid() . '-prod-dump.sql';
+        $dumpPath = sys_get_temp_dir() . '/' . uniqid() . '-' . $this->getEnv() . '-dump.sql';
 
         $host = escapeshellarg($this->dbConfig['current']['host']);
         $user = escapeshellarg($this->dbConfig['current']['user']);
@@ -422,7 +419,7 @@ class Install extends Base {
 
         $cmd =
             'mysqldump -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' > '
-            . escapeshellarg($prodDumpPath);
+            . escapeshellarg($dumpPath);
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
@@ -430,13 +427,13 @@ class Install extends Base {
         $unused = NULL;
         exec($cmd, $unused, $returnCode);
 
-        if ($returnCode !== 0 || !file_exists($prodDumpPath) || filesize($prodDumpPath) == 0) {
-            $this->abort('Unable to dump prod data base, aborting...');
+        if ($returnCode !== 0 || !file_exists($dumpPath) || filesize($dumpPath) == 0) {
+            $this->abort(sprintf('Unable to dump <env>%s</env> data base, aborting...', $this->getEnv()));
         }
 
         $this->getOutput()->writeln("OK\n");
 
-        return $prodDumpPath;
+        return $dumpPath;
 
     }
 
@@ -489,7 +486,7 @@ class Install extends Base {
 
     }
 
-    protected function copyDataToNextDB ($prodDumpPath) {
+    protected function copyDataToNextDB ($dumpPath) {
 
         $this->getOutput()->write(sprintf('Copying data to future <env>%s</env> DB ... ', $this->getEnv()));
 
@@ -501,7 +498,7 @@ class Install extends Base {
 
         $returnCode = NULL;
         $_unused = NULL;
-        $cmd = 'mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' < ' . $prodDumpPath;
+        $cmd = 'mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' < ' . $dumpPath;
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
@@ -563,7 +560,8 @@ class Install extends Base {
 
             $this->getOutput()->writeln("OK\n");
 
-        } elseif(!$this->isFirstInstall()) {
+        }
+        elseif (!$this->isFirstInstall()) {
 
             $this->getOutput()->write(sprintf("\nRemoving <env>%s</env> link ... ", $this->getEnv()));
 
@@ -604,6 +602,18 @@ class Install extends Base {
 
         $this->getOutput()->writeln("OK\n");
 
+    }
+
+    /**
+     * @return array
+     */
+    protected function getEnvConf () {
+
+        if (!isset($this->envConf)) {
+            $this->envConf = Yaml::parse($this->paths['environmentFile']);
+        }
+
+        return $this->envConf;
     }
 
     protected function setUp () {

@@ -44,9 +44,10 @@ class Deploy extends Base {
         $sendCmd->run(new ArrayInput($sendArgs), $output);
 
         $config = Yaml::parse($this->paths['environmentFile']);
+        $verboseOption = ($input->getOption('verbose')) ? ' -v ' : '';
         $cmdInstall =
             "ssh -t -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
-            . "'php {$config['dest_dir']}{$this->getEnv()}-{$revision}/deploy/deploy.php install {$this->getEnv()}'";
+            . "'php {$config['dest_dir']}{$this->getEnv()}-{$revision}/deploy/deploy.php {$verboseOption} install {$this->getEnv()}'";
 
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmdInstall));
