@@ -155,22 +155,6 @@ class ApplicationContext {
     }
 
     /**
-     * @return string
-     */
-    public function getProduct () {
-
-        return $this->product;
-    }
-
-    /**
-     * @param string $product
-     */
-    public function setProduct ($product) {
-
-        $this->product = $product;
-    }
-
-    /**
      * @return Logger
      */
     public function getLogger () {
@@ -181,6 +165,16 @@ class ApplicationContext {
         }
 
         return $this->logger;
+
+    }
+
+    public function getSessionId () {
+
+        if (!isset($this->sessionId)) {
+            $this->sessionId = uniqid();
+        }
+
+        return $this->sessionId;
 
     }
 
@@ -195,16 +189,6 @@ class ApplicationContext {
         }
 
         return $this->errorLogger;
-
-    }
-
-    public function getSessionId () {
-
-        if (!isset($this->sessionId)) {
-            $this->sessionId = uniqid();
-        }
-
-        return $this->sessionId;
 
     }
 
@@ -517,6 +501,52 @@ class ApplicationContext {
 
     }
 
+    public function getConfigManager () {
+
+        if (!isset($this->configManager)) {
+            $configFiles = [];
+            foreach ([ROOT_DIR . '/vendor/api/core/config/', ROOT_DIR . '/config/'] as $coreConfDir) {
+                if (file_exists($configFile = $coreConfDir . 'default.yml')) {
+                    $configFiles[] = $configFile;
+                }
+                $configPath = NULL;
+                $dbPath = NULL;
+                switch ($this->getEnv()) {
+                    case LOCAL_ENV:
+                        $configPath = $coreConfDir . 'local/config.yml';
+                        $dbPath = $coreConfDir . 'local/db.yml';
+                        break;
+                    case DEV_ENV:
+                        $configPath = $coreConfDir . 'dev/config.yml';
+                        $dbPath = $coreConfDir . 'dev/db.yml';
+                        break;
+                    case STAGE_ENV:
+                        $configPath = $coreConfDir . 'stage/config.yml';
+                        $dbPath = $coreConfDir . 'stage/db.yml';
+                        break;
+                    case PROD_ENV:
+                        $configPath = $coreConfDir . 'prod/config.yml';
+                        $dbPath = $coreConfDir . 'prod/db.yml';
+                        break;
+                }
+                if (!is_null($configPath) && file_exists($configPath)) {
+                    $configFiles[] = $configPath;
+                }
+                if (!is_null($dbPath) && file_exists($dbPath)) {
+                    $configFiles[] = $dbPath;
+                }
+
+            }
+
+            $routesFile = ROOT_DIR . '/config/routes.yml';
+
+            $this->configManager = new ConfigManager($configFiles, $routesFile);
+        }
+
+        return $this->configManager;
+
+    }
+
     public function getEnv () {
 
         if (isset($_SERVER['SERVER_NAME'])) {
@@ -558,45 +588,20 @@ class ApplicationContext {
 
     }
 
-    public function getConfigManager () {
+    /**
+     * @return string
+     */
+    public function getProduct () {
 
-        if (!isset($this->configManager)) {
-            $configFiles = [];
-            foreach ([ROOT_DIR . '/vendor/api/core/config/', ROOT_DIR . '/config/'] as $coreConfDir) {
-                if (file_exists($configFile = $coreConfDir . 'default.yml')) {
-                    $configFiles[] = $configFile;
-                }
-                switch ($this->getEnv()) {
-                    case LOCAL_ENV:
-                        if (file_exists($configFile = $coreConfDir . 'env/local.yml')) {
-                            $configFiles[] = $configFile;
-                        }
-                        break;
-                    case DEV_ENV:
-                        if (file_exists($configFile = $coreConfDir . 'env/dev.yml')) {
-                            $configFiles[] = $configFile;
-                        }
-                        break;
-                    case STAGE_ENV:
-                        if (file_exists($configFile = $coreConfDir . 'env/stage.yml')) {
-                            $configFiles[] = $configFile;
-                        }
-                        break;
-                    case PROD_ENV:
-                        if (file_exists($configFile = $coreConfDir . 'env/prod.yml')) {
-                            $configFiles[] = $configFile;
-                        }
-                        break;
-                }
-            }
+        return $this->product;
+    }
 
-            $routesFile = ROOT_DIR . '/config/routes.yml';
+    /**
+     * @param string $product
+     */
+    public function setProduct ($product) {
 
-            $this->configManager = new ConfigManager($configFiles, $routesFile);
-        }
-
-        return $this->configManager;
-
+        $this->product = $product;
     }
 
     /**
