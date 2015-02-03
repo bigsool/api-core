@@ -311,17 +311,18 @@ class Install extends Base {
 
         // folder www
         $this->getOutput()->write('Checking the folder <info>www</info> ... ');
-        $perms = fileperms($this->paths['root'] . '/www');
-        if (($perms & 0x0004) != 0x0004) {
+        $wwwPath = $this->paths['root'] . '/www';
+        if (!file_exists($wwwPath)) {
+            $this->abort('www folder does not exist');
+        }
+        if ((fileperms($wwwPath) & 0x0004) != 0x0004) {
             $this->abort('www folder is not world readable');
         }
         $this->getOutput()->writeln('OK');
 
-        // TODO : check tmp folder
-
         // folder Core/Logs
         $this->getOutput()->write('Checking the folder <info>Log</info> ... ');
-        $logPath = $this->paths['root'] . '/include/logs';
+        $logPath = $this->paths['root'] . '/logs';
         if (!file_exists($logPath)) {
             if (!mkdir($logPath)) {
                 $this->abort('unable to create the folder Log');
@@ -330,20 +331,24 @@ class Install extends Base {
                 $this->abort('unable to make the folder Log world writeable');
             }
         }
-        $perms = fileperms($logPath);
-        if (($perms & 0x0004) != 0x0004 || ($perms & 0x0002) != 0x0002) {
-            $this->abort('logs folder is not world o+rw');
+        $logPerms = fileperms($logPath);
+        if (($logPerms & 0x0006) != 0x0006) {
+            $this->abort('logs folder is not world +rw');
         }
         $this->getOutput()->writeln('OK');
 
+        /* TODO: this part has to be rewritten, check of confFile
         // symlink config
         $this->getOutput()->write('Checking the <info>config</info> file ... ');
         $configFile = $this->isStageOrProd() ? $this->nextDBConfigRealPath : $this->dbConfigRealPath;
+        if (file_exists($configFile)) {
+            $this->abort(sprintf('%s file does not exist', $configFile));
+        }
         $perms = fileperms($configFile);
         if (($perms & 0x0020) != 0x0020) {
-            $this->abort(sprintf('%s file is not group readable', $this->dbConfigRealPath));
+            $this->abort(sprintf('%s file is not group readable', $configFile));
         }
-        $this->getOutput()->writeln("OK");
+        $this->getOutput()->writeln("OK");*/
     }
 
     protected function setDown () {

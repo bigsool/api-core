@@ -42,7 +42,7 @@ class Send extends Base {
 
         parent::setEnv($env);
 
-        $this->paths['rsync-excludeFile'] = $this->paths['root'] . '/rsync-exclude';
+        $this->paths['rsync-excludeFile'] = $this->paths['root'] . '/deploy/rsync-exclude';
 
     }
 
