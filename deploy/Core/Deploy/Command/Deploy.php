@@ -27,6 +27,7 @@ class Deploy extends Base {
         $sendCmd = $this->getApplication()->find('send');
 
         $checkRevisionArgs = array(
+            '-v'      => $input->getOption('verbose'),
             'command' => 'check-revision',
             'env'     => $input->getArgument('env'),
         );
@@ -35,6 +36,7 @@ class Deploy extends Base {
         $revision = Helper::getLocalRevision($this->getInput(), $this->getOutput(), $this->paths['root']);
 
         $sendArgs = array(
+            '-v'       => $input->getOption('verbose'),
             'command'  => 'send',
             'env'      => $input->getArgument('env'),
             'revision' => $revision,
