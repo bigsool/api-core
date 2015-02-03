@@ -137,7 +137,7 @@ class CheckRevision extends Base {
         if (strlen($currentRev) == 0) {
             $this->getOutput()
                  ->writeln("<warning>No revision found on server.</warning>");
-            if (!$this->confirm("Is It your first commit ?\n[Y/n] ")) {
+            if (!$this->confirm("Is it your first commit ?\n[Y/n] ")) {
                 $this->abort('Checking revision aborted by user');
             }
             $this->getOutput()->writeln('');
