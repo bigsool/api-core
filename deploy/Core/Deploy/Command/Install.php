@@ -511,18 +511,29 @@ class Install extends Base {
 
     protected function runUpgradeScripts () {
 
-        $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
-
         $doctrineFolder = $this->paths['root'] . '/doctrine/';
-        $returnCode = NULL;
-        $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
-        system($cmd, $returnCode);
 
-        if ($returnCode != 0) {
-            $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
+        $migrationConfig = Yaml::parse($doctrineFolder . 'migrations.yml');
+
+        if (count(glob($doctrineFolder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
+
+            $this->getOutput()->writeln('No database patches detected.');
+
         }
+        else {
 
-        $this->getOutput()->writeln("\nOK\n");
+            $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
+            $returnCode = NULL;
+            $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
+            system($cmd, $returnCode);
+
+            if ($returnCode != 0) {
+                $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
+            }
+
+            $this->getOutput()->writeln("\nOK\n");
+
+        }
 
     }
 
