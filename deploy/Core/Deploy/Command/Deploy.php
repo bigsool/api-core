@@ -15,7 +15,7 @@ class Deploy extends Base {
 
         $this
             ->setName('deploy')
-            ->setDescription('Deploy Command');
+            ->setDescription('All in One command to do a complete deploy');
 
     }
 
@@ -25,6 +25,7 @@ class Deploy extends Base {
 
         $checkRevisionCmd = $this->getApplication()->find('check-revision');
         $sendCmd = $this->getApplication()->find('send');
+        $updateTagCmd = $this->getApplication()->find('update-tag');
 
         $checkRevisionArgs = array(
             '-v'      => $input->getOption('verbose'),
@@ -53,6 +54,13 @@ class Deploy extends Base {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmdInstall));
         }
         passthru($cmdInstall);
+
+        $updateTagArgs = array(
+            '-v'       => $input->getOption('verbose'),
+            'command'  => 'update-tag',
+            'env'      => $input->getArgument('env'),
+        );
+        $updateTagCmd->run(new ArrayInput($updateTagArgs), $output);
 
     }
 
