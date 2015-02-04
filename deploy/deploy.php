@@ -15,6 +15,7 @@ $cli->addCommands([
                       new Command\Send(),
                       new Command\Deploy(),
                       new Command\CheckRevision(),
+                      new Command\UpdateTag(),
                   ]);
 
 $cli->run();
