@@ -199,7 +199,11 @@ class JSON implements Handler {
         return new Response(json_encode(['jsonrpc' => '2.0',
                                          'result'  => $serializer->serialize($data)->get(),
                                          'id'      => $this->getId(),
-                                        ]));
+                                        ]),
+                            Response::HTTP_OK, [
+                'Content-type'                => 'application/json',
+                'Access-Control-Allow-Origin' => '*'
+            ]);
 
     }
 
