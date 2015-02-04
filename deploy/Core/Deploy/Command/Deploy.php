@@ -15,7 +15,7 @@ class Deploy extends Base {
 
         $this
             ->setName('deploy')
-            ->setDescription('Deploy Command');
+            ->setDescription('All in One command to do a complete deploy');
 
     }
 
