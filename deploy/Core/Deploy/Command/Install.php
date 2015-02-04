@@ -2,6 +2,7 @@
 
 namespace Core\Deploy\Command;
 
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -34,6 +35,8 @@ class Install extends Base {
         'db.1.yml',
         'db.2.yml',
     );
+
+    protected $isDown = false;
 
     /**
      * @var string
@@ -89,22 +92,33 @@ class Install extends Base {
 
         $this->runSanityChecks();
 
-        if ($isStageOrProd) {
+        try {
+            if ($isStageOrProd) {
 
-            if (!$isFirstInstall) {
-                $this->setDown();
-                $this->waitForTransactionsFinish();
+                if (!$isFirstInstall) {
+                    $this->setDown();
+                    $this->waitForTransactionsFinish();
+                }
+
+                $dumpPath = $this->dumpProdDB();
+                $this->clearNextDB();
+                $this->copyDataToNextDB($dumpPath);
+
             }
 
-            $dumpPath = $this->dumpProdDB();
-            $this->clearNextDB();
-            $this->copyDataToNextDB($dumpPath);
+            $this->runUpgradeScripts();
 
+            $this->changeTheLink();
         }
+        catch (\Exception $e) {
 
-        $this->runUpgradeScripts();
+            // If we set down the environment, we have to set it up
+            if ($this->isDown) {
+                $this->setUp();
+            }
 
-        $this->changeTheLink();
+            throw $e;
+        }
 
     }
 
@@ -398,18 +412,25 @@ class Install extends Base {
 
         }
 
+        $this->isDown = $isDown;
+
         $this->getOutput()->writeln("OK\n");
 
     }
 
     protected function waitForTransactionsFinish () {
 
-        $this->getOutput()->write('Waiting a bit to transactions finish .');
-        for ($i = 0; $i < 50; ++$i) {
+        $i = 15;
+        $helper = new ProgressBar($this->getOutput(), $i);
+
+        $this->getOutput()->writeln('Waiting a bit to transactions finish .');
+        $helper->start();
+        for (; $i > 0; --$i) {
             sleep(1);
-            $this->getOutput()->write('.');
+            $helper->advance();
         }
-        $this->getOutput()->writeln(" OK\n");
+        $helper->finish();
+        $this->getOutput()->writeln("\nOK\n");
 
     }
 
@@ -554,6 +575,7 @@ class Install extends Base {
     protected function changeTheLink () {
 
         if (!$this->confirm("Symlink will be updated. Are you ready for that ?\n[Y/n] ")) {
+            $this->setUp();
             $this->abort('Installation aborted by user');
         }
 
@@ -612,6 +634,12 @@ class Install extends Base {
 
     }
 
+    protected function setUp () {
+
+        $this->setIsDown(false);
+
+    }
+
     /**
      * @return array
      */
@@ -622,12 +650,6 @@ class Install extends Base {
         }
 
         return $this->envConf;
-    }
-
-    protected function setUp () {
-
-        $this->setIsDown(false);
-
     }
 
 }
