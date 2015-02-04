@@ -95,7 +95,20 @@ class JSON implements Handler {
         return new Response(json_encode(['jsonrpc' => '2.0',
                                          'error'   => $error->toArray(),
                                          'id'      => $this->getId(),
-                                        ]));
+                                        ]),
+                            Response::HTTP_OK, [
+                'Content-type'                => 'application/json',
+                'Access-Control-Allow-Origin' => '*'
+            ]);
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getIpAddress () {
+
+        return $this->ipAddress;
 
     }
 
@@ -105,6 +118,15 @@ class JSON implements Handler {
     public function getLocale () {
 
         return $this->locale;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod () {
+
+        return $this->method;
 
     }
 
@@ -154,6 +176,15 @@ class JSON implements Handler {
     public function getReturnedRootEntity () {
 
         return $this->returnedRootEntity;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getService () {
+
+        return $this->service;
 
     }
 
@@ -222,33 +253,6 @@ class JSON implements Handler {
     public function getId () {
 
         return $this->id;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getService () {
-
-        return $this->service;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getMethod () {
-
-        return $this->method;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getIpAddress () {
-
-        return $this->ipAddress;
 
     }
 
