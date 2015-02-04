@@ -38,7 +38,7 @@ class MagicalModuleManagerTest extends TestCase {
     /**
      * @var \Core\Model\TestCompany
      */
-     private static $company1;
+    private static $company1;
 
     /**
      * @var \Core\Model\TestUser
@@ -55,11 +55,10 @@ class MagicalModuleManagerTest extends TestCase {
      */
     private static $user3;
 
-     /**
-      * @var \Core\Model\TestStorage
-      */
+    /**
+     * @var \Core\Model\TestStorage
+     */
     private static $storage;
-
 
     public static function setUpBeforeClass () {
 
@@ -122,12 +121,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
 
-
     }
-
-
-
-
 
     public function testMinimalAddAspect () {
 
@@ -1051,7 +1045,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-
     public function testMagicalFindObject () {
 
         $userModuleManager = new UserModuleManager();
@@ -1206,13 +1199,12 @@ class MagicalModuleManagerTest extends TestCase {
 
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
-        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [],[], true]);
+        $result = $this->magicalAction('Find', $mgrCompany, [['company.*'], [], [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
 
     }
-
 
     public function testMagicalDeleteOneToMany () {
 
@@ -1275,8 +1267,6 @@ class MagicalModuleManagerTest extends TestCase {
         $em = $prop->getValue($ctx);
         $em->beginTransaction();
     }
-
-
 
     protected function tearDown () {
 

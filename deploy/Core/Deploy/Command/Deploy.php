@@ -56,9 +56,9 @@ class Deploy extends Base {
         passthru($cmdInstall);
 
         $updateTagArgs = array(
-            '-v'       => $input->getOption('verbose'),
-            'command'  => 'update-tag',
-            'env'      => $input->getArgument('env'),
+            '-v'      => $input->getOption('verbose'),
+            'command' => 'update-tag',
+            'env'     => $input->getArgument('env'),
         );
         $updateTagCmd->run(new ArrayInput($updateTagArgs), $output);
 

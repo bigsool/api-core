@@ -30,6 +30,8 @@ abstract class Base extends Command {
             'Environment'
         );
 
+        $this->paths['root'] = realpath(__DIR__ . '/../../../..');
+
     }
 
     /**
@@ -82,21 +84,6 @@ abstract class Base extends Command {
      * @throws \RunTimeException
      */
     protected function setEnv ($env) {
-
-        // This part is to find the root dir
-        // We cannot use __DIR__ because we don't know where is this file
-        $scriptDir = $_SERVER['SCRIPT_NAME'];
-        if (false === strpos($scriptDir, DIRECTORY_SEPARATOR)) {
-            $scriptDir = getcwd() . '/' . $_SERVER['SCRIPT_NAME'];
-        }
-        $scriptDir = dirname(dirname($scriptDir));
-
-        if (false === strpos(__DIR__, $scriptDir)) {
-            $this->abort('Unable to find the script directory (' . $scriptDir . ' not in ' . __DIR__);
-        }
-
-
-        $this->paths['root'] = $scriptDir;
 
         $env = strtolower($env);
         if (!in_array($env, array('dev', 'stage', 'prod'))) {

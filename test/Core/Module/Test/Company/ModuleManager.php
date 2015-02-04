@@ -78,7 +78,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadRules (ApplicationContext &$context) {
 
-        $context->addRule(new FieldRule(new StarField('TestCompany'), new FilterReference($context, 'TestCompany', 'mee')));
+        $context->addRule(new FieldRule(new StarField('TestCompany'),
+                                        new FilterReference($context, 'TestCompany', 'mee')));
 
     }
 

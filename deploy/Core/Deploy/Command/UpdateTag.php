@@ -26,7 +26,7 @@ class UpdateTag extends Base {
 
         $config = Yaml::parse($this->paths['environmentFile']);
 
-        $this->getOutput()->write(sprintf('Moving tag <info>%s</info>... ',$config['git_tag']));
+        $this->getOutput()->write(sprintf('Moving tag <info>%s</info>... ', $config['git_tag']));
 
         $cmd = "git tag -l | grep {$config['git_tag']}";
         if ($input->getOption('verbose')) {

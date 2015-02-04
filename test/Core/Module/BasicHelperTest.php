@@ -30,7 +30,7 @@ class BasicHelperTest extends TestCase {
             'name'         => 'AzeEn',
             'firstname'    => 'QweFr',
             'lang'         => 'fr',
-            'salt'         => uniqid('',true),
+            'salt'         => uniqid('', true),
             'registerDate' => new \DateTime(),
         ], false);
 
@@ -43,7 +43,7 @@ class BasicHelperTest extends TestCase {
             'name'         => 'QsdEn',
             'firstname'    => 'WxcFr',
             'lang'         => 'en',
-            'salt'         => uniqid('',true),
+            'salt'         => uniqid('', true),
             'registerDate' => new \DateTime(),
         ]);
 

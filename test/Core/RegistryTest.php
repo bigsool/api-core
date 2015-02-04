@@ -459,7 +459,8 @@ class RegistryTest extends TestCase {
 
         $em = $this->getEntityManager(self::$doctrineConnectionSettings);
         $result =
-            $em->createQuery('SELECT c, s, o FROM \Core\Model\TestCompany c INNER JOIN c.storage s INNER JOIN c.owner o WHERE c.id = '.$company->getId())
+            $em->createQuery('SELECT c, s, o FROM \Core\Model\TestCompany c INNER JOIN c.storage s INNER JOIN c.owner o WHERE c.id = '
+                             . $company->getId())
                ->getArrayResult();
 
         $this->assertInternalType('array', $result);
