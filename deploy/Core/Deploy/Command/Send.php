@@ -93,7 +93,7 @@ class Send extends Base {
             $this->getOutput()->write("Copying previous revision folder ... ");
 
             $cmd = "ssh -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
-                   . "'cp -r \"{$remotePrevFolder}\" \"{$remoteNextFolder}\"'";
+                   . "'cp -ra \"{$remotePrevFolder}\" \"{$remoteNextFolder}\"'";
             if ($this->getInput()->getOption('verbose')) {
                 $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
             }

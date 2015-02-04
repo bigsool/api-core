@@ -117,14 +117,19 @@ class Install extends Base {
     protected function setEnv ($env) {
 
         parent::setEnv($env);
-
-        $this->setDownPath = $this->paths['root'] . '/include/config/config.setDown.php';
-        $this->isDownPath = $this->paths['root'] . '/include/config/config.isDown.php';
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
 
         $this->dbConfigDirectory = $this->paths['root'] . '/' . $this->dbConfigDirectory;
 
         $this->deployDestDir = Helper::getRemoteDestLink($this->paths['environmentFile']);
+
+        $downFolder = $this->deployDestDir . '/vendor/api/core/config/';
+        $this->setDownPath = $downFolder . 'setDown.yml';
+        if (!file_exists($this->setDownPath)) {
+            $downFolder = $this->deployDestDir . '/config/';
+            $this->setDownPath = $downFolder . 'setDown.yml';
+        }
+        $this->isDownPath = $downFolder . 'isDown.yml';
 
         $this->dbConfigLinkName = $this->configDir . '/db.yml';
 
@@ -172,7 +177,8 @@ class Install extends Base {
 
         if (!$isFirstInstall) {
 
-            $this->dbConfigRealPath = $this->dbConfigLinkName;
+            $this->dbConfigRealPath =
+                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv() . '/db.yml';
             $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
 
             $this->getOutput()->writeln("OK");
@@ -288,9 +294,11 @@ class Install extends Base {
         $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
                                           $this->nextDBConfigRealPath, $this->dbConfigLinkName));
 
-        $success = symlink($this->nextDBConfigRealPath, $this->dbConfigLinkName);
+        if (file_exists($this->dbConfigLinkName) && !unlink($this->dbConfigLinkName)) {
+            $this->abort(sprintf('Unable to remove existing config link <info>%s</info>', $this->dbConfigLinkName));
+        }
 
-        if (!$success) {
+        if (!symlink($this->nextDBConfigRealPath, $this->dbConfigLinkName)) {
             $this->abort('Unable to create config symlink, aborting...');
         }
 
@@ -364,7 +372,7 @@ class Install extends Base {
 
                 $content = file_get_contents($this->isDownPath);
                 if ($content) {
-                    $this->getOutput()->writeln('<error>WARNING ! Below is content of config.isDown.php<error>');
+                    $this->getOutput()->writeln('<error>WARNING ! Below is content of isDown.yml<error>');
                     $this->getOutput()
                          ->writeln('<error>You might want to check that because ENV might be down !<error>');
                     $this->getOutput()->writeln($content, OutputInterface::OUTPUT_RAW);
@@ -397,7 +405,7 @@ class Install extends Base {
     protected function waitForTransactionsFinish () {
 
         $this->getOutput()->write('Waiting a bit to transactions finish .');
-        for ($i = 0; $i < 5; ++$i) {
+        for ($i = 0; $i < 50; ++$i) {
             sleep(1);
             $this->getOutput()->write('.');
         }
