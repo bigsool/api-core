@@ -22,6 +22,11 @@ class FormattedError extends \Exception {
     protected $message;
 
     /**
+     * @var string|null
+     */
+    protected $localizedMessage;
+
+    /**
      * @var string
      */
     protected $field;
@@ -77,6 +82,9 @@ class FormattedError extends \Exception {
         }
         elseif (isset($error['frMessage']) && isset($error['enMessage'])) {
             $this->message = self::$lang == "fr" ? $error['frMessage'] : $error['enMessage'];
+        }
+        elseif (isset($error['localizedMessage'])) {
+            $this->message = $this->localizedMessage = $error['localizedMessage'];
         }
         else {
             throw new \RuntimeException('message not found in the error array');
@@ -155,6 +163,10 @@ class FormattedError extends \Exception {
 
         if (count($childErrors)) {
             $result["errors"] = $childErrors;
+        }
+
+        if ($this->localizedMessage) {
+            $result['localizedMessage'] = $this->localizedMessage;
         }
 
         return $result;
