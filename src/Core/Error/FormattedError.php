@@ -80,13 +80,16 @@ class FormattedError extends \Exception {
         if (isset($error['message'])) {
             $this->message = $error['message'];
         }
-        elseif (isset($error['frMessage']) && isset($error['enMessage'])) {
+
+        if (isset($error['frMessage']) && isset($error['enMessage'])) {
             $this->message = self::$lang == "fr" ? $error['frMessage'] : $error['enMessage'];
         }
-        elseif (isset($error['localizedMessage'])) {
+
+        if (isset($error['localizedMessage'])) {
             $this->message = $this->localizedMessage = $error['localizedMessage'];
         }
-        else {
+
+        if (!$this->message) {
             throw new \RuntimeException('message not found in the error array');
         }
 
