@@ -87,7 +87,7 @@ class HTTP implements Handler {
      */
     public function getErrorResponse (FormattedError $error) {
 
-        return new Response(print_r($error, true), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new Response(strval($error), Response::HTTP_INTERNAL_SERVER_ERROR);
 
     }
 
