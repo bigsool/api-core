@@ -514,19 +514,19 @@ class ApplicationContext {
                 switch ($this->getEnv()) {
                     case LOCAL_ENV:
                         $configPath = $coreConfDir . 'local/config.yml';
-                        $dbPath = $coreConfDir . 'local/db.yml';
+                        $dbPath = $coreConfDir . 'local/extra.yml';
                         break;
                     case DEV_ENV:
                         $configPath = $coreConfDir . 'dev/config.yml';
-                        $dbPath = $coreConfDir . 'dev/db.yml';
+                        $dbPath = $coreConfDir . 'dev/extra.yml';
                         break;
                     case STAGE_ENV:
                         $configPath = $coreConfDir . 'stage/config.yml';
-                        $dbPath = $coreConfDir . 'stage/db.yml';
+                        $dbPath = $coreConfDir . 'stage/extra.yml';
                         break;
                     case PROD_ENV:
                         $configPath = $coreConfDir . 'prod/config.yml';
-                        $dbPath = $coreConfDir . 'prod/db.yml';
+                        $dbPath = $coreConfDir . 'prod/extra.yml';
                         break;
                 }
                 if (!is_null($configPath) && file_exists($configPath)) {
