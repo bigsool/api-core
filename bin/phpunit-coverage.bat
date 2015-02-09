@@ -1,1 +1,1 @@
-../vendor/bin/phpunit.bat --bootstrap ../test/autoload.php -c ../phpunit.xml --coverage-html ../coverage --strict --colors ../test/
+../vendor/bin/phpunit.bat --bootstrap ../test/autoload.php -c ../phpunit.xml --coverage-html ../coverage --report-useless-tests --strict-coverage --enforce-time-limit --disallow-test-output --colors ../test/
