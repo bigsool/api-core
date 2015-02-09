@@ -103,7 +103,7 @@ class TestUser
      *
      * @ORM\ManyToOne(targetEntity="Core\Model\TestCompany", inversedBy="users", cascade={"persist"})
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=true)
+     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      * })
      */
     private $company;

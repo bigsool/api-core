@@ -89,7 +89,7 @@ class TestCompany
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestUser", inversedBy="ownedCompany", cascade={"persist"})
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="owner_id", referencedColumnName="id", unique=true, nullable=true)
+     *   @ORM\JoinColumn(name="owner_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
      * })
      */
     private $owner;
