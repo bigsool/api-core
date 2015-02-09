@@ -51,4 +51,10 @@ class KeyPath extends AbstractKeyPath {
 
     }
 
+    public function isAggregate () {
+
+        return is_a($this,'Core\Field\Aggregate');
+
+    }
+
 }

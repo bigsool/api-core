@@ -1,0 +1,50 @@
+<?php
+
+namespace Core\Field;
+
+use Core\Context\QueryContext;
+use Core\Registry;
+
+class Aggregate extends keyPath {
+
+    /**
+     * @var string
+     */
+    protected $fn;
+
+    /**
+     * @var string
+     */
+    protected $args;
+
+    /**
+     * @param String $fn
+     * @param String [] $args
+     */
+    public function __construct($fn,$args) {
+
+        $this->fn = $fn;
+        $this->args = $args;
+
+    }
+
+    /**
+    * @param Registry     $registry
+    * @param QueryContext $ctx
+    *
+    * @return string
+    */
+    public function resolve (Registry $registry, QueryContext $ctx) {
+
+        $values = "";
+        foreach ($this->args as $arg) {
+            $values .= (new KeyPath($arg))->resolve($registry,$ctx).',';
+        }
+        $values = substr($values,0,strlen($values) - 1);
+
+        return $this->fn.'('.$values.')';
+
+    }
+
+
+}
