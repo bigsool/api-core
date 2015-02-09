@@ -28,7 +28,7 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actCtx
-     * @param TestStorage       $storage
+     * @param TestStorage   $storage
      * @param array         $params
      */
     public function updateTestStorage (ActionContext $actCtx, TestStorage $storage, array $params) {

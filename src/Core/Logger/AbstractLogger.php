@@ -46,6 +46,8 @@ abstract class AbstractLogger implements LoggerInterface {
             */
             $level = MLogger::DEBUG;
 
+            date_default_timezone_set('Europe/Paris');
+
             $stream = new RotatingFileHandler(ROOT_DIR . '/logs/' . $channel . '.log', 0, $level);
             $stream->setFormatter(new LineFormatter($this->getFormat(), $this->getDateFormat()));
             $this->mLogger->pushHandler($stream);

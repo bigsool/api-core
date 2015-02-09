@@ -163,16 +163,16 @@ class SerializerTest extends TestCase {
                 ]
             ],
             [
-            'name'    => self::$user3->getName(),
-            'email'   => self::$user3->getEmail(),
-            'company' => [
-                'name'    => self::$company1->getName(),
-                'storage' => [
-                    'url'                 => self::$storage->getUrl(),
-                    'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                'name'    => self::$user3->getName(),
+                'email'   => self::$user3->getEmail(),
+                'company' => [
+                    'name'    => self::$company1->getName(),
+                    'storage' => [
+                        'url'                 => self::$storage->getUrl(),
+                        'lastUsedSpaceUpdate' => self::$storage->getLastUsedSpaceUpdate(),
+                    ]
                 ]
-            ]
-        ],
+            ],
             [
                 'name'    => self::$user2->getName(),
                 'email'   => self::$user2->getEmail(),
@@ -225,13 +225,13 @@ class SerializerTest extends TestCase {
         $reqCtx->setReturnedKeyPaths([new KeyPath('email'), new KeyPath('company.storage.url')]);
         $serializer = new Serializer($reqCtx);
         $result = $serializer->serialize($result)->getJSON();
-        
+
         $resultExpected = [
             [
                 'email'   => self::$user1->getEmail(),
                 'company' => [
                     'storage' => [
-                        'url'                 => self::$storage->getUrl(),
+                        'url' => self::$storage->getUrl(),
                     ]
                 ]
             ],
@@ -239,7 +239,7 @@ class SerializerTest extends TestCase {
                 'email'   => self::$user2->getEmail(),
                 'company' => [
                     'storage' => [
-                        'url'                 => self::$storage->getUrl(),
+                        'url' => self::$storage->getUrl(),
                     ]
                 ]
             ],
@@ -247,7 +247,7 @@ class SerializerTest extends TestCase {
                 'email'   => self::$user3->getEmail(),
                 'company' => [
                     'storage' => [
-                        'url'                 => self::$storage->getUrl(),
+                        'url' => self::$storage->getUrl(),
                     ]
                 ]
             ],

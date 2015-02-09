@@ -138,7 +138,8 @@ class ModuleManager extends MagicalModuleManager {
 
             $context->setParams(['url' => $company->getId() . '-' . $company->getName()]);
 
-            return $self->getMagicalAction('create', $self->getModelAspectForModelName('TestStorage'))->process($context);
+            return $self->getMagicalAction('create', $self->getModelAspectForModelName('TestStorage'))
+                        ->process($context);
 
         });
 

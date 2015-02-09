@@ -10,17 +10,7 @@ use Core\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class JSON implements Handler {
-
-    /**
-     * @var string
-     */
-    protected $service;
-
-    /**
-     * @var string
-     */
-    protected $method;
+class HTTP implements Handler {
 
     /**
      * @var string
@@ -40,7 +30,12 @@ class JSON implements Handler {
     /**
      * @var string
      */
-    protected $ipAddress;
+    protected $service;
+
+    /**
+     * @var string
+     */
+    protected $method;
 
     /**
      * @var string
@@ -55,17 +50,17 @@ class JSON implements Handler {
     /**
      * @var string
      */
+    protected $ipAddress;
+
+    /**
+     * @var string|null
+     */
     protected $returnedRootEntity;
 
     /**
      * @var string[]
      */
     protected $returnedFields;
-
-    /**
-     * @var string|null
-     */
-    protected $id;
 
     /**
      * @return string
@@ -92,14 +87,7 @@ class JSON implements Handler {
      */
     public function getErrorResponse (FormattedError $error) {
 
-        return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'error'   => $error->toArray(),
-                                         'id'      => $this->getId(),
-                                        ]),
-                            Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+        return new Response(strval($error), Response::HTTP_INTERNAL_SERVER_ERROR);
 
     }
 
@@ -158,19 +146,6 @@ class JSON implements Handler {
     }
 
     /**
-     * @param string[] $fields
-     *
-     * @throws \Core\Error\FormattedError
-     */
-    protected function setReturnedFields (array $fields = NULL) {
-
-        $fields = (array)$fields;
-
-        $this->returnedFields = $fields;
-
-    }
-
-    /**
      * @return string
      */
     public function getReturnedRootEntity () {
@@ -185,7 +160,6 @@ class JSON implements Handler {
     public function getService () {
 
         return $this->service;
-
     }
 
     /**
@@ -196,21 +170,14 @@ class JSON implements Handler {
      */
     public function getSuccessResponse (Serializer $serializer, $data) {
 
-        return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'result'  => $serializer->serialize($data)->get(),
-                                         'id'      => $this->getId(),
-                                        ]),
-                            Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+        return new Response(print_r($data, true), RESPONSE::HTTP_OK);
 
     }
 
     /**
      * @param Request $request
      *
-     * @throws \Core\Error\FormattedError
+     * @throws FormattedError
      */
     public function parse (Request $request) {
 
@@ -233,31 +200,19 @@ class JSON implements Handler {
         }
         $this->service = $explodedPathInfo[2];
 
-        $this->method = $request->query->get('method');
-        if (!isset($this->method) || !is_string($this->method)) {
+        if (!isset($explodedPathInfo[3])) {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
         }
+        $this->method = $explodedPathInfo[3];
 
         $this->path = '/' . $this->service . '/' . $this->method;
 
-        $this->params = $request->query->get('params') ?: [];
-
-        $this->id = $request->query->get('id');
+        $this->params = array_merge($request->query->all(), $request->request->all());
 
         $this->ipAddress = $request->getClientIp();
 
-        $this->returnedRootEntity = $request->query->get('entity');
-        $this->setReturnedFields($request->query->get('fields'));
+        $this->returnedRootEntity = NULL;
+        $this->returnedFields = [];
 
     }
-
-    /**
-     * @return null|string
-     */
-    public function getId () {
-
-        return $this->id;
-
-    }
-
 }

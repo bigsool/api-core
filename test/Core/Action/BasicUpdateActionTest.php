@@ -42,15 +42,16 @@ class BasicUpdateActionTest extends TestCase {
         $preCalled = false;
         $postCalled = false;
 
-        $action = new BasicUpdateAction('module', 'TestUser', 'UserFeatureHelper', NULL, [], function () use (&$preCalled) {
+        $action =
+            new BasicUpdateAction('module', 'TestUser', 'UserFeatureHelper', NULL, [], function () use (&$preCalled) {
 
-            $preCalled = true;
+                $preCalled = true;
 
-        }, function () use (&$postCalled) {
+            }, function () use (&$postCalled) {
 
-            $postCalled = true;
+                $postCalled = true;
 
-        });
+            });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => $createdUser->getId(), 'email' => 'qwe2@qwe.com']);

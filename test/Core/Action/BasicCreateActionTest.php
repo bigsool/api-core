@@ -29,15 +29,16 @@ class BasicCreateActionTest extends TestCase {
         $preCalled = false;
         $postCalled = false;
 
-        $action = new BasicCreateAction('module', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        $action =
+            new BasicCreateAction('module', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
-            $preCalled = true;
+                $preCalled = true;
 
-        }, function () use (&$postCalled) {
+            }, function () use (&$postCalled) {
 
-            $postCalled = true;
+                $postCalled = true;
 
-        });
+            });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);

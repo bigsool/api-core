@@ -8,7 +8,6 @@ use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
-use Core\Filter\StringFilter;
 use Core\Parameter\UnsafeParameter;
 
 class RequestContext {

@@ -501,7 +501,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
-        
+
         foreach ($cmf->getAllMetadata() as $metadata) {
 
             $generator = new EntityGenerator();
