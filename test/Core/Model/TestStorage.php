@@ -66,9 +66,9 @@ class TestStorage
     /**
      * @var \Core\Model\TestCompany
      *
-     * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", inversedBy="storage", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", inversedBy="storage", cascade={"persist","remove"})
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", unique=true, nullable=true)
+     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
      * })
      */
     private $company;
