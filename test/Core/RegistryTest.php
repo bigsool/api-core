@@ -71,6 +71,7 @@ class RegistryTest extends TestCase {
 
         $userStarField = new StarField('TestUser');
         $this->appCtx->addField($userStarField);
+        $this->appCtx->addField(new Field('TestUser', 'name'));
         $this->appCtx->addRule(new FieldRule($userStarField, $userConfKeyFilter));
 
     }
@@ -369,7 +370,7 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
-        $fieldKeyPath = new FieldKeyPath('*');
+        $fieldKeyPath = new FieldKeyPath('name');
         $reqCtx = $this->getRequestContext();
         $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
         $reqCtx->setReturnedRootEntity('TestUser');
@@ -379,7 +380,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT testUser ' .
+        $dql = 'SELECT testUser.name ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
