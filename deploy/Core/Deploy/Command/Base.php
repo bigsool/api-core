@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Yaml\Yaml;
 
 abstract class Base extends Command {
 
@@ -107,6 +108,15 @@ abstract class Base extends Command {
 
         $this->paths['env'] = $this->paths['root'] . '/deploy/' . $this->getEnv() . '/';
         $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
+
+        $config = Yaml::parse($this->paths['environmentFile']);
+        $keyPath = $this->paths['env'].$config['key'];
+        if (!file_exists($keyPath)) {
+            $this->abort(sprintf('Unable to find private key %s', $keyPath));
+        }
+        if (!chmod($keyPath,0400)) {
+            $this->abort(sprintf('Unable to change mode of the private key %s', $keyPath));
+        }
 
     }
 
