@@ -26,6 +26,7 @@ use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
 use Core\Rule\Rule;
 use Core\Validation\AbstractConstraintsProvider;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
@@ -470,7 +471,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
             $config =
                 Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true,
-                                                       __DIR__ . '/../proxy');
+                                                       __DIR__ . '/../proxy', new ArrayCache());
             $config->setSQLLogger(new DebugStack());
             $tmpDB = __DIR__ . '/../test.archiweb-proto.db.sqlite';
 
