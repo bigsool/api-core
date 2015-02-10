@@ -121,21 +121,4 @@ class JSONTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testStarFieldAsKeyPath () {
-
-        /**
-         * @var Request $req
-         */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
-        $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
-        $req->query->add(['method' => 'method']);
-        $req->query->add(['entity' => 'entity']);
-        $req->query->add(['fields' => ['*']]);
-        (new JSON())->parse($req);
-
-    }
-
 } 

@@ -3,6 +3,7 @@
 namespace Core\Context;
 
 
+use Core\Field\KeyPath;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
 
@@ -117,7 +118,7 @@ class RequestContextTest extends TestCase {
     public function testKeyPaths () {
 
         $ctx = $this->getRequestContext();
-        $keyPaths = [$this->getMockFieldKeyPath(), $this->getMockFieldKeyPath()];
+        $keyPaths = [new KeyPath('qwe'), new KeyPath('aze')];
         $ctx->setReturnedKeyPaths($keyPaths);
         $this->assertSame($keyPaths, $ctx->getReturnedKeyPaths());
 
