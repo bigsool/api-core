@@ -210,15 +210,23 @@ class Registry implements EventSubscriber {
 
         $qb = $this->getQueryBuilder($entity);
 
-
         $keyPaths = $ctx->getKeyPaths();
 
         // KeyPath as to be resolve to do the isEqual()
         foreach ($keyPaths as $keyPath) {
             $keyPath->resolve($this, $ctx);
+            // set alias automatically
+            $entity = $keyPath->getTheEntity();
+            $field = $keyPath->getTheField();
+            $alias = $entity.ucfirst($field);
+            if ($alias) {
+                $keyPath->setAlias($alias);
+            }
         }
 
-        foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as $keyPathFromRequest) {
+        $ctx->getReqCtx()->setReturnedKeyPaths($keyPaths);
+
+        foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as &$keyPathFromRequest) {
             // KeyPath as to be resolve to do the isEqual()
             $keyPathFromRequest->resolve($this, $ctx);
             foreach ($keyPaths as $alreadyAddedKeyPath) {
@@ -226,8 +234,12 @@ class Registry implements EventSubscriber {
                     continue 2;
                 }
             }
+
             $keyPaths[] = $keyPathFromRequest;
         }
+
+
+
         if (empty($keyPaths)) {
             throw new \RuntimeException('fields are required');
         }

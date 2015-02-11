@@ -138,10 +138,10 @@ class SerializerTest extends TestCase {
     private function findUsers ($reqCtx) {
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-        $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');
-        $qryCtx->addKeyPath(new KeyPath('email'),'userEmail');
-        $qryCtx->addKeyPath(new KeyPath('company.name'),'companyName');
-        $qryCtx->addKeyPath(new KeyPath('company.storage.url'), 'storageUrl');
+        $qryCtx->addKeyPath(new Aggregate('count',['*']));
+        $qryCtx->addKeyPath(new KeyPath('email'));
+        $qryCtx->addKeyPath(new KeyPath('company.name'));
+        $qryCtx->addKeyPath(new KeyPath('company.storage.url'));
 
         return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
     }
@@ -152,18 +152,14 @@ class SerializerTest extends TestCase {
 
         $reqCtx->setReturnedRootEntity('TestUser');
 
-        $users = $this->findUsers($reqCtx);
-
         $emailKP =  new KeyPath('email');
         $nbUsersKP = new Aggregate('count',['*']);
         $companyIdKP = new KeyPath('company.name');
         $storageUrlKP = new KeyPath('company.storage.url');
-        $emailKP->setAlias('userEmail');
-        $nbUsersKP->setAlias('nbUsers');
-        $companyIdKP->setAlias('companyName');
-        $storageUrlKP->setAlias('storageUrl');
 
         $reqCtx->setReturnedKeyPaths([$nbUsersKP,$emailKP,$companyIdKP,$storageUrlKP]);
+
+        $users = $this->findUsers($reqCtx);
 
         $serializer = new Serializer($reqCtx);
 

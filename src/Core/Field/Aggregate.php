@@ -43,6 +43,9 @@ class Aggregate extends keyPath {
         }
         $values = substr($values,0,strlen($values) - 1);
 
+        $entity = $ctx->getEntity();
+        $this->setAlias($entity.'Count');
+
         return $this->fn.'('.$values.')';
 
     }
