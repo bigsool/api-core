@@ -71,6 +71,7 @@ class Serializer {
             $tab = $tab2;
             $tab2 = [];
         }
+
         return $tab;
 
     }

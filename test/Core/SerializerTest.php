@@ -85,9 +85,6 @@ class SerializerTest extends TestCase {
         self::$company1->addUser(self::$user2);
         self::$company1->addUser(self::$user3);
 
-        self::$account1 = new TestAccount(self::$user1);
-        self::$account2 = new TestAccount(self::$user2);
-
         $registry = self::getApplicationContext()->getNewRegistry();
         $registry->save(self::$user1);
         $registry->save(self::$user2);
@@ -105,7 +102,7 @@ class SerializerTest extends TestCase {
 
         self::$expected = [
             [
-                'nbUsers' => '1',
+                'count' => '1',
                 'email'   => self::$user2->getEmail(),
                 'company' => [
                     'name' => self::$company1->getName(),
@@ -115,7 +112,7 @@ class SerializerTest extends TestCase {
                 ]
             ],
             [
-                'nbUsers' => '1',
+                'count' => '1',
                 'email'   => self::$user1->getEmail(),
                 'company' => [
                     'name' => self::$company1->getName(),
@@ -125,7 +122,7 @@ class SerializerTest extends TestCase {
                 ]
             ],
             [
-                'nbUsers' => '1',
+                'count' => '1',
                 'email'   => self::$user3->getEmail(),
                 'company' => [
                     'name' => self::$company1->getName(),
@@ -158,7 +155,7 @@ class SerializerTest extends TestCase {
         $users = $this->findUsers($reqCtx);
 
         $emailKP =  new KeyPath('email');
-        $nbUsersKP = new KeyPath('nbUsers');
+        $nbUsersKP = new Aggregate('count',['*']);
         $companyIdKP = new KeyPath('company.name');
         $storageUrlKP = new KeyPath('company.storage.url');
         $emailKP->setAlias('userEmail');

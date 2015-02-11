@@ -25,6 +25,7 @@ class Aggregate extends keyPath {
 
         $this->fn = $fn;
         $this->args = $args;
+        $this->value = 'count';
 
     }
 
