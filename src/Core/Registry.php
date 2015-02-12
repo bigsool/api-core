@@ -215,16 +215,7 @@ class Registry implements EventSubscriber {
         // KeyPath as to be resolve to do the isEqual()
         foreach ($keyPaths as $keyPath) {
             $keyPath->resolve($this, $ctx);
-            // set alias automatically
-            $entity = $keyPath->getTheEntity();
-            $field = $keyPath->getTheField();
-            $alias = $entity.ucfirst($field);
-            if ($alias) {
-                $keyPath->setAlias($alias);
-            }
         }
-
-        $ctx->getReqCtx()->setReturnedKeyPaths($keyPaths);
 
         foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as &$keyPathFromRequest) {
             // KeyPath as to be resolve to do the isEqual()

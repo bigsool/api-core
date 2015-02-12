@@ -138,12 +138,14 @@ class SerializerTest extends TestCase {
     private function findUsers ($reqCtx) {
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-        $qryCtx->addKeyPath(new Aggregate('count',['*']));
-        $qryCtx->addKeyPath(new KeyPath('email'));
-        $qryCtx->addKeyPath(new KeyPath('company.name'));
-        $qryCtx->addKeyPath(new KeyPath('company.storage.url'));
+
+        $keyPaths = $reqCtx->getReturnedKeyPaths();
+        foreach ($keyPaths as $keyPath) {
+            $qryCtx->addKeyPath($keyPath,$keyPath->getAlias());
+        }
 
         return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
+
     }
 
     public function testSerialize () {
@@ -168,6 +170,9 @@ class SerializerTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testArrayWithoutKeyPath () {
 
         $reqCtx = new RequestContext();
