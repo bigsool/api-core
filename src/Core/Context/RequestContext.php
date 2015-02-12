@@ -103,7 +103,7 @@ class RequestContext {
                 $explodedKeyPath = explode('.',$returnedKeyPath->getValue());
 
                 $count = count($explodedKeyPath);
-                $entity = 'user'; //TODO
+                $entity = $this->getReturnedRootEntity();
                 if ($count - 2 >= 0) {
                     $entity = $explodedKeyPath[$count - 2];
                 }
