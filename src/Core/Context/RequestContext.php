@@ -110,12 +110,11 @@ class RequestContext {
 
                 $alias = $entity.ucFirst($explodedKeyPath[$count - 1]);
                 $returnedKeyPath->setAlias($alias);
+            }
 
-                $value = $returnedKeyPath->getValue();
-                if (!is_string($value) || $value == '*') {
-                    throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
-                }
-
+            $value = $returnedKeyPath->getValue();
+            if (!is_string($value) || $value == '*') {
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
             }
 
         }
