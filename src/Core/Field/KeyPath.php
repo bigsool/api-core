@@ -42,18 +42,18 @@ class KeyPath extends AbstractKeyPath {
 
     }
 
+    public function isAggregate () {
+
+        return is_a($this, 'Core\Field\Aggregate');
+
+    }
+
     /**
      * @return bool
      */
     protected function isUsedInExpression () {
 
         return false;
-
-    }
-
-    public function isAggregate () {
-
-        return is_a($this,'Core\Field\Aggregate');
 
     }
 

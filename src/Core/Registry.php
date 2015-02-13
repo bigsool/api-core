@@ -8,7 +8,6 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
-use Core\Field\KeyPath;
 use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
@@ -253,10 +252,10 @@ class Registry implements EventSubscriber {
                 }
                 continue;
             }
-            $groupByClause .= $keyPath->resolve($this,$ctx).',';
+            $groupByClause .= $keyPath->resolve($this, $ctx) . ',';
         }
 
-        $groupByClause = substr($groupByClause,0,strlen($groupByClause) - 1);
+        $groupByClause = substr($groupByClause, 0, strlen($groupByClause) - 1);
 
         if ($needGroupByClause) {
             $qb->addGroupBy($groupByClause);
