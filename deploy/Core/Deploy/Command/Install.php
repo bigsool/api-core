@@ -342,9 +342,9 @@ class Install extends Base {
             if (!mkdir($logPath)) {
                 $this->abort('unable to create the folder Log');
             }
-            if (!chmod($logPath, 0777)) {
-                $this->abort('unable to make the folder Log world writeable');
-            }
+        }
+        if (!chmod($logPath, 0777)) {
+            $this->abort('unable to make the folder Log world writeable');
         }
         $logPerms = fileperms($logPath);
         if (($logPerms & 0x0006) != 0x0006) {
