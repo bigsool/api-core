@@ -93,13 +93,30 @@ class RequestContext {
     public function setReturnedKeyPaths (array $returnedKeyPaths) {
 
         foreach ($returnedKeyPaths as $returnedKeyPath) {
+
             if (!($returnedKeyPath instanceof KeyPath)) {
                 throw new \RuntimeException('invalid $returnedKeyPath');
             }
+
+            if ($returnedKeyPath->getAlias() == NULL) {
+
+                $explodedKeyPath = explode('.', $returnedKeyPath->getValue());
+
+                $count = count($explodedKeyPath);
+                $entity = $this->getReturnedRootEntity();
+                if ($count - 2 >= 0) {
+                    $entity = $explodedKeyPath[$count - 2];
+                }
+
+                $alias = $entity . ucFirst($explodedKeyPath[$count - 1]);
+                $returnedKeyPath->setAlias($alias);
+            }
+
             $value = $returnedKeyPath->getValue();
             if (!is_string($value) || $value == '*') {
                 throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
             }
+
         }
 
         $this->returnedKeyPaths = $returnedKeyPaths;

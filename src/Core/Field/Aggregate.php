@@ -25,6 +25,7 @@ class Aggregate extends keyPath {
 
         $this->fn = $fn;
         $this->args = $args;
+        $this->value = $fn;
 
     }
 
@@ -41,6 +42,9 @@ class Aggregate extends keyPath {
             $values .= (new KeyPath($arg))->resolve($registry, $ctx) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);
+
+        $entity = $ctx->getEntity();
+        $this->setAlias($entity . ucfirst($this->value));
 
         return $this->fn . '(' . $values . ')';
 

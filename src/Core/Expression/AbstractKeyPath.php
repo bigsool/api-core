@@ -221,4 +221,16 @@ abstract class AbstractKeyPath extends Value {
 
     }
 
+    public function getTheEntity () {
+
+        return $this->entity;
+
+    }
+
+    public function getTheField () {
+
+        return $this->field;
+
+    }
+
 }
