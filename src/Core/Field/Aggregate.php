@@ -18,10 +18,10 @@ class Aggregate extends keyPath {
     protected $args;
 
     /**
-     * @param String $fn
+     * @param String    $fn
      * @param String [] $args
      */
-    public function __construct($fn,$args) {
+    public function __construct ($fn, $args) {
 
         $this->fn = $fn;
         $this->args = $args;
@@ -30,25 +30,24 @@ class Aggregate extends keyPath {
     }
 
     /**
-    * @param Registry     $registry
-    * @param QueryContext $ctx
-    *
-    * @return string
-    */
+     * @param Registry     $registry
+     * @param QueryContext $ctx
+     *
+     * @return string
+     */
     public function resolve (Registry $registry, QueryContext $ctx) {
 
         $values = "";
         foreach ($this->args as $arg) {
-            $values .= (new KeyPath($arg))->resolve($registry,$ctx).',';
+            $values .= (new KeyPath($arg))->resolve($registry, $ctx) . ',';
         }
-        $values = substr($values,0,strlen($values) - 1);
+        $values = substr($values, 0, strlen($values) - 1);
 
         $entity = $ctx->getEntity();
-        $this->setAlias($entity.ucfirst($this->value));
+        $this->setAlias($entity . ucfirst($this->value));
 
-        return $this->fn.'('.$values.')';
+        return $this->fn . '(' . $values . ')';
 
     }
-
 
 }

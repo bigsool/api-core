@@ -10,15 +10,14 @@ use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
-use Core\Logger\TraceLogger;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
-use Symfony\Component\Routing\RequestContext as SymfonyRequestContext;
+use Symfony\Component\Routing\RequestContext as SfRequestContext;
 
 class Application {
 
@@ -102,116 +101,34 @@ class Application {
 
         try {
 
-            foreach ($this->getModuleManagers() as $moduleManager) {
-                $moduleManager->load($this->appCtx);
-            }
-
-            $traceLogger->trace('modules loaded');
+            $this->loadModules();
 
             // default RPCHandler
             $rpcHandler = new JSON();
 
-            try {
-                $request = Request::createFromGlobals();
-                $sfReqCtx = new SymfonyRequestContext();
-                $sfReqCtx->fromRequest($request);
+            $reqCtx = new RequestContext();
 
+            try {
+
+                $request = Request::createFromGlobals();
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
-                $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
+                $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
 
-                // we can't override $rpcHandler var until we're sure that the new value is a valid RPCHandler
-                // because we require an RPCHandler to send an error
-                $tmpRPCHandler = $this->getRPCHandlerForProtocol($protocol);
-                if (!($tmpRPCHandler instanceof Handler)) {
-                    throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
-                }
-                $rpcHandler = $tmpRPCHandler;
+                $this->populateRequestContext($rpcHandler, $reqCtx);
 
-                $rpcHandler->parse($request);
+                $sfReqCtx = new SfRequestContext();
+                $sfReqCtx->fromRequest($request);
 
-                $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
+                $controller = $this->getController($sfReqCtx, $rpcHandler);
 
-                $reqCtx = new RequestContext();
-                $reqCtx->setParams($rpcHandler->getParams());
-                $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
-                $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
-
-                    return new KeyPath($field);
-
-                }, $rpcHandler->getReturnedFields()));
-
-                $traceLogger->trace('request parsed');
-                $controller = $this->getController($matcher, $rpcHandler, $traceLogger);
-
-                $actCtx = new ActionContext($reqCtx);
-
-                $result = $controller->apply($actCtx);
-
-                $traceLogger->trace('controller called');
-
-                $serializer = new Serializer($reqCtx);
-
-                $response = $rpcHandler->getSuccessResponse($serializer, $result);
-
-                $traceLogger->trace('response created');
-
-                // handle queued actions before commit
-                $queue = $this->appCtx->getOnSuccessActionQueue();
-                while (!$queue->isEmpty()) {
-                    /**
-                     * @var Action $action
-                     */
-                    list($action, $params) = $queue->dequeue();
-                    $ctx = new ActionContext($reqCtx);
-                    $ctx->setParams($params);
-                    $action->process($ctx);
-                }
-
-                $traceLogger->trace('success queue processed');
-
-                $this->entityManager->commit();
-
-                $traceLogger->trace('database committed');
+                $response = $this->executeController($controller, $reqCtx, $rpcHandler);
 
             }
             catch (\Exception $e) {
 
-                // handle queued actions before commit
-                $queue = $this->appCtx->getOnErrorActionQueue();
-                while (!$queue->isEmpty()) {
-                    /**
-                     * @var Action $action
-                     */
-                    list($action, $params) = $queue->dequeue();
-                    if (!isset($reqCtx) || !($reqCtx instanceof RequestContext)) {
-                        $reqCtx = new RequestContext();
-                    }
-                    $ctx = new ActionContext($reqCtx);
-                    $ctx->setParams($params);
-                    $action->process($ctx);
-                }
+                $response = $this->handleException($reqCtx, $e, $rpcHandler);
 
-                $traceLogger->trace('error queue processed');
-
-                if ($e instanceof FormattedError) {
-
-                    $traceLogger->trace('FormattedError thrown');
-
-                    $response = $rpcHandler->getErrorResponse($e);
-
-                }
-                else {
-
-                    $traceLogger->trace('Exception thrown');
-
-                    $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
-                                                                                  'message' => $e->getMessage()
-                                                                                 ]));
-
-                }
-
-                $traceLogger->trace('response created');
             }
 
             $this->appCtx->getQueryLogger()->logResponse($response);
@@ -223,7 +140,6 @@ class Application {
             ob_end_clean();
 
             $response->send();
-
             $traceLogger->trace('response sent');
 
         }
@@ -240,6 +156,19 @@ class Application {
             exit('Internal Server Error');
 
         }
+
+    }
+
+    /**
+     *
+     */
+    protected function loadModules () {
+
+        foreach ($this->getModuleManagers() as $moduleManager) {
+            $moduleManager->load($this->appCtx);
+        }
+
+        $this->appCtx->getTraceLogger()->trace('modules loaded');
 
     }
 
@@ -261,42 +190,208 @@ class Application {
     }
 
     /**
+     * @param Request $request
+     *
+     * @return Handler
+     * @throws FormattedError
+     *
+     */
+    protected function getRPCHandlerFromHTTPRequest (Request $request) {
+
+        $rpcHandler = $this->getRPCHandlerForProtocol($this->findProtocolInRequest($request));
+
+        $rpcHandler->parse($request);
+        $this->appCtx->getTraceLogger()->trace('request parsed');
+
+        return $rpcHandler;
+
+    }
+
+    /**
      * @param string $protocol
      *
-     * @return null|Handler
+     * @return Handler
+     * @throws FormattedError
      */
     protected function getRPCHandlerForProtocol ($protocol) {
 
         $rpcClassName = '\Core\RPC\\' . $protocol;
         if (!$protocol || !class_exists($rpcClassName)) {
-            return NULL;
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
         }
 
-        return new $rpcClassName();
+        $rpcHandler = new $rpcClassName();
+
+        if (!($rpcHandler instanceof Handler)) {
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
+        }
+
+        return $rpcHandler;
+
     }
 
     /**
-     * @param UrlMatcherInterface $matcher
-     * @param Handler             $rpcHandler
-     * @param TraceLogger         $traceLogger
+     * @param Request $request
+     *
+     * @return string
+     */
+    protected function findProtocolInRequest (Request $request) {
+
+        $protocol = strstr(trim($request->getPathInfo(), '/'), '/', true);
+
+        return $protocol;
+
+    }
+
+    /**
+     * @param Handler        $rpcHandler
+     * @param RequestContext $reqCtx
+     *
+     * @throws FormattedError
+     */
+    protected function populateRequestContext (Handler $rpcHandler, RequestContext &$reqCtx) {
+
+        $reqCtx->setParams($rpcHandler->getParams());
+        $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
+        $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
+
+            return new KeyPath($field);
+
+        }, $rpcHandler->getReturnedFields()));
+
+    }
+
+    /**
+     * @param SfRequestContext $sfReqCtx
+     * @param Handler          $rpcHandler
      *
      * @return Controller
      * @throws FormattedError
      */
-    protected function getController (UrlMatcherInterface $matcher, Handler $rpcHandler, TraceLogger $traceLogger) {
+    protected function getController (SfRequestContext $sfReqCtx, Handler $rpcHandler) {
+
+        $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
         /**
          * @var Controller $controller
          */
         try {
             $controller = $matcher->match($rpcHandler->getPath())['controller'];
-            $traceLogger->trace('controller found');
+            $this->appCtx->getTraceLogger()->trace('controller found');
         }
         catch (\Exception $e) {
             throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
         }
 
         return $controller;
+
+    }
+
+    /**
+     * @param Controller     $controller
+     * @param RequestContext $reqCtx
+     * @param Handler        $rpcHandler
+     *
+     * @return Response
+     */
+    protected function executeController (Controller $controller, RequestContext $reqCtx, Handler $rpcHandler) {
+
+        $traceLogger = $this->appCtx->getTraceLogger();
+
+        $result = $controller->apply(new ActionContext($reqCtx));
+        $traceLogger->trace('controller called');
+
+        $response = $rpcHandler->getSuccessResponse(new Serializer($reqCtx), $result);
+        $traceLogger->trace('response created');
+
+        // handle queued actions before commit
+        $this->executeSuccessQueuedActions($reqCtx);
+
+        $this->entityManager->commit();
+        $traceLogger->trace('database committed');
+
+        return $response;
+
+    }
+
+    /**
+     * @param $reqCtx
+     */
+    protected function executeSuccessQueuedActions ($reqCtx) {
+
+        $queue = $this->appCtx->getOnSuccessActionQueue();
+        while (!$queue->isEmpty()) {
+            /**
+             * @var Action $action
+             */
+            list($action, $params) = $queue->dequeue();
+            $ctx = new ActionContext($reqCtx);
+            $ctx->setParams($params);
+            $action->process($ctx);
+        }
+
+        $this->appCtx->getTraceLogger()->trace('success queue processed');
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     * @param \Exception     $e
+     * @param Handler        $rpcHandler
+     *
+     * @return Response
+     * @internal param $traceLogger
+     */
+    protected function handleException (RequestContext $reqCtx, \Exception $e, Handler $rpcHandler) {
+
+        $traceLogger = $this->appCtx->getTraceLogger();
+
+        // handle queued actions before commit
+        $this->executeErrorQueuedActions($reqCtx);
+
+        if ($e instanceof FormattedError) {
+
+            $traceLogger->trace('FormattedError thrown');
+            $response = $rpcHandler->getErrorResponse($e);
+
+        }
+        else {
+
+            $traceLogger->trace('Exception thrown');
+            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
+                                                                          'message' => $e->getMessage()
+                                                                         ]));
+
+        }
+
+        $traceLogger->trace('response created');
+
+        return $response;
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     */
+    protected function executeErrorQueuedActions (RequestContext $reqCtx = NULL) {
+
+        if (!isset($reqCtx)) {
+            $reqCtx = new RequestContext();
+        }
+
+        $queue = $this->appCtx->getOnErrorActionQueue();
+        while (!$queue->isEmpty()) {
+            /**
+             * @var Action $action
+             */
+            list($action, $params) = $queue->dequeue();
+            $ctx = new ActionContext($reqCtx);
+            $ctx->setParams($params);
+            $action->process($ctx);
+        }
+
+        $this->appCtx->getTraceLogger()->trace('error queue processed');
+
     }
 
 }
