@@ -134,7 +134,7 @@ class Application {
             $this->appCtx->getQueryLogger()->logResponse($response);
 
             if (ob_get_length()) {
-                $logger->addWarning(ob_get_contents());
+                $logger->addWarning("buffer isn't empty:" . ob_get_contents());
             }
 
             ob_end_clean();
