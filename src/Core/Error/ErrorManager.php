@@ -72,12 +72,67 @@ class ErrorManager {
      */
     public function getFormattedError ($errorCode = NULL) {
 
-        if ($errorCode) {
-            $this->addError($errorCode);
+        if ($errorCode === NULL) {
+            $errors = $this->errors;
+        }
+        else {
+            $errors = [$this->getErrorForErrorCode($errorCode)];
+        }
+        $formattedErrors = [];
+        $parentCode = $errors[0]->getParentCode();
+        foreach ($errors as $error) {
+            if ($error->getParentCode() !== $parentCode) {
+                throw new \RuntimeException("Errors to throw haven't the same parent");
+            }
+            $formattedErrors[] = $this->buildFormattedError($error);
         }
 
-        $parent = $this->getMainParent($this->errors[0]);
-        $formattedError = $this->buildFormattedError($parent);
+        $error = $errors[0];
+        $formattedError = $formattedErrors[0];
+
+        while ($error->getParentCode() !== NULL) {
+            $parent = $this->getErrorForErrorCode($error->getParentCode());
+            $parentFormattedError = $this->buildFormattedError($parent);
+            if ($formattedError === $formattedErrors[0]) {
+                foreach ($formattedErrors as $formattedError) {
+                    $parentFormattedError->addChildError($formattedError);
+                }
+            }
+            else {
+                $parentFormattedError->addChildError($formattedError);
+            }
+            $formattedError = $parentFormattedError;
+            $error = $parent;
+        }
+
+        return $formattedError;
+
+    }
+
+    /**
+     * @param string $errorCode
+     *
+     * @return Error
+     */
+    protected function getErrorForErrorCode ($errorCode) {
+
+        if (!isset($this->definedErrors[$errorCode])) {
+            throw new \RuntimeException('undefined error code ' . $errorCode);
+        }
+
+        return $this->definedErrors[$errorCode];
+
+    }
+
+    /**
+     * @param Error $error
+     *
+     * @return FormattedError
+     */
+    private function buildFormattedError (Error $error) {
+
+        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : NULL;
+        $formattedError = new FormattedError($error, $field);
 
         return $formattedError;
 
@@ -100,61 +155,17 @@ class ErrorManager {
     }
 
     /**
-     * @param string $errorCode
-     *
-     * @return Error
-     */
-    protected function getErrorForErrorCode ($errorCode) {
-
-        if (!isset($this->definedErrors[$errorCode])) {
-            throw new \RuntimeException('undefined error code ' . $errorCode);
-        }
-
-        return $this->definedErrors[$errorCode];
-
-    }
-
-    /**
      * @param Error $error
      *
      * @return Error
      */
     private function getMainParent ($error) {
 
-        $parent = $error;
-        if ($error->getParentCode() !== NULL) {
-            foreach ($this->definedErrors as $definedError) {
-                if ($definedError->getCode() === $error->getParentCode()) {
-                    $parent = $this->getMainParent($definedError);
-                    break;
-                }
-            }
+        while ($error->getParentCode() !== NULL) {
+            $error = $this->definedErrors[$error->getParentCode()];
         }
 
-        return $parent;
-    }
-
-    /**
-     * @param Error $error
-     *
-     * @return FormattedError
-     */
-    private function buildFormattedError (Error $error) {
-
-        $childErrors = $this->getChildErrors($error->getCode());
-        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : NULL;
-        $formattedError = new FormattedError($error, $field);
-
-        if ($childErrors) {
-            foreach ($childErrors as $childError) {
-                if ($this->isInTheErrorThree($childError)) {
-                    $formattedError->addChildError($this->buildFormattedError($childError));
-                }
-            }
-        }
-
-        return $formattedError;
-
+        return $error;
     }
 
     /**
