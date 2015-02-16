@@ -145,36 +145,40 @@ class ErrorManagerTest extends TestCase {
 
     }
 
-    public function testGetFormattedError () {
+    /**
+     * @expectedException \Exception
+     */
+    public function testGetFormattedErrorWithDifferentParents() {
 
         $this->errorManager->addError($this->error1000->getCode());
+        $this->errorManager->addError($this->error1000->getParentCode());
+
+        $this->errorManager->getFormattedError();
+
+    }
+
+    public function testGetFormattedError () {
+
+        $this->errorManager->addError($this->error100->getCode());
         $formattedError = $this->errorManager->getFormattedError();
         $this->assertEquals($formattedError->getCode(), __TEST__ERR_1);
         $this->assertCount(1, $formattedError->getChildErrors());
 
-        $this->errorManager->addError($this->error11->getCode());
+        $this->errorManager->addError($this->error101->getCode(), "fieldModified");
         $formattedError = $this->errorManager->getFormattedError();
         $this->assertEquals($formattedError->getCode(), __TEST__ERR_1);
-        $this->assertCount(2, $formattedError->getChildErrors());
+        $this->assertCount(1, $formattedError->getChildErrors());
 
         $formattedChildErrors = $formattedError->getChildErrors();
 
         $this->assertEquals($formattedChildErrors[0]->getCode(), __TEST__ERR_10);
-        $this->assertEquals($formattedChildErrors[1]->getCode(), __TEST__ERR_11);
+        $this->assertCount(2, $formattedChildErrors[0]->getChildErrors());
 
         $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
 
-        $this->assertEquals($formattedChildErrors[0]->getCode(), __TEST__ERR_101);
-        $this->assertCount(1, $formattedChildErrors);
-
-        $formattedChildErrors = $formattedChildErrors[0]->getChildErrors();
-
-        $this->assertEquals($formattedChildErrors[0]->getCode(), __TEST__ERR_1000);
-        $this->assertCount(1, $formattedChildErrors);
-
-        $this->errorManager->addError($this->error1->getCode(), "fieldModified");
-        $formattedError = $this->errorManager->getFormattedError();
-        $this->assertEquals($formattedError->getField(), "fieldModified");
+        $this->assertEquals($formattedChildErrors[0]->getCode(), __TEST__ERR_100);
+        $this->assertEquals($formattedChildErrors[1]->getCode(), __TEST__ERR_101);
+        $this->assertEquals($formattedChildErrors[1]->getField(), "fieldModified");
 
     }
 
