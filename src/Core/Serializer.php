@@ -9,7 +9,7 @@ class Serializer {
     /**
      * @var array
      */
-    private $requiredFields = [];
+    private $requiredKeyPaths = [];
 
     /**
      * @var array
@@ -24,7 +24,7 @@ class Serializer {
         $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
 
         foreach ($returnedKeyPaths as $keyPath) {
-            $this->requiredFields[] = ["keyPath" => explode('.', $keyPath->getValue()), "alias" => $keyPath->getAlias()];
+            $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
         }
 
     }
@@ -37,9 +37,7 @@ class Serializer {
     public function serialize ($data) {
 
         if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $this->dataSerialized[$key] = $this->getSerializedData($value);
-            }
+               $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths,$data);
         }
         else {
             $this->dataSerialized = $data;
@@ -49,30 +47,73 @@ class Serializer {
 
     }
 
-    private function getSerializedData ($data) {
+    /**
+     * @param [] String $keyPaths
+     * @param [] String $data
+     * @return Array
+     */
+    private function removeDoctrineId ($keyPaths,$data) {
 
-        $dataSerialized = [];
-        if (!$this->requiredFields) return $data;
-        foreach ($this->requiredFields as $field) {
-            $arraySerialized = $this->getSerializedArray($field['keyPath'],$data[$field['alias']]);
-            $dataSerialized = array_merge_recursive($dataSerialized,$arraySerialized);
+        $newData = [];
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                if ($key === "id" && $this->isAutomaticallyAdded($keyPaths)) {
+                    continue;
+                }
+                $newData[$key] = $this->removeDoctrineId($this->getKeyPaths($keyPaths,$key),$value);
+            }
+        }
+        else {
+            $newData = $data;
         }
 
-        return $dataSerialized;
+        return $newData;
 
     }
 
-    private function getSerializedArray ($values,$elem) {
+    /**
+     * @param [] String $keyPaths
+     * @param mixed $value
+     * @return Array
+     */
+    protected function getKeyPaths($keyPaths,$value) {
 
-        $tab[$values[count($values) -1]] = $elem;
-        $tab2 = [];
-        for ($i = count($values) -2 ; $i >= 0 ; --$i) {
-            $tab2[$values[$i]] = $tab;
-            $tab = $tab2;
-            $tab2 = [];
+        $newKeyPaths = [];
+
+        foreach ($keyPaths as $keyPath) {
+
+            if ($keyPath[0] === $value) {
+
+                $newKeyPath = [];
+
+                for ($i = 1 ; $i < count($keyPath) ; ++$i) {
+                    $newKeyPath[] = $keyPath[$i];
+                }
+
+                if (count ($newKeyPath) != 0) {
+                    $newKeyPaths[] = $newKeyPath;
+                }
+
+            }
+
         }
 
-        return $tab;
+        return $newKeyPaths ? $newKeyPaths : $keyPaths;
+
+    }
+
+    /**
+     * @param [] String $keyPaths
+     * @return boolean
+     */
+    protected function isAutomaticallyAdded ($keyPaths) {
+
+        foreach($keyPaths as $keyPath) {
+            if ($keyPath[0] === 'id') return false;
+        }
+
+        return true;
 
     }
 

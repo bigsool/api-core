@@ -22,6 +22,11 @@ class SerializerTest extends TestCase {
     protected static $expected;
 
     /**
+     * @var array
+     */
+    protected static $expectedWithAggregate;
+
+    /**
      * @var \Core\Model\TestCompany
      */
     protected static $company1;
@@ -99,37 +104,51 @@ class SerializerTest extends TestCase {
 
         self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
 
-
         self::$expected = [
             [
-                'count' => '1',
-                'email'   => self::$user2->getEmail(),
-                'company' => [
-                    'name' => self::$company1->getName(),
-                    'storage' => [
-                        'url' => self::$storage->getUrl(),
-                    ]
-                ]
-            ],
-            [
-                'count' => '1',
                 'email'   => self::$user1->getEmail(),
                 'company' => [
                     'name' => self::$company1->getName(),
                     'storage' => [
+                        'id' => self::$storage->getId(),
                         'url' => self::$storage->getUrl(),
                     ]
                 ]
             ],
             [
-                'count' => '1',
                 'email'   => self::$user3->getEmail(),
                 'company' => [
                     'name' => self::$company1->getName(),
                     'storage' => [
+                        'id' => self::$storage->getId(),
                         'url' => self::$storage->getUrl(),
                     ]
                 ]
+            ],
+            [
+                'email'   => self::$user2->getEmail(),
+                'company' => [
+                    'name' => self::$company1->getName(),
+                    'storage' => [
+                        'id' => self::$storage->getId(),
+                        'url' => self::$storage->getUrl(),
+                    ]
+                ],
+            ],
+        ];
+
+        self::$expectedWithAggregate = [
+            [
+                self::$expected[2],
+                'TestUserCount' => '1'
+            ],
+            [
+                self::$expected[0],
+                'TestUserCount' => '1'
+            ],
+            [
+                self::$expected[1],
+                'TestUserCount' => '1'
             ],
         ];
 
@@ -153,13 +172,12 @@ class SerializerTest extends TestCase {
         $reqCtx = new RequestContext();
 
         $reqCtx->setReturnedRootEntity('TestUser');
-
         $emailKP =  new KeyPath('email');
-        $nbUsersKP = new Aggregate('count',['*']);
         $companyIdKP = new KeyPath('company.name');
+        $storageIdKP = new KeyPath('company.storage.id');
         $storageUrlKP = new KeyPath('company.storage.url');
 
-        $reqCtx->setReturnedKeyPaths([$nbUsersKP,$emailKP,$companyIdKP,$storageUrlKP]);
+        $reqCtx->setReturnedKeyPaths([$emailKP,$companyIdKP,$storageIdKP,$storageUrlKP]);
 
         $users = $this->findUsers($reqCtx);
 
@@ -167,6 +185,24 @@ class SerializerTest extends TestCase {
 
         $serializer->serialize($users);
         $this->assertSame(self::$expected, $serializer->get());
+
+        $reqCtx = new RequestContext();
+
+        $reqCtx->setReturnedRootEntity('TestUser');
+        $emailKP =  new KeyPath('email');
+        $nbUsersKP = new Aggregate('count',['*']);
+        $companyIdKP = new KeyPath('company.name');
+        $storageIdKP = new KeyPath('company.storage.id');
+        $storageUrlKP = new KeyPath('company.storage.url');
+
+        $reqCtx->setReturnedKeyPaths([$nbUsersKP,$emailKP,$companyIdKP,$storageIdKP,$storageUrlKP]);
+
+        $users = $this->findUsers($reqCtx);
+
+        $serializer = new Serializer($reqCtx);
+
+        $serializer->serialize($users);
+        $this->assertSame(self::$expectedWithAggregate, $serializer->get());
 
     }
 
