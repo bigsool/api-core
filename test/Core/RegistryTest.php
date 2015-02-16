@@ -11,6 +11,7 @@ use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath as ExpressionKeyPath;
 use Core\Expression\Parameter;
 use Core\Expression\Value;
+use Core\Field\Aggregate;
 use Core\Field\Field;
 use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\StarField;
@@ -302,7 +303,8 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
-        $this->assertSame(['name' => $this->company['name'],
+        $this->assertSame(['id'   => $this->company['id'],
+                           'name' => $this->company['name'],
                            'tva'  => $this->company['tva']
                           ], $result[0]);
         // TODO: improve test
@@ -380,7 +382,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT testUser.name ' .
+        $dql = 'SELECT partial testUser.{id,name} ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
@@ -397,6 +399,7 @@ class RegistryTest extends TestCase {
         $this->appCtx->addField(new Field('TestCompany', 'name'));
 
         $qryCtx = new FindQueryContext('TestUser');
+        $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
         $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
@@ -404,9 +407,10 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT testUser.email, testUser.name AS userName, testUserCompany.name AS companyName ' .
+        $dql = 'SELECT count(testUser) AS nbUsers, partial testUser.{id,email,name}, partial testUserCompany.{id,name} ' .
                'FROM \Core\Model\TestUser testUser ' .
-               'INNER JOIN testUser.company testUserCompany';
+               'INNER JOIN testUser.company testUserCompany '.
+               'GROUP BY testUser.email,testUser.name,testUserCompany.name';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }

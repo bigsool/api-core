@@ -39,12 +39,15 @@ class Aggregate extends keyPath {
 
         $values = "";
         foreach ($this->args as $arg) {
-            $values .= (new KeyPath($arg))->resolve($registry, $ctx) . ',';
+            $keyPath = new KeyPath($arg);
+            $values .= $keyPath->resolve($registry, $ctx) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);
 
         $entity = $ctx->getEntity();
-        $this->setAlias($entity . ucfirst($this->value));
+        if (!$this->getAlias()) {
+            $this->setAlias($entity . ucfirst($this->value));
+        }
 
         return $this->fn . '(' . $values . ')';
 

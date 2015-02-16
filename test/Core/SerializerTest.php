@@ -213,7 +213,6 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
         $reqCtx->setReturnedRootEntity('TestUser');
-        $reqCtx->setReturnedRootEntity(NULL);
 
         $serializer = new Serializer($reqCtx);
 

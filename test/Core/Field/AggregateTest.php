@@ -121,19 +121,6 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new KeyPath('company.id'));
-        $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');
-
-        $result = $registry->find($qryCtx);
-
-        $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
-        $this->assertSame(["id" => 1, "nbUsers" => "2"], $result[0]);
-        $this->assertSame(["id" => 2, "nbUsers" => "1"], $result[1]);
-
-        $registry = self::getApplicationContext()->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addKeyPath(new Aggregate('max',['company.id']),'maxCompanyId');
 
         $result = $registry->find($qryCtx);
@@ -151,7 +138,7 @@ class AggregateTest extends TestCase {
         $result = $registry->find($qryCtx,false);
 
         $this->assertInternalType('array', $result);
-        $this->assertCount(1, $result);
+        $this->assertCount(3, $result);
         $this->assertSame("1", $result[0]['minCompanyId']);
 
     }

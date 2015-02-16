@@ -241,9 +241,9 @@ class Registry implements EventSubscriber {
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
             $exploded = explode('.',$field);
-            if (count($exploded) == 1) {
+            if (count($exploded) == 1 || $keyPath->isAggregate()) {
                 if($keyPath->getAlias()) {
-                    $field .= 'AS '.$keyPath->getAlias();
+                    $field .= ' AS '.$keyPath->getAlias();
                 }
                 $qb->addSelect($field);
             }
