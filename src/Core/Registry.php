@@ -235,13 +235,11 @@ class Registry implements EventSubscriber {
 
         // TODO: fix problem with partial objects
         // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
-        // In fact we don't want to implement partial object because of potentials problems
-        // We should find a way to prevent problem
         $entities = [];
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
             $exploded = explode('.',$field);
-            if (count($exploded) == 1 || $keyPath->isAggregate()) {
+            if (!$hydrateArray || count($exploded) == 1 || $keyPath->isAggregate()) {
                 if($keyPath->getAlias()) {
                     $field .= ' AS '.$keyPath->getAlias();
                 }
@@ -255,10 +253,7 @@ class Registry implements EventSubscriber {
 
         foreach ($entities as $entity => $fields) {
             $selectClause = 'partial '.$entity.'.{id,';
-            foreach ($fields as $field) {
-                $selectClause .= $field.',';
-            }
-            $selectClause = substr($selectClause,0,strlen($selectClause) -1);
+            $selectClause .= implode(',',$fields);
             $selectClause .= '}';
             $qb->addSelect($selectClause);
         }

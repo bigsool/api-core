@@ -382,7 +382,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT partial testUser.{id,name} ' .
+        $dql = 'SELECT testUser.name ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
@@ -407,7 +407,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT count(testUser) AS nbUsers, partial testUser.{id,email,name}, partial testUserCompany.{id,name} ' .
+        $dql = 'SELECT count(testUser) AS nbUsers, testUser.email, testUser.name AS userName, testUserCompany.name AS companyName ' .
                'FROM \Core\Model\TestUser testUser ' .
                'INNER JOIN testUser.company testUserCompany '.
                'GROUP BY testUser.email,testUser.name,testUserCompany.name';
