@@ -194,7 +194,7 @@ class Install extends Base {
         if (!$isFirstInstall) {
 
             $this->dbConfigRealPath =
-                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv() . '/db.yml';
+                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv() . '/extra.yml';
             $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
 
             $this->getOutput()->writeln("OK");
