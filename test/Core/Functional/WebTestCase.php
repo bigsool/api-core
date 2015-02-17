@@ -31,6 +31,12 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public static function getWWWPath() {
+
+        return 'api/core/www/run.php';
+
+    }
+
     public static function resetDatabase () {
 
         require __DIR__ . '/../../../doctrine/config.php';
@@ -73,7 +79,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     public static function get ($service, $method, array $params = [], $entity = NULL, array $fields = [],
                                 $auth = NULL, $id = NULL) {
 
-        $config = ['base_url' => 'http://localhost/api/core/run.php/JSON/archipad-cloud+1+fr/'];
+        $config = ['base_url' => 'http://localhost/'.static::getWWWPath().'/JSON/archipad-cloud+1+fr/'];
         if (version_compare(PHP_VERSION, '5.5.0') >= 0) {
             $config['handler'] = new CurlHandler();
         }

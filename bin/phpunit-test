@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-../vendor/bin/phpunit --bootstrap ../test/autoload.php -c ../phpunit.xml --verbose --report-useless-tests --strict-coverage --enforce-time-limit --disallow-test-output --colors ../test/
+../vendor/bin/phpunit --bootstrap ../vendor/autoload.php -c ../phpunit.xml --verbose --report-useless-tests --strict-coverage --enforce-time-limit --disallow-test-output --colors ../test/

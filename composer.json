@@ -24,6 +24,11 @@
       "Core\\Sami": "sami/"
     }
   },
+  "autoload-dev": {
+    "psr-0": {
+      "Core": "test/"
+    }
+  },
   "extra": {
     "branch-alias": {
       "dev-master": "1.0.x-dev"
