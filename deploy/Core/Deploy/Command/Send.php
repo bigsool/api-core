@@ -38,8 +38,9 @@ class Send extends Base {
 
         $this->copyPreviousRev();
 
-
         $this->rsync();
+
+        return 0;
 
     }
 

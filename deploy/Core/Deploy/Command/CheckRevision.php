@@ -37,6 +37,8 @@ class CheckRevision extends Base {
 
         $this->checkCurrentRevision($revision);
 
+        return 0;
+
     }
 
     protected function setEnv ($env) {

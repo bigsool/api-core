@@ -32,8 +32,8 @@ class Install extends Base {
     protected $dbConfigDirectory = '../CONFIG';
 
     protected $dbConfigFilenames = array(
-        'db.1.yml',
-        'db.2.yml',
+        'extra.1.yml',
+        'extra.2.yml',
     );
 
     protected $isDown = false;
@@ -120,6 +120,8 @@ class Install extends Base {
             throw $e;
         }
 
+        return 0;
+
     }
 
     /**
@@ -145,7 +147,7 @@ class Install extends Base {
         }
         $this->isDownPath = $downFolder . 'isDown.yml';
 
-        $this->dbConfigLinkName = $this->configDir . '/db.yml';
+        $this->dbConfigLinkName = $this->configDir . '/extra.yml';
 
     }
 

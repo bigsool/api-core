@@ -32,7 +32,9 @@ class Deploy extends Base {
             'command' => 'check-revision',
             'env'     => $input->getArgument('env'),
         );
-        $checkRevisionCmd->run(new ArrayInput($checkRevisionArgs), $output);
+        if ($errorCode = $checkRevisionCmd->run(new ArrayInput($checkRevisionArgs), $output)) {
+            $this->abort($checkRevisionArgs['command'] . ' failed with error code: ' . $errorCode);
+        }
 
         $revision = Helper::getLocalRevision($this->getInput(), $this->getOutput(), $this->paths['root']);
 
@@ -42,7 +44,9 @@ class Deploy extends Base {
             'env'      => $input->getArgument('env'),
             'revision' => $revision,
         );
-        $sendCmd->run(new ArrayInput($sendArgs), $output);
+        if ($errorCode = $sendCmd->run(new ArrayInput($sendArgs), $output)) {
+            $this->abort($sendArgs['command'] . ' failed with error code: ' . $errorCode);
+        }
 
         $config = Yaml::parse($this->paths['environmentFile']);
         $verboseOption = ($input->getOption('verbose')) ? ' -v ' : '';
@@ -53,14 +57,19 @@ class Deploy extends Base {
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmdInstall));
         }
-        passthru($cmdInstall);
+        passthru($cmdInstall, $errorCode);
+        if ($errorCode) {
+            $this->abort('install failed with error code: ' . $errorCode);
+        }
 
         $updateTagArgs = array(
             '-v'      => $input->getOption('verbose'),
             'command' => 'update-tag',
             'env'     => $input->getArgument('env'),
         );
-        $updateTagCmd->run(new ArrayInput($updateTagArgs), $output);
+        if ($errorCode = $updateTagCmd->run(new ArrayInput($updateTagArgs), $output)) {
+            $this->abort($updateTagArgs['command'] . ' failed with error code: ' . $errorCode);
+        }
 
     }
 
