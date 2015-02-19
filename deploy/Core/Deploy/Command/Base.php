@@ -43,8 +43,9 @@ abstract class Base extends Command {
 
         $this->setInput($input);
         $this->setOutput($output);
-        $this->setEnv($input->getArgument('env'));
         $this->setQuestion($this->getHelper('dialog'));
+        $this->setEnv($input->getArgument('env'));
+
 
     }
 
