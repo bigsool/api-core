@@ -64,6 +64,8 @@ class UpdateTag extends Base {
 
         $this->getOutput()->writeln("OK\n");
 
+        return 0;
+
     }
 
 }
