@@ -7,14 +7,11 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\Aggregate;
 use Core\Field\KeyPath;
-use Core\Filter\StringFilter;
-use Core\Model\TestAccount;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
 
 class SerializerTest extends TestCase {
-
 
     /**
      * @var array
@@ -50,7 +47,6 @@ class SerializerTest extends TestCase {
      * @var \Core\Model\TestStorage
      */
     protected static $storage;
-
 
     public static function setUpBeforeClass () {
 
@@ -108,9 +104,9 @@ class SerializerTest extends TestCase {
             [
                 'email'   => self::$user1->getEmail(),
                 'company' => [
-                    'name' => self::$company1->getName(),
+                    'name'    => self::$company1->getName(),
                     'storage' => [
-                        'id' => self::$storage->getId(),
+                        'id'  => self::$storage->getId(),
                         'url' => self::$storage->getUrl(),
                     ]
                 ]
@@ -118,9 +114,9 @@ class SerializerTest extends TestCase {
             [
                 'email'   => self::$user3->getEmail(),
                 'company' => [
-                    'name' => self::$company1->getName(),
+                    'name'    => self::$company1->getName(),
                     'storage' => [
-                        'id' => self::$storage->getId(),
+                        'id'  => self::$storage->getId(),
                         'url' => self::$storage->getUrl(),
                     ]
                 ]
@@ -128,9 +124,9 @@ class SerializerTest extends TestCase {
             [
                 'email'   => self::$user2->getEmail(),
                 'company' => [
-                    'name' => self::$company1->getName(),
+                    'name'    => self::$company1->getName(),
                     'storage' => [
-                        'id' => self::$storage->getId(),
+                        'id'  => self::$storage->getId(),
                         'url' => self::$storage->getUrl(),
                     ]
                 ],
@@ -154,30 +150,17 @@ class SerializerTest extends TestCase {
 
     }
 
-    private function findUsers ($reqCtx) {
-
-        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-
-        $keyPaths = $reqCtx->getReturnedKeyPaths();
-        foreach ($keyPaths as $keyPath) {
-            $qryCtx->addKeyPath($keyPath,$keyPath->getAlias());
-        }
-
-        return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
-
-    }
-
     public function testSerialize () {
 
         $reqCtx = new RequestContext();
 
         $reqCtx->setReturnedRootEntity('TestUser');
-        $emailKP =  new KeyPath('email');
+        $emailKP = new KeyPath('email');
         $companyIdKP = new KeyPath('company.name');
         $storageIdKP = new KeyPath('company.storage.id');
         $storageUrlKP = new KeyPath('company.storage.url');
 
-        $reqCtx->setReturnedKeyPaths([$emailKP,$companyIdKP,$storageIdKP,$storageUrlKP]);
+        $reqCtx->setReturnedKeyPaths([$emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
 
         $users = $this->findUsers($reqCtx);
 
@@ -189,13 +172,13 @@ class SerializerTest extends TestCase {
         $reqCtx = new RequestContext();
 
         $reqCtx->setReturnedRootEntity('TestUser');
-        $emailKP =  new KeyPath('email');
-        $nbUsersKP = new Aggregate('count',['*']);
+        $emailKP = new KeyPath('email');
+        $nbUsersKP = new Aggregate('count', ['*']);
         $companyIdKP = new KeyPath('company.name');
         $storageIdKP = new KeyPath('company.storage.id');
         $storageUrlKP = new KeyPath('company.storage.url');
 
-        $reqCtx->setReturnedKeyPaths([$nbUsersKP,$emailKP,$companyIdKP,$storageIdKP,$storageUrlKP]);
+        $reqCtx->setReturnedKeyPaths([$nbUsersKP, $emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
 
         $users = $this->findUsers($reqCtx);
 
@@ -203,6 +186,19 @@ class SerializerTest extends TestCase {
 
         $serializer->serialize($users);
         $this->assertSame(self::$expectedWithAggregate, $serializer->get());
+
+    }
+
+    private function findUsers ($reqCtx) {
+
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+
+        $keyPaths = $reqCtx->getReturnedKeyPaths();
+        foreach ($keyPaths as $keyPath) {
+            $qryCtx->addKeyPath($keyPath, $keyPath->getAlias());
+        }
+
+        return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
 
     }
 
@@ -241,6 +237,56 @@ class SerializerTest extends TestCase {
         $this->assertSame($true, $serializer->serialize($true)->get());
         $this->assertSame($false, $serializer->serialize($false)->get());
         $this->assertSame($null, $serializer->serialize($null)->get());
+
+    }
+
+    public function testV1ListHostedProject () {
+
+        $result = json_decode('{
+  "data": [
+    {
+      "id": "4543434357486343",
+      "creator": "3",
+      "name": "Qwe",
+      "creationDate": 1424354103,
+      "patchId": null,
+      "lastModificationDate": 1424354103,
+      "clientNameCreator": "archipad-enterprise",
+      "clientVersionCreator": "3.3.1",
+      "UUIDCreator": "CD129869-933C-4B37-B234-7F36B8B0FBC7",
+      "isUploading": "1",
+      "isSynchronizable": "1",
+      "isExternalProject": "0",
+      "permission": null,
+      "expired": false,
+      "uploading": true,
+      "path": "3-54e1f9c02bc99-qwe\/projects\/0df4c214738b12eb"
+    },
+    {
+      "id": "56457567867865341",
+      "creator": "3",
+      "name": "Qwe3",
+      "creationDate": 1424360032,
+      "patchId": null,
+      "lastModificationDate": 1424360032,
+      "clientNameCreator": "archipad-enterprise",
+      "clientVersionCreator": "3.3.1",
+      "UUIDCreator": "CD129869-933C-4B37-B234-7F36B8B0FBC7",
+      "isUploading": "1",
+      "isSynchronizable": "1",
+      "isExternalProject": "0",
+      "permission": null,
+      "expired": false,
+      "uploading": true,
+      "path": "3-54e1f9c02bc99-qwe\/projects\/1b962fb018c97675"
+    }
+  ]
+}', true);
+
+        $reqCtx = new RequestContext();
+        $serializer = new Serializer($reqCtx);
+
+        $this->assertSame($result, $serializer->serialize($result)->get());
 
     }
 
