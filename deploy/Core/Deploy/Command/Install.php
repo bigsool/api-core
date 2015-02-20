@@ -152,7 +152,7 @@ class Install extends Base {
                                                            $this->getEnv())));
 
         $this->getEnvConf();
-        $configFolderArchiweb = $this->envConf['archiweb_path_root'] . 'stage-api-'.substr($revision, 0, 7).'/include/config/';
+        $configFolderArchiweb = $this->envConf['archiweb_path_root'] . $this->getEnv().'-api-'.substr($revision, 0, 7).'/include/config/';
         $configDirArchiweb = $configFolderArchiweb.'envs/';
 
         $this->dbConfigDirectory = $this->envConf['conf_directory'];
