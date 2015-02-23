@@ -22,7 +22,6 @@ class ModuleManagerTest extends TestCase {
 
         };
 
-        $loadFieldsCalled = false;
         $loadFiltersCalled = false;
         $loadRulesCalled = false;
         $loadActionsCalled = false;
@@ -34,7 +33,6 @@ class ModuleManagerTest extends TestCase {
          * @var ModuleManager $moduleManager
          */
         $moduleManager = $this->getMockForAbstractClass('\Core\Module\ModuleManager');
-        $moduleManager->method('loadFields')->will($this->returnCallback($fn($loadFieldsCalled, $appCtx)));
         $moduleManager->method('loadFilters')->will($this->returnCallback($fn($loadFiltersCalled, $appCtx)));
         $moduleManager->method('loadRules')->will($this->returnCallback($fn($loadRulesCalled, $appCtx)));
         $moduleManager->method('loadActions')->will($this->returnCallback($fn($loadActionsCalled, $appCtx)));
@@ -43,7 +41,6 @@ class ModuleManagerTest extends TestCase {
 
         $moduleManager->load($appCtx);
 
-        $this->assertTrue($loadFieldsCalled);
         $this->assertTrue($loadFiltersCalled);
         $this->assertTrue($loadRulesCalled);
         $this->assertTrue($loadActionsCalled);

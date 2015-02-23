@@ -44,18 +44,6 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFields (ApplicationContext &$context) {
-
-        $context->addField(new StarField('TestUser'));
-        $context->addField(new Field('TestUser', 'email'));
-        $context->addField(new Field('TestUser', 'password'));
-        $context->addField(new Field('TestUser', 'name'));
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public function loadFilters (ApplicationContext &$context) {
 
     }

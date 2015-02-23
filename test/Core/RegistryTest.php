@@ -62,17 +62,12 @@ class RegistryTest extends TestCase {
         self::resetApplicationContext();
 
         $this->appCtx = $this->getApplicationContext(self::$doctrineConnectionSettings);
-        $this->appCtx->addField(new StarField('TestCompany'));
-        $this->appCtx->addField(new Field('TestCompany', 'name'));
-        $this->appCtx->addField(new Field('TestCompany', 'zipCode'));
 
         $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('confirmationKey'), new Value(1));
         $userConfKeyFilter = new ExpressionFilter('TestUser', 'confirmationKey', $expression);
         $this->appCtx->addFilter($userConfKeyFilter);
 
         $userStarField = new StarField('TestUser');
-        $this->appCtx->addField($userStarField);
-        $this->appCtx->addField(new Field('TestUser', 'name'));
         $this->appCtx->addRule(new FieldRule($userStarField, $userConfKeyFilter));
 
     }
@@ -393,10 +388,6 @@ class RegistryTest extends TestCase {
      *
      */
     public function testFindWithAlias () {
-
-        $this->appCtx->addField(new Field('TestUser', 'email'));
-        $this->appCtx->addField(new Field('TestUser', 'name'));
-        $this->appCtx->addField(new Field('TestCompany', 'name'));
 
         $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');

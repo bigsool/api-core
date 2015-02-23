@@ -54,22 +54,6 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testFields () {
-
-        $ctx = $this->getApplicationContext();
-        $fields = [$this->getMockField(), $this->getMockField(), $this->getMockField()];
-
-        $this->assertSame([], $ctx->getFields());
-
-        $ctx->addField($fields[0]);
-        $this->assertSame([$fields[0]], $ctx->getFields());
-
-        $ctx->addField($fields[1]);
-        $ctx->addField($fields[2]);
-        $this->assertSame($fields, $ctx->getFields());
-
-    }
-
     public function testRules () {
 
         $ctx = $this->getApplicationContext();
@@ -103,37 +87,6 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetFieldsByEntity () {
-
-        $ctx = $this->getApplicationContext();
-
-        $this->assertEmpty($ctx->getFieldsByEntity('TestCompany'));
-
-        $fields[] = $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('TestCompany');
-        $ctx->addField($field);
-        $this->assertSame($fields, $ctx->getFieldsByEntity('TestCompany'));
-
-        $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('Product');
-        $ctx->addField($field);
-        $this->assertSame($fields, $ctx->getFieldsByEntity('TestCompany'));
-        $this->assertSame([$field], $ctx->getFieldsByEntity('Product'));
-
-    }
-
-    public function testGetFieldByEntityAndName () {
-
-        $ctx = $this->getApplicationContext();
-
-        $fields[] = $field = $this->getMockField();
-        $field->method('getEntity')->willReturn('TestCompany');
-        $field->method('getName')->willReturn('name');
-        $ctx->addField($field);
-        $this->assertSame($field, $ctx->getFieldByEntityAndName('TestCompany', 'name'));
-
-    }
-
     public function testGetFilterByEntityAndName () {
 
         $ctx = $this->getApplicationContext();
@@ -143,15 +96,6 @@ class ApplicationContextTest extends TestCase {
         $filter->method('getName')->willReturn('name');
         $ctx->addFilter($filter);
         $this->assertSame($filter, $ctx->getFilterByEntityAndName('TestCompany', 'name'));
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testGetFieldByEntityAndNameNotFound () {
-
-        $this->getApplicationContext()->getFieldByEntityAndName('TestCompany', 'name');
 
     }
 

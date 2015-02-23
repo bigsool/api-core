@@ -39,13 +39,6 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFields (ApplicationContext &$context) {
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public function loadFilters (ApplicationContext &$context) {
 
         $context->addField(new StarField('TestStorage'));

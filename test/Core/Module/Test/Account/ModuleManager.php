@@ -93,13 +93,6 @@ class ModuleManager extends MagicalModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFields (ApplicationContext &$context) {
-        // TODO: Implement loadFields() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public function loadFilters (ApplicationContext &$context) {
         // TODO: Implement loadFilters() method.
     }

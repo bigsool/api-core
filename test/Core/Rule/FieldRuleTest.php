@@ -69,11 +69,9 @@ class FieldRuleTest extends TestCase {
 
     public function testShouldApply () {
 
-        $appCtx = $this->getApplicationContext();
-        $appCtx->addField($field = new Field('TestCompany', 'name'));
-        $appCtx->addField(new Field('TestUser', 'name'));
-        $appCtx->addField($starField = new StarField('TestCompany'));
-        $appCtx->addField(new Field('TestCompany', 'city'));
+        $this->getApplicationContext();
+        $field = new Field('TestCompany', 'name');
+        $starField = new StarField('TestCompany');
 
         $rule = new FieldRule($field, $this->getMockFilter());
         $this->assertFalse($rule->shouldApply(new SaveQueryContext(new TestCompany())));
@@ -104,8 +102,8 @@ class FieldRuleTest extends TestCase {
 
     public function testApply () {
 
-        $appCtx = $this->getApplicationContext();
-        $appCtx->addField($field = new Field('TestCompany', 'name'));
+        $this->getApplicationContext();
+        $field = new Field('TestCompany', 'name');
 
         $filter = $this->getMockFilter();
 

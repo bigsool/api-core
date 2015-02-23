@@ -13,7 +13,6 @@ abstract class ModuleManager {
      */
     public function load (ApplicationContext &$context) {
 
-        $this->loadFields($context);
         $this->loadFilters($context);
         $this->loadRules($context);
         $this->loadActions($context);
@@ -21,11 +20,6 @@ abstract class ModuleManager {
         $this->loadHelpers($context);
 
     }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public abstract function loadFields (ApplicationContext &$context);
 
     /**
      * @param ApplicationContext $context
