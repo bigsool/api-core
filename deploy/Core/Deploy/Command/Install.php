@@ -19,6 +19,8 @@ class Install extends Base {
 
     protected $dbConfigLinkName;
 
+    protected $dbConfigLinkArchiweb;
+
     protected $dbConfigRealPath;
 
     protected $nextDBConfigRealPath;
@@ -27,13 +29,22 @@ class Install extends Base {
 
     protected $isDownPath;
 
+    protected $setDownPathArchiweb;
+
+    protected $isDownPathArchiweb;
+
     protected $deployDestDir;
 
-    protected $dbConfigDirectory = '../CONFIG';
+    protected $dbConfigDirectory;
 
     protected $dbConfigFilenames = array(
         'extra.1.yml',
         'extra.2.yml',
+    );
+
+    protected $dbConfigFilenamesArchiweb = array(
+        'config_1.php',
+        'config_2.php',
     );
 
     protected $isDown = false;
@@ -109,6 +120,9 @@ class Install extends Base {
             $this->runUpgradeScripts();
 
             $this->changeTheLink();
+
+            $this->setUp();
+
         }
         catch (\Exception $e) {
 
@@ -116,11 +130,8 @@ class Install extends Base {
             if ($this->isDown) {
                 $this->setUp();
             }
-
             throw $e;
         }
-
-        return 0;
 
     }
 
@@ -135,11 +146,21 @@ class Install extends Base {
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
 
-        $this->dbConfigDirectory = $this->paths['root'] . '/' . $this->dbConfigDirectory;
+        $revision =
+            $this->getQuestion()->ask($this->getInput(), $this->getOutput(),
+                                      new Question(sprintf("Please enter the last Archiweb revision deployed on <env>%s</env>\n[e.g. bc2e1f3]",
+                                                           $this->getEnv())));
+
+        $this->getEnvConf();
+        $configFolderArchiweb = $this->envConf['archiweb_path_root'] . $this->getEnv().'-api-'.substr($revision, 0, 7).'/include/config/';
+        $configDirArchiweb = $configFolderArchiweb.'envs/';
+
+        $this->dbConfigDirectory = $this->envConf['conf_directory'];
 
         $this->deployDestDir = Helper::getRemoteDestLink($this->paths['environmentFile']);
 
         $downFolder = $this->deployDestDir . '/vendor/api/core/config/';
+
         $this->setDownPath = $downFolder . 'setDown.yml';
         if (!file_exists($this->setDownPath)) {
             $downFolder = $this->deployDestDir . '/config/';
@@ -147,7 +168,12 @@ class Install extends Base {
         }
         $this->isDownPath = $downFolder . 'isDown.yml';
 
+        $this->setDownPathArchiweb = $configFolderArchiweb . 'config.setDown.php';
+        $this->isDownPathArchiweb = $configFolderArchiweb . 'config.isDown.php';
+
         $this->dbConfigLinkName = $this->configDir . '/extra.yml';
+
+        $this->dbConfigLinkNameArchiweb = $configDirArchiweb . 'config.php';
 
     }
 
@@ -220,6 +246,9 @@ class Install extends Base {
                     $this->dbConfigDirectory . '/' . $this->dbConfigFilenames[1 % count($this->dbConfigFilenames)];
                 $this->dbConfig['next'] = $this->loadDBConfig($this->nextDBConfigRealPath);
 
+                $this->nextDBConfigRealPathArchiweb =
+                    $this->dbConfigDirectory . '/' . $this->dbConfigFilenamesArchiweb[1 % count($this->dbConfigFilenamesArchiweb)];
+
             }
             else {
 
@@ -237,6 +266,10 @@ class Install extends Base {
 
                 $this->nextDBConfigRealPath =
                     $configDirectory . '/' . $this->dbConfigFilenames[($index + 1) % count($this->dbConfigFilenames)];
+
+                $this->nextDBConfigRealPathArchiweb =
+                    $configDirectory . '/' . $this->dbConfigFilenamesArchiweb[($index + 1) % count($this->dbConfigFilenames)];
+
                 $this->dbConfig['next'] = $this->loadDBConfig($this->nextDBConfigRealPath);
 
             }
@@ -307,6 +340,7 @@ class Install extends Base {
 
     protected function createConfigLink () {
 
+
         $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
                                           $this->nextDBConfigRealPath, $this->dbConfigLinkName));
 
@@ -319,6 +353,30 @@ class Install extends Base {
         }
 
         $this->getOutput()->writeln('OK');
+
+        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
+                                          $this->nextDBConfigRealPathArchiweb, $this->dbConfigLinkNameArchiweb));
+
+
+        if (file_exists($this->dbConfigLinkNameArchiweb)) {
+
+            if (file_exists($this->dbConfigLinkNameArchiweb) && !unlink($this->dbConfigLinkNameArchiweb)) {
+             $this->abort(sprintf('Unable to remove existing config link <info>%s</info>', $this->dbConfigLinkNameArchiweb));
+            }
+
+            if (!symlink($this->nextDBConfigRealPathArchiweb, $this->dbConfigLinkNameArchiweb)) {
+                $this->abort('Unable to create config symlink, aborting...');
+            }
+
+            $this->getOutput()->writeln('OK');
+
+        }
+        else {
+            $this->getOutput()->writeln('Cancelled');
+        }
+
+
+
 
     }
 
@@ -370,21 +428,22 @@ class Install extends Base {
 
     protected function setDown () {
 
-        $this->setIsDown(true);
+        $this->setIsDown(true,$this->setDownPath,$this->isDownPath);
+        $this->setIsDown(true,$this->setDownPathArchiweb,$this->setDownPathArchiweb,'Archiweb');
 
     }
 
-    protected function setIsDown ($isDown) {
+    protected function setIsDown ($isDown,$setDownPath,$isDownPath, $product = "") {
 
         if ($isDown) {
 
-            $this->getOutput()->write('Setting env as DOWN ... ');
+            $this->getOutput()->writeln("Setting $product env as DOWN ... ");
 
             if (!copy($this->setDownPath, $this->isDownPath)) {
 
                 $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
 
-                $this->setIsDown(false);
+                $this->setIsDown(false,$setDownPath,$isDownPath,$product);
 
                 $content = file_get_contents($this->isDownPath);
                 if ($content) {
@@ -401,7 +460,7 @@ class Install extends Base {
         }
         else {
 
-            $this->getOutput()->write('Setting env as UP ... ');
+            $this->getOutput()->writeln("Setting $product env as UP ... ");
 
             if (false === file_put_contents($this->isDownPath, '')) {
 
@@ -581,7 +640,7 @@ class Install extends Base {
             $this->abort('Installation aborted by user');
         }
 
-        if (!$this->isFirstInstall() && $this->isStageOrProd()) {
+       if (!$this->isFirstInstall() && $this->isStageOrProd()) {
 
             $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
 
@@ -638,7 +697,8 @@ class Install extends Base {
 
     protected function setUp () {
 
-        $this->setIsDown(false);
+        $this->setIsDown(false,$this->setDownPath,$this->isDownPath);
+        $this->setIsDown(false,$this->setDownPathArchiweb,$this->setDownPathArchiweb,'Archiweb');
 
     }
 
