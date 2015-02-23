@@ -4,8 +4,6 @@
 namespace Core\Field;
 
 
-use Core\Rule\Rule;
-
 class Field {
 
     /**
@@ -17,11 +15,6 @@ class Field {
      * @var string
      */
     protected $name;
-
-    /**
-     * @var Rule[]
-     */
-    protected $rules = [];
 
     /**
      * @param string $entity
@@ -53,21 +46,6 @@ class Field {
     public function getName () {
 
         return $this->name;
-
-    }
-
-    /**
-     * @return void|Rule
-     */
-    public function getRules () {
-
-        return $this->rules;
-
-    }
-
-    public function addRule (Rule $rule) {
-
-        $this->rules[] = $rule;
 
     }
 
