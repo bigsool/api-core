@@ -47,6 +47,8 @@ class Install extends Base {
         'config_2.php',
     );
 
+    protected $dumpFolder;
+
     protected $isDown = false;
 
     /**
@@ -145,7 +147,7 @@ class Install extends Base {
 
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
-
+        $this->dumpFolder = $this->paths['root'] .'/dump';
         $revision =
             $this->getQuestion()->ask($this->getInput(), $this->getOutput(),
                                       new Question(sprintf("Please enter the last Archiweb revision deployed on <env>%s</env>\n[e.g. bc2e1f3]",
@@ -499,8 +501,8 @@ class Install extends Base {
 
         $this->getOutput()->write(sprintf('Dumping current <env>%s</env> DB ... ', $this->getEnv()));
 
-        $dumpPath = sys_get_temp_dir() . '/' . uniqid() . '-' . $this->getEnv() . '-dump.sql';
-
+        //$dumpPath = sys_get_temp_dir() . '/' . uniqid() . '-' . $this->getEnv() . '-dump.sql';
+        $dumpPath = $this->dumpFolder. '/' . uniqid() . '-' . $this->getEnv() . '-dump.sql';
         $host = escapeshellarg($this->dbConfig['current']['host']);
         $user = escapeshellarg($this->dbConfig['current']['user']);
         $password = escapeshellarg($this->dbConfig['current']['password']);
