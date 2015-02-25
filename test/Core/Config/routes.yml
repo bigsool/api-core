@@ -1,3 +1,0 @@
-routes :
-   userCreate: { path: /user/create ,controller: User2Company, action: create }
-   userUpdate: { path: /user/update ,controller: User2Company, action: update }
