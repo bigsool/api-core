@@ -47,6 +47,8 @@ class Install extends Base {
         'config_2.php',
     );
 
+    protected $dumpFolder;
+
     protected $isDown = false;
 
     /**
@@ -152,6 +154,7 @@ class Install extends Base {
                                                            $this->getEnv())));
 
         $this->getEnvConf();
+        $this->dumpFolder = $this->envConf['dump_folder'];
         $configFolderArchiweb = $this->envConf['archiweb_path_root'] . $this->getEnv().'-api-'.substr($revision, 0, 7).'/include/config/';
         $configDirArchiweb = $configFolderArchiweb.'envs/';
 
@@ -499,8 +502,10 @@ class Install extends Base {
 
         $this->getOutput()->write(sprintf('Dumping current <env>%s</env> DB ... ', $this->getEnv()));
 
-        $dumpPath = sys_get_temp_dir() . '/' . uniqid() . '-' . $this->getEnv() . '-dump.sql';
-
+        if( !ini_get('date.timezone') ) {
+            date_default_timezone_set('Europe/Paris');
+        }
+        $dumpPath = $this->dumpFolder. '/' . date('Ymj-His',time()) . '-' . $this->getEnv() . '-dump.sql';
         $host = escapeshellarg($this->dbConfig['current']['host']);
         $user = escapeshellarg($this->dbConfig['current']['user']);
         $password = escapeshellarg($this->dbConfig['current']['password']);
