@@ -72,7 +72,7 @@ class ConfigManager {
         }
         foreach ($parse['routes'] as $name => $value) {
             $this->appCtx->addRoute($name, new Route($value['path'], [
-                'controller' => new Controller($value['method'], ApplicationContext::getInstance()->getProduct() . '\\'
+                'controller' => new Controller($value['action'], ApplicationContext::getInstance()->getProduct() . '\\'
                                                                  . $value['controller'])
             ]));
         }
