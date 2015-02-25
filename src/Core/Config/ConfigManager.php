@@ -22,14 +22,14 @@ class ConfigManager {
 
     /**
      * @param string[] $yamlConfigPaths
-     * @param string   $yamlRoutesPath
+     *
+     * @throws \Exception
      */
-    public function __construct ($yamlConfigPaths, $yamlRoutesPath) {
+    public function __construct ($yamlConfigPaths) {
 
         $this->appCtx = ApplicationContext::getInstance();
 
         $this->loadConfig($yamlConfigPaths);
-        $this->loadRoutes($yamlRoutesPath);
 
     }
 
@@ -56,26 +56,6 @@ class ConfigManager {
             $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
         }
         $this->config = $configs;
-
-    }
-
-    /**
-     * @param $yamlRoutesPath
-     *
-     * @throws \Exception
-     */
-    private function loadRoutes ($yamlRoutesPath) {
-
-        $parse = Yaml::parse($yamlRoutesPath);
-        if (!is_array($parse)) {
-            throw new \Exception('route yaml file can\'t be found');
-        }
-        foreach ($parse['routes'] as $name => $value) {
-            $this->appCtx->addRoute($name, new Route($value['path'], [
-                'controller' => new Controller($value['action'], ApplicationContext::getInstance()->getProduct() . '\\'
-                                                                 . $value['controller'])
-            ]));
-        }
 
     }
 

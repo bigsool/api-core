@@ -191,8 +191,7 @@ class ApplicationContextTest extends TestCase {
         $this->assertInstanceOf('\Symfony\Component\Routing\RouteCollection', $appCtx->getRoutes());
         $this->assertSame(0, $appCtx->getRoutes()->count());
 
-        $route1 = new Route('path');
-        $appCtx->addRoute('route1', $route1);
+        $appCtx->addRoute('path','Account','create');
         $this->assertSame(1, $appCtx->getRoutes()->count());
 
     }

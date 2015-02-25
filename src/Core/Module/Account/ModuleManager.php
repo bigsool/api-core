@@ -22,7 +22,34 @@ class ModuleManager extends MagicalModuleManager {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
+        /**
+         * @api            {post} /account/create
+         * @apiVersion     1.0.0
+         * @apiDescription Create an account.
+         *                 It could be a regular user, a sub user or a student depending on the parameter type
+         *
+         * @apiSuccess {string} email The Account email
+         * @apiSuccess {int}    id    The Account id
+         * @apiSuccess {Object} company The company object
+         * @apiSuccess {int} company.id The company id for this newly created account
+         * @apiSuccessExample {json}
+         * HTTP 1/1 200 OK
+         * {
+         *   "id":123,
+         *   "email":"julien@bigsool.com",
+         *   "company":{
+         *       "id":456,
+         *       "name":"Bigsool"
+         *   }
+         * }
+         *
+         * @apiError       101 Invalid parameter Email
+         * @apiError       102 Invalid parameter Name
+         * @apiError       1002 Email already used
+         */
+        // TODO: handle HTTP METHOD (POST,GET,PUT,DELETE) (REST CRUD)
+        $this->addRoute('/account/create', 'create');
+        $context->addAction(new SimpleAction($this->getActionModuleName(), 'create', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 /**
@@ -39,7 +66,8 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Account', 'update', NULL, [],
+        $this->addRoute('/account/create', 'update');
+        $context->addAction(new SimpleAction($this->getActionModuleName(), 'update', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 $user = $self->magicalUpdate($context);
@@ -48,7 +76,8 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Account', 'find', NULL, [],
+        $this->addRoute('/account/create', 'find');
+        $context->addAction(new SimpleAction($this->getActionModuleName(), 'find', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 throw new \RuntimeException('Not implemented yet');

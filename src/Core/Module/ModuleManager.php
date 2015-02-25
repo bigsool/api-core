@@ -46,4 +46,36 @@ abstract class ModuleManager {
      */
     public abstract function loadHelpers (ApplicationContext &$context);
 
+    /**
+     * @param string $path
+     * @param string $action
+     */
+    public function addRoute ($path, $action) {
+
+        ApplicationContext::getInstance()->addRoute($path, $this->getControllerName(), $action);
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerName () {
+
+        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+
+        return substr($namespace, strrpos($namespace, '/'));
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getActionModuleName () {
+
+        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+
+        return strstr($namespace, '/', true) . $this->getControllerName();
+
+    }
+
 } 

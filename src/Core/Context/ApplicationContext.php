@@ -7,6 +7,7 @@ namespace Core\Context;
 use Core\Action\Action;
 use Core\ActionQueue;
 use Core\Config\ConfigManager;
+use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\Field;
 use Core\Filter\Filter;
@@ -138,19 +139,6 @@ class ApplicationContext {
     protected function loadConstants () {
 
         require __DIR__ . '/../../../config/constants.php';
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public static function getInstance () {
-
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
 
     }
 
@@ -411,12 +399,46 @@ class ApplicationContext {
     }
 
     /**
-     * @param string $name
-     * @param Route  $route
+     * @param $path
+     * @param $controller
+     * @param $action
      */
-    public function addRoute ($name, Route $route) {
+    public function addRoute ($path, $controller, $action) {
 
-        $this->routes->add($name, $route);
+        $camelizedPath = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
+        $product = ApplicationContext::getInstance()->getProduct();
+        $this->routes->add($camelizedPath, new Route($path, [
+            'controller' => new Controller($action, $product . '\\' . $controller)
+        ]));
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getProduct () {
+
+        return $this->product;
+    }
+
+    /**
+     * @param string $product
+     */
+    public function setProduct ($product) {
+
+        $this->product = $product;
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public static function getInstance () {
+
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
 
     }
 
@@ -484,9 +506,7 @@ class ApplicationContext {
 
             }
 
-            $routesFile = ROOT_DIR . '/config/routes.yml';
-
-            $this->configManager = new ConfigManager($configFiles, $routesFile);
+            $this->configManager = new ConfigManager($configFiles);
         }
 
         return $this->configManager;
@@ -532,22 +552,6 @@ class ApplicationContext {
             }
         }
 
-    }
-
-    /**
-     * @return string
-     */
-    public function getProduct () {
-
-        return $this->product;
-    }
-
-    /**
-     * @param string $product
-     */
-    public function setProduct ($product) {
-
-        $this->product = $product;
     }
 
     /**

@@ -11,26 +11,19 @@ class ConfigManagerTest extends TestCase {
 
     private $yamlConfigPaths;
 
-    private $yamlRoutesPath;
-
     public function setUp () {
 
         parent::setUp();
 
         $this->yamlConfigPaths = array(__DIR__ . '/config.yml');
-        $this->yamlRoutesPath = __DIR__ . '/routes.yml';
 
     }
 
     public function testLoadConfigAndRoute () {
 
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+        $configManager = new ConfigManager($this->yamlConfigPaths);
         $this->assertInstanceOf('\Core\Config\ConfigManager', $configManager);
         $appCtx = ApplicationContext::getInstance();
-        $routes = $appCtx->getRoutes();
-        $this->assertCount(2, $routes);
-        $this->assertEquals($routes->get('userCreate')->getPath(), "/user/create");
-        $this->assertEquals($routes->get('userUpdate')->getPath(), "/user/update");
 
     }
 
@@ -39,7 +32,7 @@ class ConfigManagerTest extends TestCase {
      */
     public function testLoadConfigWithBadYamlFile () {
 
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+        $configManager = new ConfigManager($this->yamlConfigPaths);
 
         $meth = new \ReflectionMethod($configManager, 'loadConfig');
         $meth->setAccessible(true);
@@ -52,7 +45,7 @@ class ConfigManagerTest extends TestCase {
      */
     public function testLoadConfigMalFormattedYamlFile () {
 
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+        $configManager = new ConfigManager($this->yamlConfigPaths);
 
         $meth = new \ReflectionMethod($configManager, 'loadConfig');
         $meth->setAccessible(true);
@@ -65,7 +58,7 @@ class ConfigManagerTest extends TestCase {
      */
     public function testLoadConfigMalFormatted2YamlFile () {
 
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+        $configManager = new ConfigManager($this->yamlConfigPaths);
 
         $meth = new \ReflectionMethod($configManager, 'loadConfig');
         $meth->setAccessible(true);
@@ -73,22 +66,9 @@ class ConfigManagerTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testLoadRouteWithBadYamlFile () {
-
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
-
-        $meth = new \ReflectionMethod($configManager, 'loadRoutes');
-        $meth->setAccessible(true);
-        $meth->invokeArgs($configManager, array(__DIR__ . '/routess.yml'));
-
-    }
-
     public function testGetConfig () {
 
-        $configManager = new ConfigManager($this->yamlConfigPaths, $this->yamlRoutesPath);
+        $configManager = new ConfigManager($this->yamlConfigPaths);
 
 
         $config = $configManager->getConfig();
