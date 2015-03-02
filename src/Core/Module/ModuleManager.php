@@ -16,7 +16,6 @@ abstract class ModuleManager {
         $this->loadFilters($context);
         $this->loadRules($context);
         $this->loadActions($context);
-        $this->loadRoutes($context);
         $this->loadHelpers($context);
 
     }
@@ -35,11 +34,6 @@ abstract class ModuleManager {
      * @param ApplicationContext $context
      */
     public abstract function loadActions (ApplicationContext &$context);
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public abstract function loadRoutes (ApplicationContext &$context);
 
     /**
      * @param ApplicationContext $context
