@@ -8,6 +8,13 @@ use Core\Context\ApplicationContext;
 
 class BasicHelper {
 
+
+
+    public function call($method) {
+
+
+
+    }
     /**
      * @param object $model
      * @param array  $params

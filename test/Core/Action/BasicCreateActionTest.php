@@ -4,7 +4,7 @@
 namespace Core\Action;
 
 
-use Core\Module\Test\User\ModuleManager as UserModuleManager;
+use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
@@ -30,7 +30,7 @@ class BasicCreateActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicCreateAction('module', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+            new BasicCreateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
                 $preCalled = true;
 
@@ -63,7 +63,7 @@ class BasicCreateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        (new BasicCreateAction('module', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicCreateAction('Core\User', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 

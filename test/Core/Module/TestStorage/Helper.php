@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\Test\Storage;
+namespace Core\Module\TestStorage;
 
 use Core\Context\ActionContext;
 use Core\Model\TestStorage;

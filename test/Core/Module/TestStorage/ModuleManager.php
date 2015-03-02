@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\Test\Storage;
+namespace Core\Module\TestStorage;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicFindAction;
@@ -52,7 +52,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $context->addHelper('StorageFeatureHelper', new Helper());
+        $this->addHelper($context,'StorageFeatureHelper');
 
     }
 

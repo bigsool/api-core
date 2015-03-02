@@ -161,18 +161,21 @@ class ApplicationContextTest extends TestCase {
         $this->assertInternalType('array', $appCtx->getHelpers());
         $this->assertCount(0, $appCtx->getHelpers());
 
+        $action = $this->getMockAction();
+        $action->method('getModule')->willReturn('module');
+
         $helper = new \stdClass();
-        $appCtx->addHelper('helper1', $helper);
-        $this->assertCount(1, $appCtx->getHelpers());
-        $this->assertSame($helper, $appCtx->getHelpers()['helper1']);
+        $appCtx->addHelper('module','helper1', $helper);
+        $this->assertCount(1, $appCtx->getHelpers()['module']);
+        $this->assertSame($helper, $appCtx->getHelpers()['module']['helper1']);
 
         $helper2 = new \stdClass();
-        $appCtx->addHelper('helper2', $helper2);
-        $this->assertCount(2, $appCtx->getHelpers());
-        $this->assertSame($helper2, $appCtx->getHelper('helper2'));
+        $appCtx->addHelper('module','helper2', $helper2);
+        $this->assertCount(2, $appCtx->getHelpers()['module']);
+        $this->assertSame($helper2, $appCtx->getHelper($action,'helper2'));
 
-        $appCtx->addHelper('helper2', new \stdClass());
-        $this->assertCount(2, $appCtx->getHelpers());
+        $appCtx->addHelper('module','helper2', new \stdClass());
+        $this->assertCount(2, $appCtx->getHelpers()['module']);
 
     }
 
@@ -181,7 +184,8 @@ class ApplicationContextTest extends TestCase {
      */
     public function testHelperNotFound () {
 
-        $this->getApplicationContext()->getHelper('qwe');
+        $action = $this->getMockAction();
+        $this->getApplicationContext()->getHelper($action,'qwe');
 
     }
 

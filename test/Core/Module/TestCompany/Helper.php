@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\Test\Company;
+namespace Core\Module\TestCompany;
 
 
 use Core\Context\ActionContext;

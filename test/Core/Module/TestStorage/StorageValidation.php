@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\Test\Storage;
+namespace Core\Module\TestStorage;
 
 use Core\Validation\AbstractConstraintsProvider;
 use Symfony\Component\Validator\Constraints as Assert;

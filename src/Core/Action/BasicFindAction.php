@@ -26,7 +26,7 @@ class BasicFindAction extends SimpleAction {
 
                 $preUpdateCallable($context);
 
-                $helper = ApplicationContext::getInstance()->getHelper($helperName);
+                $helper = ApplicationContext::getInstance()->getHelper($this,$helperName);
                 $reqCtx = $context->getRequestContext();
                 $method = 'find' . ucfirst($model);
                 if (!is_callable([$helper, $method], false, $callableName)) {

@@ -53,7 +53,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $context->addHelper('UserFeatureHelper', new Helper());
+        $this->addHelper($context,'UserFeatureHelper');
 
     }
 

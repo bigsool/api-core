@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\Test\User;
+namespace Core\Module\TestUser;
 
 use Core\Context\ActionContext;
 use Core\Model\TestUser;

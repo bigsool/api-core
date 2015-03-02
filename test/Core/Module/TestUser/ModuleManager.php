@@ -1,14 +1,12 @@
 <?php
 
 
-namespace Core\Module\Test\User;
+namespace Core\Module\TestUser;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Field\Field;
-use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 
@@ -18,6 +16,7 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadActions (ApplicationContext &$context) {
+
 
         $context->addAction(new BasicCreateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
             'name'      => [ERR_INVALID_NAME, new UserValidation()],
@@ -53,7 +52,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $context->addHelper('UserFeatureHelper', new Helper());
+        $this->addHelper($context,'UserFeatureHelper');
 
     }
 
