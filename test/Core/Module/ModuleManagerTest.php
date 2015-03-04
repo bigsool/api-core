@@ -25,7 +25,6 @@ class ModuleManagerTest extends TestCase {
         $loadFiltersCalled = false;
         $loadRulesCalled = false;
         $loadActionsCalled = false;
-        $loadRoutesCalled = false;
         $loadHelpersCalled = false;
         $appCtx = $this->getApplicationContext();
 
@@ -36,7 +35,6 @@ class ModuleManagerTest extends TestCase {
         $moduleManager->method('loadFilters')->will($this->returnCallback($fn($loadFiltersCalled, $appCtx)));
         $moduleManager->method('loadRules')->will($this->returnCallback($fn($loadRulesCalled, $appCtx)));
         $moduleManager->method('loadActions')->will($this->returnCallback($fn($loadActionsCalled, $appCtx)));
-        $moduleManager->method('loadRoutes')->will($this->returnCallback($fn($loadRoutesCalled, $appCtx)));
         $moduleManager->method('loadHelpers')->will($this->returnCallback($fn($loadHelpersCalled, $appCtx)));
 
         $moduleManager->load($appCtx);
@@ -44,7 +42,6 @@ class ModuleManagerTest extends TestCase {
         $this->assertTrue($loadFiltersCalled);
         $this->assertTrue($loadRulesCalled);
         $this->assertTrue($loadActionsCalled);
-        $this->assertTrue($loadRoutesCalled);
         $this->assertTrue($loadHelpersCalled);
 
     }
