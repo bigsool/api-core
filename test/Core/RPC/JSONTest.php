@@ -22,8 +22,9 @@ class JSONTest extends TestCase {
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo','getClientIp']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
+        $req->method('getClientIp')->willReturn('10.0.1.104');
         $params = ['param1' => 'value1', 'param2'];
         $req->query->add(['method' => 'method', 'params' => $params]);
         $JSON = new JSON();
@@ -38,7 +39,7 @@ class JSONTest extends TestCase {
         $this->assertSame([], $JSON->getReturnedFields());
         $this->assertSame('service', $JSON->getService());
         $this->assertSame('method', $JSON->getMethod());
-
+        $this->assertSame('10.0.1.104', $JSON->getIpAddress());
 
         $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+fr/service/');

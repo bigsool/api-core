@@ -90,6 +90,7 @@ class FormattedErrorTest extends TestCase {
 
     }
 
+
     public function testToString () {
 
         $this->formattedError->addChildError($this->childErrors[0]);
@@ -162,6 +163,22 @@ class FormattedErrorTest extends TestCase {
 
         $formattedError = new FormattedError($errorArray);
         $this->assertSame($errorArray, $formattedError->toArray());
+
+    }
+
+    public function testFormattedErrorWithSerializedMessage () {
+
+        $errorArray = ['code'    => 123,
+                       'localizedMessage' => 'message 123'
+        ];
+
+        $errorExpected = ['code'    => 123,
+                          'message' => 'message 123',
+                          'localizedMessage' => 'message 123'
+        ];
+        FormattedError::setLang("fr");
+        $formattedError = new FormattedError($errorArray);
+        $this->assertSame($errorExpected, $formattedError->toArray());
 
     }
 

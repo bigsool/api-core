@@ -4,17 +4,31 @@
 namespace Core\Action;
 
 
+use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
-class BasicFindActionTest extends TestCase {
+class BasicCreateActionTest extends TestCase {
+
+    /**
+     * @var \Core\Model\TestUser
+     */
+    protected static $user;
 
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 
         self::resetDatabase(self::getApplicationContext());
+
+        self::$user = new TestUser();
+        self::$user->setEmail('thierry@bigsool.com');
+        self::$user->setPassword('qwe');
+        self::$user->setRegisterDate(new \DateTime());
+
+        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry->save(self::$user);
 
     }
 
@@ -30,7 +44,7 @@ class BasicFindActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicCreateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+            new BasicFindAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
                 $preCalled = true;
 
@@ -41,37 +55,16 @@ class BasicFindActionTest extends TestCase {
             });
 
         $actCtx = $this->getActionContext();
-        $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);
-        $user = $action->process($actCtx);
+        $actCtx->setParams(['email' => 'thierry@bigsool.com']);
+        $action->process($actCtx);
+
+        $user = $actCtx['TestUser'];
 
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame($user, $actCtx['testUser']);
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testWrongHelper () {
-
-        $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
-
-        $userModuleManager = new UserModuleManager();
-        $userModuleManager->loadHelpers($appCtx);
-
-        (new BasicCreateAction('Core\User', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
-
-            $preCalled = true;
-
-        }, function () use (&$postCalled) {
-
-            $postCalled = true;
-
-        }))->process($this->getActionContext());
 
     }
 

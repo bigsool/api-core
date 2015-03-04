@@ -4,6 +4,8 @@
 namespace Core\Module\TestUser;
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
+use Core\Context\FindQueryContext;
 use Core\Model\TestUser;
 use Core\Module\BasicHelper;
 use Core\Parameter\UnsafeParameter;
@@ -66,6 +68,30 @@ class Helper extends BasicHelper {
         $this->basicSave($user, $params);
 
         $actCtx['testUser'] = $user;
+
+    }
+
+    /**
+     * @param ActionContext $actCtx
+     * @param KeyPath[]     $keyPaths
+     * @param Filter[]      $filters
+     * @param bool          $hydrateArray
+     */
+    public function findTestUser (ActionContext $actCtx, array $keyPaths = [], array $filters = [],
+                                     $hydrateArray = true) {
+
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('TestUser');
+
+        foreach ($keyPaths as $keyPath) {
+            $qryCtx->addKeyPath($keyPath);
+        }
+        foreach ($filters as $filter) {
+            $qryCtx->addFilter($filter);
+        }
+
+        $actCtx['TestUser'] = $registry->find($qryCtx, $hydrateArray);
 
     }
 
