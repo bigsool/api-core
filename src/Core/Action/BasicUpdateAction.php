@@ -7,7 +7,9 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Filter\StringFilter;
-use Core\Module\CompanyFeature\CompanyValidation;
+use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\RuntimeConstraintsProvider;
 
 class BasicUpdateAction extends SimpleAction {
 
@@ -24,8 +26,8 @@ class BasicUpdateAction extends SimpleAction {
             };
         }
 
-        // TODO: DONT USE CompanyValidation
-        $params = array_merge($params, ['id' => [ERR_INVALID_COMPANY_ID, new CompanyValidation()]]);
+        $params =
+            array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [new NotBlank(), new Int()]])]]);
 
         parent::__construct($module, 'update', $minRights, $params,
             function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {

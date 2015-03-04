@@ -6,12 +6,13 @@ namespace Core\Action;
 
 use Core\Auth;
 use Core\Context\ActionContext;
-use Core\Error\Error;
+use Core\Context\ApplicationContext;
 use Core\Error\FormattedError;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
+use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\String;
+use Core\Validation\RuntimeConstraintsProvider;
 
 class SimpleActionTest extends TestCase {
 
@@ -53,58 +54,20 @@ class SimpleActionTest extends TestCase {
 
         $errorManager = $this->getApplicationContext()->getErrorManager();
 
-        $errorCodeA = rand();
-        $errorCodeB = rand();
-        $errorManager->defineError(new Error($errorCodeA, 'fr', 'en', 1));
-        $errorManager->defineError(new Error($errorCodeB, 'fr', 'en', 1));
+        $constraintsProviderA = new RuntimeConstraintsProvider(['a' => [new String()]]);
+        $constraintsProviderB = new RuntimeConstraintsProvider(['b' => [new Int()]]);
 
-        $constraintsProviderA = $this->getMockConstraintsProvider();
-        $constraintsProviderB = $this->getMockConstraintsProvider();
-
-        $params = ['a' => [$errorCodeA, $constraintsProviderA]];
+        $params = ['a' => [$constraintsProviderA]];
         $context = $this->getActionContext();
-        $context->setParam('a', new UnsafeParameter('A'));
-        $context->setParam('b', new UnsafeParameter('B'));
-
-        $calledA = false;
-        $constraintsProviderA->method('validate')->will($this->returnCallback(function ($field, $value,
-                                                                                        $forceOptional) use (
-            &$calledA
-        ) {
-
-            $calledA = true;
-            $this->assertSame('a', $field);
-            $this->assertSame('A', $value);
-            $this->assertFalse($forceOptional);
-
-            return new ConstraintViolationList();
-
-        }));
+        $context->setParam('a', new UnsafeParameter('A', 'a'));
+        $context->setParam('b', new UnsafeParameter('B', 'b'));
 
         $action = new SimpleAction('module', 'name', NULL, $params, $this->getCallable());
 
         // No exceptions
         $action->validate($context);
 
-        $params['b'] = [$errorCodeB, $constraintsProviderB, true];
-
-        $calledB = false;
-        $constraintsProviderB->method('validate')->will($this->returnCallback(function ($field, $value,
-                                                                                        $forceOptional) use (
-            &$calledB
-        ) {
-
-            $calledB = true;
-            $this->assertSame('b', $field);
-            $this->assertSame('B', $value);
-            $this->assertTrue($forceOptional);
-
-            $violations = new ConstraintViolationList();
-            $violations->add(new ConstraintViolation('', '', [], '', '', ''));
-
-            return $violations;
-
-        }));
+        $params['b'] = [$constraintsProviderB, true];
 
         $action = new SimpleAction('module', 'name', NULL, $params, $this->getCallable());
         try {
@@ -112,13 +75,9 @@ class SimpleActionTest extends TestCase {
             $this->fail('SimpleAction->validate() should throw an Exception');
         }
         catch (FormattedError $e) {
-            $this->assertSame(1, $e->getCode());
-            $this->assertCount(1, $e->getChildErrors());
-            $this->assertSame($errorCodeB, $e->getChildErrors()[0]->getCode());
+            $expectedErrorCode = (new Int())->getErrorCode();;
+            $this->assertSame($expectedErrorCode, $e->getCode());
         }
-
-        $this->assertTrue($calledA);
-        $this->assertTrue($calledB);
 
     }
 
@@ -192,7 +151,7 @@ class SimpleActionTest extends TestCase {
 
     /**
      * @expectedException \Core\Error\FormattedError
-     * @expectedExceptionCode 7
+     * @expectedExceptionCode -7
      */
     public function testAuthorizeFail () {
 

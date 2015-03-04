@@ -19,7 +19,7 @@ class ModuleManager extends AbstractModuleManager {
     public function loadActions (ApplicationContext &$context) {
 
         $context->addAction(new BasicCreateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
-            'url' => [ERR_INVALID_NAME, new StorageValidation()],
+            'url' => [new StorageValidation()],
         ], function (ActionContext $context) {
 
             $context->setParam('login', uniqid('login'));
@@ -28,7 +28,7 @@ class ModuleManager extends AbstractModuleManager {
         }));
 
         $context->addAction(new BasicUpdateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
-            'url' => [ERR_INVALID_NAME, new StorageValidation()],
+            'url' => [new StorageValidation()],
         ]));
 
         $context->addAction(new BasicFindAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [

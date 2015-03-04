@@ -11,7 +11,7 @@ interface ConstraintsProvider {
      * @param mixed  $value
      * @param bool   $forceOptional
      *
-     * @return ConstraintViolationList|\Symfony\Component\Validator\ConstraintViolationListInterface
+     * @return bool
      */
     public function validate ($name, $value, $forceOptional = false);
 

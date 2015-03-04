@@ -27,11 +27,11 @@ class ModuleManager extends AbstractModuleManager {
     public function loadActions (ApplicationContext &$context) {
 
         $context->addAction(new BasicCreateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
-            'name' => [ERR_INVALID_NAME, new CompanyValidation()],
+            'name' => [new CompanyValidation()],
         ]));
 
         $context->addAction(new BasicUpdateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
-            'name' => [ERR_INVALID_NAME, new CompanyValidation()],
+            'name' => [new CompanyValidation()],
         ]));
 
         $context->addAction(new BasicFindAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [

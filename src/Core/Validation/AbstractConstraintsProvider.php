@@ -3,14 +3,14 @@
 
 namespace Core\Validation;
 
-
-use Symfony\Component\Validator\Constraint;
+use Core\Context\ApplicationContext;
+use Core\Parameter\UnsafeParameter;
+use Core\Validation\Parameter\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Collection;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validation;
 
-abstract class AbstractConstraintsProvider implements ConstraintsProvider {
+abstract class AbstractConstraintsProvider {
 
     /**
      * @param string $name
@@ -30,7 +30,7 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
      * @param mixed  $value
      * @param bool   $forceOptional
      *
-     * @return ConstraintViolationList|\Symfony\Component\Validator\ConstraintViolationListInterface
+     * @return bool
      */
     public function validate ($name, $value, $forceOptional = false) {
 
@@ -38,7 +38,7 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
         if ($forceOptional && $constraints) {
             $constraints = array_reduce($constraints, function ($constraints, Constraint $constraint) {
 
-                if (!($constraint instanceof Assert\NotBlank)) {
+                if (!($constraint->getConstraint() instanceof Assert\NotBlank)) {
                     $constraints[] = $constraint;
                 }
 
@@ -47,8 +47,22 @@ abstract class AbstractConstraintsProvider implements ConstraintsProvider {
             }, []);
         }
 
-        return $constraints ? Validation::createValidator()->validate($value, $constraints)
-            : new ConstraintViolationList();
+        $isValid = true;
+
+        if ($constraints) {
+            foreach ($constraints as $constraint) {
+                $validator = Validation::createValidator();
+                $violations = $validator->validate($value, [$constraint->getConstraint()]);
+                if ($violations->count()) {
+                    $field = ($value instanceof UnsafeParameter) ? $value->getPath() : '';
+                    ApplicationContext::getInstance()->getErrorManager()->addError($constraint->getErrorCode(), $field);
+                    $isValid = false;
+                }
+            }
+
+        }
+
+        return $isValid;
 
     }
 

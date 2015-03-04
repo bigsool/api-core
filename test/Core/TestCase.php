@@ -383,17 +383,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return AbstractConstraintsProvider
-     */
-    public function getMockConstraintsProvider () {
-
-        return $this->getMockBuilder('\Core\Validation\ConstraintsProvider')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-    }
-
-    /**
      * @return callable
      */
     public function getCallable () {

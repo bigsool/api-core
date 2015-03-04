@@ -140,7 +140,7 @@ class RegistryTest extends TestCase {
 
         $company = new TestCompany();
         $company->setName($this->company['name']);
-        $company->setAddress(new UnsafeParameter($this->company['address']));
+        $company->setAddress(new UnsafeParameter($this->company['address'],''));
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($company);

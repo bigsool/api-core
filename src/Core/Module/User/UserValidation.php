@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\UserFeature;
+namespace Core\Module\User;
 
 use Core\Validation\AbstractConstraintsProvider;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,15 +14,16 @@ class UserValidation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'email'    =>
+            'firstName'    =>
                 [
-                    new Assert\NotBlank(),
-                    new Assert\Email(),
+                    new Assert\Type(['type'=>'string']),
+                    new Assert\Length(['max'=>255]),
                 ]
             ,
-            'password' =>
+            'lastName' =>
                 [
-                    new Assert\NotBlank(),
+                    new Assert\Type(['type'=>'string']),
+                    new Assert\Length(['max'=>255]),
                 ]
             ,
         ];

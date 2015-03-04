@@ -4,7 +4,8 @@
 namespace Core\Validation;
 
 
-use Symfony\Component\Validator\Constraint;
+
+use Core\Validation\Parameter\Constraint;
 
 class RuntimeConstraintsProvider extends AbstractConstraintsProvider {
 

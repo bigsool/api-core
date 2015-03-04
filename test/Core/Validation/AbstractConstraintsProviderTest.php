@@ -5,11 +5,20 @@ namespace Core\Validation;
 
 
 use Core\TestCase;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Core\Validation\Parameter\Email;
+use Core\Validation\Parameter\NotBlank;
 
 
 class AbstractConstraintsProviderTest extends TestCase {
+
+    public static function setUpBeforeClass() {
+
+        parent::setUpBeforeClass();
+
+        // load errors
+        self::getApplicationContext();
+
+    }
 
     public function testGetConstraintsFor () {
 
@@ -36,25 +45,15 @@ class AbstractConstraintsProviderTest extends TestCase {
         $provider = $this->getMockForAbstractClass('\Core\Validation\AbstractConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);
 
-        $violations = $provider->validate('email', 'julien@bigsool.com');
-        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
-        $this->assertSame(0, $violations->count());
+        $this->assertTrue($provider->validate('email', 'julien@bigsool.com'));
 
-        $violations = $provider->validate('email', '');
-        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
-        $this->assertSame(1, $violations->count());
+        $this->assertFalse($provider->validate('email', ''));
 
-        $violations = $provider->validate('email', '', true);
-        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
-        $this->assertSame(0, $violations->count());
+        $this->assertTrue($provider->validate('email', '', true));
 
-        $violations = $provider->validate('email', 'julienbigsool.com');
-        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
-        $this->assertSame(1, $violations->count());
+        $this->assertFalse($provider->validate('email', 'julienbigsool.com'));
 
-        $violations = $provider->validate('qwe', 123);
-        $this->assertInstanceOf('\Symfony\Component\Validator\ConstraintViolationListInterface', $violations);
-        $this->assertSame(0, $violations->count());
+        $this->assertTrue($provider->validate('qwe', 123));
 
     }
 

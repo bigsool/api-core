@@ -31,7 +31,7 @@ class ActionContext extends \ArrayObject {
         parent::__construct();
 
         if ($context instanceof RequestContext) {
-            $params = $this->convertToUnsafeParameter($context->getParams());
+            $params = $this->convertToUnsafeParameter($context->getParams(), '');
         }
         elseif ($context instanceof ActionContext) {
             $params = $context->getParams();
@@ -49,13 +49,18 @@ class ActionContext extends \ArrayObject {
     /**
      * @param array $values
      *
-     * @return UnsafeParameter[]
+     * @param       $path
+     *
+     * @return \Core\Parameter\UnsafeParameter[]
      */
-    public function convertToUnsafeParameter (array $values) {
+    public function convertToUnsafeParameter (array $values, $path) {
 
         $params = [];
         foreach ($values as $key => $value) {
-            $params[$key] = new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value) : $value);
+            $newPath = !empty($path) ? "$path.$key" : $key;
+            $params[$key] =
+                new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value, $path) : $value,
+                                    $newPath);
         }
 
         return $params;
@@ -139,6 +144,19 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function getVerifiedParam ($key) {
+
+        $params = $this->getVerifiedParams();
+
+        return isset($params[$key]) ? $params[$key] : NULL;
+
+    }
+
+    /**
      * @param array $keys
      *
      * @return array
@@ -154,19 +172,6 @@ class ActionContext extends \ArrayObject {
         }
 
         return $verifiedParams;
-    }
-
-    /**
-     * @param mixed $key
-     *
-     * @return mixed
-     */
-    public function getVerifiedParam ($key) {
-
-        $params = $this->getVerifiedParams();
-
-        return isset($params[$key]) ? $params[$key] : NULL;
-
     }
 
     /**

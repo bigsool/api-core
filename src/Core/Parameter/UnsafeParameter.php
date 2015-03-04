@@ -12,11 +12,18 @@ class UnsafeParameter {
     protected $value;
 
     /**
-     * @param mixed $value
+     * @var string
      */
-    public function __construct ($value) {
+    protected $path;
+
+    /**
+     * @param mixed  $value
+     * @param string $path
+     */
+    public function __construct ($value, $path) {
 
         $this->value = $value;
+        $this->path = $path;
 
     }
 
@@ -38,6 +45,14 @@ class UnsafeParameter {
 
         return $this->value;
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath () {
+
+        return $this->path;
     }
 
     /**

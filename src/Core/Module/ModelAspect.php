@@ -6,7 +6,7 @@ namespace Core\Module;
 
 use Core\Action\Action;
 use Core\Expression\AbstractKeyPath;
-use Core\Validation\ConstraintsProvider;
+use Core\Validation\AbstractConstraintsProvider;
 
 class ModelAspect {
 
@@ -21,7 +21,7 @@ class ModelAspect {
     private $prefix;
 
     /**
-     * @var ConstraintsProvider[][]
+     * @var AbstractConstraintsProvider[][]
      */
     private $constraints;
 
@@ -38,7 +38,7 @@ class ModelAspect {
     /**
      * @param string                  $model
      * @param string                  $prefix
-     * @param ConstraintsProvider[][] $constraints
+     * @param AbstractConstraintsProvider[][] $constraints
      * @param Action[]                $actions
      * @param AbstractKeyPath         $keyPath
      */
@@ -70,7 +70,7 @@ class ModelAspect {
     /**
      * @param null $actionName
      *
-     * @return ConstraintsProvider[]|ConstraintsProvider[][]
+     * @return AbstractConstraintsProvider[]|AbstractConstraintsProvider[][]
      */
     public function getConstraints ($actionName = NULL) {
 

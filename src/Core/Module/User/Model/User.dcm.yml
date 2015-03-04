@@ -1,0 +1,22 @@
+User:
+    type: entity
+    table: user
+    id:
+        id:
+            type: integer
+    fields:
+        lastName:
+            type: string
+            nullable: false
+            length: 255
+        firstName:
+            type: string
+            nullable: false
+            length: 255
+        lang:
+            type: string
+            nullable: false
+            length: 255
+        creationDate:
+            type: datetime
+            nullable: false

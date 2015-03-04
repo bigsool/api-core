@@ -33,8 +33,9 @@ class GlobalTest extends TestCase {
         $iterator = new \RecursiveIteratorIterator($filter);
         foreach ($iterator as $info) {
 
-            $this->assertNotRegExp('/(archipad)|(archiweb)/', file_get_contents($info->getPathname()),
-                                   $info->getPathname());
+            if (preg_match('/(archipad)|(archiweb)/', file_get_contents($info->getPathname()))) {
+                $this->fail($info->getPathname() . ' contains a reference to archipad or archiweb');
+            }
 
         }
 
@@ -71,7 +72,7 @@ class GlobalTest extends TestCase {
         foreach ($iterator as $info) {
 
             $this->assertNotRegExp('/\?>\s*$/', file_get_contents($info->getPathname()),
-                                $info->getPathname());
+                                   $info->getPathname());
 
         }
 

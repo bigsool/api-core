@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\UserFeature;
+namespace Core\Module\User;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
@@ -20,11 +20,8 @@ class ModuleManager extends AbstractModuleManager {
     public function loadActions (ApplicationContext &$context) {
 
         $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'name'      => [ERR_INVALID_NAME, new UserValidation()],
-            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
-            'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
-            'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
-            'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
+            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
+            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
         ], function (ActionContext $context) {
 
             $context->setParam('lang', 'fr');
@@ -32,11 +29,8 @@ class ModuleManager extends AbstractModuleManager {
         }));
 
         $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'name'      => [ERR_INVALID_NAME, new UserValidation()],
-            'email'     => [ERR_INVALID_PARAM_EMAIL, new UserValidation()],
-            'firstname' => [ERR_PARAMS_INVALID, new UserValidation()],
-            'password'  => [ERR_INVALID_PASSWORD, new UserValidation()],
-            'knowsFrom' => [ERR_PARAMS_INVALID, new UserValidation()]
+            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
+            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
         ]));
 
     }

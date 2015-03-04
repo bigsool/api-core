@@ -4,6 +4,8 @@
 namespace Core\Module\Test\User;
 
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Email;
+use Core\Validation\Parameter\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserValidation extends AbstractConstraintsProvider {
@@ -16,13 +18,13 @@ class UserValidation extends AbstractConstraintsProvider {
         return [
             'email'    =>
                 [
-                    new Assert\NotBlank(),
-                    new Assert\Email(),
+                    new Email(),
+                    new NotBlank(),
                 ]
             ,
             'password' =>
                 [
-                    new Assert\NotBlank(),
+                    new NotBlank(),
                 ]
             ,
         ];

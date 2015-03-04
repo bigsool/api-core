@@ -10,7 +10,6 @@ use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\AbstractConstraintsProvider;
-use Core\Validation\ConstraintsProvider;
 
 class SimpleAction implements Action {
 
@@ -71,14 +70,10 @@ class SimpleAction implements Action {
 
         $this->params = [];
         foreach ($params as $field => $param) {
-            $errorManager = ApplicationContext::getInstance()->getErrorManager();
-            if (!is_array($param) || count($param) < 2 || !$errorManager->getDefinedError($param[0])
-                || !($param[1] instanceof ConstraintsProvider)
-            ) {
+            if (!is_array($param) || count($param) < 1 || !($param[0] instanceof AbstractConstraintsProvider)) {
                 throw new \RuntimeException('invalid param');
             }
-            $this->params[$field] =
-                ['error' => $param[0], 'validator' => $param[1], 'forceOptional' => isset($param[2]) && !!$param[2]];
+            $this->params[$field] = ['validator' => $param[0], 'forceOptional' => isset($param[1]) && !!$param[1]];
         }
     }
 
@@ -153,11 +148,8 @@ class SimpleAction implements Action {
             $validator = $params['validator'];
             $param = $context->getParam($field);
             $value = isset($param) ? UnsafeParameter::getFinalValue($param) : NULL;
-            $violations = $validator->validate($field, $value, $params['forceOptional']);
-            if ($violations->count()) {
-                $errorManager->addError($params['error'], $field);
-            }
-            else {
+            $isValid = $validator->validate($field, $value, $params['forceOptional']);
+            if ($isValid) {
                 $context->setParam($field, $value);
             }
         }

@@ -3,6 +3,7 @@
 namespace Core\Module\Test\Company;
 
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CompanyValidation extends AbstractConstraintsProvider {
@@ -15,12 +16,12 @@ class CompanyValidation extends AbstractConstraintsProvider {
         return [
             'name' =>
                 [
-                    new Assert\NotBlank(),
+                    new NotBlank(),
                 ]
             ,
             'id'   =>
                 [
-                    new Assert\NotBlank(),
+                    new NotBlank(),
                 ]
             ,
         ];

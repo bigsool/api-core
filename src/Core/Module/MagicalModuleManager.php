@@ -14,10 +14,9 @@ use Core\Expression\AbstractKeyPath;
 use Core\Field\KeyPath;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
+use Core\Validation\Parameter\Constraint;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
 abstract class MagicalModuleManager extends ModuleManager {
@@ -357,6 +356,31 @@ abstract class MagicalModuleManager extends ModuleManager {
     public abstract function loadAspects ();
 
     /**
+     * @param Filter[] $filters
+     *
+     * @return mixed
+     */
+    public function magicalDelete ($filters) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
+
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        foreach ($filters as $filter) {
+            $qryCtx->addFilter($filter);
+        }
+
+        $result = $registry->find($qryCtx, false);
+
+        $registry->delete($result[0]);
+
+    }
+
+    /**
      * @return mixed
      */
     protected function getMainEntity () {
@@ -513,71 +537,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param Filter[] $filters
-     *
-     * @return mixed
-     */
-    public function magicalDelete ($filters) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
-
-        $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
-
-        $qryCtx->addKeyPath(new KeyPath('*'));
-
-        foreach ($filters as $filter) {
-            $qryCtx->addFilter($filter);
-        }
-
-        $result = $registry->find($qryCtx, false);
-
-        $registry->delete($result[0]);
-
-    }
-
-    /**
-     * @param string   $name
-     * @param array    $params
-     * @param callable $processFn
-     */
-    protected function defineAction ($name, Array $params, callable $processFn) {
-
-        foreach ($params as $key => $value) {
-            $params[$key][1] = new RuntimeConstraintsProvider([$key => $value[1]]);
-        }
-
-        $module = $this->getModuleName();
-        $appCtx = ApplicationContext::getInstance();
-        $modelAspects = $this->modelAspects;
-
-        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
-            function (ActionContext $actionContext) use ($processFn, &$modelAspects, &$name) {
-
-                $params = $actionContext->getParams();
-                $prefixes = [];
-                foreach ($modelAspects as $modelAspect) {
-                    if (!$modelAspect->getPrefix()) {
-                        continue;
-                    }
-                    $prefixes[] = $modelAspect->getPrefix();
-                    $param = $params[$modelAspect->getPrefix()];
-                    $constraintViolationList =
-                        Validation::createValidator()->validate(UnsafeParameter::getFinalValue($param),
-                                                                $modelAspect->getConstraints($name));
-                    if ($constraintViolationList->count()) {
-                        throw new \RuntimeException('constraint violation');
-                    }
-                }
-
-                return $processFn($actionContext);
-
-            }));
-
-    }
-
-    /**
      * @param Array $result
      *
      * @return Array
@@ -595,6 +554,39 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entities;
+    }
+
+    /**
+     * @param string   $name
+     * @param array    $params
+     * @param callable $processFn
+     */
+    protected function defineAction ($name, array $params, callable $processFn) {
+
+        $module = $this->getModuleName();
+        $appCtx = ApplicationContext::getInstance();
+        $modelAspects = $this->modelAspects;
+
+        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
+            function (ActionContext $actionContext) use ($processFn, &$modelAspects, &$name) {
+
+                $params = $actionContext->getParams();
+                $prefixes = [];
+                foreach ($modelAspects as $modelAspect) {
+                    if (!$modelAspect->getPrefix()) {
+                        continue;
+                    }
+                    $prefixes[] = $modelAspect->getPrefix();
+                    $param = $params[$modelAspect->getPrefix()];
+                    $field = $modelAspect->getPrefix();
+                    $validator = new RuntimeConstraintsProvider([$field => $modelAspect->getConstraints($name)]);
+                    $validator->validate($field, UnsafeParameter::getFinalValue($param));
+                }
+
+                return $processFn($actionContext);
+
+            }));
+
     }
 
 }

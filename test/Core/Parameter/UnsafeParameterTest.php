@@ -11,7 +11,7 @@ class UnsafeParameterTest extends \PHPUnit_Framework_TestCase {
      */
     public function testIsSafe () {
 
-        $param = new UnsafeParameter('qwe');
+        $param = new UnsafeParameter('qwe','');
         $this->assertFalse($param->isSafe());
 
     }
@@ -22,8 +22,19 @@ class UnsafeParameterTest extends \PHPUnit_Framework_TestCase {
     public function testGetValue () {
 
         $obj = new \stdClass();
-        $param = new UnsafeParameter($obj);
+        $param = new UnsafeParameter($obj,'');
         $this->assertSame($obj, $param->getValue());
+
+    }
+
+    /**
+     *
+     */
+    public function testPath () {
+
+        $obj = new \stdClass();
+        $param = new UnsafeParameter($obj,'qwe');
+        $this->assertSame('qwe', $param->getPath());
 
     }
 
