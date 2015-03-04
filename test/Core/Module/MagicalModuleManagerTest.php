@@ -13,10 +13,10 @@ use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
 use Core\Model\User;
-use Core\Module\Test\Company\ModuleManager as CompanyModuleManager;
-use Core\Module\Test\Storage\ModuleManager as StorageModuleManager;
-use Core\Module\Test\User\Helper as UserHelper;
-use Core\Module\Test\User\ModuleManager as UserModuleManager;
+use Core\Module\TestCompany\ModuleManager as CompanyModuleManager;
+use Core\Module\TestStorage\ModuleManager as StorageModuleManager;
+use Core\Module\TestUser\Helper as UserHelper;
+use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\TestCase;
@@ -519,6 +519,9 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testSimpleMagicalCreate () {
 
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Core');
+
         $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
         $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
 
@@ -611,7 +614,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Archipad');
+        $appCtx->setProduct('Core');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -784,7 +787,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        $appCtx->setProduct('Core');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);

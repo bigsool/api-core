@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\Test\Company;
+namespace Core\Module\TestCompany;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicFindAction;
@@ -54,7 +54,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $context->addHelper('CompanyFeatureHelper', new Helper());
+        $this->addHelper($context,'CompanyFeatureHelper');
 
     }
 

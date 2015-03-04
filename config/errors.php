@@ -4,6 +4,8 @@ use Core\Error\Error;
 
 $errorManager = \Core\Context\ApplicationContext::getInstance()->getErrorManager();
 
+// TODO: rename error which start by ERR_ to ERROR_ in order to prevent conflicts with archiweb
+
 @define('ERR_INTERNAL_ERROR', -1);
 $errorManager->defineError(new Error(ERR_INTERNAL_ERROR, 'erreur interne', 'internal error'));
 
@@ -35,6 +37,15 @@ $errorManager->defineError(new Error(ERR_BAD_VERSION, 'version du client obsolè
 @define('ERR_API_UNAVAILABLE', -9);
 $errorManager->defineError(new Error(ERR_API_UNAVAILABLE, 'service temporairement indisponible',
                                      'service temporarily unavailable', ERR_INTERNAL_ERROR));
+
+
+@define('ERR_BAD_ENTITY', -28);
+$errorManager->defineError(new Error(ERR_BAD_ENTITY, "entité demandé non disponible",
+                                     'requested entity not available', ERR_REQUEST_INVALID));
+
+@define('ERR_BAD_FIELD', -29);
+$errorManager->defineError(new Error(ERR_BAD_FIELD, "au moins un des fields est invalide",
+                                     'one or more field are invalid', ERR_REQUEST_INVALID));
 
 @define('ERROR_INVALID_PARAM', -100);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM, "au moins un paramètre est invalid",

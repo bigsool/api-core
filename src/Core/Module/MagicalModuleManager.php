@@ -316,7 +316,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    public function formatResult () {
+    /*public function formatResult () {
 
         $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
         foreach ($this->modelAspects as $modelAspect) {
@@ -327,7 +327,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $entities;
 
-    }
+    }*/
 
     /**
      * @param ActionContext $ctx
@@ -460,23 +460,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
-
-    }
-
-    /**
-     * @param $modelName
-     *
-     * @return ModelAspect
-     */
-    protected function getModelAspectForModelName ($modelName) {
-
-        foreach ($this->getAspects() as $modelAspect) {
-            if ($modelAspect->getModel() == $modelName) {
-                return $modelAspect;
-            }
-        }
-
-        throw new \RuntimeException('ModelAspect not found');
 
     }
 

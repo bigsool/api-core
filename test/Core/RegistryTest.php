@@ -395,6 +395,8 @@ class RegistryTest extends TestCase {
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
         $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
 
+
+
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
@@ -414,6 +416,7 @@ class RegistryTest extends TestCase {
         $qryCtx = new FindQueryContext('TestCompany');
         $this->appCtx->getNewRegistry()->find($qryCtx);
 
+
     }
 
     /**
@@ -421,8 +424,35 @@ class RegistryTest extends TestCase {
      */
     public function testFindWithBadEntity () {
 
-        $qryCtx = new FindQueryContext('Qwe');
+        $qryCtx = $this->getMockFindQueryContext();
+        $reqCtx  = $this->getMockRequestContext();
+        $reqCtx->method('getReturnedRootEntity')->willReturn('Qweee');
+        $qryCtx->method('getReqCtx')->willReturn($reqCtx);
+        $qryCtx->method('getEntity')->willReturn('Qwe');
         $this->appCtx->getNewRegistry()->find($qryCtx);
+
+    }
+
+    public function testFindWithRequestedKeyPath () {
+
+        $reqCtx  = $this->getMockRequestContext();
+        $reqCtx->method('getReturnedKeyPaths')->willReturn([
+            new FieldKeyPath('name')
+        ]);
+
+        $qryCtx = new FindQueryContext('TestUser',$reqCtx);
+
+        $qryCtx->addKeyPath(new FieldKeyPath('email'));
+
+        $registry = $this->appCtx->getNewRegistry();
+        $registry->find($qryCtx, false);
+
+        $dql = 'SELECT testUser.email, testUser.name ' .
+               'FROM \Core\Model\TestUser testUser ' .
+               'WHERE ((testUser.confirmationKey = 1))';
+
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
 
     }
 

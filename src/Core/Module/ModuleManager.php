@@ -50,6 +50,18 @@ abstract class ModuleManager {
 
     }
 
+    public function addHelper (ApplicationContext &$context, $helperName) {
+
+        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+
+        $helper = $namespace.'\\Helper';
+        $exploded = explode('\\',$this->getControllerName());
+        $moduleName = $exploded[0].'\\'.$exploded[count($exploded)-1];
+
+        $context->addHelper($moduleName, $helperName, new $helper());
+
+    }
+
     /**
      * @return string
      */

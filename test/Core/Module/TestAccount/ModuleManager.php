@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Module\Test\Account;
+namespace Core\Module\TestAccount;
 
 
 use Core\Action\SimpleAction;

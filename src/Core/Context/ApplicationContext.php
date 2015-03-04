@@ -366,10 +366,10 @@ class ApplicationContext {
      * @param string $name
      * @param object $helper
      */
-    public function addHelper ($name, $helper) {
+    public function addHelper ($module, $name, $helper) {
 
         if (!isset($this->helpers[$name])) {
-            $this->helpers[$name] = $helper;
+            $this->helpers[$module][$name] = $helper;
         }
 
     }
@@ -384,14 +384,15 @@ class ApplicationContext {
     }
 
     /**
+     * @param Action $action
      * @param string $name
      *
      * @return object
      */
-    public function getHelper ($name) {
+    public function getHelper (Action $action,$name) {
 
-        if (isset($this->helpers[$name])) {
-            return $this->helpers[$name];
+        if (isset($this->helpers[$action->getModule()][$name])) {
+            return $this->helpers[$action->getModule()][$name];
         }
 
         throw new \RuntimeException('Helper not found');

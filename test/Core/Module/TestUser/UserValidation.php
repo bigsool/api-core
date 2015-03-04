@@ -1,12 +1,14 @@
 <?php
 
-namespace Core\Module\Test\Company;
+
+namespace Core\Module\TestUser;
 
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Email;
 use Core\Validation\Parameter\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CompanyValidation extends AbstractConstraintsProvider {
+class UserValidation extends AbstractConstraintsProvider {
 
     /**
      * @return Constraint[][]
@@ -14,12 +16,13 @@ class CompanyValidation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'name' =>
+            'email'    =>
                 [
+                    new Email(),
                     new NotBlank(),
                 ]
             ,
-            'id'   =>
+            'password' =>
                 [
                     new NotBlank(),
                 ]

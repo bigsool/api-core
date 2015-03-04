@@ -7,6 +7,12 @@ use Core\Context\RequestContext;
 class Serializer {
 
     /**
+     * @var rootEntity
+     */
+    private $inProxyMode;
+
+
+    /**
      * @var array
      */
     private $requiredKeyPaths = [];
@@ -22,6 +28,7 @@ class Serializer {
     function __construct (RequestContext $reqCtx) {
 
         $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
+        $this->inProxyMode = $reqCtx->getReturnedRootEntity() ? false : true;
 
         foreach ($returnedKeyPaths as $keyPath) {
             $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
@@ -36,7 +43,7 @@ class Serializer {
      */
     public function serialize ($data) {
 
-        if (is_array($data)) {
+        if (is_array($data) && !$this->inProxyMode) {
                $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths,$data);
         }
         else {

@@ -1,14 +1,12 @@
 <?php
 
 
-namespace Core\Module\User;
+namespace Core\Module\TestUser;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Field\Field;
-use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 
@@ -19,18 +17,25 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
-            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
+
+        $context->addAction(new BasicCreateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
+            'name'      => [new UserValidation()],
+            'email'     => [new UserValidation()],
+            'firstname' => [new UserValidation()],
+            'password'  => [new UserValidation()],
+            'knowsFrom' => [new UserValidation()]
         ], function (ActionContext $context) {
 
             $context->setParam('lang', 'fr');
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
-            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
+        $context->addAction(new BasicUpdateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
+            'name'      => [new UserValidation()],
+            'email'     => [new UserValidation()],
+            'firstname' => [new UserValidation()],
+            'password'  => [new UserValidation()],
+            'knowsFrom' => [new UserValidation()]
         ]));
 
     }

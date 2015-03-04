@@ -185,7 +185,10 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
 
         $serializer->serialize($users);
+
         $this->assertSame(self::$expectedWithAggregate, $serializer->get());
+
+        $this->assertSame(json_encode(self::$expectedWithAggregate), $serializer->getJSON());
 
     }
 

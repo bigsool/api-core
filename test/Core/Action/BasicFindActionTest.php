@@ -4,17 +4,32 @@
 namespace Core\Action;
 
 
+use Core\Field\KeyPath;
+use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
-class BasicFindActionTest extends TestCase {
+class BasicCreateActionTest extends TestCase {
+
+    /**
+     * @var \Core\Model\TestUser
+     */
+    protected static $user;
 
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 
         self::resetDatabase(self::getApplicationContext());
+
+        self::$user = new TestUser();
+        self::$user->setEmail('thierry@bigsool.com');
+        self::$user->setPassword('qwe');
+        self::$user->setRegisterDate(new \DateTime());
+
+        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry->save(self::$user);
 
     }
 
@@ -30,7 +45,7 @@ class BasicFindActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicCreateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+            new BasicFindAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
                 $preCalled = true;
 
@@ -41,12 +56,16 @@ class BasicFindActionTest extends TestCase {
             });
 
         $actCtx = $this->getActionContext();
-        $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);
+        $actCtx->setParams(['email' => 'thierry@bigsool.com']);
+        $reqCtx = $actCtx->getRequestContext();
+        $reqCtx->setReturnedKeyPaths([new KeyPath('email')]);
 
-        $user = $action->process($actCtx);
 
-        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
-        $this->assertSame($user, $actCtx['testUser']);
+        $action->process($actCtx);
+
+        $user = $actCtx['TestUser'][0];
+
+        $this->assertSame('thierry@bigsool.com', $user['email']);
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);
@@ -64,7 +83,7 @@ class BasicFindActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        (new BasicCreateAction('Core\TestUser', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicFindAction('Core\TestUser', 'TestUsere', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 
@@ -75,5 +94,6 @@ class BasicFindActionTest extends TestCase {
         }))->process($this->getActionContext());
 
     }
+
 
 }

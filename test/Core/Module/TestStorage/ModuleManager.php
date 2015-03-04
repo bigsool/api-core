@@ -1,16 +1,15 @@
 <?php
 
-
-namespace Core\Module\Test\User;
+namespace Core\Module\TestStorage;
 
 use Core\Action\BasicCreateAction;
+use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
-
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -19,24 +18,20 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
-            'name'      => [new UserValidation()],
-            'email'     => [new UserValidation()],
-            'firstname' => [new UserValidation()],
-            'password'  => [new UserValidation()],
-            'knowsFrom' => [new UserValidation()]
+        $context->addAction(new BasicCreateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
+            'url' => [new StorageValidation()],
         ], function (ActionContext $context) {
 
-            $context->setParam('lang', 'fr');
+            $context->setParam('login', uniqid('login'));
+            $context->setParam('password', uniqid('password'));
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\TestUser', 'testUser', 'UserFeatureHelper', NULL, [
-            'name'      => [new UserValidation()],
-            'email'     => [new UserValidation()],
-            'firstname' => [new UserValidation()],
-            'password'  => [new UserValidation()],
-            'knowsFrom' => [new UserValidation()]
+        $context->addAction(new BasicUpdateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
+            'url' => [new StorageValidation()],
+        ]));
+
+        $context->addAction(new BasicFindAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
         ]));
 
     }
@@ -46,6 +41,10 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
+        $context->addField(new StarField('TestStorage'));
+        $context->addField(new Field('TestStorage', 'id'));
+        $context->addField(new Field('TestStorage', 'url'));
+
     }
 
     /**
@@ -53,10 +52,13 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $context->addHelper('UserFeatureHelper', new Helper());
+        $this->addHelper($context,'StorageFeatureHelper');
 
     }
 
+    /**
+     * @param ApplicationContext $context
+     */
     public function loadRoutes (ApplicationContext &$context) {
 
     }
