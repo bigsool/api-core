@@ -85,7 +85,7 @@ class BasicUpdateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => 1]);
 
-        (new BasicUpdateAction('Core\Company', 'TestUser', 'CompanyFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicUpdateAction('Core\TestCompany', 'TestUser', 'CompanyFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 
@@ -111,7 +111,7 @@ class BasicUpdateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => 567435453]);
 
-        (new BasicUpdateAction('Core\User', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicUpdateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 

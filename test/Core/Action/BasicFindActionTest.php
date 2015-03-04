@@ -4,6 +4,7 @@
 namespace Core\Action;
 
 
+use Core\Field\KeyPath;
 use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
@@ -56,16 +57,43 @@ class BasicCreateActionTest extends TestCase {
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'thierry@bigsool.com']);
+        $reqCtx = $actCtx->getRequestContext();
+        $reqCtx->setReturnedKeyPaths([new KeyPath('email')]);
+
+
         $action->process($actCtx);
 
-        $user = $actCtx['TestUser'];
+        $user = $actCtx['TestUser'][0];
 
-        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
-        $this->assertSame($user, $actCtx['testUser']);
+        $this->assertSame('thierry@bigsool.com', $user['email']);
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);
 
     }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testWrongHelper () {
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Core');
+
+        $userModuleManager = new UserModuleManager();
+        $userModuleManager->loadHelpers($appCtx);
+
+        (new BasicFindAction('Core\TestUser', 'TestUsere', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+
+            $preCalled = true;
+
+        }, function () use (&$postCalled) {
+
+            $postCalled = true;
+
+        }))->process($this->getActionContext());
+
+    }
+
 
 }

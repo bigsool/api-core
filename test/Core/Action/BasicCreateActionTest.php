@@ -42,6 +42,7 @@ class BasicFindActionTest extends TestCase {
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);
+
         $user = $action->process($actCtx);
 
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
@@ -63,7 +64,7 @@ class BasicFindActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        (new BasicCreateAction('Core\User', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicCreateAction('Core\TestUser', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
 
             $preCalled = true;
 
