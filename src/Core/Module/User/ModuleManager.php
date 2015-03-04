@@ -7,8 +7,6 @@ use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Field\Field;
-use Core\Field\StarField;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 
@@ -20,17 +18,21 @@ class ModuleManager extends AbstractModuleManager {
     public function loadActions (ApplicationContext &$context) {
 
         $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
-            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
+            'lastName'  => [new UserValidation()],
+            'firstName' => [new UserValidation()],
+            'lang'      => [new UserValidation(), true],
         ], function (ActionContext $context) {
 
-            $context->setParam('lang', 'fr');
+            if ($context->getParam('lang') === NULL) {
+                $context->setParam('lang', $context->getRequestContext()->getLocale());
+            }
 
         }));
 
         $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'      => [ERR_PARAMS_INVALID, new UserValidation()],
-            'firstName' => [ERR_PARAMS_INVALID, new UserValidation()],
+            'lastName'  => [new UserValidation()],
+            'firstName' => [new UserValidation()],
+            'lang'      => [new UserValidation()],
         ]));
 
     }
@@ -47,11 +49,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context,'UserFeatureHelper');
-
-    }
-
-    public function loadRoutes (ApplicationContext &$context) {
+        $this->addHelper($context, 'UserFeatureHelper');
 
     }
 

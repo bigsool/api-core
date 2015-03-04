@@ -4,7 +4,10 @@
 namespace Core\Module\User;
 
 use Core\Validation\AbstractConstraintsProvider;
-use Symfony\Component\Validator\Constraints as Assert;
+use Core\Validation\Parameter\Choice;
+use Core\Validation\Parameter\Length;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\String;
 
 class UserValidation extends AbstractConstraintsProvider {
 
@@ -14,16 +17,22 @@ class UserValidation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'firstName'    =>
+            'firstName' =>
                 [
-                    new Assert\Type(['type'=>'string']),
-                    new Assert\Length(['max'=>255]),
+                    new String(),
+                    new Length(['max' => 255]),
                 ]
             ,
-            'lastName' =>
+            'lastName'  =>
                 [
-                    new Assert\Type(['type'=>'string']),
-                    new Assert\Length(['max'=>255]),
+                    new String(),
+                    new Length(['max' => 255]),
+                ]
+            ,
+            'lang'      =>
+                [
+                    new Choice(['choices' => ['fr', 'en']]),
+                    new NotBlank(),
                 ]
             ,
         ];
