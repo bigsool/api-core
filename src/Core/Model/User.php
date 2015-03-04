@@ -7,209 +7,127 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="userEmail", columns={"email"})})
+ * @ORM\Table(name="user")
  * @ORM\Entity
  */
-class User {
-
+class User
+{
     /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * @ORM\Column(name="lastName", type="string", length=255, nullable=false)
      */
-    private $email;
+    private $lastName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=255, nullable=false)
+     * @ORM\Column(name="firstName", type="string", length=255, nullable=false)
      */
-    private $password;
+    private $firstName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
-     */
-    private $firstname;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="lang", type="string", length=255, nullable=true)
+     * @ORM\Column(name="lang", type="string", length=255, nullable=false)
      */
     private $lang;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="SALT", type="string", length=255, nullable=true)
-     */
-    private $salt;
-
-    /**
      * @var \DateTime
      *
-     * @ORM\Column(name="register_date", type="datetime", nullable=false)
+     * @ORM\Column(name="creationDate", type="datetime", nullable=false)
      */
-    private $registerDate;
+    private $creationDate;
+
 
     /**
-     * @var \DateTime
+     * Set id
      *
-     * @ORM\Column(name="last_login_date", type="datetime", nullable=true)
+     * @param integer $id
+     * @return User
      */
-    private $lastLoginDate;
+    public function setId($id)
+    {
+        $this->id = $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="knowsFrom", type="string", length=255, nullable=true)
-     */
-    private $knowsFrom;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="confirmationKey", type="string", length=255, nullable=true)
-     */
-    private $confirmationKey;
-
-    /**
-     * @var \Core\Model\Company
-     *
-     * @ORM\OneToOne(targetEntity="Core\Model\Company", mappedBy="owner", cascade={"persist"})
-     */
-    private $ownedCompany;
-
-    /**
-     * @var \Core\Model\Company
-     *
-     * @ORM\ManyToOne(targetEntity="Core\Model\Company", inversedBy="users", cascade={"persist"})
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=true)
-     * })
-     */
-    private $company;
+        return $this;
+    }
 
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
-    public function getId () {
-
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
-     * Get email
+     * Set lastName
      *
-     * @return string
-     */
-    public function getEmail () {
-
-        return $this->email;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
+     * @param string $lastName
      * @return User
      */
-    public function setEmail ($email) {
-
-        $this->email = $email;
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }
 
     /**
-     * Get password
+     * Get lastName
      *
-     * @return string
+     * @return string 
      */
-    public function getPassword () {
-
-        return $this->password;
+    public function getLastName()
+    {
+        return $this->lastName;
     }
 
     /**
-     * Set password
+     * Set firstName
      *
-     * @param string $password
-     *
+     * @param string $firstName
      * @return User
      */
-    public function setPassword ($password) {
-
-        $this->password = $password;
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get firstName
      *
-     * @return string
+     * @return string 
      */
-    public function getName () {
-
-        return $this->name;
+    public function getFirstName()
+    {
+        return $this->firstName;
     }
 
     /**
-     * Set name
+     * Set lang
      *
-     * @param string $name
-     *
+     * @param string $lang
      * @return User
      */
-    public function setName ($name) {
-
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get firstname
-     *
-     * @return string
-     */
-    public function getFirstname () {
-
-        return $this->firstname;
-    }
-
-    /**
-     * Set firstname
-     *
-     * @param string $firstname
-     *
-     * @return User
-     */
-    public function setFirstname ($firstname) {
-
-        $this->firstname = $firstname;
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
 
         return $this;
     }
@@ -217,192 +135,33 @@ class User {
     /**
      * Get lang
      *
-     * @return string
+     * @return string 
      */
-    public function getLang () {
-
+    public function getLang()
+    {
         return $this->lang;
     }
 
     /**
-     * Set lang
+     * Set creationDate
      *
-     * @param string $lang
-     *
+     * @param \DateTime $creationDate
      * @return User
      */
-    public function setLang ($lang) {
-
-        $this->lang = $lang;
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
 
         return $this;
     }
 
     /**
-     * Get salt
+     * Get creationDate
      *
-     * @return string
+     * @return \DateTime 
      */
-    public function getSalt () {
-
-        return $this->salt;
-    }
-
-    /**
-     * Set salt
-     *
-     * @param string $salt
-     *
-     * @return User
-     */
-    public function setSalt ($salt) {
-
-        $this->salt = $salt;
-
-        return $this;
-    }
-
-    /**
-     * Get registerDate
-     *
-     * @return \DateTime
-     */
-    public function getRegisterDate () {
-
-        return $this->registerDate;
-    }
-
-    /**
-     * Set registerDate
-     *
-     * @param \DateTime $registerDate
-     *
-     * @return User
-     */
-    public function setRegisterDate ($registerDate) {
-
-        $this->registerDate = $registerDate;
-
-        return $this;
-    }
-
-    /**
-     * Get lastLoginDate
-     *
-     * @return \DateTime
-     */
-    public function getLastLoginDate () {
-
-        return $this->lastLoginDate;
-    }
-
-    /**
-     * Set lastLoginDate
-     *
-     * @param \DateTime $lastLoginDate
-     *
-     * @return User
-     */
-    public function setLastLoginDate ($lastLoginDate) {
-
-        $this->lastLoginDate = $lastLoginDate;
-
-        return $this;
-    }
-
-    /**
-     * Get knowsFrom
-     *
-     * @return string
-     */
-    public function getKnowsFrom () {
-
-        return $this->knowsFrom;
-    }
-
-    /**
-     * Set knowsFrom
-     *
-     * @param string $knowsFrom
-     *
-     * @return User
-     */
-    public function setKnowsFrom ($knowsFrom) {
-
-        $this->knowsFrom = $knowsFrom;
-
-        return $this;
-    }
-
-    /**
-     * Get confirmationKey
-     *
-     * @return string
-     */
-    public function getConfirmationKey () {
-
-        return $this->confirmationKey;
-    }
-
-    /**
-     * Set confirmationKey
-     *
-     * @param string $confirmationKey
-     *
-     * @return User
-     */
-    public function setConfirmationKey ($confirmationKey) {
-
-        $this->confirmationKey = $confirmationKey;
-
-        return $this;
-    }
-
-    /**
-     * Get ownedCompany
-     *
-     * @return \Core\Model\Company
-     */
-    public function getOwnedCompany () {
-
-        return $this->ownedCompany;
-    }
-
-    /**
-     * Set ownedCompany
-     *
-     * @param \Core\Model\Company $ownedCompany
-     *
-     * @return User
-     */
-    public function setOwnedCompany (\Core\Model\Company $ownedCompany = NULL) {
-
-        $this->ownedCompany = $ownedCompany;
-
-        return $this;
-    }
-
-    /**
-     * Get company
-     *
-     * @return \Core\Model\Company
-     */
-    public function getCompany () {
-
-        return $this->company;
-    }
-
-    /**
-     * Set company
-     *
-     * @param \Core\Model\Company $company
-     *
-     * @return User
-     */
-    public function setCompany (\Core\Model\Company $company = NULL) {
-
-        $this->company = $company;
-
-        return $this;
+    public function getCreationDate()
+    {
+        return $this->creationDate;
     }
 }

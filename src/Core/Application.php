@@ -178,7 +178,7 @@ class Application {
     public function getModuleManagers () {
 
         $product = $this->appCtx->getProduct();
-        $modules = array_map('basename', glob(ROOT_DIR . 'src/' . $product . '/Module/*', GLOB_ONLYDIR));
+        $modules = array_map('basename', glob(ROOT_DIR . '/src/' . $product . '/Module/*', GLOB_ONLYDIR));
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
             $className = "\\$product\\Module\\$moduleName\\ModuleManager";

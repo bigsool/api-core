@@ -7,7 +7,6 @@ namespace Core\Module\User;
 use Core\Context\ActionContext;
 use Core\Model\User;
 use Core\Module\BasicHelper;
-use Core\Parameter\UnsafeParameter;
 
 class Helper extends BasicHelper {
 
