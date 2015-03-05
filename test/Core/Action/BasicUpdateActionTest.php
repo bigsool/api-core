@@ -43,15 +43,16 @@ class BasicUpdateActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicUpdateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', NULL, [], function () use (&$preCalled) {
+            new BasicUpdateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', NULL, [],
+                function () use (&$preCalled) {
 
-                $preCalled = true;
+                    $preCalled = true;
 
-            }, function () use (&$postCalled) {
+                }, function () use (&$postCalled) {
 
-                $postCalled = true;
+                    $postCalled = true;
 
-            });
+                });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => self::$user->getId(), 'email' => 'qwe2@qwe.com']);
@@ -85,15 +86,16 @@ class BasicUpdateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['id' => 1]);
 
-        (new BasicUpdateAction('Core\TestCompany', 'TestUser', 'CompanyFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicUpdateAction('Core\TestCompany', 'TestUser', 'CompanyFeatureHelper', [], [],
+            function () use (&$preCalled) {
 
-            $preCalled = true;
+                $preCalled = true;
 
-        }, function () use (&$postCalled) {
+            }, function () use (&$postCalled) {
 
-            $postCalled = true;
+                $postCalled = true;
 
-        }))->process($actCtx);
+            }))->process($actCtx);
 
     }
 

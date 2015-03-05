@@ -22,7 +22,7 @@ class JSONPTest extends TestCase {
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo','getClientIp']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo', 'getClientIp']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
         $req->method('getClientIp')->willReturn('10.0.1.104');
         $params = ['param1' => 'value1', 'param2'];

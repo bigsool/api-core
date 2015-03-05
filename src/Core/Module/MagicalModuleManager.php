@@ -170,6 +170,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $modifyAction;
+
     }
 
     /**
@@ -180,6 +181,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function isMainEntity ($modelAspect) {
 
         return !$modelAspect->getKeyPath();
+
     }
 
     /**
@@ -197,6 +199,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entity;
+
     }
 
     private function setRelationshipsFromMetadata () {
@@ -245,6 +248,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return NULL;
+
     }
 
     /**
@@ -282,6 +286,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $fn = $prefix2 . ucfirst($field2);
         $this->models[$target]->$fn($this->models[$sourceModelName]);
+
     }
 
     private function saveEntities () {
@@ -337,6 +342,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     public function magicalUpdate (ActionContext $ctx) {
 
         return $this->magicalModify($ctx, 'update');
+
     }
 
     /**
@@ -537,6 +543,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entities;
+        
     }
 
     /**

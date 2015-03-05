@@ -6,7 +6,6 @@ namespace Core\RPC;
 
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
-use Core\Error\FormattedError;
 use Core\Serializer;
 use Core\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +24,7 @@ class HTTPTest extends TestCase {
         /**
          * @var Request $req
          */
-        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo','getClientIp']);
+        $req = $this->getMock('\Symfony\Component\HttpFoundation\Request', ['getPathInfo', 'getClientIp']);
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/method/');
         $req->method('getClientIp')->willReturn('10.0.1.104');
         $params = ['param1' => 'value1', 'param2'];
@@ -49,8 +48,6 @@ class HTTPTest extends TestCase {
         $response = $HTTP->getSuccessResponse(new Serializer(new RequestContext()), 'qwe');
 
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
-
-
 
     }
 
@@ -108,16 +105,15 @@ class HTTPTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
         (new HTTP())->parse($req);
 
-
     }
 
     public function testGetErrorResponse () {
 
         $error = ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
         $response = (new HTTP())->getErrorResponse($error);
-        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response',$response);
-        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR,$response->getStatusCode());
-        $this->assertSame(strval($error),$response->getContent());
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertSame(strval($error), $response->getContent());
 
     }
 } 

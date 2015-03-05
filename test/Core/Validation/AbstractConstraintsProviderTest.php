@@ -11,7 +11,7 @@ use Core\Validation\Parameter\NotBlank;
 
 class AbstractConstraintsProviderTest extends TestCase {
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 

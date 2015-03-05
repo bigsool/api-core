@@ -26,13 +26,14 @@ class BasicFindAction extends SimpleAction {
 
                 $preUpdateCallable($context);
 
-                $helper = ApplicationContext::getInstance()->getHelper($this,$helperName);
+                $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
                 $reqCtx = $context->getRequestContext();
                 $method = 'find' . ucfirst($model);
                 if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
-                $helper->$method($context, $reqCtx->getReturnedKeyPaths(), $reqCtx->getFilter() ? [$reqCtx->getFilter()] : []);
+                $helper->$method($context, $reqCtx->getReturnedKeyPaths(),
+                                 $reqCtx->getFilter() ? [$reqCtx->getFilter()] : []);
 
                 $postUpdateCallable($context);
 

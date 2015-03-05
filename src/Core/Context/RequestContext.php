@@ -195,7 +195,7 @@ class RequestContext {
 
         $params = [];
         foreach ($this->getParams() as $key => $param) {
-            $params[$key] = new UnsafeParameter($param,$key);
+            $params[$key] = new UnsafeParameter($param, $key);
         }
 
         $actonContext->setParams($params);

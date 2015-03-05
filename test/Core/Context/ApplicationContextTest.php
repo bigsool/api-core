@@ -5,7 +5,6 @@ namespace Core\Context;
 
 
 use Core\TestCase;
-use Symfony\Component\Routing\Route;
 
 class ApplicationContextTest extends TestCase {
 
@@ -165,16 +164,16 @@ class ApplicationContextTest extends TestCase {
         $action->method('getModule')->willReturn('module');
 
         $helper = new \stdClass();
-        $appCtx->addHelper('module','helper1', $helper);
+        $appCtx->addHelper('module', 'helper1', $helper);
         $this->assertCount(1, $appCtx->getHelpers()['module']);
         $this->assertSame($helper, $appCtx->getHelpers()['module']['helper1']);
 
         $helper2 = new \stdClass();
-        $appCtx->addHelper('module','helper2', $helper2);
+        $appCtx->addHelper('module', 'helper2', $helper2);
         $this->assertCount(2, $appCtx->getHelpers()['module']);
-        $this->assertSame($helper2, $appCtx->getHelper($action,'helper2'));
+        $this->assertSame($helper2, $appCtx->getHelper($action, 'helper2'));
 
-        $appCtx->addHelper('module','helper2', new \stdClass());
+        $appCtx->addHelper('module', 'helper2', new \stdClass());
         $this->assertCount(2, $appCtx->getHelpers()['module']);
 
     }
@@ -185,7 +184,7 @@ class ApplicationContextTest extends TestCase {
     public function testHelperNotFound () {
 
         $action = $this->getMockAction();
-        $this->getApplicationContext()->getHelper($action,'qwe');
+        $this->getApplicationContext()->getHelper($action, 'qwe');
 
     }
 
@@ -195,7 +194,7 @@ class ApplicationContextTest extends TestCase {
         $this->assertInstanceOf('\Symfony\Component\Routing\RouteCollection', $appCtx->getRoutes());
         $this->assertSame(0, $appCtx->getRoutes()->count());
 
-        $appCtx->addRoute('path','Account','create');
+        $appCtx->addRoute('path', 'Account', 'create');
         $this->assertSame(1, $appCtx->getRoutes()->count());
 
     }

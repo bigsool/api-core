@@ -2,7 +2,6 @@
 namespace Core\Validation;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 interface ConstraintsProvider {
 

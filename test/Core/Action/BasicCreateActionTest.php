@@ -30,15 +30,16 @@ class BasicCreationActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicCreateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+            new BasicCreateAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [],
+                function () use (&$preCalled) {
 
-                $preCalled = true;
+                    $preCalled = true;
 
-            }, function () use (&$postCalled) {
+                }, function () use (&$postCalled) {
 
-                $postCalled = true;
+                    $postCalled = true;
 
-            });
+                });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);
@@ -64,15 +65,16 @@ class BasicCreationActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        (new BasicCreateAction('Core\TestUser', 'TestCompany', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+        (new BasicCreateAction('Core\TestUser', 'TestCompany', 'UserFeatureHelper', [], [],
+            function () use (&$preCalled) {
 
-            $preCalled = true;
+                $preCalled = true;
 
-        }, function () use (&$postCalled) {
+            }, function () use (&$postCalled) {
 
-            $postCalled = true;
+                $postCalled = true;
 
-        }))->process($this->getActionContext());
+            }))->process($this->getActionContext());
 
     }
 

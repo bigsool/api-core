@@ -49,13 +49,12 @@ class ModuleManagerTest extends TestCase {
     public function testAddRoute () {
 
         $moduleManager = $this->getMockForAbstractClass('\Core\Module\ModuleManager');
-        $moduleManager->addRoute('/user/create','UserCreate');
+        $moduleManager->addRoute('/user/create', 'UserCreate');
 
         $routes = ApplicationContext::getInstance()->getRoutes()->all();
         $route = $routes['UserCreate'];
-        $this->assertSame('/user/create',$route->getPath());
+        $this->assertSame('/user/create', $route->getPath());
 
     }
 
-
-} 
+}

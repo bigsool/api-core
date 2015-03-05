@@ -11,7 +11,6 @@ class Serializer {
      */
     private $inProxyMode;
 
-
     /**
      * @var array
      */
@@ -44,7 +43,7 @@ class Serializer {
     public function serialize ($data) {
 
         if (is_array($data) && !$this->inProxyMode) {
-               $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths,$data);
+            $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths, $data);
         }
         else {
             $this->dataSerialized = $data;
@@ -57,9 +56,10 @@ class Serializer {
     /**
      * @param [] String $keyPaths
      * @param [] String $data
+     *
      * @return Array
      */
-    private function removeDoctrineId ($keyPaths,$data) {
+    private function removeDoctrineId ($keyPaths, $data) {
 
         $newData = [];
 
@@ -68,7 +68,7 @@ class Serializer {
                 if ($key === "id" && $this->isAutomaticallyAdded($keyPaths)) {
                     continue;
                 }
-                $newData[$key] = $this->removeDoctrineId($this->getKeyPaths($keyPaths,$key),$value);
+                $newData[$key] = $this->removeDoctrineId($this->getKeyPaths($keyPaths, $key), $value);
             }
         }
         else {
@@ -81,10 +81,28 @@ class Serializer {
 
     /**
      * @param [] String $keyPaths
+     *
+     * @return boolean
+     */
+    protected function isAutomaticallyAdded ($keyPaths) {
+
+        foreach ($keyPaths as $keyPath) {
+            if ($keyPath[0] === 'id') {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    /**
+     * @param [] String $keyPaths
      * @param mixed $value
+     *
      * @return Array
      */
-    protected function getKeyPaths($keyPaths,$value) {
+    protected function getKeyPaths ($keyPaths, $value) {
 
         $newKeyPaths = [];
 
@@ -94,11 +112,11 @@ class Serializer {
 
                 $newKeyPath = [];
 
-                for ($i = 1 ; $i < count($keyPath) ; ++$i) {
+                for ($i = 1; $i < count($keyPath); ++$i) {
                     $newKeyPath[] = $keyPath[$i];
                 }
 
-                if (count ($newKeyPath) != 0) {
+                if (count($newKeyPath) != 0) {
                     $newKeyPaths[] = $newKeyPath;
                 }
 
@@ -107,20 +125,6 @@ class Serializer {
         }
 
         return $newKeyPaths ? $newKeyPaths : $keyPaths;
-
-    }
-
-    /**
-     * @param [] String $keyPaths
-     * @return boolean
-     */
-    protected function isAutomaticallyAdded ($keyPaths) {
-
-        foreach($keyPaths as $keyPath) {
-            if ($keyPath[0] === 'id') return false;
-        }
-
-        return true;
 
     }
 

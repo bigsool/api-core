@@ -12,7 +12,6 @@ use Core\Expression\KeyPath as ExpressionKeyPath;
 use Core\Expression\Parameter;
 use Core\Expression\Value;
 use Core\Field\Aggregate;
-use Core\Field\Field;
 use Core\Field\KeyPath as FieldKeyPath;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
@@ -140,7 +139,7 @@ class RegistryTest extends TestCase {
 
         $company = new TestCompany();
         $company->setName($this->company['name']);
-        $company->setAddress(new UnsafeParameter($this->company['address'],''));
+        $company->setAddress(new UnsafeParameter($this->company['address'], ''));
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->save($company);
@@ -390,20 +389,21 @@ class RegistryTest extends TestCase {
     public function testFindWithAlias () {
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');
+        $qryCtx->addKeyPath(new Aggregate('count', ['*']), 'nbUsers');
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
         $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
         $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
 
 
-
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT count(testUser) AS nbUsers, testUser.email, testUser.name AS userName, testUserCompany.name AS companyName ' .
-               'FROM \Core\Model\TestUser testUser ' .
-               'INNER JOIN testUser.company testUserCompany '.
-               'GROUP BY testUser.email,testUser.name,testUserCompany.name';
+        $dql =
+            'SELECT count(testUser) AS nbUsers, testUser.email, testUser.name AS userName, testUserCompany.name AS companyName '
+            .
+            'FROM \Core\Model\TestUser testUser ' .
+            'INNER JOIN testUser.company testUserCompany ' .
+            'GROUP BY testUser.email,testUser.name,testUserCompany.name';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -416,7 +416,6 @@ class RegistryTest extends TestCase {
         $qryCtx = new FindQueryContext('TestCompany');
         $this->appCtx->getNewRegistry()->find($qryCtx);
 
-
     }
 
     /**
@@ -425,7 +424,7 @@ class RegistryTest extends TestCase {
     public function testFindWithBadEntity () {
 
         $qryCtx = $this->getMockFindQueryContext();
-        $reqCtx  = $this->getMockRequestContext();
+        $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getReturnedRootEntity')->willReturn('Qweee');
         $qryCtx->method('getReqCtx')->willReturn($reqCtx);
         $qryCtx->method('getEntity')->willReturn('Qwe');
@@ -435,12 +434,12 @@ class RegistryTest extends TestCase {
 
     public function testFindWithRequestedKeyPath () {
 
-        $reqCtx  = $this->getMockRequestContext();
+        $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getReturnedKeyPaths')->willReturn([
-            new FieldKeyPath('name')
-        ]);
+                                                               new FieldKeyPath('name')
+                                                           ]);
 
-        $qryCtx = new FindQueryContext('TestUser',$reqCtx);
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 
         $qryCtx->addKeyPath(new FieldKeyPath('email'));
 
@@ -452,7 +451,6 @@ class RegistryTest extends TestCase {
                'WHERE ((testUser.confirmationKey = 1))';
 
         $this->assertSame($dql, $registry->getLastExecutedQuery());
-
 
     }
 

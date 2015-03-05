@@ -78,7 +78,7 @@ class Helper extends BasicHelper {
      * @param bool          $hydrateArray
      */
     public function findTestUser (ActionContext $actCtx, array $keyPaths = [], array $filters = [],
-                                     $hydrateArray = true) {
+                                  $hydrateArray = true) {
 
         $registry = ApplicationContext::getInstance()->getNewRegistry();
 

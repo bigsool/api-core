@@ -6,7 +6,6 @@ namespace Core\Action;
 
 use Core\Auth;
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
 use Core\Error\FormattedError;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;

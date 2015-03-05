@@ -212,7 +212,8 @@ abstract class AbstractKeyPath extends Value {
 
         if ($this->field == '*') {
             return new StarField($this->entity);
-        } else {
+        }
+        else {
             return new Field($this->entity, $this->field);
         }
 

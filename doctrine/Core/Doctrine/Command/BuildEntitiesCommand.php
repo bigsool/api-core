@@ -109,7 +109,8 @@ class BuildEntitiesCommand extends Command {
             $loadYml(new \ReflectionClass($moduleManager));
         }
 
-        array_walk_recursive($ymls, function (&$value, $key) use($product) {
+        array_walk_recursive($ymls, function (&$value, $key) use ($product) {
+
             if ($key == 'targetEntity') {
                 $value = str_replace('Core\Model\\', "$product\\Model\\", $value);
             }

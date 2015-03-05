@@ -10,7 +10,6 @@ use Core\Context\ApplicationContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath;
 use Core\Expression\Parameter;
-use Core\Field\Field;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Filter\FilterReference;
@@ -54,7 +53,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context,'CompanyFeatureHelper');
+        $this->addHelper($context, 'CompanyFeatureHelper');
 
     }
 

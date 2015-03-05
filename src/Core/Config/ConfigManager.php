@@ -3,9 +3,7 @@
 namespace Core\Config;
 
 use Core\Context\ApplicationContext;
-use Core\Controller;
 use Core\Util\ArrayExtra;
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigManager {

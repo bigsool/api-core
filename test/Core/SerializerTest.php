@@ -293,5 +293,4 @@ class SerializerTest extends TestCase {
 
     }
 
-
 }

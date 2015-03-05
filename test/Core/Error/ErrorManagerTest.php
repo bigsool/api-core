@@ -148,7 +148,7 @@ class ErrorManagerTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testGetFormattedErrorWithDifferentParents() {
+    public function testGetFormattedErrorWithDifferentParents () {
 
         $this->errorManager->addError($this->error1000->getCode());
         $this->errorManager->addError($this->error1000->getParentCode());

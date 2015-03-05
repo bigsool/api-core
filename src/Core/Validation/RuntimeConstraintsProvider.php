@@ -4,7 +4,6 @@
 namespace Core\Validation;
 
 
-
 use Core\Validation\Parameter\Constraint;
 
 class RuntimeConstraintsProvider extends AbstractConstraintsProvider {

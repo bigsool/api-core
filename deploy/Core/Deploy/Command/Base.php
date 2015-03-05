@@ -46,7 +46,6 @@ abstract class Base extends Command {
         $this->setQuestion($this->getHelper('dialog'));
         $this->setEnv($input->getArgument('env'));
 
-
     }
 
     /**

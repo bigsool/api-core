@@ -35,7 +35,7 @@ class BasicCreateAction extends SimpleAction {
 
                 $preUpdateCallable($context);
 
-                $helper = ApplicationContext::getInstance()->getHelper($this,$helperName);
+                $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
                 $params = $context->getVerifiedParams();
                 $method = 'create' . ucfirst($model);
                 if (!is_callable([$helper, $method], false, $callableName)) {

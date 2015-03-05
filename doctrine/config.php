@@ -1,8 +1,8 @@
 <?php
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 
 if (!file_exists($file = __DIR__ . '/../vendor/autoload.php')
     && !file_exists($file = __DIR__ . '/../../../../vendor/autoload.php')

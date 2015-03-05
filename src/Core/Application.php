@@ -181,6 +181,10 @@ class Application {
         $modules = array_map('basename', glob(ROOT_DIR . '/src/' . $product . '/Module/*', GLOB_ONLYDIR));
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
+            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+            if (class_exists($className)) {
+                $moduleManagers[] = new $className;
+            }
             $className = "\\$product\\Module\\$moduleName\\ModuleManager";
             $moduleManagers[] = new $className;
         }

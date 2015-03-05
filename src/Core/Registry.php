@@ -238,29 +238,31 @@ class Registry implements EventSubscriber {
         $entities = [];
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->resolve($this, $ctx);
-            $exploded = explode('.',$field);
+            $exploded = explode('.', $field);
             if (!$hydrateArray || count($exploded) == 1 || $keyPath->isAggregate()) {
-                if($keyPath->getAlias()) {
-                    $field .= ' AS '.$keyPath->getAlias();
+                if ($keyPath->getAlias()) {
+                    $field .= ' AS ' . $keyPath->getAlias();
                 }
                 $qb->addSelect($field);
             }
-            else if (count($exploded) == 2) {
-                $entities[$exploded[0]][] = $exploded[1];
+            else {
+                if (count($exploded) == 2) {
+                    $entities[$exploded[0]][] = $exploded[1];
+                }
             }
 
         }
 
         foreach ($entities as $entity => $fields) {
-            $selectClause = 'partial '.$entity.'.{id,';
-            $selectClause .= implode(',',$fields);
+            $selectClause = 'partial ' . $entity . '.{id,';
+            $selectClause .= implode(',', $fields);
             $selectClause .= '}';
             $qb->addSelect($selectClause);
         }
 
         $needGroupByClause = false;
         $groupByClause = "";
-        
+
         foreach ($keyPaths as $keyPath) {
             if ($keyPath->isAggregate()) {
                 if (count($keyPaths) > 1) {

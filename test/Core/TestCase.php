@@ -25,7 +25,6 @@ use Core\Module\ModelAspect;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
 use Core\Rule\Rule;
-use Core\Validation\AbstractConstraintsProvider;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;

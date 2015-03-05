@@ -4,9 +4,6 @@
 namespace Core\Validation\Parameter;
 
 
-use Core\Context\ApplicationContext;
-use Core\Error\Error;
-use Core\Error\ErrorManager;
 use Symfony\Component\Validator\Constraint as SfConstraint;
 
 abstract class Constraint {

@@ -44,7 +44,7 @@ class RequestContextTest extends TestCase {
         $params = ['a', 'b' => 1, ['c'], new \stdClass()];
         $expectedParams = [];
         foreach ($params as $key => $param) {
-            $expectedParams[$key] = new UnsafeParameter($param,'');
+            $expectedParams[$key] = new UnsafeParameter($param, '');
         }
 
         $ctx->setParams($params);

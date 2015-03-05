@@ -365,7 +365,7 @@ class ApplicationContext {
     /**
      * @param string $module
      * @param string $name
-     * @param $helper
+     * @param        $helper
      */
     public function addHelper ($module, $name, $helper) {
 
@@ -390,7 +390,7 @@ class ApplicationContext {
      *
      * @return object
      */
-    public function getHelper (Action $action,$name) {
+    public function getHelper (Action $action, $name) {
 
         if (isset($this->helpers[$action->getModule()][$name])) {
             return $this->helpers[$action->getModule()][$name];

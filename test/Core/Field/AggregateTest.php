@@ -110,7 +110,7 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new Aggregate('count',['*']),'nbUsers');
+        $qryCtx->addKeyPath(new Aggregate('count', ['*']), 'nbUsers');
 
         $result = $registry->find($qryCtx);
 
@@ -121,7 +121,7 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new Aggregate('max',['company.id']),'maxCompanyId');
+        $qryCtx->addKeyPath(new Aggregate('max', ['company.id']), 'maxCompanyId');
 
         $result = $registry->find($qryCtx);
 
@@ -132,10 +132,10 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new Aggregate('min',['company.id']),'minCompanyId');
+        $qryCtx->addKeyPath(new Aggregate('min', ['company.id']), 'minCompanyId');
         $qryCtx->addKeyPath(new KeyPath('*'));
 
-        $result = $registry->find($qryCtx,false);
+        $result = $registry->find($qryCtx, false);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(3, $result);

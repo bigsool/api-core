@@ -155,8 +155,10 @@ class Install extends Base {
 
         $this->getEnvConf();
         $this->dumpFolder = $this->envConf['dump_folder'];
-        $configFolderArchiweb = $this->envConf['archiweb_path_root'] . $this->getEnv().'-api-'.substr($revision, 0, 7).'/include/config/';
-        $configDirArchiweb = $configFolderArchiweb.'envs/';
+        $configFolderArchiweb =
+            $this->envConf['archiweb_path_root'] . $this->getEnv() . '-api-' . substr($revision, 0, 7)
+            . '/include/config/';
+        $configDirArchiweb = $configFolderArchiweb . 'envs/';
 
         $this->dbConfigDirectory = $this->envConf['conf_directory'];
 
@@ -223,7 +225,8 @@ class Install extends Base {
         if (!$isFirstInstall) {
 
             $this->dbConfigRealPath =
-                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv() . '/extra.yml';
+                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv()
+                . '/extra.yml';
             $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
 
             $this->getOutput()->writeln("OK");
@@ -250,7 +253,8 @@ class Install extends Base {
                 $this->dbConfig['next'] = $this->loadDBConfig($this->nextDBConfigRealPath);
 
                 $this->nextDBConfigRealPathArchiweb =
-                    $this->dbConfigDirectory . '/' . $this->dbConfigFilenamesArchiweb[1 % count($this->dbConfigFilenamesArchiweb)];
+                    $this->dbConfigDirectory . '/' . $this->dbConfigFilenamesArchiweb[1
+                                                                                      % count($this->dbConfigFilenamesArchiweb)];
 
             }
             else {
@@ -271,7 +275,8 @@ class Install extends Base {
                     $configDirectory . '/' . $this->dbConfigFilenames[($index + 1) % count($this->dbConfigFilenames)];
 
                 $this->nextDBConfigRealPathArchiweb =
-                    $configDirectory . '/' . $this->dbConfigFilenamesArchiweb[($index + 1) % count($this->dbConfigFilenames)];
+                    $configDirectory . '/' . $this->dbConfigFilenamesArchiweb[($index + 1)
+                                                                              % count($this->dbConfigFilenames)];
 
                 $this->dbConfig['next'] = $this->loadDBConfig($this->nextDBConfigRealPath);
 
@@ -364,7 +369,8 @@ class Install extends Base {
         if (file_exists($this->dbConfigLinkNameArchiweb)) {
 
             if (file_exists($this->dbConfigLinkNameArchiweb) && !unlink($this->dbConfigLinkNameArchiweb)) {
-             $this->abort(sprintf('Unable to remove existing config link <info>%s</info>', $this->dbConfigLinkNameArchiweb));
+                $this->abort(sprintf('Unable to remove existing config link <info>%s</info>',
+                                     $this->dbConfigLinkNameArchiweb));
             }
 
             if (!symlink($this->nextDBConfigRealPathArchiweb, $this->dbConfigLinkNameArchiweb)) {
@@ -377,9 +383,6 @@ class Install extends Base {
         else {
             $this->getOutput()->writeln('Cancelled');
         }
-
-
-
 
     }
 
@@ -431,12 +434,12 @@ class Install extends Base {
 
     protected function setDown () {
 
-        $this->setIsDown(true,$this->setDownPath,$this->isDownPath);
-        $this->setIsDown(true,$this->setDownPathArchiweb,$this->setDownPathArchiweb,'Archiweb');
+        $this->setIsDown(true, $this->setDownPath, $this->isDownPath);
+        $this->setIsDown(true, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
 
     }
 
-    protected function setIsDown ($isDown,$setDownPath,$isDownPath, $product = "") {
+    protected function setIsDown ($isDown, $setDownPath, $isDownPath, $product = "") {
 
         if ($isDown) {
 
@@ -446,7 +449,7 @@ class Install extends Base {
 
                 $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
 
-                $this->setIsDown(false,$setDownPath,$isDownPath,$product);
+                $this->setIsDown(false, $setDownPath, $isDownPath, $product);
 
                 $content = file_get_contents($this->isDownPath);
                 if ($content) {
@@ -502,10 +505,10 @@ class Install extends Base {
 
         $this->getOutput()->write(sprintf('Dumping current <env>%s</env> DB ... ', $this->getEnv()));
 
-        if( !ini_get('date.timezone') ) {
+        if (!ini_get('date.timezone')) {
             date_default_timezone_set('Europe/Paris');
         }
-        $dumpPath = $this->dumpFolder. '/' . date('Ymj-His',time()) . '-' . $this->getEnv() . '-dump.sql';
+        $dumpPath = $this->dumpFolder . '/' . date('Ymj-His', time()) . '-' . $this->getEnv() . '-dump.sql';
         $host = escapeshellarg($this->dbConfig['current']['host']);
         $user = escapeshellarg($this->dbConfig['current']['user']);
         $password = escapeshellarg($this->dbConfig['current']['password']);
@@ -645,7 +648,7 @@ class Install extends Base {
             $this->abort('Installation aborted by user');
         }
 
-       if (!$this->isFirstInstall() && $this->isStageOrProd()) {
+        if (!$this->isFirstInstall() && $this->isStageOrProd()) {
 
             $this->getOutput()->write(sprintf("\nBackuping <env>%s</env> link ... ", $this->getEnv()));
 
@@ -702,8 +705,8 @@ class Install extends Base {
 
     protected function setUp () {
 
-        $this->setIsDown(false,$this->setDownPath,$this->isDownPath);
-        $this->setIsDown(false,$this->setDownPathArchiweb,$this->setDownPathArchiweb,'Archiweb');
+        $this->setIsDown(false, $this->setDownPath, $this->isDownPath);
+        $this->setIsDown(false, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
 
     }
 

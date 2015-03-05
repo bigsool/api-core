@@ -7,7 +7,6 @@ namespace Core\Action;
 use Core\Field\KeyPath;
 use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
-use Core\Registry;
 use Core\TestCase;
 
 class BasicCreateActionTest extends TestCase {
@@ -45,15 +44,16 @@ class BasicCreateActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicFindAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
+            new BasicFindAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [],
+                function () use (&$preCalled) {
 
-                $preCalled = true;
+                    $preCalled = true;
 
-            }, function () use (&$postCalled) {
+                }, function () use (&$postCalled) {
 
-                $postCalled = true;
+                    $postCalled = true;
 
-            });
+                });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'thierry@bigsool.com']);
@@ -94,6 +94,5 @@ class BasicCreateActionTest extends TestCase {
         }))->process($this->getActionContext());
 
     }
-
 
 }
