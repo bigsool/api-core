@@ -383,6 +383,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @return FieldKeyPath
+     */
+    public function getMockFormattedError () {
+
+        return $this->getMockBuilder('\Core\Error\Formatted')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
      * @return callable
      */
     public function getCallable () {

@@ -5,6 +5,7 @@ namespace Core\Expression;
 
 
 use Core\Model\Company;
+use Core\Model\TestCompany;
 use Core\TestCase;
 
 class ParameterTest extends TestCase {
@@ -98,7 +99,7 @@ class ParameterTest extends TestCase {
     public function testInvalidContext () {
 
         $registry = $this->getRegistry();
-        $context = $this->getSaveQueryContext(new Company());
+        $context = $this->getSaveQueryContext(new TestCompany());
 
         $param = ':company';
 
@@ -121,5 +122,7 @@ class ParameterTest extends TestCase {
         $param1->resolve($registry, $context);
 
     }
+
+
 
 } 

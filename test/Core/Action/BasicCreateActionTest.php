@@ -8,7 +8,7 @@ use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
-class BasicFindActionTest extends TestCase {
+class BasicCreationActionTest extends TestCase {
 
     public static function setUpBeforeClass () {
 
