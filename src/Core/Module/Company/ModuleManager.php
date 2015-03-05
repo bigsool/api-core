@@ -1,14 +1,13 @@
 <?php
 
 
-namespace Core\Module\User;
+namespace Core\Module\Company;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
-
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -17,23 +16,19 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'  => [new Validation()],
-            'firstName' => [new Validation()],
-            'lang'      => [new Validation(), true],
+        $context->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+            'name' => [new Validation()],
+            'vat'  => [new Validation()],
         ], function (ActionContext $context) {
-
-            if ($context->getParam('lang') === NULL) {
-                $context->setParam('lang', $context->getRequestContext()->getLocale());
-            }
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
-            'lastName'  => [new Validation()],
-            'firstName' => [new Validation()],
-            'lang'      => [new Validation()],
-        ]));
+        $context->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+            'name' => [new Validation()],
+            'vat'  => [new Validation()],
+        ], function (ActionContext $context) {
+
+        }));
 
     }
 
@@ -41,23 +36,21 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadFilters (ApplicationContext &$context) {
-
+        // TODO: Implement loadFilters() method.
     }
 
     /**
      * @param ApplicationContext $context
      */
     public function loadHelpers (ApplicationContext &$context) {
-
-        $this->addHelper($context, 'UserFeatureHelper');
-
+        // TODO: Implement loadHelpers() method.
     }
 
     /**
      * @param ApplicationContext $context
      */
     public function loadRules (ApplicationContext &$context) {
-
+        // TODO: Implement loadRules() method.
     }
 
 }

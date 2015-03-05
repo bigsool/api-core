@@ -36,11 +36,11 @@ class ModelAspect {
     private $actions;
 
     /**
-     * @param string                  $model
-     * @param string                  $prefix
+     * @param string                          $model
+     * @param string                          $prefix
      * @param AbstractConstraintsProvider[][] $constraints
-     * @param Action[]                $actions
-     * @param AbstractKeyPath         $keyPath
+     * @param Action[]                        $actions
+     * @param AbstractKeyPath                 $keyPath
      */
     public function __construct ($model, $prefix, array $constraints, array $actions, $keyPath) {
 

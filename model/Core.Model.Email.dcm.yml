@@ -1,0 +1,19 @@
+Core\Model\Email:
+    type: entity
+    table: email
+    id:
+        id:
+            type: integer
+    fields:
+        label:
+            type: string
+            nullable: true
+            length: 255
+        email:
+            type: string
+            nullable: false
+            length: 255
+    manyToOne:
+        contact:
+            targetEntity: Core\Model\Contact
+            inversedBy: emails

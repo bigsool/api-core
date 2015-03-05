@@ -1,0 +1,30 @@
+Core\Model\Address:
+    type: entity
+    table: address
+    id:
+        id:
+            type: integer
+    fields:
+        label:
+            type: string
+            nullable: true
+            length: 255
+        address:
+            type: text
+            nullable: false
+        city:
+            type: string
+            length: 255
+        state:
+            type: string
+            length: 255
+        zip:
+            type: string
+            length: 255
+        country:
+            type: string
+            length: 255
+    manyToOne:
+        contact:
+            targetEntity: Core\Model\Contact
+            inversedBy: addresses

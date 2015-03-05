@@ -1,4 +1,4 @@
-Core\Model\Company:
+Company:
     type: entity
     table: company
     id:

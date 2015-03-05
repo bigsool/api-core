@@ -64,10 +64,10 @@ class Company extends \Core\Model\Company implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'name', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'address', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'zipCode', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'city', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'state', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'country', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'tel', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'fax', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'tva', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'owner', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'storage', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'users');
+            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'name', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'vat');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'name', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'address', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'zipCode', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'city', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'state', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'country', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'tel', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'fax', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'tva', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'owner', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'storage', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'users');
+        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'name', '' . "\0" . 'Core\\Model\\Company' . "\0" . 'vat');
     }
 
     /**
@@ -176,6 +176,17 @@ class Company extends \Core\Model\Company implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
+    public function setId($id)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
+
+        return parent::setId($id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getId()
     {
         if ($this->__isInitialized__ === false) {
@@ -186,17 +197,6 @@ class Company extends \Core\Model\Company implements \Doctrine\ORM\Proxy\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getName', array());
-
-        return parent::getName();
     }
 
     /**
@@ -213,254 +213,34 @@ class Company extends \Core\Model\Company implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
-    public function getAddress()
+    public function getName()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddress', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getName', array());
 
-        return parent::getAddress();
+        return parent::getName();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setAddress($address)
+    public function setVat($vat)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAddress', array($address));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setVat', array($vat));
 
-        return parent::setAddress($address);
+        return parent::setVat($vat);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getZipCode()
+    public function getVat()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getZipCode', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getVat', array());
 
-        return parent::getZipCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setZipCode($zipCode)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setZipCode', array($zipCode));
-
-        return parent::setZipCode($zipCode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getCity()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCity', array());
-
-        return parent::getCity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setCity($city)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setCity', array($city));
-
-        return parent::setCity($city);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getState()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getState', array());
-
-        return parent::getState();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setState($state)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setState', array($state));
-
-        return parent::setState($state);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getCountry()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCountry', array());
-
-        return parent::getCountry();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setCountry($country)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setCountry', array($country));
-
-        return parent::setCountry($country);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getTel()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTel', array());
-
-        return parent::getTel();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setTel($tel)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setTel', array($tel));
-
-        return parent::setTel($tel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getFax()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFax', array());
-
-        return parent::getFax();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setFax($fax)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setFax', array($fax));
-
-        return parent::setFax($fax);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getTva()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTva', array());
-
-        return parent::getTva();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setTva($tva)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setTva', array($tva));
-
-        return parent::setTva($tva);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOwner()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOwner', array());
-
-        return parent::getOwner();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setOwner(\Core\Model\User $owner = NULL)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setOwner', array($owner));
-
-        return parent::setOwner($owner);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getStorage()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStorage', array());
-
-        return parent::getStorage();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setStorage(\Core\Model\Storage $storage = NULL)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStorage', array($storage));
-
-        return parent::setStorage($storage);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addUser(\Core\Model\User $users)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addUser', array($users));
-
-        return parent::addUser($users);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function removeUser(\Core\Model\User $users)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUser', array($users));
-
-        return parent::removeUser($users);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUsers()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUsers', array());
-
-        return parent::getUsers();
+        return parent::getVat();
     }
 
 }
