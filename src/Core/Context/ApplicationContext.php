@@ -363,8 +363,9 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $module
      * @param string $name
-     * @param object $helper
+     * @param $helper
      */
     public function addHelper ($module, $name, $helper) {
 

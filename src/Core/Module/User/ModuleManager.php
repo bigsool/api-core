@@ -17,7 +17,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
+        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserHelper', NULL, [
             'lastName'  => [new Validation()],
             'firstName' => [new Validation()],
             'lang'      => [new Validation(), true],
@@ -29,7 +29,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserFeatureHelper', NULL, [
+        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserHelper', NULL, [
             'lastName'  => [new Validation()],
             'firstName' => [new Validation()],
             'lang'      => [new Validation()],
@@ -49,7 +49,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context, 'UserFeatureHelper');
+        $this->addHelper($context, 'UserHelper');
 
     }
 

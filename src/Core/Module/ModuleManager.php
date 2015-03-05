@@ -66,10 +66,8 @@ abstract class ModuleManager {
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
         $helper = $namespace . '\\Helper';
-        $exploded = explode('\\', $this->getControllerName());
-        $moduleName = $exploded[0] . '\\' . $exploded[count($exploded) - 1];
 
-        $context->addHelper($moduleName, $helperName, new $helper());
+        $context->addHelper($this->getActionModuleName(), $helperName, new $helper());
 
     }
 
@@ -80,7 +78,7 @@ abstract class ModuleManager {
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
-        return strstr($namespace, '\\', true) . $this->getControllerName();
+        return strstr($namespace, '\\', true) . '\\' . $this->getControllerName();
 
     }
 
