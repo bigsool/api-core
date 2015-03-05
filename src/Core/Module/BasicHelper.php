@@ -9,6 +9,17 @@ use Core\Context\ApplicationContext;
 class BasicHelper {
 
     /**
+     * @param $model
+     *
+     * @return string
+     */
+    public function realModelClassName ($model) {
+
+        return ApplicationContext::getInstance()->getNewRegistry()->realModelClassName($model);
+
+    }
+
+    /**
      * @param object $model
      * @param array  $params
      * @param bool   $shouldSave

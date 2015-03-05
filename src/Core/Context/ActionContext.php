@@ -103,6 +103,15 @@ class ActionContext extends \ArrayObject {
 
     /**
      * @param mixed $key
+     */
+    public function unsetParam($key) {
+
+        unset($this->params[$key]);
+
+    }
+
+    /**
+     * @param mixed $key
      *
      * @return mixed
      */
