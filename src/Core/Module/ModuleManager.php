@@ -57,7 +57,7 @@ abstract class ModuleManager {
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
-        return substr($namespace, strrpos($namespace, '/'));
+        return substr($namespace, strrpos($namespace, '\\') + 1);
 
     }
 
@@ -80,7 +80,7 @@ abstract class ModuleManager {
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
-        return strstr($namespace, '/', true) . $this->getControllerName();
+        return strstr($namespace, '\\', true) . $this->getControllerName();
 
     }
 
