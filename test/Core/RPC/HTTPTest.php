@@ -4,10 +4,13 @@
 namespace Core\RPC;
 
 
+use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
+use Core\Error\FormattedError;
 use Core\Serializer;
 use Core\TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class HTTPTest extends TestCase {
 
@@ -105,6 +108,16 @@ class HTTPTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service');
         (new HTTP())->parse($req);
 
+
     }
 
+    public function testGetErrorResponse () {
+
+        $error = ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
+        $response = (new HTTP())->getErrorResponse($error);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response',$response);
+        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR,$response->getStatusCode());
+        $this->assertSame(strval($error),$response->getContent());
+
+    }
 } 
