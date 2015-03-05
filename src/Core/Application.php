@@ -256,6 +256,9 @@ class Application {
     protected function populateRequestContext (Handler $rpcHandler, RequestContext &$reqCtx) {
 
         $reqCtx->setParams($rpcHandler->getParams());
+        $reqCtx->setClientName($rpcHandler->getClientName());
+        $reqCtx->setClientVersion($rpcHandler->getClientVersion());
+        $reqCtx->setLocale($rpcHandler->getLocale());
         $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
         $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
 
