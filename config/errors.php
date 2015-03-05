@@ -74,3 +74,6 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NULL, "null attendu",
 @define('ERROR_INVALID_PARAM_LENGTH', -108);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_LENGTH, "valeur hors limites",
                                      'out of range value'));
+@define('ERROR_INVALID_PARAM_NOT_NULL', -109);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, "paramètre requis",
+                                     'required parameter'));
