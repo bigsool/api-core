@@ -181,9 +181,11 @@ class Application {
         $modules = array_map('basename', glob(ROOT_DIR . '/src/' . $product . '/Module/*', GLOB_ONLYDIR));
         $moduleManagers = [];
         foreach ($modules as $moduleName) {
-            $className = "\\Core\\Module\\$moduleName\\ModuleManager";
-            if (class_exists($className)) {
-                $moduleManagers[] = new $className;
+            if ($product != 'Core') {
+                $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+                if (class_exists($className)) {
+                    $moduleManagers[] = new $className;
+                }
             }
             $className = "\\$product\\Module\\$moduleName\\ModuleManager";
             $moduleManagers[] = new $className;
@@ -353,6 +355,7 @@ class Application {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
+
         // handle queued actions before commit
         $this->executeErrorQueuedActions($reqCtx);
 
@@ -364,7 +367,14 @@ class Application {
         }
         else {
 
-            $traceLogger->trace('Exception thrown');
+            $traceLogger->trace('Unexpected Exception thrown');
+            $this->appCtx->getErrorLogger()->getMLogger()->addError('Unexpected Exception thrown', [get_class($e),
+                                                                                                    $e->getCode(),
+                                                                                                    $e->getMessage(),
+                                                                                                    $e->getFile(),
+                                                                                                    $e->getLine(),
+                                                                                                    $e->getTraceAsString()
+            ]);
             $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
                                                                           'message' => $e->getMessage()
                                                                          ]));

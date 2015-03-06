@@ -4,6 +4,8 @@ Core\Model\Contact:
     id:
         id:
             type: integer
+            generator:
+                strategy: AUTO
     oneToMany:
         addresses:
             targetEntity: Core\Model\Address

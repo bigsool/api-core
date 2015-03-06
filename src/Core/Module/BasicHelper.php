@@ -9,13 +9,38 @@ use Core\Context\ApplicationContext;
 class BasicHelper {
 
     /**
-     * @param $model
+     * @param $modelName
      *
      * @return string
      */
-    public function realModelClassName ($model) {
+    public function getRealModelClassName ($modelName) {
 
-        return ApplicationContext::getInstance()->getNewRegistry()->realModelClassName($model);
+        return ApplicationContext::getInstance()->getNewRegistry()->realModelClassName($modelName);
+
+    }
+
+    /**
+     * @param string $modelName
+     *
+     * @return mixed
+     */
+    public function createRealModel($modelName) {
+
+        $className = $this->getRealModelClassName($modelName);
+        return new $className;
+
+    }
+
+    /**
+     * @param mixed $model
+     * @param string $modelName
+     */
+    public function checkRealModelType($model, $modelName) {
+
+        $className = $this->getRealModelClassName($modelName);
+        if (!is_a($model, $className)) {
+            throw new \RuntimeException("Excepted type is $className");
+        }
 
     }
 

@@ -17,7 +17,7 @@ class Address
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
@@ -73,19 +73,6 @@ class Address
      */
     private $contact;
 
-
-    /**
-     * Set id
-     *
-     * @param integer $id
-     * @return Address
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Get id

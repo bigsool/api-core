@@ -12,9 +12,13 @@ use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
+    /**
+     * @param ActionContext $actCtx
+     * @param array         $params
+     */
     public function createContact (ActionContext $actCtx, array $params) {
 
-        $contact = new Contact();
+        $contact = $this->createRealModel('Contact');
 
         $this->basicSave($contact, $params);
 
@@ -22,9 +26,13 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param array         $params
+     */
     public function createPhone (ActionContext $actCtx, array $params) {
 
-        $phone = new Phone();
+        $phone = $this->createRealModel('Phone');
 
         $this->basicSave($phone, $params);
 
@@ -32,9 +40,13 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param array         $params
+     */
     public function createAddress (ActionContext $actCtx, array $params) {
 
-        $address = new Address();
+        $address = $this->createRealModel('Address');
 
         $this->basicSave($address, $params);
 
@@ -42,9 +54,13 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param array         $params
+     */
     public function createEmail (ActionContext $actCtx, array $params) {
 
-        $email = new Email();
+        $email = $this->createRealModel('Email');
 
         $this->basicSave($email, $params);
 

@@ -16,14 +16,14 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+        $context->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
             'name' => [new Validation()],
             'vat'  => [new Validation()],
         ], function (ActionContext $context) {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyFeatureHelper', NULL, [
+        $context->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
             'name' => [new Validation()],
             'vat'  => [new Validation()],
         ], function (ActionContext $context) {
@@ -43,7 +43,9 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadHelpers (ApplicationContext &$context) {
-        // TODO: Implement loadHelpers() method.
+
+        $this->addHelper($context, 'CompanyHelper');
+
     }
 
     /**
