@@ -5,10 +5,8 @@ namespace Core\Module\User;
 
 
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
 use Core\Model\User;
 use Core\Module\BasicHelper;
-use Core\Registry;
 
 class Helper extends BasicHelper {
 
@@ -18,8 +16,7 @@ class Helper extends BasicHelper {
      */
     public function createUser (ActionContext $actCtx, array $params) {
 
-        $userClassName = $this->realModelClassName('User');
-        $user = new $userClassName;
+        $user = $this->createRealModel('User');
 
         /**
          * @var User $user
@@ -39,9 +36,7 @@ class Helper extends BasicHelper {
      */
     public function updateUser (ActionContext $actCtx, $user, array $params) {
 
-        if (!is_a($user, $this->realModelClassName('User'))) {
-            throw new \RuntimeException('Unexpected type for $user');
-        }
+        $this->checkRealModelType($user, 'User');
 
         $this->basicSave($user, $params);
 

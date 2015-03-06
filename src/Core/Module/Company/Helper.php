@@ -12,7 +12,7 @@ class Helper extends BasicHelper {
 
     public function createCompany (ActionContext $actionContext, array $params) {
 
-        $company = new Company();
+        $company = $this->createRealModel('Company');
 
         $this->basicSave($company, $params);
 
@@ -20,7 +20,9 @@ class Helper extends BasicHelper {
 
     }
 
-    public function updateCompany (ActionContext $actionContext, Company $company, array $params) {
+    public function updateCompany (ActionContext $actionContext, $company, array $params) {
+
+        $this->checkRealModelType($company, 'Company');
 
         $this->basicSave($company, $params);
 
