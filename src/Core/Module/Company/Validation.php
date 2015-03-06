@@ -5,9 +5,9 @@ namespace Core\Module\Company;
 
 
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Length;
+use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\String;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class Validation extends AbstractConstraintsProvider {
 

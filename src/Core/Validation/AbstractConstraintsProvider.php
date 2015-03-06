@@ -14,19 +14,6 @@ abstract class AbstractConstraintsProvider {
 
     /**
      * @param string $name
-     *
-     * @return Constraint[]|null
-     */
-    public function getConstraintsFor ($name) {
-
-        $constraints = $this->listConstraints();
-
-        return isset($constraints[$name]) ? $constraints[$name] : NULL;
-
-    }
-
-    /**
-     * @param string $name
      * @param mixed  $value
      * @param bool   $forceOptional
      *
@@ -38,7 +25,9 @@ abstract class AbstractConstraintsProvider {
         if ($forceOptional && $constraints) {
             $constraints = array_reduce($constraints, function ($constraints, Constraint $constraint) {
 
-                if (!($constraint->getConstraint() instanceof Assert\NotBlank)) {
+                if (!($constraint->getConstraint() instanceof Assert\NotBlank)
+                    && !($constraint->getConstraint() instanceof Assert\NotNull)
+                ) {
                     $constraints[] = $constraint;
                 }
 
@@ -51,6 +40,9 @@ abstract class AbstractConstraintsProvider {
 
         if ($constraints) {
             foreach ($constraints as $constraint) {
+                if (!($constraint instanceof Constraint)) {
+                    throw new \RuntimeException('wrong constraint type');
+                }
                 $validator = Validation::createValidator();
                 $violations = $validator->validate($value, [$constraint->getConstraint()]);
                 if ($violations->count()) {
@@ -63,6 +55,19 @@ abstract class AbstractConstraintsProvider {
         }
 
         return $isValid;
+
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Constraint[]|null
+     */
+    public function getConstraintsFor ($name) {
+
+        $constraints = $this->listConstraints();
+
+        return isset($constraints[$name]) ? $constraints[$name] : NULL;
 
     }
 
