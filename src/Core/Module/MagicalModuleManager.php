@@ -12,6 +12,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Field\KeyPath;
+use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Validation\Parameter\Constraint;
@@ -387,6 +388,15 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
+     * @return ModelAspect[]
+     */
+    public function getAspects () {
+
+        return $this->modelAspects;
+
+    }
+
+    /**
      * @return mixed
      */
     protected function getMainEntity () {
@@ -470,29 +480,25 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @return ModelAspect[]
-     */
-    public function getAspects () {
-
-        return $this->modelAspects;
-
-    }
-
-    /**
-     * @param String[] $values
-     * @param String[] $alias
-     * @param Filter[] $filters
-     * @param Boolean  $hydrateArray
+     * @param RequestContext $requestContext
+     * @param String[]       $values
+     * @param String[]       $alias
+     * @param Filter[]       $filters
+     * @param array          $params
+     * @param Boolean        $hydrateArray
      *
      * @return mixed
+     * @throws \Core\Error\FormattedError
      */
-    protected function magicalFind ($values, $alias, $filters, $hydrateArray = false) {
+    protected function magicalFind (RequestContext $requestContext, $values, $alias, $filters, $params = [],
+                                    $hydrateArray = false) {
 
         $appCtx = ApplicationContext::getInstance();
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext($this->mainEntityName, new RequestContext());
+        $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext);
+
 
         foreach ($values as $value) {
             $valueArray = explode('.', $value);
@@ -519,6 +525,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addFilter($filter);
         }
 
+        $qryCtx->setParams($params);
+
         $result = $registry->find($qryCtx, $hydrateArray);
 
         return $hydrateArray ? $result : $this->formatFindResult($result);
@@ -543,7 +551,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entities;
-        
+
     }
 
     /**
