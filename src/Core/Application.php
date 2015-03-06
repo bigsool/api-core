@@ -353,6 +353,7 @@ class Application {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
+
         // handle queued actions before commit
         $this->executeErrorQueuedActions($reqCtx);
 
@@ -364,7 +365,8 @@ class Application {
         }
         else {
 
-            $traceLogger->trace('Exception thrown');
+            $traceLogger->trace('Unexpected Exception thrown');
+            $this->appCtx->getErrorLogger()->getMLogger()->addError('Unexpected Exception thrown', [get_class($e), $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString()]);
             $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
                                                                           'message' => $e->getMessage()
                                                                          ]));
