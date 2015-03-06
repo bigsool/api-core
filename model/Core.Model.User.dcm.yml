@@ -4,6 +4,8 @@ Core\Model\User:
     id:
         id:
             type: integer
+            generator:
+                strategy: AUTO
     fields:
         lastName:
             type: string

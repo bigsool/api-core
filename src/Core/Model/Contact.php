@@ -17,7 +17,7 @@ class Contact
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
@@ -50,19 +50,6 @@ class Contact
         $this->addresses = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Set id
-     *
-     * @param integer $id
-     * @return Contact
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     /**
