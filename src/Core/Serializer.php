@@ -35,12 +35,28 @@ class Serializer {
 
     }
 
+    public function convertDateTime (array &$data) {
+
+        array_walk_recursive($data, function (&$value) {
+
+            if ($value instanceof \DateTime) {
+                $value = $value->format($value::ISO8601);
+            }
+
+        });
+
+    }
+
     /**
      * @param mixed $data
      *
      * @return Serializer
      */
     public function serialize ($data) {
+
+        if (is_array($data)) {
+            $this->convertDateTime($data);
+        }
 
         if (is_array($data) && !$this->inProxyMode) {
             $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths, $data);

@@ -10,6 +10,7 @@ use Core\Field\KeyPath;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
+use Core\Validation\Parameter\DateTime;
 
 class SerializerTest extends TestCase {
 
@@ -290,6 +291,15 @@ class SerializerTest extends TestCase {
         $serializer = new Serializer($reqCtx);
 
         $this->assertSame($result, $serializer->serialize($result)->get());
+
+    }
+
+    public function testDateTime() {
+
+        $data = [$datetime = new \DateTime()];
+        $serializer = new Serializer(new RequestContext());
+
+        $this->assertSame([$datetime->format($datetime::ISO8601)], $serializer->serialize($data)->get());
 
     }
 
