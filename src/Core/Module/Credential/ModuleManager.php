@@ -4,6 +4,7 @@
 namespace Core\Module\Credential;
 
 use Core\Action\SimpleAction;
+use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
