@@ -119,7 +119,7 @@ class BuildEntitiesCommand extends Command {
         // write new yml files
         $rootDir = substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR));
         if ($rootDir == '') {
-            // SHOULD HAPEN ONLY IF YOU ARE TESTING CORE
+            // SHOULD HAPPEN ONLY IF YOU ARE TESTING CORE
             $rootDir = __DIR__ . '/../../../../';
         }
         $this->modelDIr = $rootDir . '/model';
@@ -278,7 +278,7 @@ class BuildEntitiesCommand extends Command {
 
 namespace $product\Model;
 
-use $product\Module\MagicalEntity;
+use Core\Module\MagicalEntity;
 
 class $magicalEntityName extends MagicalEntity {
 
