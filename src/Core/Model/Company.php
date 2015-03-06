@@ -17,7 +17,7 @@ class Company
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
@@ -35,19 +35,6 @@ class Company
      */
     private $vat;
 
-
-    /**
-     * Set id
-     *
-     * @param integer $id
-     * @return Company
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Get id
