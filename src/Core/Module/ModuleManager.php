@@ -41,12 +41,15 @@ abstract class ModuleManager {
     public abstract function loadHelpers (ApplicationContext &$context);
 
     /**
-     * @param string $path
-     * @param string $action
+     * @param string   $path
+     * @param string   $action
+     * @param string   $defaultEntity
+     * @param string[] $defaultFields
      */
-    public function addRoute ($path, $action) {
+    public function addRoute ($path, $action, $defaultEntity = NULL, $defaultFields = []) {
 
-        ApplicationContext::getInstance()->addRoute($path, $this->getControllerName(), $action);
+        ApplicationContext::getInstance()
+                          ->addRoute($path, $this->getControllerName(), $action, $defaultEntity, $defaultFields);
 
     }
 

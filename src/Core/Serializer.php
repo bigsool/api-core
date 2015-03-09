@@ -7,9 +7,9 @@ use Core\Context\RequestContext;
 class Serializer {
 
     /**
-     * @var rootEntity
+     * @var bool
      */
-    private $inProxyMode;
+    private $inProxyMode = false;
 
     /**
      * @var array
@@ -27,12 +27,27 @@ class Serializer {
     function __construct (RequestContext $reqCtx) {
 
         $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
-        $this->inProxyMode = $reqCtx->getReturnedRootEntity() ? false : true;
 
         foreach ($returnedKeyPaths as $keyPath) {
             $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
         }
 
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInProxyMode () {
+
+        return $this->inProxyMode;
+    }
+
+    /**
+     * @param boolean $inProxyMode
+     */
+    public function setInProxyMode ($inProxyMode) {
+
+        $this->inProxyMode = !!$inProxyMode;
     }
 
     /**
@@ -42,6 +57,10 @@ class Serializer {
      */
     public function serialize ($data) {
 
+        if (is_array($data)) {
+            $this->convertDateTime($data);
+        }
+
         if (is_array($data) && !$this->inProxyMode) {
             $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths, $data);
         }
@@ -50,6 +69,18 @@ class Serializer {
         }
 
         return $this;
+
+    }
+
+    public function convertDateTime (array &$data) {
+
+        array_walk_recursive($data, function (&$value) {
+
+            if ($value instanceof \DateTime) {
+                $value = $value->format($value::ISO8601);
+            }
+
+        });
 
     }
 

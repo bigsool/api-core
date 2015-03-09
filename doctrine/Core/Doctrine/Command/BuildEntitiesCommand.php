@@ -7,6 +7,7 @@ use Core\Context\ApplicationContext;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Registry;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
@@ -359,24 +360,33 @@ CONSTRUCTOR;
         $prefix2 = 'set';
 
         if ($mapping['type'] == ClassMetadataInfo::ONE_TO_MANY || $mapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-            $field1 = substr($field1, 0, strlen($field1) - 1);
+            $field1 = Inflector::singularize($field1);
             $prefix1 = "add";
         }
 
         if ($mapping['type'] == ClassMetadataInfo::MANY_TO_ONE || $mapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-            $field2 = $mapping['inversedBy'];
-            $field2 = substr($field2, 0, strlen($field2) - 1);
+            $field2 = Inflector::singularize($mapping['inversedBy']);
             $prefix2 = "add";
         }
 
         $setterFromMainEntity = $prefix1 . ucfirst($field1);
         $setterFromModelAspect = $prefix2 . ucfirst($field2);
 
+        $getterMethodName = 'get';
+        $setterMethodName = $prefix1;
+        $prefixToConcat = '';
+        foreach (explode('.',$modelAspect->getPrefix()) as $prefix) {
+            $getterMethodName .= ucfirst($prefix);
+            $setterMethodName .= ucfirst($prefixToConcat);
+            $prefixToConcat = $prefix;
+        }
+        $setterMethodName .= ucfirst(Inflector::singularize($prefixToConcat));
+
         return <<<GETTER_AND_SETTER
     /**
      * @return $modelName
      */
-    public function get$modelName () {
+    public function $getterMethodName () {
 
         return $getterChain;
 
@@ -385,7 +395,7 @@ CONSTRUCTOR;
     /**
      * @param $modelName \$$varName
      */
-    public function set$modelName ($modelName \$$varName) {
+    public function $setterMethodName ($modelName \$$varName) {
 
         {$getterChainUntilEntity}->$setterFromMainEntity(\$$varName);
         \${$varName}->$setterFromModelAspect($getterChainUntilEntity);

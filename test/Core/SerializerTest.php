@@ -10,6 +10,7 @@ use Core\Field\KeyPath;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
+use Core\Validation\Parameter\DateTime;
 
 class SerializerTest extends TestCase {
 
@@ -154,7 +155,6 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $reqCtx->setReturnedRootEntity('TestUser');
         $emailKP = new KeyPath('email');
         $companyIdKP = new KeyPath('company.name');
         $storageIdKP = new KeyPath('company.storage.id');
@@ -171,7 +171,6 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $reqCtx->setReturnedRootEntity('TestUser');
         $emailKP = new KeyPath('email');
         $nbUsersKP = new Aggregate('count', ['*']);
         $companyIdKP = new KeyPath('company.name');
@@ -211,7 +210,6 @@ class SerializerTest extends TestCase {
     public function testArrayWithoutKeyPath () {
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('TestUser');
 
         $serializer = new Serializer($reqCtx);
 
@@ -288,8 +286,18 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
         $serializer = new Serializer($reqCtx);
+        $serializer->setInProxyMode(true);
 
         $this->assertSame($result, $serializer->serialize($result)->get());
+
+    }
+
+    public function testDateTime() {
+
+        $data = [$datetime = new \DateTime()];
+        $serializer = new Serializer(new RequestContext());
+
+        $this->assertSame([$datetime->format($datetime::ISO8601)], $serializer->serialize($data)->get());
 
     }
 
