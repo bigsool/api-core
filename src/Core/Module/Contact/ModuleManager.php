@@ -28,7 +28,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context, 'ContactHelper');
+        $this->addHelper($context, 'ContactFeatureHelper');
 
     }
 

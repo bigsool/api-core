@@ -4,7 +4,6 @@
 namespace Core\Module\Contact;
 
 use Core\Validation\AbstractConstraintsProvider;
-use Core\Validation\Parameter\Email;
 
 class Validation extends AbstractConstraintsProvider {
 
@@ -14,9 +13,6 @@ class Validation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'email' => [
-                new Email()
-            ]
         ];
 
     }
