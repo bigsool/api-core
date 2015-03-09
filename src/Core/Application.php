@@ -120,7 +120,7 @@ class Application {
                 $sfReqCtx = new SfRequestContext();
                 $sfReqCtx->fromRequest($request);
 
-                $controller = $this->getController($sfReqCtx, $rpcHandler);
+                $controller = $this->getController($sfReqCtx, $rpcHandler, $reqCtx);
 
                 $response = $this->executeController($controller, $reqCtx, $rpcHandler);
 
@@ -273,11 +273,12 @@ class Application {
     /**
      * @param SfRequestContext $sfReqCtx
      * @param Handler          $rpcHandler
+     * @param RequestContext   $reqCtx
      *
      * @return Controller
      * @throws FormattedError
      */
-    protected function getController (SfRequestContext $sfReqCtx, Handler $rpcHandler) {
+    protected function getController (SfRequestContext $sfReqCtx, Handler $rpcHandler, RequestContext &$reqCtx) {
 
         $matcher = new UrlMatcher($this->appCtx->getRoutes(), $sfReqCtx);
 
@@ -285,7 +286,18 @@ class Application {
          * @var Controller $controller
          */
         try {
-            $controller = $matcher->match($rpcHandler->getPath())['controller'];
+            $match = $matcher->match($rpcHandler->getPath());
+            if (isset($match['entity']) && !$reqCtx->getReturnedRootEntity()) {
+                $reqCtx->setReturnedRootEntity($match['entity']);
+            }
+            if (isset($match['fields']) && !$reqCtx->getReturnedKeyPaths()) {
+                $fields = [];
+                foreach ($match['fields'] as $field) {
+                    $fields = new KeyPath($field);
+                }
+                $reqCtx->setReturnedKeyPaths($fields);
+            }
+            $controller = $match['controller'];
             $this->appCtx->getTraceLogger()->trace('controller found');
         }
         catch (\Exception $e) {

@@ -401,16 +401,20 @@ class ApplicationContext {
     }
 
     /**
-     * @param $path
-     * @param $controller
-     * @param $action
+     * @param string   $path
+     * @param string   $controller
+     * @param string   $action
+     * @param string   $defaultEntity
+     * @param string[] $defaultFields
      */
-    public function addRoute ($path, $controller, $action) {
+    public function addRoute ($path, $controller, $action, $defaultEntity = NULL, $defaultFields = []) {
 
         $camelizedPath = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
         $product = ApplicationContext::getInstance()->getProduct();
         $this->routes->add($camelizedPath, new Route($path, [
-            'controller' => new Controller($action, $product . '\\' . $controller)
+            'controller' => new Controller($action, $product . '\\' . $controller),
+            'entity'     => $defaultEntity,
+            'fields'     => $defaultFields,
         ]));
 
     }
