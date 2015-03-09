@@ -374,10 +374,13 @@ CONSTRUCTOR;
 
         $getterMethodName = 'get';
         $setterMethodName = $prefix1;
+        $prefixToConcat = '';
         foreach (explode('.',$modelAspect->getPrefix()) as $prefix) {
             $getterMethodName .= ucfirst($prefix);
-            $setterMethodName .= ucfirst($prefix);
+            $setterMethodName .= ucfirst($prefixToConcat);
+            $prefixToConcat = $prefix;
         }
+        $setterMethodName .= ucfirst(Inflector::singularize($prefixToConcat));
 
         return <<<GETTER_AND_SETTER
     /**
