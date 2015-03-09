@@ -261,7 +261,6 @@ class Application {
         $reqCtx->setClientName($rpcHandler->getClientName());
         $reqCtx->setClientVersion($rpcHandler->getClientVersion());
         $reqCtx->setLocale($rpcHandler->getLocale());
-        $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
         $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
 
             return new KeyPath($field);

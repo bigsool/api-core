@@ -201,11 +201,6 @@ class Registry implements EventSubscriber {
     public function find (FindQueryContext $ctx, $hydrateArray = true) {
 
         $entity = $ctx->getEntity();
-        $requestedEntity = $ctx->getReqCtx()->getReturnedRootEntity();
-
-        if ($requestedEntity && $requestedEntity != $entity) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_ENTITY);
-        }
 
         $qb = $this->getQueryBuilder($entity);
 
