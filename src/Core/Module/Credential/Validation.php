@@ -3,12 +3,12 @@
 
 namespace Core\Module\Credential;
 
-
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Length;
+use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\String;
 use Core\Validation\Parameter\Email;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Core\Validation\Parameter\Int;
 
 class Validation extends AbstractConstraintsProvider {
 
@@ -18,7 +18,7 @@ class Validation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'email' =>
+            'login' =>
                 [
                     new Email(),
                 ]
@@ -30,6 +30,10 @@ class Validation extends AbstractConstraintsProvider {
                     new NotBlank(),
                 ]
             ,
+            'authToken' =>
+                [
+                    new Int(),
+                ]
         ];
 
     }

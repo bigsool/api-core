@@ -7,6 +7,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
+use Symfony\Component\Validator\Exception\RuntimeException;
 
 
 class ModuleManager extends AbstractModuleManager {
@@ -18,14 +19,20 @@ class ModuleManager extends AbstractModuleManager {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['email'  => [new Validation()],
-                                                                                'password' => [new Validation()]],
+        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'  => [new Validation()],
+                                                                                'password' => [new Validation()],
+                                                                                'authToken' => [new Validation()]],
             function (ActionContext $context) use ($self) {
 
                 $params = $context->getVerifiedParams();
                 $helper = new Helper($this,$params);
-                $helper->login($context,$params);
-                $result = $context['credential'];
+                $authToken = $helper->login($context,$params);
+
+                return ['success' => true,
+                        'data' => [
+                            'authToken' => $authToken,
+                            'email' => $params['login']
+                        ]];
 
         }));
 
