@@ -77,10 +77,8 @@ class FieldRuleTest extends TestCase {
         $this->assertFalse($rule->shouldApply(new SaveQueryContext(new TestCompany())));
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('TestCompany');
 
         $reqUserCtx = new RequestContext();
-        $reqUserCtx->setReturnedRootEntity('TestUser');
         $qryCtx = new FindQueryContext('TestUser', $reqUserCtx);
         $reqUserCtx->setReturnedKeyPaths([new KeyPath('name')]);
         $qryCtx->addKeyPath(new KeyPath('name'));
@@ -110,7 +108,6 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $filter);
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedRootEntity('TestCompany');
         $reqCtx->setReturnedKeyPaths([new KeyPath('name')]);
 
         $qryCtx = new FindQueryContext('TestCompany', $reqCtx);

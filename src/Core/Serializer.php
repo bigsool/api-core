@@ -7,9 +7,9 @@ use Core\Context\RequestContext;
 class Serializer {
 
     /**
-     * @var rootEntity
+     * @var bool
      */
-    private $inProxyMode;
+    private $inProxyMode = false;
 
     /**
      * @var array
@@ -27,7 +27,6 @@ class Serializer {
     function __construct (RequestContext $reqCtx) {
 
         $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
-        $this->inProxyMode = $reqCtx->getReturnedRootEntity() ? false : true;
 
         foreach ($returnedKeyPaths as $keyPath) {
             $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
@@ -35,16 +34,20 @@ class Serializer {
 
     }
 
-    public function convertDateTime (array &$data) {
+    /**
+     * @return boolean
+     */
+    public function isInProxyMode () {
 
-        array_walk_recursive($data, function (&$value) {
+        return $this->inProxyMode;
+    }
 
-            if ($value instanceof \DateTime) {
-                $value = $value->format($value::ISO8601);
-            }
+    /**
+     * @param boolean $inProxyMode
+     */
+    public function setInProxyMode ($inProxyMode) {
 
-        });
-
+        $this->inProxyMode = !!$inProxyMode;
     }
 
     /**
@@ -66,6 +69,18 @@ class Serializer {
         }
 
         return $this;
+
+    }
+
+    public function convertDateTime (array &$data) {
+
+        array_walk_recursive($data, function (&$value) {
+
+            if ($value instanceof \DateTime) {
+                $value = $value->format($value::ISO8601);
+            }
+
+        });
 
     }
 

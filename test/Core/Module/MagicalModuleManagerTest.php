@@ -215,7 +215,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertNull($modelAspect->getKeyPath());
 
         $modelAspect = $modelAspects[1];
-        $this->assertSame('company', $modelAspect->getPrefix());
+        $this->assertSame('firm', $modelAspect->getPrefix());
         $this->assertSame('TestCompany', $modelAspect->getModel());
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
@@ -228,7 +228,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertInstanceOf('\Core\Validation\Parameter\NotBlank', $validators[1]);
 
         $modelAspect = $modelAspects[2];
-        $this->assertSame('storage', $modelAspect->getPrefix());
+        $this->assertSame('s3', $modelAspect->getPrefix());
         $this->assertSame('TestStorage', $modelAspect->getModel());
         $keyPath = $modelAspect->getKeyPath();
         $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
@@ -248,7 +248,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgr, [
             'model'   => 'TestCompany',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
             'keyPath' => 'company',
             'create'  => [
                 'constraints' => [new Object(), new NotBlank()],
@@ -267,7 +267,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
             'keyPath' => 'company.storage',
             'create'  => [
                 'constraints' => [new Null()],
@@ -605,7 +605,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
             'keyPath' => 'company.storage',
             'create'  => [
                 'constraints' => [new Null()],
@@ -628,10 +628,10 @@ class MagicalModuleManagerTest extends TestCase {
                 'email'    => 'qwe@qwe2.com',
                 'name'     => 'thierry',
                 'password' => new UnsafeParameter('qwe', ''),
-                'company'  => [
+                'firm'     => [
                     'name' => new UnsafeParameter('bigsool', '')
                 ],
-                'storage'  => new UnsafeParameter(
+                's3'       => new UnsafeParameter(
                     ['url' => new UnsafeParameter('http://ddfd.fr', '')], ''),
 
             ]);
@@ -670,7 +670,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestCompany',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
             'keyPath' => 'company',
             'create'  => [
                 'constraints' => [new Object(), new NotBlank()],
@@ -691,7 +691,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgrCompany, [
             'model'   => 'TestStorage',
             'keyPath' => 'storage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
         ]);
         $self = $this;
         $called = false;
@@ -711,9 +711,9 @@ class MagicalModuleManagerTest extends TestCase {
             ['email'    => 'thomas@bigsool.com',
              'name'     => 'thomas',
              'password' => new UnsafeParameter('qwe', ''),
-             'company'  => new UnsafeParameter(
-                 ['name'    => new UnsafeParameter('bigsool', ''),
-                  'storage' => new UnsafeParameter(
+             'firm'     => new UnsafeParameter(
+                 ['name' => new UnsafeParameter('bigsool', ''),
+                  's3'   => new UnsafeParameter(
                       ['url' => new UnsafeParameter('http://www.bigsool.com', '')], ''),
                  ], ''),
 
@@ -734,10 +734,9 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertCount(2, $params);
                                               $self->assertArrayHasKey('name', $params);
                                               $self->assertSame('bigsool', $params['name']);
-                                              $self->assertArrayHasKey('storage', $params);
-                                              $self->assertInstanceOf('\Core\Parameter\UnsafeParameter',
-                                                                      $params['storage']);
-                                              $storageParams = $params['storage']->getValue();
+                                              $self->assertArrayHasKey('s3', $params);
+                                              $self->assertInstanceOf('\Core\Parameter\UnsafeParameter', $params['s3']);
+                                              $storageParams = $params['s3']->getValue();
                                               $self->assertInternalType('array', $storageParams);
                                               $self->assertArrayHasKey('url', $storageParams);
                                               $self->assertInstanceOf('\Core\Parameter\UnsafeParameter',
@@ -834,7 +833,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestCompany',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
             'keyPath' => 'company',
             'update'  => [
                 'constraints' => [new Object(), new NotBlank()],
@@ -843,7 +842,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestStorage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
             'keyPath' => 'company.storage',
             'update'  => [
                 'constraints' => [new Null()],
@@ -868,8 +867,8 @@ class MagicalModuleManagerTest extends TestCase {
              'name'      => 'ferrier',
              'firstname' => 'julien',
              'password'  => 'bla',
-             'company'   => new UnsafeParameter(['name' => 'bigsoole'], ''),
-             'storage'   => ['url' => 'http://www.bigsoole.com']
+             'firm'      => new UnsafeParameter(['name' => 'bigsoole'], ''),
+             's3'        => ['url' => 'http://www.bigsoole.com']
             ]);
 
         /*
@@ -912,7 +911,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestCompany',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
             'keyPath' => 'company',
             'update'  => [
                 'constraints' => [new Object(), new NotBlank()],
@@ -934,7 +933,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgrCompany, [
             'model'   => 'TestStorage',
             'keyPath' => 'storage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
         ]);
 
 
@@ -958,8 +957,8 @@ class MagicalModuleManagerTest extends TestCase {
              'name'      => 'wozniak',
              'firstname' => 'laurent',
              'password'  => 'bli',
-             'company'   => new UnsafeParameter(['name'    => 'bigsoolee',
-                                                 'storage' => ['url' => 'http://www.bigsoolee.com']
+             'firm'      => new UnsafeParameter(['name' => 'bigsoolee',
+                                                 's3'   => ['url' => 'http://www.bigsoolee.com']
                                                 ], '')
             ]);
 
@@ -972,8 +971,8 @@ class MagicalModuleManagerTest extends TestCase {
                                               $self->assertCount(3, $params);
                                               $self->assertArrayHasKey('name', $params);
                                               $self->assertSame('bigsoolee', $params['name']);
-                                              $self->assertArrayHasKey('storage', $params);
-                                              $storageParams = $params['storage'];
+                                              $self->assertArrayHasKey('s3', $params);
+                                              $storageParams = $params['s3'];
                                               $self->assertInternalType('array', $storageParams);
                                               $self->assertArrayHasKey('url', $storageParams);
                                               $self->assertSame('http://www.bigsoolee.com', $storageParams['url']);
@@ -1017,13 +1016,13 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgrUser, [
             'model'   => 'TestCompany',
             'keyPath' => 'company',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
         ]);
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
         ]);
 
         $appCtx = $this->getApplicationContext();
@@ -1070,13 +1069,13 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addAspect($mgrUser, [
             'model'   => 'TestCompany',
             'keyPath' => 'company',
-            'prefix'  => 'company',
+            'prefix'  => 'firm',
         ]);
 
         $this->addAspect($mgrUser, [
             'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
-            'prefix'  => 'storage',
+            'prefix'  => 's3',
         ]);
 
         $appCtx = $this->getApplicationContext();
@@ -1096,12 +1095,18 @@ class MagicalModuleManagerTest extends TestCase {
         $alias = []; //[ 'company.name' => 'companyName'];
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $alias, $filters, [], true]);
-        $this->assertTrue(is_array($result));
+        $this->assertInternalType('array', $result);
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
-        $this->assertTrue(is_array($result));
-        $this->assertEquals('Bigsool', $result['company']['name']);
-        $this->assertEquals('http://www.amazon.com/', $result['company']['storage']['url']);
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('firm', $result);
+        $this->assertInternalType('array', $result['firm']);
+        $this->assertArrayHasKey('name', $result['firm']);
+        $this->assertEquals('Bigsool', $result['firm']['name']);
+        $this->assertArrayHasKey('s3', $result);
+        $this->assertInternalType('array', $result['s3']);
+        $this->assertArrayHasKey('url', $result['s3']);
+        $this->assertEquals('http://www.amazon.com/', $result['s3']['url']);
 
     }
 
@@ -1199,7 +1204,8 @@ class MagicalModuleManagerTest extends TestCase {
 
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
-        $result = $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], [], $filters, [], true]);
+        $result =
+            $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], [], $filters, [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);

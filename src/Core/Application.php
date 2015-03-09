@@ -261,7 +261,6 @@ class Application {
         $reqCtx->setClientName($rpcHandler->getClientName());
         $reqCtx->setClientVersion($rpcHandler->getClientVersion());
         $reqCtx->setLocale($rpcHandler->getLocale());
-        $reqCtx->setReturnedRootEntity($rpcHandler->getReturnedRootEntity());
         $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
 
             return new KeyPath($field);
@@ -287,9 +286,6 @@ class Application {
          */
         try {
             $match = $matcher->match($rpcHandler->getPath());
-            if (isset($match['entity']) && !$reqCtx->getReturnedRootEntity()) {
-                $reqCtx->setReturnedRootEntity($match['entity']);
-            }
             if (isset($match['fields']) && !$reqCtx->getReturnedKeyPaths()) {
                 $fields = [];
                 foreach ($match['fields'] as $field) {

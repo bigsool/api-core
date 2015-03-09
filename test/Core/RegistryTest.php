@@ -369,7 +369,6 @@ class RegistryTest extends TestCase {
         $fieldKeyPath = new FieldKeyPath('name');
         $reqCtx = $this->getRequestContext();
         $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
-        $reqCtx->setReturnedRootEntity('TestUser');
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
         $qryCtx->addKeyPath($fieldKeyPath);
 

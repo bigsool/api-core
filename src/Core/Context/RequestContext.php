@@ -89,6 +89,8 @@ class RequestContext {
 
     /**
      * @param KeyPath[] $returnedKeyPaths
+     *
+     * @throws FormattedError
      */
     public function setReturnedKeyPaths (array $returnedKeyPaths) {
 
@@ -106,28 +108,6 @@ class RequestContext {
         }
 
         $this->returnedKeyPaths = $returnedKeyPaths;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getReturnedRootEntity () {
-
-        return $this->returnedRootEntity;
-
-    }
-
-    /**
-     * @param string|NULL $returnedRootEntity
-     */
-    public function setReturnedRootEntity ($returnedRootEntity = NULL) {
-
-        if (!is_string($returnedRootEntity) && !is_null($returnedRootEntity)) {
-            throw new \RuntimeException('invalid $returnedRootEntity');
-        }
-
-        $this->returnedRootEntity = $returnedRootEntity;
 
     }
 

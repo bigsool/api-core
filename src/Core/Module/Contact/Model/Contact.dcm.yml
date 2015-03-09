@@ -6,19 +6,27 @@ Contact:
             type: integer
             generator:
                 strategy: AUTO
-    oneToMany:
-        addresses:
-            targetEntity: Core\Model\Address
-            mappedBy: contact
-            cascade: ["persist"]
-            onDelete: "CASCADE"
-        emails:
-            targetEntity: Core\Model\Email
-            mappedBy: contact
-            cascade: ["persist"]
-            onDelete: "CASCADE"
-        phones:
-            targetEntity: Core\Model\Phone
-            mappedBy: contact
-            cascade: ["persist"]
-            onDelete: "CASCADE"
+    fields:
+        label:
+            type: string
+            length: 255
+        address:
+            type: text
+        city:
+            type: string
+            length: 255
+        state:
+            type: string
+            length: 255
+        zip:
+            type: string
+            length: 255
+        country:
+            type: string
+            length: 255
+        email:
+            type: string
+            length: 255
+        phone:
+            type: string
+            length: 255
