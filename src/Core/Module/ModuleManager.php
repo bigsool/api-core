@@ -43,13 +43,14 @@ abstract class ModuleManager {
     /**
      * @param string   $path
      * @param string   $action
-     * @param string   $defaultEntity
      * @param string[] $defaultFields
+     *
+     * @internal param string $defaultEntity
      */
-    public function addRoute ($path, $action, $defaultEntity = NULL, $defaultFields = []) {
+    public function addRoute ($path, $action, $defaultFields = []) {
 
         ApplicationContext::getInstance()
-                          ->addRoute($path, $this->getControllerName(), $action, $defaultEntity, $defaultFields);
+                          ->addRoute($path, $this->getControllerName(), $action, $defaultFields);
 
     }
 
