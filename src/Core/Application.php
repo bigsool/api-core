@@ -289,7 +289,7 @@ class Application {
             if (isset($match['fields']) && !$reqCtx->getReturnedKeyPaths()) {
                 $fields = [];
                 foreach ($match['fields'] as $field) {
-                    $fields = new KeyPath($field);
+                    $fields[] = new KeyPath($field);
                 }
                 $reqCtx->setReturnedKeyPaths($fields);
             }
@@ -383,7 +383,7 @@ class Application {
                                                                                                     $e->getLine(),
                                                                                                     $e->getTraceAsString()
             ]);
-            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => $e->getCode(),
+            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => ERR_INTERNAL_ERROR,
                                                                           'message' => $e->getMessage()
                                                                          ]));
 
