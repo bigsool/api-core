@@ -74,8 +74,25 @@ class SimpleActionTest extends TestCase {
             $this->fail('SimpleAction->validate() should throw an Exception');
         }
         catch (FormattedError $e) {
-            $expectedErrorCode = (new Int())->getErrorCode();;
-            $this->assertSame($expectedErrorCode, $e->getCode());
+            /**
+             * @param FormattedError[] $finalErrors
+             *
+             * @return FormattedError
+             */
+            $getFinalError = function (array $finalErrors) use (&$getFinalError) {
+
+                $this->assertCount(1, $finalErrors);
+                $childErrors = $finalErrors[0]->getChildErrors();
+                if (count($childErrors)) {
+                    return $getFinalError($childErrors);
+                }
+
+                return $finalErrors[0];
+
+            };
+
+            $expectedErrorCode = (new Int())->getErrorCode();
+            $this->assertSame($expectedErrorCode, $getFinalError([$e])->getCode());
         }
 
     }
