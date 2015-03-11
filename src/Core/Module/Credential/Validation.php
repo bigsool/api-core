@@ -21,6 +21,7 @@ class Validation extends AbstractConstraintsProvider {
             'login' =>
                 [
                     new Email(),
+                    new NotBlank(),
                 ]
             ,
             'password'  =>
@@ -28,11 +29,6 @@ class Validation extends AbstractConstraintsProvider {
                     new String(),
                     new Length(['max' => 255]),
                     new NotBlank(),
-                ]
-            ,
-            'authToken' =>
-                [
-                    new Int(),
                 ]
         ];
 

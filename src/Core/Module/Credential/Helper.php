@@ -8,9 +8,13 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
+use Core\Model\Credential;
 use Core\Module\BasicHelper;
+use Core\Parameter\UnsafeParameter;
 
 class Helper extends BasicHelper {
+
+    const AUTH_TOKEN_TYPE_BASIC = 'basic';
 
     /**
      * @param ActionContext $actCtx
@@ -20,40 +24,62 @@ class Helper extends BasicHelper {
 
         $registry = ApplicationContext::getInstance()->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('TestCredential');
+        $qryCtx = new FindQueryContext('Credential');
 
         $qryCtx->addKeyPath(new KeyPath('*'));
 
-        $qryCtx->addFilter(new StringFilter('TestCredential','bla','login = :login'));
+        $qryCtx->addFilter(new StringFilter('TestCredential','filterbylogin','login = :login'));
 
-        $qryCtx->setParams(['login' => $params['login']]);
+        $login = UnsafeParameter::getFinalValue($params['login']);
+
+        $qryCtx->setParams(['login' => $login]);
 
         $user = $registry->find($qryCtx, true);
         $user = $user[0];
 
         $salt = $user['salt'];
-        $paramsPassword = self::encryptPassword($salt,$params['password']);
-        if ($paramsPassword != $user['password']) {
+        $hashedPassword = self::encryptPassword($salt,$params['password']);
+        if ($hashedPassword != $user['password']) {
             throw new \RuntimeException('invalid credential');
         }
+        $appCtx = ApplicationContext::getInstance();
+        $configManager = $appCtx->getConfigManager();
+        $config = $configManager->getConfig();
+        $expiration = $config['expirationAuthToken']; //  time() + 10 * 60; //TOTEST//
 
+        return self::generateAuthToken($login,$expiration,$hashedPassword,self::AUTH_TOKEN_TYPE_BASIC);
 
-        if (!isset($params['authToken'])) { //TODO//
-            $authTokenValidity = 1*60*60;
-            $authToken = time() + $authTokenValidity;
-        }
-        else if ($params['authToken'] < time()) {
-            throw new \RuntimeException('auth token expired');
-        }
+    }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param array         $params
+     */
+    public function create (ActionContext $actionContext, array $params) {
 
-        return $authToken;
+        $registry = ApplicationContext::getInstance()->getNewRegistry();
+
+        $credential = new Credential();
+        $credential->setLogin(UnsafeParameter::getFinalValue($params['login']));
+
+        $salt = Helper::createSalt();
+        $password = Helper::encryptPassword($salt, UnsafeParameter::getFinalValue($params['password']));
+
+        $credential->setPassword($password);
+        $credential->setSalt($salt);
+
+        $registry->save($credential);
+
+        return $credential;
 
     }
 
 
     /**
      * @return string
+
+
+
      */
     public static function createSalt () {
 
@@ -77,5 +103,19 @@ class Helper extends BasicHelper {
         return $hash;
 
     }
+
+    /**
+     * @param string $login
+     * @param string $end
+     * @param string $hashedPassword
+     * @param string $type
+     * @return array
+     */
+    public static function generateAuthToken ($login,$expiration,$hashedPassword,$type) {
+
+        return [sha1($login.$expiration.$hashedPassword.$type),$login,$expiration,$type];
+
+    }
+
 
 } 
