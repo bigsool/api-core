@@ -402,16 +402,14 @@ class ApplicationContext {
 
     /**
      * @param string   $path
-     * @param string   $controller
-     * @param string   $action
+     * @param Action   $action
      * @param string[] $defaultFields
      */
-    public function addRoute ($path, $controller, $action, $defaultFields = []) {
+    public function addRoute ($path, Action $action, array $defaultFields = []) {
 
         $camelizedPath = str_replace(' ', '', ucwords(str_replace('/', ' ', $path)));
-        $product = ApplicationContext::getInstance()->getProduct();
         $this->routes->add($camelizedPath, new Route($path, [
-            'controller' => new Controller($action, $product . '\\' . $controller),
+            'controller' => new Controller($action),
             'fields'     => $defaultFields,
         ]));
 
