@@ -27,7 +27,7 @@ ABPerson:
             targetEntity: Core\Model\ABCompanyContact
             mappedBy: abcompany
             cascade: ["persist"]
-            onDelete: "CASCADE"
+            onDelete: "SET NULL"
         abpersonContact:
             targetEntity: Core\Model\ABPersonContact
             mappedBy: abperson
