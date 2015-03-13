@@ -17,11 +17,6 @@ class ErrorManager {
     protected $errors = array();
 
     /**
-     * @var Error[]
-     */
-    protected $fields = [];
-
-    /**
      * The constructor should be called only by the ApplicationContext
      */
     protected function __construct () {
@@ -131,8 +126,7 @@ class ErrorManager {
      */
     private function buildFormattedError (Error $error) {
 
-        $field = isset($this->fields[$error->getCode()]) ? $this->fields[$error->getCode()] : NULL;
-        $formattedError = new FormattedError($error, $field);
+        $formattedError = new FormattedError($error);
 
         return $formattedError;
 
@@ -144,12 +138,12 @@ class ErrorManager {
      */
     public function addError ($errorCode, $field = NULL) {
 
-        $error = $this->getErrorForErrorCode($errorCode);
-        if (!in_array($error, $this->errors)) {
-            $this->errors[] = $error;
+        $error = clone $this->getErrorForErrorCode($errorCode);
+        if (isset($field)) {
+            $error->setField($field);
         }
-        if ($field) {
-            $this->fields[$error->getCode()] = $field;
+        if (!in_array($error, $this->errors, true)) {
+            $this->errors[] = $error;
         }
 
     }

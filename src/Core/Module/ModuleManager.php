@@ -18,6 +18,16 @@ abstract class ModuleManager {
         $this->loadActions($context);
         $this->loadHelpers($context);
 
+        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+
+        if (class_exists($classname = $namespace . '\\API')) {
+            /**
+             * @var API $API
+             */
+            $API = new $classname();
+            $API->load();
+        }
+
     }
 
     /**
@@ -40,28 +50,6 @@ abstract class ModuleManager {
      */
     public abstract function loadHelpers (ApplicationContext &$context);
 
-    /**
-     * @param string   $path
-     * @param string   $action
-     * @param string[] $defaultFields
-     */
-    public function addRoute ($path, $action, $defaultFields = []) {
-
-        ApplicationContext::getInstance()->addRoute($path, $this->getControllerName(), $action, $defaultFields);
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getControllerName () {
-
-        $namespace = (new \ReflectionClass($this))->getNamespaceName();
-
-        return substr($namespace, strrpos($namespace, '\\') + 1);
-
-    }
-
     public function addHelper (ApplicationContext &$context, $helperName) {
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
@@ -80,6 +68,17 @@ abstract class ModuleManager {
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
         return strstr($namespace, '\\', true) . '\\' . $this->getControllerName();
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerName () {
+
+        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+
+        return substr($namespace, strrpos($namespace, '\\') + 1);
 
     }
 

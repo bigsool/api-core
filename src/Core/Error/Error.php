@@ -85,6 +85,14 @@ class Error {
     }
 
     /**
+     * @param string $field
+     */
+    public function setField ($field) {
+
+        $this->field = strval($field);
+    }
+
+    /**
      * @return int
      */
     public function getParentCode () {

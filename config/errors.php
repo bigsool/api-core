@@ -52,28 +52,31 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM, "au moins un paramètr
                                      'one or more parameters are invalid'));
 @define('ERROR_INVALID_PARAM_STRING', -101);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_STRING, "paramètre de type chaine de caractères attendu",
-                                     'string parameter expected'));
+                                     'string parameter expected', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_EMAIL', -102);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_EMAIL, "email invalide",
-                                     'invalid email'));
+                                     'invalid email', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_INT', -103);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_INT, "int invalide",
-                                     'invalid int'));
+                                     'invalid int', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_CHOICE', -104);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_CHOICE, "valeur non acceptée",
-                                     'value not in white list'));
+                                     'value not in white list', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_DATETIME', -105);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_DATETIME, "datetime invalide",
-                                     'invalid datetime'));
+                                     'invalid datetime', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_OBJECT', -106);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_OBJECT, "object invalide",
-                                     'invalid object'));
+                                     'invalid object', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_NULL', -107);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NULL, "null attendu",
-                                     'null expected'));
+                                     'null expected', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_LENGTH', -108);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_LENGTH, "valeur hors limites",
-                                     'out of range value'));
+                                     'out of range value', ERROR_INVALID_PARAM));
 @define('ERROR_INVALID_PARAM_NOT_NULL', -109);
-$errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, "paramètre requis",
-                                     'required parameter'));
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, "paramètre vide",
+                                     'empty parameter', ERROR_INVALID_PARAM));
+@define('ERROR_MISSING_PARAM', -110);
+$errorManager->defineError(new Error(ERROR_MISSING_PARAM, "paramètre manquant",
+                                     'missing parameter', ERROR_INVALID_PARAM));

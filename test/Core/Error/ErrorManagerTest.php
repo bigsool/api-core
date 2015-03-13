@@ -85,7 +85,7 @@ class ErrorManagerTest extends TestCase {
         $errorManager->addError($error->getCode());
         $errors = $errorManager->getErrors();
         $this->assertCount(1, $errors);
-        $this->assertContains($error, $errors);
+        $this->assertEquals($error, $errors[0]);
 
     }
 
