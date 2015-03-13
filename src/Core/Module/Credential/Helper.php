@@ -9,6 +9,7 @@ use Core\Context\FindQueryContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Model\Credential;
+use Core\Model\TestCredential;
 use Core\Module\BasicHelper;
 use Core\Parameter\UnsafeParameter;
 
@@ -28,7 +29,7 @@ class Helper extends BasicHelper {
 
         $qryCtx->addKeyPath(new KeyPath('*'));
 
-        $qryCtx->addFilter(new StringFilter('TestCredential','filterbylogin','login = :login'));
+        $qryCtx->addFilter(new StringFilter('Credential','filterbylogin','login = :login'));
 
         $login = UnsafeParameter::getFinalValue($params['login']);
 
@@ -45,7 +46,7 @@ class Helper extends BasicHelper {
         $appCtx = ApplicationContext::getInstance();
         $configManager = $appCtx->getConfigManager();
         $config = $configManager->getConfig();
-        $expiration = $config['expirationAuthToken']; //  time() + 10 * 60; //TOTEST//
+        $expiration =  time() + 10 * 60; //TOTEST//
 
         return self::generateAuthToken($login,$expiration,$hashedPassword,self::AUTH_TOKEN_TYPE_BASIC);
 
@@ -59,7 +60,7 @@ class Helper extends BasicHelper {
 
         $registry = ApplicationContext::getInstance()->getNewRegistry();
 
-        $credential = new Credential();
+        $credential = new TestCredential();
         $credential->setLogin(UnsafeParameter::getFinalValue($params['login']));
 
         $salt = Helper::createSalt();
