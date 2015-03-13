@@ -1,0 +1,26 @@
+Core\Model\ABCompany:
+    type: entity
+    table: abcompany
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+    oneToMany:
+        persons:
+            targetEntity: Core\Model\ABPerson
+            mappedBy: abcompany
+            cascade:
+                - persist
+            onDelete: CASCADE
+        abcompanyContact:
+            targetEntity: Core\Model\ABCompanyContact
+            mappedBy: abcompany
+            cascade:
+                - persist
+            onDelete: CASCADE

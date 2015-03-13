@@ -64,10 +64,10 @@ class Contact extends \Core\Model\Contact implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'addresses', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'emails', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'phones');
+            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'label', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'streets', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'city', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'state', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'zip', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'country', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'email', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'mobile', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'landLine', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'abcompanyContact', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'abpersonContact');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'addresses', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'emails', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'phones');
+        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'id', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'label', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'streets', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'city', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'state', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'zip', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'country', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'email', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'mobile', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'landLine', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'abcompanyContact', '' . "\0" . 'Core\\Model\\Contact' . "\0" . 'abpersonContact');
     }
 
     /**
@@ -191,100 +191,243 @@ class Contact extends \Core\Model\Contact implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
-    public function addAddress(\Core\Model\Address $addresses)
+    public function setLabel($label)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addAddress', array($addresses));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLabel', array($label));
 
-        return parent::addAddress($addresses);
+        return parent::setLabel($label);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeAddress(\Core\Model\Address $addresses)
+    public function getLabel()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeAddress', array($addresses));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLabel', array());
 
-        return parent::removeAddress($addresses);
+        return parent::getLabel();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getAddresses()
+    public function setStreets($streets)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddresses', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStreets', array($streets));
 
-        return parent::getAddresses();
+        return parent::setStreets($streets);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function addEmail(\Core\Model\Email $emails)
+    public function getStreets()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addEmail', array($emails));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStreets', array());
 
-        return parent::addEmail($emails);
+        return parent::getStreets();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeEmail(\Core\Model\Email $emails)
+    public function setCity($city)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeEmail', array($emails));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setCity', array($city));
 
-        return parent::removeEmail($emails);
+        return parent::setCity($city);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getEmails()
+    public function getCity()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEmails', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCity', array());
 
-        return parent::getEmails();
+        return parent::getCity();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function addPhone(\Core\Model\Phone $phones)
+    public function setState($state)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addPhone', array($phones));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setState', array($state));
 
-        return parent::addPhone($phones);
+        return parent::setState($state);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removePhone(\Core\Model\Phone $phones)
+    public function getState()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removePhone', array($phones));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getState', array());
 
-        return parent::removePhone($phones);
+        return parent::getState();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getPhones()
+    public function setZip($zip)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getPhones', array());
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setZip', array($zip));
 
-        return parent::getPhones();
+        return parent::setZip($zip);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getZip()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getZip', array());
+
+        return parent::getZip();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setCountry($country)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setCountry', array($country));
+
+        return parent::setCountry($country);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCountry()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCountry', array());
+
+        return parent::getCountry();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setEmail($email)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setEmail', array($email));
+
+        return parent::setEmail($email);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getEmail()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getEmail', array());
+
+        return parent::getEmail();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setMobile($mobile)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMobile', array($mobile));
+
+        return parent::setMobile($mobile);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMobile()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMobile', array());
+
+        return parent::getMobile();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLandLine($landLine)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLandLine', array($landLine));
+
+        return parent::setLandLine($landLine);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLandLine()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLandLine', array());
+
+        return parent::getLandLine();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact = NULL)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAbcompanyContact', array($abcompanyContact));
+
+        return parent::setAbcompanyContact($abcompanyContact);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAbcompanyContact()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAbcompanyContact', array());
+
+        return parent::getAbcompanyContact();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAbpersonContact(\Core\Model\ABPersonContact $abpersonContact = NULL)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAbpersonContact', array($abpersonContact));
+
+        return parent::setAbpersonContact($abpersonContact);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAbpersonContact()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAbpersonContact', array());
+
+        return parent::getAbpersonContact();
     }
 
 }

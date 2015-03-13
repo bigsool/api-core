@@ -1,0 +1,29 @@
+ABPersonContact:
+    type: entity
+    table: abperson_contact
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    uniqueConstraints:
+        abperson_contact_order:
+          columns:
+              - abperson_id
+              - contact_id
+              - order
+    fields:
+        type:
+            type: string
+            length: 255
+        order:
+            type: integer
+    oneToOne:
+        contact:
+            targetEntity: Core\Model\Contact
+            inversedBy: abpersonContact
+            cascade: ["persist"]
+    manyToOne:
+        abperson:
+            targetEntity: Core\Model\ABPerson
+            inversedBy: abpersonContact
