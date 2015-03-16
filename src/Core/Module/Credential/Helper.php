@@ -9,7 +9,7 @@ use Core\Context\FindQueryContext;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Model\Credential;
-use Core\Model\TestCredential;
+use Core\Model\LoginHistory;
 use Core\Module\BasicHelper;
 use Core\Parameter\UnsafeParameter;
 
@@ -48,6 +48,22 @@ class Helper extends BasicHelper {
         $config = $configManager->getConfig();
         $expiration =  time() + 10 * 60; //TOTEST//
 
+        // handle history
+
+        $reqCtx = $actionContext->getRequestContext();
+        $credential = $this->create($actionContext,$params);
+
+        $loginHistory = $this->createRealModel('LoginHistory');
+        $loginHistory->setDate(new \DateTime());
+        $loginHistory->setCredentialId($credential->getId());
+        $loginHistory->setClientName($reqCtx->getClientName());
+        $loginHistory->setClientVersion($reqCtx->getClientVersion());
+        $loginHistory->setIP($reqCtx->getIpAddress());
+        $loginHistory->setUUID(12); //TODO//
+
+        $registry->save($loginHistory);
+
+
         return self::generateAuthToken($login,$expiration,$hashedPassword,self::AUTH_TOKEN_TYPE_BASIC);
 
     }
@@ -60,7 +76,7 @@ class Helper extends BasicHelper {
 
         $registry = ApplicationContext::getInstance()->getNewRegistry();
 
-        $credential = new TestCredential();
+        $credential = $this->createRealModel('Credential');
         $credential->setLogin(UnsafeParameter::getFinalValue($params['login']));
 
         $salt = Helper::createSalt();

@@ -53,6 +53,11 @@ class RequestContext {
     protected $filter;
 
     /**
+     * @var string
+     */
+    protected $IpAddress;
+
+    /**
      */
     public function __construct () {
 
@@ -241,6 +246,24 @@ class RequestContext {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getIpAddress () {
+
+        return $this->IpAddress;
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public function setIpAddress ($IpAddress) {
+
+        $this->IpAddress = $IpAddress;
 
     }
 
