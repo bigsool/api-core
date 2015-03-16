@@ -55,7 +55,7 @@ class RequestContext {
     /**
      * @var string
      */
-    protected $IpAddress;
+    protected $ipAddress;
 
     /**
      */
@@ -250,20 +250,20 @@ class RequestContext {
     }
 
     /**
-     * @return Auth
+     * @return string
      */
     public function getIpAddress () {
 
-        return $this->IpAddress;
+        return $this->ipAddress;
 
     }
 
     /**
-     * @return Auth
+     * @param string $ipAddress
      */
-    public function setIpAddress ($IpAddress) {
+    public function setIpAddress ($ipAddress) {
 
-        $this->IpAddress = $IpAddress;
+        $this->ipAddress = (string)$ipAddress;
 
     }
 

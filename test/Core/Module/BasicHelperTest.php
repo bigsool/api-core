@@ -70,4 +70,26 @@ class BasicHelperTest extends TestCase {
 
     }
 
+    public function testRealModelClassName () {
+
+        $this->assertSame('\Core\Model\TestUser', (new BasicHelper())->getRealModelClassName('TestUser'));
+        $this->assertInstanceOf('\Core\Model\TestUser', (new BasicHelper())->createRealModel('TestUser'));
+
+    }
+
+    public function testCheckRealModelType () {
+
+        $this->assertNull((new BasicHelper())->checkRealModelType(new TestUser(),'TestUser'));
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidRealModelType () {
+
+        (new BasicHelper())->checkRealModelType(new \stdClass(),'TestUser');
+
+    }
+
 } 

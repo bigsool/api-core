@@ -27,6 +27,18 @@ class ConfigManagerTest extends TestCase {
 
     }
 
+    public function testLoadEmpty () {
+
+        $configManager = new ConfigManager($this->yamlConfigPaths);
+
+        $method = new \ReflectionMethod($configManager, 'loadConfig');
+        $method->setAccessible(true);
+        $method->invokeArgs($configManager, array(array(__DIR__ . '/empty.yml')));
+
+        $this->assertSame([], $configManager->getConfig());
+
+    }
+
     /**
      * @expectedException \Exception
      */
