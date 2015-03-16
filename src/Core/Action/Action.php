@@ -61,7 +61,8 @@ abstract class Action {
             $validator = $params['validator'];
             $param = $context->getParam($field);
             $value = isset($param) ? UnsafeParameter::getFinalValue($param) : NULL;
-            $isValid = $validator->validate($field, $value, $params['forceOptional']);
+            $path = isset($param) && $param instanceof UnsafeParameter ? $param->getPath() : $field;
+            $isValid = $validator->validate($field, $value, $path, $params['forceOptional']);
             if ($isValid) {
                 $context->setParam($field, $value);
             }

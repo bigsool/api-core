@@ -578,11 +578,10 @@ abstract class MagicalModuleManager extends ModuleManager {
                     if (!$modelAspect->getPrefix()) {
                         continue;
                     }
-                    $prefixes[] = $modelAspect->getPrefix();
-                    $param = $params[$modelAspect->getPrefix()];
-                    $field = $modelAspect->getPrefix();
+                    $prefixes[] = $field = $modelAspect->getPrefix();
+                    $param = $params[$field];
                     $validator = new RuntimeConstraintsProvider([$field => $modelAspect->getConstraints($name)]);
-                    $validator->validate($field, UnsafeParameter::getFinalValue($param));
+                    $validator->validate($field, UnsafeParameter::getFinalValue($param), $field);
                 }
 
                 return $processFn($actionContext);
