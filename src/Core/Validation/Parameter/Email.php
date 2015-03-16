@@ -10,7 +10,7 @@ class Email extends Constraint {
     public function __construct () {
 
         $this->setConstraint(new Constraints\Email());
-        $this->setErrorCode(ERROR_INVALID_PARAM_STRING);
+        $this->setErrorCode(ERROR_INVALID_PARAM_EMAIL);
 
     }
 
