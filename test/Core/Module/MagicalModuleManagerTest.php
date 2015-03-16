@@ -4,7 +4,9 @@
 namespace Core\Module;
 
 
+use Core\Action\Action;
 use Core\Action\ActionReference;
+use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -238,6 +240,58 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertContainsOnlyInstancesOf('\Core\Validation\Parameter\Constraint', $validators);
         $this->assertCount(1, $validators);
         $this->assertInstanceOf('\Core\Validation\Parameter\Null', $validators[0]);
+
+    }
+
+    public function testParamsOfActionContexts() {
+
+        $userCalled = $companyCalled = $storageCalled = false;
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->setMainEntity($mgr, [
+            'model'=>'TestUser',
+            'create' => [
+                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$userCalled){
+
+                    $this->assertSame(['firstName'=>'first name'], $context->getParams());
+                    $userCalled = true;
+
+                },$this->getCallable(),$this->getCallable())
+            ]
+        ]);
+        $this->addAspect($mgr, [
+            'model'=>'TestCompany',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'create' => [
+                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$companyCalled){
+
+                    $this->assertSame(['name'=>'company'], $context->getParams());
+                    $companyCalled = true;
+
+                },$this->getCallable(),$this->getCallable())
+            ]
+        ]);
+        $this->addAspect($mgr, [
+            'model'=>'TestStorage',
+            'prefix'  => 'storage',
+            'keyPath' => 'company.storage',
+            'create' => [
+                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$storageCalled){
+
+                    $this->assertSame([], $context->getParams());
+                    $storageCalled = true;
+
+                },$this->getCallable(),$this->getCallable())
+            ]
+        ]);
+        $context = new ActionContext(new RequestContext());
+        $context->setParams(['firstName'=>'first name','company.name'=>'company']);
+        $mgr->magicalCreate($context);
+
+        $this->assertTrue($userCalled);
+        $this->assertTrue($companyCalled);
+        $this->assertTrue($storageCalled);
 
     }
 
