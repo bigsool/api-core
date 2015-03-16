@@ -108,6 +108,10 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
 
             }
+            elseif ($modelAspect->getPrefix()) {
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+            }
             else {
                 // Create a new context and remove parameters which are used by model aspects
                 $subContext = new ActionContext($ctx);
