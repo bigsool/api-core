@@ -14,26 +14,26 @@ class BasicCreateAction extends SimpleAction {
      * @param string   $helperName
      * @param array    $minRights
      * @param array    $params
-     * @param callable $preUpdateCallable
-     * @param callable $postUpdateCallable
+     * @param callable $preCreateCallable
+     * @param callable $postCreateCallable
      */
     public function __construct ($module, $model, $helperName, $minRights, array $params,
-                                 callable $preUpdateCallable = NULL, callable $postUpdateCallable = NULL) {
+                                 callable $preCreateCallable = NULL, callable $postCreateCallable = NULL) {
 
-        if (!$preUpdateCallable) {
-            $preUpdateCallable = function () {
+        if (!$preCreateCallable) {
+            $preCreateCallable = function () {
             };
         }
 
-        if (!$postUpdateCallable) {
-            $postUpdateCallable = function () {
+        if (!$postCreateCallable) {
+            $postCreateCallable = function () {
             };
         }
 
         parent::__construct($module, 'create', $minRights, $params,
-            function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
+            function (ActionContext $context) use (&$model, &$helperName, &$preCreateCallable, &$postCreateCallable) {
 
-                $preUpdateCallable($context);
+                $preCreateCallable($context);
 
                 $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
                 $params = $context->getVerifiedParams();
@@ -43,7 +43,7 @@ class BasicCreateAction extends SimpleAction {
                 }
                 $helper->$method($context, $params);
 
-                $postUpdateCallable($context);
+                $postCreateCallable($context);
 
                 return $context[lcfirst($model)];
 
