@@ -102,7 +102,8 @@ class SimpleActionTest extends TestCase {
      */
     public function testInvalidParam () {
 
-        new SimpleAction('module', 'name', NULL, ['qwe' => []], $this->getCallable());
+        $action = new SimpleAction('module', 'name', NULL, ['qwe' => []], $this->getCallable());
+        $action->validate($this->getMockActionContext());
 
     }
 
