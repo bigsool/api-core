@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\Marketing\Model;
+namespace Core\Module\Marketing;
 
 
 use Core\Context\ActionContext;
