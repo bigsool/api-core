@@ -9,22 +9,22 @@ use Core\Context\ApplicationContext;
 class BasicFindAction extends SimpleAction {
 
     public function __construct ($module, $model, $helperName, $minRights, array $params,
-                                 callable $preUpdateCallable = NULL, callable $postUpdateCallable = NULL) {
+                                 callable $preFindCallable = NULL, callable $postFindCallable = NULL) {
 
-        if (!$preUpdateCallable) {
-            $preUpdateCallable = function () {
+        if (!$preFindCallable) {
+            $preFindCallable = function () {
             };
         }
 
-        if (!$postUpdateCallable) {
-            $postUpdateCallable = function () {
+        if (!$postFindCallable) {
+            $postFindCallable = function () {
             };
         }
 
         parent::__construct($module, 'find', $minRights, $params,
-            function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
+            function (ActionContext $context) use (&$model, &$helperName, &$preFindCallable, &$postFindCallable) {
 
-                $preUpdateCallable($context);
+                $preFindCallable($context);
 
                 $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
                 $reqCtx = $context->getRequestContext();
@@ -35,7 +35,7 @@ class BasicFindAction extends SimpleAction {
                 $helper->$method($context, $reqCtx->getReturnedKeyPaths(),
                                  $reqCtx->getFilter() ? [$reqCtx->getFilter()] : []);
 
-                $postUpdateCallable($context);
+                $postFindCallable($context);
 
                 return $context[$model];
 

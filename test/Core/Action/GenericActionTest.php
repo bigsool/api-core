@@ -66,14 +66,19 @@ class GenericActionTest extends TestCase {
 
     }
 
+    /**
+     * @param bool              $called
+     * @param GenericActionTest $self
+     * @param Action            $action
+     * @param ActionContext     $ctx
+     *
+     * @return callable
+     */
     protected function getTestedCallable (&$called, &$self, &$action, &$ctx) {
 
-        return function (ActionContext $context) use (&$called, &$self, &$action, &$ctx) {
+        return function (ActionContext $context, Action $_action) use (&$called, &$self, &$action, &$ctx) {
 
-            /**
-             * @var Action $this
-             */
-            $self->assertSame($action, $this);
+            $self->assertSame($action, $_action);
             $self->assertSame($ctx, $context);
 
             $called = true;

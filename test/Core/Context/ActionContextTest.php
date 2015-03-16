@@ -57,19 +57,31 @@ class ActionContextTest extends TestCase {
 
     public function testParams () {
 
-        $array = ['a' => new UnsafeParameter(0, ''), 'b', new UnsafeParameter(new \stdClass(), '')];
+        $array =
+            ['a'                  => new UnsafeParameter(0, ''),
+             0                    => 'b',
+             1                    => new UnsafeParameter(new \stdClass(), ''),
+             'first.second.third' => 'qwe'
+            ];
+        $expected =
+            ['a'     => $array['a'],
+             0       => 'b',
+             1       => $array[1],
+             'first' => ['second' => ['third' => 'qwe']]
+            ];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
         $ctx = new ActionContext($reqCtx);
         $ctx->setParams($array);
 
-        $this->assertSame($array, $ctx->getParams());
-        $this->assertSame($array[0], $ctx->getParam(0));
-        $this->assertSame($array['a'], $ctx->getParam('a'));
+        $this->assertSame($expected, $ctx->getParams());
+        $this->assertSame($expected[0], $ctx->getParam(0));
+        $this->assertSame($expected['a'], $ctx->getParam('a'));
+        $this->assertSame($expected['first']['second'], $ctx->getParam('first.second'));
 
         $this->assertCount(2, $ctx->getParams([1, 'a']));
-        $this->assertContains($array[1], $ctx->getParams([1, 'a']));
-        $this->assertContains($array['a'], $ctx->getParams([1, 'a']));
+        $this->assertContains($expected[1], $ctx->getParams([1, 'a']));
+        $this->assertContains($expected['a'], $ctx->getParams([1, 'a']));
 
         $this->assertNull($ctx->getParam('qwe'));
         $qweParam = $this->getMockParameter();

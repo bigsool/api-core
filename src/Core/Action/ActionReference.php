@@ -5,7 +5,7 @@ namespace Core\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 
-class ActionReference implements Action {
+class ActionReference extends Action {
 
     /**
      * @var string

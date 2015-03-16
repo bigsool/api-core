@@ -102,7 +102,8 @@ class SimpleActionTest extends TestCase {
      */
     public function testInvalidParam () {
 
-        new SimpleAction('module', 'name', NULL, ['qwe' => []], $this->getCallable());
+        $action = new SimpleAction('module', 'name', NULL, ['qwe' => []], $this->getCallable());
+        $action->validate($this->getMockActionContext());
 
     }
 
@@ -121,18 +122,13 @@ class SimpleActionTest extends TestCase {
                                   $name,
                                   NULL,
                                   [],
-                                  function (ActionContext $context) use (
+                                  function (ActionContext $context, Action $_action) use (
                                       &$called, &$self,
                                       &$action, &$ctx
                                   ) {
 
-                                      /**
-                                       * @var Action $this
-                                       */
-                                      $self->assertSame($action,
-                                                        $this);
-                                      $self->assertSame($ctx,
-                                                        $context);
+                                      $self->assertSame($action, $_action);
+                                      $self->assertSame($ctx, $context);
 
                                       $called = true;
 

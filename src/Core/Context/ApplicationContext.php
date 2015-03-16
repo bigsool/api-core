@@ -143,6 +143,19 @@ class ApplicationContext {
     }
 
     /**
+     * @return ApplicationContext
+     */
+    public static function getInstance () {
+
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+
+    }
+
+    /**
      * @return Logger
      */
     public function getLogger () {
@@ -358,7 +371,7 @@ class ApplicationContext {
             }
         }
 
-        throw new \RuntimeException('Action not found');
+        throw new \RuntimeException("Action $module/$name not found");
 
     }
 
@@ -392,11 +405,12 @@ class ApplicationContext {
      */
     public function getHelper (Action $action, $name) {
 
-        if (isset($this->helpers[$action->getModule()][$name])) {
-            return $this->helpers[$action->getModule()][$name];
+        $module = $action->getModule();
+        if (isset($this->helpers[$module][$name])) {
+            return $this->helpers[$module][$name];
         }
 
-        throw new \RuntimeException('Helper not found');
+        throw new \RuntimeException("Helper $module/$name not found");
 
     }
 
@@ -412,35 +426,6 @@ class ApplicationContext {
             'controller' => new Controller($action),
             'fields'     => $defaultFields,
         ]));
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getProduct () {
-
-        return $this->product;
-    }
-
-    /**
-     * @param string $product
-     */
-    public function setProduct ($product) {
-
-        $this->product = $product;
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public static function getInstance () {
-
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
 
     }
 
@@ -554,6 +539,22 @@ class ApplicationContext {
             }
         }
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getProduct () {
+
+        return $this->product;
+    }
+
+    /**
+     * @param string $product
+     */
+    public function setProduct ($product) {
+
+        $this->product = $product;
     }
 
     /**
