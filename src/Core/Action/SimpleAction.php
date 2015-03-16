@@ -11,7 +11,7 @@ use Core\Error\FormattedError;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\AbstractConstraintsProvider;
 
-class SimpleAction implements Action {
+class SimpleAction extends Action {
 
     /**
      * @var string
@@ -57,24 +57,11 @@ class SimpleAction implements Action {
 
         $this->module = $module;
         $this->name = $name;
-        $this->process = \Closure::bind($process, $this);
+        // TODO: IDE cannot detect that this = GenericAction
+        $this->process = /*\Closure::bind(*/$process/*, $this)*/;
         $this->minRights = (array)$minRights;
-        $this->setParams($params);
+        $this->params = $params;
 
-    }
-
-    /**
-     * @param array $params
-     */
-    protected function setParams (array $params) {
-
-        $this->params = [];
-        foreach ($params as $field => $param) {
-            if (!is_array($param) || count($param) < 1 || !($param[0] instanceof AbstractConstraintsProvider)) {
-                throw new \RuntimeException('invalid param');
-            }
-            $this->params[$field] = ['validator' => $param[0], 'forceOptional' => isset($param[1]) && !!$param[1]];
-        }
     }
 
     /**
@@ -129,7 +116,7 @@ class SimpleAction implements Action {
         $this->authorize($context);
         $this->validate($context);
 
-        return call_user_func($this->process, $context);
+        return call_user_func($this->process, $context, $this);
 
     }
 
@@ -140,23 +127,7 @@ class SimpleAction implements Action {
      */
     public function validate (ActionContext $context) {
 
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
-        foreach ($this->params as $field => $params) {
-            /**
-             * @var AbstractConstraintsProvider $validator
-             */
-            $validator = $params['validator'];
-            $param = $context->getParam($field);
-            $value = isset($param) ? UnsafeParameter::getFinalValue($param) : NULL;
-            $isValid = $validator->validate($field, $value, $params['forceOptional']);
-            if ($isValid) {
-                $context->setParam($field, $value);
-            }
-        }
-        $errors = $errorManager->getErrors();
-        if (!empty($errors)) {
-            throw $errorManager->getFormattedError();
-        }
+        $this->validateParams($context, $this->params);
 
     }
 }

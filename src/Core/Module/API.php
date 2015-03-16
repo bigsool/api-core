@@ -7,6 +7,7 @@ namespace Core\Module;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Parameter\UnsafeParameter;
 
 abstract class API {
 
@@ -49,6 +50,7 @@ abstract class API {
                     $params = $context->getParams();
                     $completePath = '';
                     foreach ($explodedParameterPath as $paramPath) {
+                        $params = UnsafeParameter::getFinalValue($params);
                         $completePath .= $paramPath;
                         if (!isset($params[$paramPath])) {
                             $errorManager->addError(ERROR_MISSING_PARAM, $completePath);

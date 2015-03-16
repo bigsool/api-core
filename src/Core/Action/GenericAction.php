@@ -7,7 +7,7 @@ namespace Core\Action;
 use Closure;
 use Core\Context\ActionContext;
 
-class GenericAction implements Action {
+class GenericAction extends Action {
 
     /**
      * @var string
@@ -53,9 +53,10 @@ class GenericAction implements Action {
 
         $this->module = $module;
         $this->name = $name;
-        $this->process = Closure::bind($process, $this);
-        $this->validate = Closure::bind($validate, $this);
-        $this->authorize = Closure::bind($authorize, $this);
+        // TODO: IDE cannot detect that this = GenericAction
+        $this->process = /*Closure::bind(*/$process/*, $this)*/;
+        $this->validate = /*Closure::bind(*/$validate/*, $this)*/;
+        $this->authorize = /*Closure::bind(*/$authorize/*, $this)*/;
 
     }
 
@@ -64,7 +65,7 @@ class GenericAction implements Action {
      */
     public function authorize (ActionContext $context) {
 
-        call_user_func($this->authorize, $context);
+        call_user_func($this->authorize, $context, $this);
 
     }
 
@@ -97,7 +98,7 @@ class GenericAction implements Action {
 
         $this->validate($context);
 
-        return call_user_func($this->process, $context);
+        return call_user_func($this->process, $context, $this);
 
     }
 
@@ -106,7 +107,7 @@ class GenericAction implements Action {
      */
     public function validate (ActionContext $context) {
 
-        call_user_func($this->validate, $context);
+        call_user_func($this->validate, $context, $this);
 
     }
 }

@@ -117,7 +117,20 @@ class ActionContext extends \ArrayObject {
      */
     public function getParam ($key) {
 
-        return isset($this->params[$key]) ? $this->params[$key] : NULL;
+        $exploded = explode('.',$key);
+        $params = $this->params;
+        foreach ($exploded as $index => $key) {
+            if (!isset($params[$key])) {
+                return NULL;
+            }
+            // it's not necessary to create an array for the last key
+            if ($index+1 == count($exploded)) {
+                break;
+            }
+            $params = UnsafeParameter::getFinalValue($params[$key]);
+        }
+
+        return $params[$key];
 
     }
 
@@ -148,7 +161,24 @@ class ActionContext extends \ArrayObject {
             throw new \RuntimeException('invalid key type');
         }
 
-        $this->params[$key] = $value;
+        $exploded = explode('.',$key);
+        $params = &$this->params;
+        foreach ($exploded as $index => $key) {
+
+            // it's not necessary to create an array for the last key
+            if ($index+1 == count($exploded)) {
+                break;
+            }
+
+            if (!isset($params[$key])) {
+                $params[$key] = [];
+            }
+            $params[$key] = UnsafeParameter::getFinalValue($params[$key]);
+            $params = &$params[$key];
+
+        }
+
+        $params[$key] = $value;
 
     }
 
