@@ -31,9 +31,9 @@ class BasicCreateAction extends SimpleAction {
         }
 
         parent::__construct($module, 'create', $minRights, $params,
-            function (ActionContext $context) use (&$model, &$helperName, &$preCreateCallable, &$postCreateCallable) {
+            function (ActionContext $context, BasicCreateAction $action) use (&$model, &$helperName, &$preCreateCallable, &$postCreateCallable) {
 
-                $preCreateCallable($context);
+                $preCreateCallable($context, $action);
 
                 $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
                 $params = $context->getVerifiedParams();
@@ -43,7 +43,7 @@ class BasicCreateAction extends SimpleAction {
                 }
                 $helper->$method($context, $params);
 
-                $postCreateCallable($context);
+                $postCreateCallable($context, $action);
 
                 return $context[lcfirst($model)];
 
