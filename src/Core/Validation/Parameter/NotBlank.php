@@ -10,7 +10,7 @@ class NotBlank extends Constraint {
     public function __construct () {
 
         $this->setConstraint(new Constraints\NotBlank());
-        $this->setErrorCode(ERROR_INVALID_PARAM_STRING);
+        $this->setErrorCode(ERROR_INVALID_PARAM_NOT_NULL);
 
     }
 

@@ -97,6 +97,15 @@ class RequestContextTest extends TestCase {
 
     }
 
+    public function testIpAddress () {
+
+        $ctx = $this->getRequestContext();
+        $ip = '10.0.1.123';
+        $ctx->setIpAddress($ip);
+        $this->assertSame($ip, $ctx->getIpAddress());
+
+    }
+
     public function testKeyPaths () {
 
         $ctx = $this->getRequestContext();
@@ -112,6 +121,15 @@ class RequestContextTest extends TestCase {
     public function testInvalidKeyPathsType () {
 
         $this->getRequestContext()->setReturnedKeyPaths([new \stdClass()]);
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidKeyPathsValue () {
+
+        $this->getRequestContext()->setReturnedKeyPaths(['*']);
 
     }
 

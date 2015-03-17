@@ -108,6 +108,10 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
 
             }
+            elseif ($modelAspect->getPrefix()) {
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+            }
             else {
                 // Create a new context and remove parameters which are used by model aspects
                 $subContext = new ActionContext($ctx);
@@ -266,7 +270,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }*/
 
         $field1 = $mapping['fieldName'];
-        $field2 = $mapping['mappedBy'];
+        $field2 = isset($mapping['mappedBy']) ? $mapping['mappedBy'] : $mapping['inversedBy'];
 
         $prefix1 = 'set';
         $prefix2 = 'set';
@@ -574,11 +578,10 @@ abstract class MagicalModuleManager extends ModuleManager {
                     if (!$modelAspect->getPrefix()) {
                         continue;
                     }
-                    $prefixes[] = $modelAspect->getPrefix();
-                    $param = $params[$modelAspect->getPrefix()];
-                    $field = $modelAspect->getPrefix();
+                    $prefixes[] = $field = $modelAspect->getPrefix();
+                    $param = $params[$field];
                     $validator = new RuntimeConstraintsProvider([$field => $modelAspect->getConstraints($name)]);
-                    $validator->validate($field, UnsafeParameter::getFinalValue($param));
+                    $validator->validate($field, UnsafeParameter::getFinalValue($param), $field);
                 }
 
                 return $processFn($actionContext);

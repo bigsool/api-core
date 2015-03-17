@@ -15,11 +15,12 @@ abstract class AbstractConstraintsProvider {
     /**
      * @param string $name
      * @param mixed  $value
+     * @param        $path
      * @param bool   $forceOptional
      *
      * @return bool
      */
-    public function validate ($name, $value, $forceOptional = false) {
+    public function validate ($name, $value, $path, $forceOptional = false) {
 
         $constraints = $this->getConstraintsFor($name);
         if ($forceOptional && $constraints) {
@@ -46,8 +47,7 @@ abstract class AbstractConstraintsProvider {
                 $validator = Validation::createValidator();
                 $violations = $validator->validate($value, [$constraint->getConstraint()]);
                 if ($violations->count()) {
-                    $field = ($value instanceof UnsafeParameter) ? $value->getPath() : '';
-                    ApplicationContext::getInstance()->getErrorManager()->addError($constraint->getErrorCode(), $field);
+                    ApplicationContext::getInstance()->getErrorManager()->addError($constraint->getErrorCode(), $path);
                     $isValid = false;
                 }
             }

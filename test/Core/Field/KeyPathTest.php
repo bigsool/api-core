@@ -21,7 +21,12 @@ class KeyPathTest extends TestCase {
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
+        $param2 = new KeyPath('*');
+
         $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+
+        $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
+
     }
 
     public function testAlias () {

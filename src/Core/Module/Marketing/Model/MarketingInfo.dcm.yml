@@ -10,3 +10,4 @@ MarketingInfo:
         knowsFrom:
             type: string
             length: 255
+            nullable: true

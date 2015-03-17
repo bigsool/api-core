@@ -354,7 +354,7 @@ CONSTRUCTOR;
         $mapping = $this->getPreviousMapping($modelAspect, $mainModelName);
 
         $field1 = $mapping['fieldName'];
-        $field2 = $mapping['mappedBy'];
+        $field2 = isset($mapping['mappedBy']) ? $mapping['mappedBy'] : $mapping['inversedBy'];
 
         $prefix1 = 'set';
         $prefix2 = 'set';

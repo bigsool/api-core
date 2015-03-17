@@ -87,6 +87,8 @@ class ActionContextTest extends TestCase {
         $qweParam = $this->getMockParameter();
         $ctx->setParam('qwe', $qweParam);
         $this->assertSame($qweParam, $ctx->getParam('qwe'));
+        $ctx->unsetParam('qwe');
+        $this->assertNull($ctx->getParam('qwe'));
 
         $ctx->setParams([]);
         $this->assertEmpty($ctx->getParams());

@@ -5,6 +5,8 @@ namespace Core\RPC;
 
 
 use Core\Context\RequestContext;
+use Core\Error\Error;
+use Core\Error\FormattedError;
 use Core\Serializer;
 use Core\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,6 +64,9 @@ class JSONPTest extends TestCase {
         $this->assertSame('method', $JSONP->getMethod());
 
         $response = $JSONP->getSuccessResponse(new Serializer(new RequestContext()), 'qwe');
+        $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
+
+        $response = $JSONP->getErrorResponse(new FormattedError(new Error(1,'','')));
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
     }

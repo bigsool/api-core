@@ -59,7 +59,7 @@ class ActionContext extends \ArrayObject {
         foreach ($values as $key => $value) {
             $newPath = !empty($path) ? "$path.$key" : $key;
             $params[$key] =
-                new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value, $path) : $value,
+                new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value, $newPath) : $value,
                                     $newPath);
         }
 
