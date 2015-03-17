@@ -18,7 +18,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction(new BasicCreateAction('Core\Contact', 'create','ContactHelper', [], [
+        $context->addAction($a = new BasicCreateAction('Core\Contact', 'Contact','ContactHelper', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],
@@ -28,9 +28,19 @@ class ModuleManager extends AbstractModuleManager {
             'email'    => [new Validation()],
             'mobile'   => [new Validation()],
             'landLine' => [new Validation()],
-        ]));
+        ],function(ActionContext $context, BasicCreateAction $action){
 
-        $context->addAction(new BasicUpdateAction('Core\Contact', 'create','ContactHelper', [], [
+            foreach (array_keys($action->getParams()) as $field) {
+
+                if (is_null($context->getParam($field))) {
+                    $context->setParam($field, '');
+                }
+
+            }
+
+        }));
+
+        $context->addAction(new BasicUpdateAction('Core\Contact', 'Contact','ContactHelper', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],
