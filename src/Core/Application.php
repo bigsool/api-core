@@ -319,7 +319,7 @@ class Application {
         $result = $controller->apply(new ActionContext($reqCtx));
         $traceLogger->trace('controller called');
 
-        $response = $rpcHandler->getSuccessResponse(new Serializer($reqCtx), $result);
+        $response = $rpcHandler->getSuccessResponse($this->getSerializer($reqCtx), $result);
         $traceLogger->trace('response created');
 
         // handle queued actions before commit
@@ -417,6 +417,17 @@ class Application {
         }
 
         $this->appCtx->getTraceLogger()->trace('error queue processed');
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     *
+     * @return Serializer
+     */
+    protected function getSerializer (RequestContext $reqCtx) {
+
+        return new Serializer($reqCtx);
 
     }
 
