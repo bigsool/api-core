@@ -8,8 +8,6 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Parameter\UnsafeParameter;
-use Core\Validation\AbstractConstraintsProvider;
 
 class SimpleAction extends Action {
 
@@ -58,10 +56,20 @@ class SimpleAction extends Action {
         $this->module = $module;
         $this->name = $name;
         // TODO: IDE cannot detect that this = GenericAction
-        $this->process = /*\Closure::bind(*/$process/*, $this)*/;
+        $this->process = /*\Closure::bind(*/
+            $process/*, $this)*/
+        ;
         $this->minRights = (array)$minRights;
         $this->params = $params;
 
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams () {
+
+        return $this->params;
     }
 
     /**

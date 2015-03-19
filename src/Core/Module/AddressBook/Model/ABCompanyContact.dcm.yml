@@ -16,17 +16,31 @@ ABCompanyContact:
         type:
             type: string
             length: 255
+            nullable: true
         order:
+            column: `order`
             type: integer
     oneToOne:
         contact:
             targetEntity: Core\Model\Contact
             inversedBy: abcompanyContact
             cascade: ["persist"]
+            joinColumns:
+                contact_id:
+                    referencedColumnName: id
+                    nullable: true
     manyToOne:
         abcompany:
             targetEntity: Core\Model\ABCompany
             inversedBy: abcompanyContact
+            joinColumns:
+                abcompany_id:
+                    referencedColumnName: id
+                    nullable: true
         abperson:
             targetEntity: Core\Model\ABPerson
             inversedBy: abcompanyContact
+            joinColumns:
+                abperson_id:
+                    referencedColumnName: id
+                    nullable: true
