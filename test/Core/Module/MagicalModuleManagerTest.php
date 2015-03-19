@@ -1095,7 +1095,7 @@ class MagicalModuleManagerTest extends TestCase {
         $values = ['user.*', 'company.*', 'storage.*'];
         $alias = []; //[ 'company.name' => 'companyName'];
 
-        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $alias, $filters]);
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters]);
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
         $account = $result[0];
@@ -1146,9 +1146,8 @@ class MagicalModuleManagerTest extends TestCase {
         $filters =
             [new StringFilter('TestUser', 'bla', 'id = 1')];
         $values = ['user.*', 'company.*', 'storage.*'];
-        $alias = []; //[ 'company.name' => 'companyName'];
 
-        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $alias, $filters, [], true]);
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
         $this->assertInternalType('array', $result);
         $this->assertTrue(count($result) == 1);
         $result = $result[0];
@@ -1240,7 +1239,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
 
-        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], [], $filters, [], true]);
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], $filters, [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
@@ -1259,7 +1258,7 @@ class MagicalModuleManagerTest extends TestCase {
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
         $result =
-            $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], [], $filters, [], true]);
+            $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], $filters, [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
