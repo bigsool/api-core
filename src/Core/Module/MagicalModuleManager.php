@@ -306,9 +306,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    /**
-     * @return MagicalEntity
-     */
+
     public function getMagicalEntityObject ($entity) {
 
         $className = Registry::realModelClassName($this->getModuleName());
@@ -317,6 +315,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @return array
+     */
     protected function getModuleName () {
 
         $className = get_called_class();
@@ -326,18 +327,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    /*public function formatResult () {
-
-        $entities[lcfirst($this->getMainEntityName())] = $this->mainEntity;
-        foreach ($this->modelAspects as $modelAspect) {
-            if (($keyPath = $modelAspect->getKeyPath())) {
-                $entities[lcfirst($modelAspect->getModel())] = $this->getEntityFromKeyPath($keyPath);
-            }
-        }
-
-        return $entities;
-
-    }*/
 
     /**
      * @param ActionContext $ctx
@@ -494,7 +483,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
-    protected function magicalFind (RequestContext $requestContext, $values, $alias, $filters, $params = [],
+    protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
                                     $hydrateArray = false) {
 
         $appCtx = ApplicationContext::getInstance();
@@ -514,15 +503,10 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
                 $modeAspectKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
                 if ($modeAspectKeyPath[count($modeAspectKeyPath) - 1] == $model) {
-                    $newValue = $modelAspect->getKeyPath()->getValue();
-                    unset($valueArray[0]);
-                    foreach ($valueArray as $keyPath) {
-                        $newValue .= '.' . $keyPath;
-                    }
+                    $newValue = $modelAspect->getKeyPath()->getValue().'.'.$newValue;
                 }
             }
-            $valueAlias = isset($alias[$value]) ? $alias[$value] : NULL;
-            $qryCtx->addKeyPath(new KeyPath($newValue), $valueAlias);
+            $qryCtx->addKeyPath(new KeyPath($newValue));
         }
 
         foreach ($filters as $filter) {
@@ -533,16 +517,121 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $result = $registry->find($qryCtx, $hydrateArray);
 
-        return $hydrateArray ? $result : $this->formatFindResult($result);
+
+        return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
 
     }
+
+    /**
+     * @param array $result
+     * @return array
+     */
+    private function formatFindResultArray ($result) {
+
+        $resultFormatted = [];
+        foreach ($result as $elem) {
+            $resultFormatted[] = $this->formatArrayWithPrefix($elem);
+        }
+
+        return $resultFormatted;
+
+    }
+
+    /**
+     * @param array $result
+     * @return array
+     */
+    private function formatArrayWithPrefix ($result) {
+
+        $formattedResult = [];
+
+        foreach ($this->modelAspects as $modelAspect) {
+
+            if ($modelAspect->getKeyPath()) {
+                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+                $data = $result;
+                foreach ($explodedKeyPath as $elem) {
+                    $data = $data[$elem];
+                }
+            }
+            else {
+                $data = $result;
+            }
+
+            if ($modelAspect->getPrefix()) {
+                $explodedPrefix = explode('.',$modelAspect->getPrefix());
+                $data = $this->buildPrefixArray($explodedPrefix,$data);
+            }
+
+            $formattedResult = array_merge_recursive($formattedResult,$data);
+
+            if ($modelAspect->getKeyPath()) {
+                $formattedResult =  $this->clearPrefixArray($explodedKeyPath,$formattedResult);
+            }
+
+        }
+
+        return $formattedResult;
+
+    }
+
+    /**
+     * @param array $prefixExploded
+     * @param array $data
+     * @return array
+     */
+    public function buildPrefixArray ($prefixExploded,$data) {
+
+        $tab = [];
+
+        if (count($prefixExploded) == 1) {
+            $tab[$prefixExploded[0]] = $data;
+        }
+        else {
+            array_splice($prefixExploded,0,1);
+            $tab[$prefixExploded[0]] = buildPrefixArray($prefixExploded,$data);
+        }
+
+        return $tab;
+
+    }
+
+    /**
+     * @param array $keyPath
+     * @param array $data
+     * @return array
+     */
+    private function clearPrefixArray ($keyPath, $data) {
+
+        $newData = [];
+
+        if (is_array($data)) {
+
+            foreach ($data as $key => $value) {
+                if (count($keyPath) == 1 && $keyPath[0] == $key) {
+                    continue;
+                }
+                $newData[$key] = $this->clearPrefixArray(array_slice($keyPath,1,count($keyPath)), $value);
+            }
+
+        }
+        else {
+
+            $newData = $data;
+
+        }
+
+        return $newData;
+
+    }
+
 
     /**
      * @param Array $result
      *
      * @return Array
      */
-    protected function formatFindResult ($result) {
+    protected function formatFindResultObject ($result) {
 
         $entities = [];
         foreach ($result as $elem) {
