@@ -34,6 +34,19 @@ class Application {
     public function __construct () {
 
         self::defineRootDir();
+
+        if (function_exists('opcache_get_status')) {
+            $opcacheStatus = opcache_get_status(false);
+            $opcacheStatistics = $opcacheStatus['opcache_statistics'];
+            $fileTimestamp = filemtime(ROOT_DIR);
+            $opcacheStartTime = $opcacheStatistics['last_restart_time'] ?: $opcacheStatistics['start_time'];
+            if ($opcacheStartTime < $fileTimestamp) {
+                opcache_reset();
+            }
+            else {
+            }
+        }
+
         $this->appCtx = $this->createApplicationContext();
 
     }
@@ -333,6 +346,17 @@ class Application {
     }
 
     /**
+     * @param RequestContext $reqCtx
+     *
+     * @return Serializer
+     */
+    protected function getSerializer (RequestContext $reqCtx) {
+
+        return new Serializer($reqCtx);
+
+    }
+
+    /**
      * @param $reqCtx
      */
     protected function executeSuccessQueuedActions ($reqCtx) {
@@ -417,17 +441,6 @@ class Application {
         }
 
         $this->appCtx->getTraceLogger()->trace('error queue processed');
-
-    }
-
-    /**
-     * @param RequestContext $reqCtx
-     *
-     * @return Serializer
-     */
-    protected function getSerializer (RequestContext $reqCtx) {
-
-        return new Serializer($reqCtx);
 
     }
 
