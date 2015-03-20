@@ -475,7 +475,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     /**
      * @param RequestContext $requestContext
      * @param String[]       $values
-     * @param String[]       $alias
      * @param Filter[]       $filters
      * @param array          $params
      * @param Boolean        $hydrateArray
