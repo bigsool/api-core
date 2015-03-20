@@ -64,10 +64,10 @@ class TestUser extends \Core\Model\TestUser implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'id', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'email', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'password', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'name', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'firstname', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lang', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'salt', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'registerDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lastLoginDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'knowsFrom', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'confirmationKey', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'ownedCompany', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'company');
+            return array('__isInitialized__', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'id', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'email', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'password', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'name', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'firstname', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lang', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'salt', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'registerDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lastLoginDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'knowsFrom', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'confirmationKey', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'ownedCompany', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'storage', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'company');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'id', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'email', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'password', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'name', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'firstname', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lang', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'salt', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'registerDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lastLoginDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'knowsFrom', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'confirmationKey', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'ownedCompany', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'company');
+        return array('__isInitialized__', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'id', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'email', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'password', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'name', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'firstname', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lang', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'salt', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'registerDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'lastLoginDate', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'knowsFrom', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'confirmationKey', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'ownedCompany', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'storage', '' . "\0" . 'Core\\Model\\TestUser' . "\0" . 'company');
     }
 
     /**
@@ -428,6 +428,28 @@ class TestUser extends \Core\Model\TestUser implements \Doctrine\ORM\Proxy\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getOwnedCompany', array());
 
         return parent::getOwnedCompany();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setStorage(\Core\Model\TestStorage $storage = NULL)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStorage', array($storage));
+
+        return parent::setStorage($storage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStorage()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStorage', array());
+
+        return parent::getStorage();
     }
 
     /**

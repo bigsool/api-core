@@ -4,13 +4,13 @@
 namespace Core\Module;
 
 
-use Core\Action\Action;
 use Core\Action\ActionReference;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Filter\StringFilter;
+use Core\Model\TestAccount;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
@@ -243,58 +243,6 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    public function testParamsOfActionContexts() {
-
-        $userCalled = $companyCalled = $storageCalled = false;
-
-        $mgr = $this->getMockMagicalModuleManager();
-        $this->setMainEntity($mgr, [
-            'model'=>'TestUser',
-            'create' => [
-                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$userCalled){
-
-                    $this->assertSame(['firstName'=>'first name'], $context->getParams());
-                    $userCalled = true;
-
-                },$this->getCallable(),$this->getCallable())
-            ]
-        ]);
-        $this->addAspect($mgr, [
-            'model'=>'TestCompany',
-            'prefix'  => 'company',
-            'keyPath' => 'company',
-            'create' => [
-                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$companyCalled){
-
-                    $this->assertSame(['name'=>'company'], $context->getParams());
-                    $companyCalled = true;
-
-                },$this->getCallable(),$this->getCallable())
-            ]
-        ]);
-        $this->addAspect($mgr, [
-            'model'=>'TestStorage',
-            'prefix'  => 'storage',
-            'keyPath' => 'company.storage',
-            'create' => [
-                'action' => new GenericAction('module','name',function(ActionContext $context) use (&$storageCalled){
-
-                    $this->assertSame([], $context->getParams());
-                    $storageCalled = true;
-
-                },$this->getCallable(),$this->getCallable())
-            ]
-        ]);
-        $context = new ActionContext(new RequestContext());
-        $context->setParams(['firstName'=>'first name','company.name'=>'company']);
-        $mgr->magicalCreate($context);
-
-        $this->assertTrue($userCalled);
-        $this->assertTrue($companyCalled);
-        $this->assertTrue($storageCalled);
-
-    }
-
     /**
      * @param MagicalModuleManager $mgr
      */
@@ -328,6 +276,73 @@ class MagicalModuleManagerTest extends TestCase {
                 'action'      => NULL,
             ]
         ]);
+
+    }
+
+    public function testParamsOfActionContexts () {
+
+        $userCalled = $companyCalled = $storageCalled = false;
+
+        $mgr = $this->getMockMagicalModuleManager();
+        $this->setMainEntity($mgr, [
+            'model'  => 'TestUser',
+            'create' => [
+                'action' => new GenericAction('module', 'name', function (ActionContext $context) use (&$userCalled) {
+
+                    $this->assertSame(['firstName' => 'first name'], $context->getParams());
+                    $userCalled = true;
+
+                }, $this->getCallable(), $this->getCallable())
+            ]
+        ]);
+        $this->addAspect($mgr, [
+            'model'   => 'TestCompany',
+            'prefix'  => 'company',
+            'keyPath' => 'company',
+            'create'  => [
+                'action' => new GenericAction('module', 'name',
+                    function (ActionContext $context) use (&$companyCalled) {
+
+                        $this->assertSame(['name' => 'company'], $context->getParams());
+                        $companyCalled = true;
+
+                    }, $this->getCallable(), $this->getCallable())
+            ]
+        ]);
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'prefix'  => 'storage',
+            'keyPath' => 'company.storage',
+            'create'  => [
+                'action' => new GenericAction('module', 'name',
+                    function (ActionContext $context) use (&$storageCalled) {
+
+                        $this->assertSame([], $context->getParams());
+                        $storageCalled = true;
+
+                    }, $this->getCallable(), $this->getCallable())
+            ]
+        ]);
+        $context = new ActionContext(new RequestContext());
+        $context->setParams(['firstName' => 'first name', 'company.name' => 'company']);
+        $mgr->magicalCreate($context);
+
+        $this->assertTrue($userCalled);
+        $this->assertTrue($companyCalled);
+        $this->assertTrue($storageCalled);
+
+    }
+
+    /**
+     * @param MagicalModuleManager $mgr
+     * @param array                $params
+     */
+    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
+
+        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
+        $method->setAccessible(true);
+
+        $method->invokeArgs($mgr, [$params]);
 
     }
 
@@ -555,19 +570,6 @@ class MagicalModuleManagerTest extends TestCase {
         // in this case this is not the good one. should improve the test to add some values in ActCtx
 
         $mgr->magicalCreate($actionContext);
-
-    }
-
-    /**
-     * @param MagicalModuleManager $mgr
-     * @param array                $params
-     */
-    protected function setMainEntity (MagicalModuleManager &$mgr, array $params) {
-
-        $method = (new \ReflectionClass($mgr))->getMethod('setMainEntity');
-        $method->setAccessible(true);
-
-        $method->invokeArgs($mgr, [$params]);
 
     }
 
@@ -1098,12 +1100,15 @@ class MagicalModuleManagerTest extends TestCase {
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters]);
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 1);
+        /**
+         * @var TestAccount $account
+         */
         $account = $result[0];
         $this->assertInstanceOf('\Core\Model\TestAccount', $account);
         $this->assertInstanceOf('\Core\Model\TestCompany', $account->getCompany());
         $this->assertEquals('u1@bigsool.com', $account->getUser()->getEmail());
         $this->assertEquals('Bigsool', $account->getCompany()->getName());
-        $this->assertEquals('http://www.amazon.com/', $account->getStorage()->getUrl());
+        $this->assertEquals('http://www.amazon.com/', $account->getCompanyStorage()->getUrl());
 
     }
 
@@ -1385,6 +1390,104 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $em = $prop->getValue($appCtx);
         $em->commit();
+
+    }
+
+    public function testMagicalWithTwoStorage () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'TestUser',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestCompany',
+            'keyPath' => 'company',
+            'prefix'  => 'firm',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'storage',
+            'prefix'  => 's3',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'firm.s3',
+        ]);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'name'     => 'name',
+                'email'    => 'e@ma.il',
+                'password' => 'password',
+                'firm'     => [
+                    'name' => 'firm name',
+                    's3'   => [
+                        'login' => 'firm storage login'
+                    ]
+                ],
+                's3'       => [
+                    'login' => 'storage login',
+                    'url'   => 'storage url',
+                ]
+
+            ]);
+
+        /**
+         * @var TestAccount $account
+         */
+        $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+
+
+        $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
+        $values = ['name', 'firm.name', 'firm.s3.login', 's3.login', 's3.url'];
+
+        $result =
+            $this->magicalAction('Find', $mgrUser, [new RequestContext(),
+                                                    $values,
+                                                    $filters,
+                                                    ['id' => $account->getUser()->getId()],
+                                                    true
+            ]);
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertEquals('name', $result['name']);
+        $this->assertArrayHasKey('firm', $result);
+
+        $this->assertInternalType('array', $result['firm']);
+        $this->assertArrayHasKey('name', $result['firm']);
+        $this->assertEquals('firm name', $result['firm']['name']);
+
+        $this->assertArrayHasKey('s3', $result['firm']);
+        $this->assertInternalType('array', $result['firm']['s3']);
+        $this->assertEquals('firm storage login', $result['firm']['s3']['login']);
+
+        $this->assertArrayHasKey('s3', $result);
+        $this->assertInternalType('array', $result['s3']);
+        $this->assertArrayHasKey('url', $result['s3']);
+        $this->assertEquals('storage url', $result['s3']['url']);
 
     }
 

@@ -41,6 +41,11 @@ class AggregateTest extends TestCase {
      */
     protected static $storage;
 
+    /**
+     * @var \Core\Model\TestStorage
+     */
+    protected static $storage2;
+
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
@@ -83,8 +88,17 @@ class AggregateTest extends TestCase {
         self::$company1->setStorage(self::$storage);
         self::$company1->addUser(self::$user1);
         self::$company1->addUser(self::$user2);
+
+        self::$storage2 = new TestStorage();
+        self::$storage2->setUrl('http://www.amazon.com/');
+        self::$storage2->setCompany(self::$company1);
+        self::$storage2->setLogin('login');
+        self::$storage2->setPassword('qwe');
+        self::$storage2->setUsedspace(0);
+        self::$storage2->setLastusedspaceupdate(new \DateTime());
+        self::$storage2->setIsoutofquota(false);
         self::$company2->addUser(self::$user3);
-        self::$company2->setStorage(self::$storage);
+        self::$company2->setStorage(self::$storage2);
 
         $registry = self::getApplicationContext()->getNewRegistry();
         $registry->save(self::$user1);
@@ -93,12 +107,15 @@ class AggregateTest extends TestCase {
         $registry->save(self::$company1);
         $registry->save(self::$company2);
         $registry->save(self::$storage);
+        $registry->save(self::$storage2);
 
-        self::$user1->setRegisterDate((new \DateTime())->getTimestamp());
-        self::$user2->setRegisterDate((new \DateTime())->getTimestamp());
-        self::$user3->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user1->setRegisterDate(new \DateTime());
+        self::$user2->setRegisterDate(new \DateTime());
+        self::$user3->setRegisterDate(new \DateTime());
 
-        self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
+        self::$storage->setLastUsedSpaceUpdate(new \DateTime());
+
+        self::$storage2->setLastUsedSpaceUpdate(new \DateTime());
 
     }
 

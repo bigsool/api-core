@@ -4,7 +4,15 @@ Core\Model\TestUser:
             targetEntity: Core\Model\TestCompany
             mappedBy: owner
             cascade: ["persist"]
-
+        storage:
+            targetEntity: Core\Model\TestStorage
+            inversedBy: user
+            cascade: ["persist","remove"]
+            joinColumns:
+                storage_id:
+                    referencedColumnName: id
+                    nullable: true
+                    onDelete: CASCADE
     manyToOne:
         company:
             targetEntity: Core\Model\TestCompany

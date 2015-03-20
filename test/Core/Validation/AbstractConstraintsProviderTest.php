@@ -45,15 +45,15 @@ class AbstractConstraintsProviderTest extends TestCase {
         $provider = $this->getMockForAbstractClass('\Core\Validation\AbstractConstraintsProvider');
         $provider->method('listConstraints')->willReturn(['email' => $emailConstraints]);
 
-        $this->assertTrue($provider->validate('email', 'julien@bigsool.com',));
+        $this->assertTrue($provider->validate('email', 'julien@bigsool.com',''));
 
-        $this->assertFalse($provider->validate('email', '',));
+        $this->assertFalse($provider->validate('email', '',''));
 
-        $this->assertTrue($provider->validate('email', '', , true));
+        $this->assertTrue($provider->validate('email', '','' , true));
 
-        $this->assertFalse($provider->validate('email', 'julienbigsool.com',));
+        $this->assertFalse($provider->validate('email', 'julienbigsool.com',''));
 
-        $this->assertTrue($provider->validate('qwe', 123,));
+        $this->assertTrue($provider->validate('qwe', 123,''));
 
     }
 

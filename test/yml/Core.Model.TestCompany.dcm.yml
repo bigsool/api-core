@@ -11,8 +11,13 @@ Core\Model\TestCompany:
                     onDelete: CASCADE
         storage:
             targetEntity: Core\Model\TestStorage
-            mappedBy: company
-            cascade: ["persist"]
+            inversedBy: company
+            cascade: ["persist","remove"]
+            joinColumns:
+                storage_id:
+                    referencedColumnName: id
+                    nullable: true
+                    onDelete: CASCADE
     oneToMany:
         users:
             targetEntity: Core\Model\TestUser

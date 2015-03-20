@@ -66,12 +66,16 @@ class TestStorage
     /**
      * @var \Core\Model\TestCompany
      *
-     * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", inversedBy="storage", cascade={"persist","remove"})
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
-     * })
+     * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", mappedBy="storage", cascade={"persist"})
      */
     private $company;
+
+    /**
+     * @var \Core\Model\TestUser
+     *
+     * @ORM\OneToOne(targetEntity="Core\Model\TestUser", mappedBy="storage", cascade={"persist"})
+     */
+    private $user;
 
 
     /**
@@ -243,5 +247,28 @@ class TestStorage
     public function getCompany()
     {
         return $this->company;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Core\Model\TestUser $user
+     * @return TestStorage
+     */
+    public function setUser(\Core\Model\TestUser $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Core\Model\TestUser 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
