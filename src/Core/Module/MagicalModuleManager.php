@@ -589,7 +589,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
         else {
             array_splice($prefixExploded,0,1);
-            $tab[$prefixExploded[0]] = buildPrefixArray($prefixExploded,$data);
+            $tab[$prefixExploded[0]] = $this->buildPrefixArray($prefixExploded,$data);
         }
 
         return $tab;
