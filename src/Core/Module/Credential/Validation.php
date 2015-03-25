@@ -4,11 +4,10 @@
 namespace Core\Module\Credential;
 
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\String;
-use Core\Validation\Parameter\Email;
-use Core\Validation\Parameter\Int;
 
 class Validation extends AbstractConstraintsProvider {
 
@@ -18,13 +17,20 @@ class Validation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'login' =>
+            'type'     =>
                 [
-                    new Email(),
+                    new String(),
+                    new Choice(['choices' => ['email']]),
                     new NotBlank(),
                 ]
             ,
-            'password'  =>
+            'login'    =>
+                [
+                    new String(),
+                    new NotBlank(),
+                ]
+            ,
+            'password' =>
                 [
                     new String(),
                     new Length(['max' => 255]),

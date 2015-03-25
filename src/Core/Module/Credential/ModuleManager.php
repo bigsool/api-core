@@ -6,7 +6,10 @@ namespace Core\Module\Credential;
 use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Field\Field;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleManager as AbstractModuleManager;
+use Core\Rule\FieldRule;
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -17,36 +20,40 @@ class ModuleManager extends AbstractModuleManager {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'  => [new Validation()],
-                                                                                'password' => [new Validation()]],
+        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
+                                                                                'password' => [new Validation()]
+        ],
             function (ActionContext $context) use ($self) {
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper($this,$params);
-                $authToken = $helper->login($context,$params);
+                $helper = new Helper($this, $params);
+                $authToken = $helper->login($context, $params);
 
                 return ['success' => true,
-                        'data' => [
+                        'data'    => [
                             'authToken' => $authToken,
-                            'email' => $params['login']
-                        ]];
+                            'email'     => $params['login']
+                        ]
+                ];
 
-        }));
+            }));
 
         /**
          * @param ApplicationContext $context
          */
-        $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'  => [new Validation()],
-                                                                                'password' => [new Validation()]],
+        $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
+                                                                                 'type'     => [new Validation()],
+                                                                                 'password' => [new Validation()]
+        ],
             function (ActionContext $context) use ($self) {
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper($this,$params);
-                $credential = $helper->create($context,$params);
+                $helper = new Helper($this, $params);
+                $helper->createCredential($context, $params);
 
-                return $credential;
+                return $context['credential'];
 
-        }));
+            }));
 
     }
 
@@ -54,6 +61,8 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadFilters (ApplicationContext &$context) {
+
+        $context->addFilter(new StringFilter('Credential', 'filterByLogin', 'login = :login'));
 
     }
 
@@ -70,6 +79,9 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadRules (ApplicationContext &$context) {
+
+        $context->addRule(new FieldRule(new Field('Credential', 'salt'),
+                                        new StringFilter('Credential', 'saltIsForbidden', '1 = 0')));
 
     }
 
