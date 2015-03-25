@@ -85,7 +85,7 @@ class SimpleAction extends Action {
 
             if (!$reqCtx->getAuth()->hasRights($this->minRights)) {
 
-                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
 
             }
 

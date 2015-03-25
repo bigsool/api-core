@@ -34,7 +34,7 @@ abstract class API {
 
                 if (!$reqCtx->getAuth()->hasRights($auth)) {
 
-                    throw $appCtx->getErrorManager()->getFormattedError(ERR_PERMISSION_DENIED);
+                    throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
 
                 }
 

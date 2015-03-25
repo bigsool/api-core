@@ -217,11 +217,11 @@ class JSON implements Handler {
         $explodedPathInfo = explode('/', trim($request->getPathInfo(), '/'));
 
         if (!isset($explodedPathInfo[1])) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_CLIENT_IS_INVALID);
         }
         $explodedClient = explode('+', $explodedPathInfo[1]);
         if (count($explodedClient) != 3) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_CLIENT_IS_INVALID);
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_CLIENT_IS_INVALID);
         }
         list($this->clientName, $this->clientVersion, $this->locale) = $explodedClient;
         if ($this->locale != 'fr') {
@@ -229,13 +229,13 @@ class JSON implements Handler {
         }
 
         if (!isset($explodedPathInfo[2])) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_SERVICE_NOT_FOUND);
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_SERVICE_NOT_FOUND);
         }
         $this->service = $explodedPathInfo[2];
 
         $this->method = $request->query->get('method');
         if (!isset($this->method) || !is_string($this->method)) {
-            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
+            throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_METHOD_NOT_FOUND);
         }
 
         $this->path = '/' . $this->service . '/' . $this->method;

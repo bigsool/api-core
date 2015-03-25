@@ -242,13 +242,13 @@ class Application {
 
         $rpcClassName = '\Core\RPC\\' . $protocol;
         if (!$protocol || !class_exists($rpcClassName)) {
-            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERROR_PROTOCOL_IS_INVALID);
         }
 
         $rpcHandler = new $rpcClassName();
 
         if (!($rpcHandler instanceof Handler)) {
-            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_PROTOCOL_IS_INVALID);
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERROR_PROTOCOL_IS_INVALID);
         }
 
         return $rpcHandler;
@@ -317,7 +317,7 @@ class Application {
             $this->appCtx->getTraceLogger()->trace('controller found');
         }
         catch (\Exception $e) {
-            throw $this->appCtx->getErrorManager()->getFormattedError(ERR_METHOD_NOT_FOUND);
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERROR_METHOD_NOT_FOUND);
         }
 
         return $controller;
@@ -414,7 +414,7 @@ class Application {
                                                                                                     $e->getLine(),
                                                                                                     $e->getTraceAsString()
             ]);
-            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => ERR_INTERNAL_ERROR,
+            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => ERROR_INTERNAL_ERROR,
                                                                           'message' => $e->getMessage()
                                                                          ]));
 

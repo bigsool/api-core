@@ -107,7 +107,7 @@ class RequestContext {
 
             $value = $returnedKeyPath->getValue();
             if (!is_string($value) || $value == '*') {
-                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERR_BAD_FIELD);
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_BAD_FIELD);
             }
 
         }
