@@ -12,6 +12,10 @@ class Auth {
 
     const AUTHENTICATED = 'AUTHENTICATED';
 
+    const ROOT = 'ROOT';
+
+    const INTERNAL = 'INTERNAL';
+
     /**
      * @var User
      */
@@ -57,7 +61,19 @@ class Auth {
      */
     public function hasRights ($rights) {
 
-        return 0 == count(array_diff((array)$rights, $this->rights));
+        return self::staticHasRights($this->rights, $rights);
+
+    }
+
+    /**
+     * @param string|string[] $currentRights
+     * @param string|string[] $minRights
+     *
+     * @return bool
+     */
+    public static function staticHasRights ($currentRights, $minRights) {
+
+        return 0 == count(array_diff((array)$minRights, (array)$currentRights));
 
     }
 
