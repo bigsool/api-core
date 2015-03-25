@@ -1,2 +1,1 @@
-v1:
-  path:
+expirationAuthToken: 30 * 60

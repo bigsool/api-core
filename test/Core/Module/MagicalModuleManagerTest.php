@@ -9,6 +9,7 @@ use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Model\TestAccount;
 use Core\Model\TestCompany;
@@ -1454,15 +1455,20 @@ class MagicalModuleManagerTest extends TestCase {
 
         /**
          * @var TestAccount $account
+         * @var TestUser $user
          */
-        $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+        $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+        $account = new TestAccount($user);
 
 
         $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
-        $values = ['name', 'firm.name', 'firm.s3.login', 's3.login', 's3.url'];
+        $values = ['name', 'firm.name', 'firm.s3.login', 's3.login'/*, 's3.url' => requested field (present in RequestContext) */];
+
+        $requestCtx = new RequestContext();
+        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
 
         $result =
-            $this->magicalAction('Find', $mgrUser, [new RequestContext(),
+            $this->magicalAction('Find', $mgrUser, [$requestCtx,
                                                     $values,
                                                     $filters,
                                                     ['id' => $account->getUser()->getId()],

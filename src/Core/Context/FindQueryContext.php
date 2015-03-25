@@ -41,21 +41,40 @@ class FindQueryContext implements QueryContext {
     protected $reqCtx;
 
     /**
+     * @var string[]
+     */
+    protected $rights;
+
+    /**
      * @param string         $entity
      * @param RequestContext $reqCtx
+     * @param string[]       $rights
      */
-    public function __construct ($entity, RequestContext $reqCtx = NULL) {
+    public function __construct ($entity, RequestContext $reqCtx = NULL, array $rights = []) {
 
         if (!is_string($entity)) {
             throw new RuntimeException('$entity must be a string');
         }
 
+        if (!is_array($rights)) {
+            throw new RuntimeException('$rights must be a array');
+        }
+
         $this->entity = $entity;
+        $this->rights = $rights;
 
         if (is_null($reqCtx)) {
             $reqCtx = new RequestContext();
         }
         $this->reqCtx = $reqCtx;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRights () {
+
+        return $this->rights;
     }
 
     /**

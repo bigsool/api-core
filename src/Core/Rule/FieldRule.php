@@ -4,6 +4,7 @@
 namespace Core\Rule;
 
 
+use Core\Auth;
 use Core\Context\FindQueryContext;
 use Core\Context\QueryContext;
 use Core\Field\Field;
@@ -71,6 +72,11 @@ class FieldRule implements Rule {
     public function shouldApply (QueryContext $ctx) {
 
         if (!($ctx instanceof FindQueryContext)) {
+            return false;
+        }
+
+        // Do not apply rule if the Query is defined as INTERNAL
+        if (Auth::staticHasRights($ctx->getRights(), Auth::INTERNAL)) {
             return false;
         }
 
