@@ -108,13 +108,13 @@ abstract class MagicalModuleManager extends ModuleManager {
 
                 $subContext = NULL;
 
-                if ($params) {
+                if (is_array($params) || $params != null) {
 
                     $subContext = new ActionContext($ctx);
                     $subContext->clearParams();
                     $params = UnsafeParameter::getFinalValue($params);
                     foreach ($params as $key => $value) {
-                        if (!is_array($value)) {
+                        if (!$this->isParamLinkedToAspectModel($modelAspect->getKeyPath()->getValue(),$key)) {
                             $subContext->setParam($key, $value);
                         }
                     }
@@ -132,7 +132,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                     $subContext = new ActionContext($ctx);
                     $subContext->clearParams();
                     foreach ($formattedParams as $key => $value) {
-                        if (!is_array($value)) {
+                        if (!$this->isParamLinkedToAspectModel(null,$key)) {
                             $subContext->setParam($key, $value);
                         }
                     }
@@ -140,7 +140,8 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $p = $subContext->getParams();
                 $result = $modifyAction->process($subContext ? $subContext : $ctx);
 
-                $this->models[$modelAspect->getModel()] = $result;
+                $key = $modelAspect->getKeyPath() ? $modelAspect->getKeyPath()->getValue() : 'main';
+                $this->models[$key] = $result;
 
                 if ($this->isMainEntity($modelAspect)) {
                     $this->mainEntity = $result;
@@ -171,6 +172,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
+
         /**
          * @param string      $action
          * @param ModelAspect $modelAspect
@@ -190,6 +192,21 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $modifyAction;
+
+    }
+
+    private function isParamLinkedToAspectModel ($keyPath,$paramKey) {
+
+        $keyPath = $keyPath ? $keyPath.'.'.$paramKey : $paramKey;
+
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->getKeyPath()) continue;
+            if($modelAspect->getKeyPath()->getValue() == $keyPath) {
+                return true;
+            }
+        }
+
+        return false;
 
     }
 
@@ -253,7 +270,17 @@ abstract class MagicalModuleManager extends ModuleManager {
             $metadata = ApplicationContext::getInstance()->getClassMetadata($mainEntityClassName);
             $mapping = $metadata->getAssociationMapping($lastKeyPath);
 
-            $this->setRelationshipsFromAssociationMapping($modelName, $mapping);
+            $explodedKeyPath = explode('.',$keyPath);
+            if (count($explodedKeyPath) == 1) {
+                $sourceKeyPath = 'main';
+            }
+            else {
+                array_pop($explodedKeyPath);
+                $sourceKeyPath = implode('.',$explodedKeyPath);;
+            }
+            $targetKeyPath = $keyPath;
+
+            $this->setRelationshipsFromAssociationMapping($sourceKeyPath, $targetKeyPath, $mapping);
 
         }
 
@@ -275,7 +302,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param string $sourceModelName
      * @param        $mapping
      */
-    private function setRelationshipsFromAssociationMapping ($sourceModelName, array $mapping) {
+    private function setRelationshipsFromAssociationMapping ($sourceKeyPath, $targetKeyPath, array $mapping) {
 
         $target = explode('\\', $mapping['targetEntity']);
         $target = $target[count($target) - 1];
@@ -298,10 +325,10 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $fn = $prefix1 . ucfirst($field1);
-        $this->models[$sourceModelName]->$fn($this->models[$target]);
+        $this->models[$sourceKeyPath]->$fn($this->models[$targetKeyPath]);
 
         $fn = $prefix2 . ucfirst($field2);
-        $this->models[$target]->$fn($this->models[$sourceModelName]);
+        $this->models[$targetKeyPath]->$fn($this->models[$sourceKeyPath]);
 
     }
 
@@ -728,19 +755,19 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
-        $modelAspects = $this->modelAspects;
 
         $appCtx->addAction(new SimpleAction($module, $name, [], $params,
-            function (ActionContext $actionContext) use ($processFn, &$modelAspects, &$name) {
+            function (ActionContext $actionContext) use ($processFn, &$params, &$name) {
 
-                $params = $actionContext->getParams();
+                $ctxParams = $actionContext->getParams();
 
-                if (count($params) > 0) {
-                    foreach ($params as $key => $value) {
-                        $modelAspect = $this->getModelAspectForParam($key); //TODO//
+                if (count($ctxParams) > 0) {
+                    foreach ($ctxParams as $key => $value) {
+                        if (array_key_exists($key,$params)) {
+                            $validator = $params[$key][0];
+                            $validator->validate($key, UnsafeParameter::getFinalValue($value), $key);
+                        }
                     }
-                    $validator = new RuntimeConstraintsProvider([$key => $modelAspect->getConstraints($name)]);
-                    $validator->validate($key, UnsafeParameter::getFinalValue($value), $key);
                 }
 
                 return $processFn($actionContext);
@@ -748,20 +775,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             }));
 
     }
-
-    private function getModelAspectForParam($param) {
-
-        foreach ($this->modelAspects as $modelAspect) {
-            if (!$modelAspect->getKeyPath() && !is_array($modelAspect)) {
-                return $modelAspect;
-            }
-            else if ($modelAspect->getPrefix() == $param) {
-                return $modelAspect;
-            }
-        }
-        return null;
-    }
-
 
 
 }
