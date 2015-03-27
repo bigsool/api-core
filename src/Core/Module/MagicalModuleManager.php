@@ -548,13 +548,23 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addKeyPath(new KeyPath($value));
         }
 
+        $reqCtxKeyPaths = $requestContext->getReturnedKeyPaths();
+        $reqCtxFormattedKeyPaths = [];
+        foreach ($reqCtxKeyPaths as $keyPath) {
+            $newValue = $this->formatFindValues([$keyPath->getValue()])[0];
+            $reqCtxFormattedKeyPaths[] = new KeyPath($newValue);
+        }
+
+        $requestContext->setFormattedReturnedKeyPaths($reqCtxFormattedKeyPaths);
+
+
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);
         }
 
         $qryCtx->setParams($params);
 
-        $result = $registry->find($qryCtx, $hydrateArray);
+        $result = $registry->find($qryCtx, $hydrateArray, $reqCtxFormattedKeyPaths);
 
         return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
 

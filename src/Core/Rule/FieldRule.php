@@ -80,7 +80,8 @@ class FieldRule implements Rule {
             return false;
         }
 
-        $keyPaths = $ctx->getReqCtx()->getReturnedKeyPaths();
+        $keyPaths = $ctx->getReqCtx()->getFormattedReturnedKeyPaths();
+
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->getField($ctx);
             if ($field->getEntity() != $this->getField()->getEntity()) {

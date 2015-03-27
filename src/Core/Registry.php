@@ -211,7 +211,9 @@ class Registry implements EventSubscriber {
             $keyPath->resolve($this, $ctx);
         }
 
-        foreach ($ctx->getReqCtx()->getReturnedKeyPaths() as &$keyPathFromRequest) {
+        $reqCtxKeyPaths = $ctx->getReqCtx()->getFormattedReturnedKeyPaths();
+
+        foreach ($reqCtxKeyPaths as &$keyPathFromRequest) {
             // KeyPath as to be resolve to do the isEqual()
             $keyPathFromRequest->resolve($this, $ctx);
             foreach ($keyPaths as $alreadyAddedKeyPath) {

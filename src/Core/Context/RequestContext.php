@@ -48,6 +48,11 @@ class RequestContext {
     protected $returnedKeyPaths = [];
 
     /**
+     * @var KeyPath[]
+     */
+    protected $formattedReturnedKeyPaths = [];
+
+    /**
      * @var Filter
      */
     protected $filter;
@@ -113,6 +118,41 @@ class RequestContext {
         }
 
         $this->returnedKeyPaths = $returnedKeyPaths;
+
+    }
+
+    /**
+     * @return KeyPath[]
+     */
+    public function getFormattedReturnedKeyPaths () {
+
+        if (count($this->formattedReturnedKeyPaths) == 0) {
+            return $this->returnedKeyPaths;
+        }
+        
+        return $this->formattedReturnedKeyPaths;
+
+    }
+
+    /**
+     * @param KeyPath[] $formattedReturnedKeyPaths
+     *
+     * @throws FormattedError
+     */
+    public function setFormattedReturnedKeyPaths (array $formattedReturnedKeyPaths) {
+
+        foreach ($formattedReturnedKeyPaths as $formattedReturnedKeyPath) {
+            if (!($formattedReturnedKeyPath instanceof KeyPath)) {
+                throw new \RuntimeException('invalid $returnedKeyPath');
+            }
+
+            $value = $formattedReturnedKeyPath->getValue();
+            if (!is_string($value) || $value == '*') {
+                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_BAD_FIELD);
+            }
+        }
+
+        $this->formattedReturnedKeyPaths = $formattedReturnedKeyPaths;
 
     }
 
