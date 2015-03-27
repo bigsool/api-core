@@ -5,8 +5,24 @@ namespace Core\Module;
 
 
 use Core\Context\ApplicationContext;
+use Core\Context\FindQueryContext;
+use Core\Field\KeyPath;
+use Core\Filter\Filter;
 
 class BasicHelper {
+
+    /**
+     * @param string $modelName
+     *
+     * @return mixed
+     */
+    public function createRealModel ($modelName) {
+
+        $className = $this->getRealModelClassName($modelName);
+
+        return new $className;
+
+    }
 
     /**
      * @param $modelName
@@ -20,22 +36,10 @@ class BasicHelper {
     }
 
     /**
-     * @param string $modelName
-     *
-     * @return mixed
-     */
-    public function createRealModel($modelName) {
-
-        $className = $this->getRealModelClassName($modelName);
-        return new $className;
-
-    }
-
-    /**
-     * @param mixed $model
+     * @param mixed  $model
      * @param string $modelName
      */
-    public function checkRealModelType($model, $modelName) {
+    public function checkRealModelType ($model, $modelName) {
 
         $className = $this->getRealModelClassName($modelName);
         if (!is_a($model, $className)) {
@@ -74,6 +78,33 @@ class BasicHelper {
         }
 
         return $model;
+
+    }
+
+    /**
+     * @param FindQueryContext $context
+     * @param bool             $hydrateArray
+     * @param KeyPath[]        $keyPaths
+     * @param Filter[]         $filters
+     * @param array            $params
+     *
+     * @return mixed[]
+     */
+    public function basicFind (FindQueryContext $context, $hydrateArray = true, array $keyPaths = [],
+                               array $filters = [],
+                               array $params = []) {
+
+        foreach ($keyPaths as $keyPath) {
+            $context->addKeyPath($keyPath);
+        }
+
+        foreach ($filters as $filter) {
+            $context->addFilter($filter);
+        }
+
+        $context->setParams($params);
+
+        return ApplicationContext::getInstance()->getNewRegistry()->find($context, $hydrateArray);
 
     }
 

@@ -7,6 +7,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Field\Field;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
@@ -47,8 +48,21 @@ class ModuleManager extends AbstractModuleManager {
         ],
             function (ActionContext $context) use ($self) {
 
+                $appCtx = ApplicationContext::getInstance();
+
                 $params = $context->getVerifiedParams();
                 $helper = new Helper($this, $params);
+
+                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
+
+                $helper->findCredential($context, true, [new KeyPath('*')], [$filter], ['login' => $params['login']]);
+
+                if (count($context['credentials']) != 0) {
+
+                    throw $appCtx->getErrorManager()->getFormattedError(ERROR_CREDENTIAL_ALREADY_EXIST);
+
+                }
+
                 $helper->createCredential($context, $params);
 
                 return $context['credential'];
