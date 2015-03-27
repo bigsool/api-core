@@ -595,8 +595,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->modelAspects as $modelAspect) {
 
-            if ($modelAspect->getKeyPath()) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+            $keyPath = $modelAspect->getKeyPath();
+            $prefix = $modelAspect->getPrefix();
+
+            if ($keyPath) {
+                $explodedKeyPath = explode('.', $keyPath->getValue());
                 $data = $result;
                 foreach ($explodedKeyPath as $elem) {
                     $data = $data[$elem];
@@ -613,7 +616,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $formattedResult = array_merge_recursive($formattedResult,$data);
 
-            if ($modelAspect->getKeyPath()) {
+            if ($keyPath && $keyPath->getValue() != $prefix) {
                 $formattedResult =  $this->removeKeysFromArray($explodedKeyPath,$formattedResult);
             }
 
