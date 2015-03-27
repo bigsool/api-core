@@ -613,7 +613,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $data = $this->buildArrayWithKeys($explodedPrefix,$data);
             }
 
-            $formattedResult = array_merge_recursive($formattedResult,$data);
+            $formattedResult = ArrayExtra::array_merge_recursive_distinct($formattedResult,$data);
 
             if ($keyPath && $keyPath->getValue() != $prefix) {
                 $formattedResult =  $this->removeKeysFromArray($explodedKeyPath,$formattedResult);
