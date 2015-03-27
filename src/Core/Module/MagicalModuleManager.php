@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Core\Module;
-
 
 use Core\Action\Action;
 use Core\Action\SimpleAction;
@@ -17,7 +15,6 @@ use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Validation\Parameter\Constraint;
-use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
@@ -71,114 +68,115 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $params = $ctx->getParams();
-        $formattedParams = $this->format($params);
+        $formattedParams = $this->formatModifyParameters($params);
 
         foreach ($this->modelAspects as $modelAspect) {
 
-                // TODO HANDLE ONETOMANY
-                $actions = $modelAspect->getActions();
+            // TODO HANDLE ONETOMANY
+            $actions = $modelAspect->getActions();
 
-                $modifyAction = array_key_exists($action, $actions) ? $actions[$action] : 'none';
+            $modifyAction = array_key_exists($action, $actions) ? $actions[$action] : 'none';
 
-                if ($modifyAction != 'none' && $actions[$action] == NULL) {
-                    continue;
-                }
+            if ($modifyAction != 'none' && $actions[$action] == NULL) {
+                continue;
+            }
 
-                $params = null;
-                if ($modelAspect->getKeyPath()) {
-                   $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
-                   $params = $formattedParams;
-                   $data = $params;
-                   foreach($explodedKeyPath as $elem) {
-                       if (!isset($data[$elem])) {
-                           $data = [];
-                           break;
-                       }
-                       $data = $data[$elem];
+            $params = null;
+            if ($modelAspect->getKeyPath()) {
+               $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+               $params = $formattedParams;
+               $data = $params;
+               foreach($explodedKeyPath as $elem) {
+                   if (!isset($data[$elem])) {
+                       $data = [];
+                       break;
                    }
-                   $params = $data;
-                }
+                   $data = $data[$elem];
+               }
+               $params = $data;
+            }
 
 
-                if ($modifyAction == 'none') {
+            if ($modifyAction == 'none') {
 
-                    $modifyAction = $this->getMagicalAction($action, $modelAspect);
+                $modifyAction = $this->getMagicalAction($action, $modelAspect);
 
-                }
+            }
 
-                $subContext = NULL;
+            $subContext = NULL;
 
-                if (is_array($params) || $params != null) {
+            if (is_array($params) || $params != null) {
 
-                    $subContext = new ActionContext($ctx);
-                    $subContext->clearParams();
-                    $params = UnsafeParameter::getFinalValue($params);
-                    foreach ($params as $key => $value) {
-                        if (!$this->isParamLinkedToAspectModel($modelAspect->getKeyPath()->getValue(),$key)) {
-                            $subContext->setParam($key, $value);
-                        }
-                    }
-                    if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                        $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
-                        if ($entity) {
-                            $subContext->setParam('id', $entity->getId());
-                        }
-                    }
-
-
-                }
-                else {
-                    // Create a new context and remove parameters which are used by model aspects
-                    $subContext = new ActionContext($ctx);
-                    $subContext->clearParams();
-                    foreach ($formattedParams as $key => $value) {
-                        if (!$this->isParamLinkedToAspectModel(null,$key)) {
-                            $subContext->setParam($key, $value);
-                        }
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+                $params = UnsafeParameter::getFinalValue($params);
+                foreach ($params as $key => $value) {
+                    if (!$this->isParamLinkedToAspectModel($modelAspect->getKeyPath()->getValue(),$key)) {
+                        $subContext->setParam($key, $value);
                     }
                 }
-                $p = $subContext->getParams();
-                $result = $modifyAction->process($subContext ? $subContext : $ctx);
-
-                $key = $modelAspect->getKeyPath() ? $modelAspect->getKeyPath()->getValue() : 'main';
-                $this->models[$key] = $result;
-
-                if ($this->isMainEntity($modelAspect)) {
-                    $this->mainEntity = $result;
+                if (!$this->isMainEntity($modelAspect) && $action == 'update') {
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
+                    if ($entity) {
+                        $subContext->setParam('id', $entity->getId());
+                    }
                 }
 
-                if ($subContext) {
-                    $iterator = $subContext->getIterator();
-                    while ($iterator->valid()) {
-                        $key = $iterator->key();
-                        if (!isset($ctx[$key])) {
-                            $ctx[$key] = $iterator->current();
-                        }
-                        $iterator->next();
+
+            }
+            else {
+
+                $subContext = new ActionContext($ctx);
+                $subContext->clearParams();
+                foreach ($formattedParams as $key => $value) {
+                    if (!$this->isParamLinkedToAspectModel(null,$key)) {
+                        $subContext->setParam($key, $value);
                     }
                 }
 
             }
 
-            if (!isset($this->mainEntity)) {
-                return NULL;
+            $result = $modifyAction->process($subContext);
+
+            $key = $modelAspect->getKeyPath() ? $modelAspect->getKeyPath()->getValue() : 'main';
+            $this->models[$key] = $result;
+
+            if ($this->isMainEntity($modelAspect)) {
+                $this->mainEntity = $result;
             }
 
-            $this->setRelationshipsFromMetadata();
-
-            $this->saveEntities();
-
-            return $this->getMagicalEntityObject($this->mainEntity);
+            if ($subContext) {
+                $iterator = $subContext->getIterator();
+                while ($iterator->valid()) {
+                    $key = $iterator->key();
+                    if (!isset($ctx[$key])) {
+                        $ctx[$key] = $iterator->current();
+                    }
+                    $iterator->next();
+                }
+            }
 
         }
 
+        if (!isset($this->mainEntity)) {
+            return NULL;
+        }
 
-        /**
-         * @param string      $action
-         * @param ModelAspect $modelAspect
-         *
-         * @return Action
-         */
+        $this->setRelationshipsFromMetadata();
+
+        $this->saveEntities();
+
+        return $this->getMagicalEntityObject($this->mainEntity);
+
+    }
+
+
+    /**
+     * @param string      $action
+     * @param ModelAspect $modelAspect
+     *
+     * @return Action
+     */
     protected function getMagicalAction ($action, ModelAspect $modelAspect) {
 
         $appCtx = ApplicationContext::getInstance();
@@ -195,13 +193,18 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param string $keyPath
+     * @param string $paramKey
+     * @return boolean
+     */
     private function isParamLinkedToAspectModel ($keyPath,$paramKey) {
 
         $keyPath = $keyPath ? $keyPath.'.'.$paramKey : $paramKey;
 
         foreach ($this->modelAspects as $modelAspect) {
             if (!$modelAspect->getKeyPath()) continue;
-            if($modelAspect->getKeyPath()->getValue() == $keyPath) {
+            if ($modelAspect->getKeyPath()->getValue() == $keyPath) {
                 return true;
             }
         }
@@ -252,8 +255,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             $keyPath = $modelAspect->getKeyPath()->getValue();
             $modelNameForKeyPath[$keyPath] = $modelAspect->getModel();
 
-            // Si prefix ne contient pas de . alors on se base de mainEntity
             $pos = strrpos($keyPath, '.');
+
             if ($pos === false) {
                 $modelName = $this->getMainEntityName();
                 $lastKeyPath = $keyPath;
@@ -286,6 +289,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @return string
+     */
     private function getMainEntityName () {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -299,13 +305,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param string $sourceModelName
+     * @param string $sourceKeyPath
+     * @param string $targetKeyPath
      * @param        $mapping
      */
     private function setRelationshipsFromAssociationMapping ($sourceKeyPath, $targetKeyPath, array $mapping) {
-
-        $target = explode('\\', $mapping['targetEntity']);
-        $target = $target[count($target) - 1];
 
         $field1 = $mapping['fieldName'];
         $field2 = isset($mapping['mappedBy']) ? $mapping['mappedBy'] : $mapping['inversedBy'];
@@ -344,7 +348,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
+    /**
+     * @param string $entity
+     *
+     * @return string
+     */
     public function getMagicalEntityObject ($entity) {
 
         $className = Registry::realModelClassName($this->getModuleName());
@@ -480,10 +488,13 @@ abstract class MagicalModuleManager extends ModuleManager {
         $actionNames = ['create', 'find', 'update', 'delete'];
         $constraints = [];
         $actions = [];
+
         foreach ($actionNames as $actionName) {
+
             if (!isset($config[$actionName])) {
                 continue;
             }
+
             $configOfTheAction = $config[$actionName];
 
             if (isset($configOfTheAction['constraints'])) {
@@ -504,6 +515,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                     throw new \RuntimeException('invalid action');
                 }
             }
+
         }
 
         $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
@@ -543,7 +555,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         $qryCtx->setParams($params);
 
         $result = $registry->find($qryCtx, $hydrateArray);
-
 
         return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
 
@@ -602,15 +613,20 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    public function format ($result) {
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    public function formatModifyParameters ($params) {
 
-        $formattedResult = [];
+        $formattedParams = [];
 
         foreach ($this->modelAspects as $modelAspect) {
 
             if ($modelAspect->getPrefix()) {
                 $explodedPrefix = explode('.', $modelAspect->getPrefix());
-                $data = $result;
+                $data = $params;
                 $haveToContinue = false;
                 foreach ($explodedPrefix as $elem) {
                     if (!isset($data[$elem])) {
@@ -622,7 +638,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 if ($haveToContinue) continue;
             }
             else {
-                $data = $result;
+                $data = $params;
             }
 
             if ($modelAspect->getKeyPath()) {
@@ -630,19 +646,20 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $data = $this->buildArrayWithKeys($explodedKeyPath,$data);
             }
 
-            $formattedResult = ArrayExtra::array_merge_recursive_distinct($formattedResult,$data);
+            $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams,$data);
 
             if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getKeyPath()->getValue()) {
-               $formattedResult =  $this->removeKeysFromArray($explodedPrefix,$formattedResult);
+                $formattedParams =  $this->removeKeysFromArray($explodedPrefix,$formattedParams);
             }
 
         }
 
-        return $formattedResult;
+        return $formattedParams;
 
     }
+
     /**
-     * @param array $prefixExploded
+     * @param array $keys
      * @param array $data
      * @return array
      */
@@ -662,7 +679,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param array $keyPath
+     * @param array $keysToRemove
      * @param array $data
      * @return array
      */
@@ -673,10 +690,12 @@ abstract class MagicalModuleManager extends ModuleManager {
         if (is_array($data)) {
 
             foreach ($data as $key => $value) {
+
                 if (count($keysToRemove) == 1 && $keysToRemove[0] == $key) {
                     continue;
                 }
                 $newData[$key] = $this->removeKeysFromArray(array_slice($keysToRemove,1,count($keysToRemove)), $value);
+
             }
 
         }
@@ -700,19 +719,25 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $entities = [];
         foreach ($result as $elem) {
+
             if (is_array($elem)) {
                 $entities[] = $this->getMagicalEntityObject($elem[0]);
             }
             else {
                 $entities[] = $this->getMagicalEntityObject($elem);
             }
+
         }
 
         return $entities;
 
     }
 
-
+    /**
+     * @param Array $values
+     *
+     * @return Array
+     */
     private function formatFindValues ($values) {
 
         $formattedValues = [];
@@ -722,6 +747,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $explodedValue = explode('.',$value);
             $field = $explodedValue[count($explodedValue) -1];
             $prefixed = false;
+
             if (count($explodedValue) > 1) {
                 array_splice($explodedValue,count($explodedValue) - 1,1);
                 $value = implode('.',$explodedValue);
