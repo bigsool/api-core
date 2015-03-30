@@ -38,7 +38,10 @@ class KeyPath extends AbstractKeyPath {
      */
     public function isEqual ($keyPath) {
 
-        return ($keyPath instanceof self) && ($keyPath->entity === $this->entity) && ($keyPath->field === $this->field);
+        return ($keyPath instanceof self)
+               && ($keyPath->entity === $this->entity)
+               && ($keyPath->field === $this->field)
+               && ($keyPath->getValue() === $this->getValue());
 
     }
 
