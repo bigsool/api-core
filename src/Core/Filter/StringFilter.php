@@ -3,6 +3,7 @@
 namespace Core\Filter;
 
 use Core\Expression\BinaryExpression;
+use Core\Expression\Expression;
 use Core\Expression\KeyPath;
 use Core\Expression\Parameter;
 use Core\Expression\Value;
@@ -20,13 +21,18 @@ class StringFilter extends Filter {
      * @param string $name
      * @param string $expression
      */
-    function __construct ($entity, $name, $expression) {
+    public function __construct ($entity, $name, $expression) {
 
         parent::__construct($entity, $name, $this->stringToExpression($expression));
 
     }
 
-    function stringToExpression ($expression) {
+    /**
+     * @param string $expression
+     *
+     * @return BinaryExpression
+     */
+    public function stringToExpression ($expression) {
 
         $operator = NULL;
         $strOperator = "";
@@ -56,16 +62,21 @@ class StringFilter extends Filter {
             $operator = new EqualOperator();
         }
 
-        $operandes = explode($strOperator, $expression);
+        $operands = explode($strOperator, $expression);
 
         $binaryExpression =
-            new BinaryExpression($operator, $this->getExpressionFromString(trim($operandes[0])),
-                                 $this->getExpressionFromString(trim($operandes[1])));
+            new BinaryExpression($operator, $this->getExpressionFromString(trim($operands[0])),
+                                 $this->getExpressionFromString(trim($operands[1])));
 
         return $binaryExpression;
 
     }
 
+    /**
+     * @param string $str
+     *
+     * @return Expression
+     */
     private function getExpressionFromString ($str) {
 
         $expression = NULL;
