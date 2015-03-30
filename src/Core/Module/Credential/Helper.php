@@ -153,12 +153,14 @@ class Helper extends BasicHelper {
      * @param KeyPath[]     $keyPaths
      * @param Filter[]      $filters
      * @param array         $params
+     * @param string[]      $rights
      */
     public function findCredential (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
                                     array $filters = [],
-                                    array $params = []) {
+                                    array $params = [],
+                                    array $rights) {
 
-        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext());
+        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), $rights);
 
         $actionContext['credentials'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
 
