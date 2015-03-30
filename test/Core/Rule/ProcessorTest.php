@@ -1,13 +1,12 @@
 <?php
 
-namespace Core;
+namespace Core\Rule;
 
 
 use Core\Context\FindQueryContext;
-use Core\Rule\CallbackRule;
-use Core\Rule\Processor;
+use Core\TestCase;
 
-class RuleProcessorTest extends TestCase {
+class ProcessorTest extends TestCase {
 
     public function testApply () {
 
