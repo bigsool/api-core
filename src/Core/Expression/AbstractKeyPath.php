@@ -99,7 +99,7 @@ abstract class AbstractKeyPath extends Value {
         if (count($aliasForEntity) == 0) {
             throw new \RuntimeException('alias for entity ' . $this->getEntity($ctx) . ' not found');
         }
-        elseif (count($aliasForEntity) > 1) {
+        elseif (isset($this->rootEntity) && count($aliasForEntity) > 1) {
             throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
         }
 

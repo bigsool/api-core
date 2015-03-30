@@ -7,6 +7,7 @@ namespace Core;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\QueryContext;
+use Core\Context\RequestContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath as ExpressionKeyPath;
 use Core\Expression\Parameter;
@@ -448,6 +449,29 @@ class RegistryTest extends TestCase {
         $dql = 'SELECT testUser.email, testUser.name ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
+
+        $this->assertSame($dql, $registry->getLastExecutedQuery());
+
+    }
+
+    public function testFindWithTwoIdenticalEntities() {
+
+        $reqCtx = new RequestContext();
+        //$reqCtx->setReturnedKeyPaths([new FieldKeyPath('email'),new FieldKeyPath('company.users.email')]);
+
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+
+        $qryCtx->addKeyPath(new FieldKeyPath('name'));
+        $qryCtx->addKeyPath(new FieldKeyPath('company.users.name'));
+        $qryCtx->addKeyPath(new FieldKeyPath('company.users.email'));
+
+        $registry = $this->appCtx->getNewRegistry();
+        $registry->find($qryCtx, false);
+
+        $dql = 'SELECT testUser.name, testUserCompanyUsers.name, testUserCompanyUsers.email ' .
+               'FROM \Core\Model\TestUser testUser ' .
+               'INNER JOIN testUser.company testUserCompany ' .
+               'INNER JOIN testUserCompany.users testUserCompanyUsers';
 
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
