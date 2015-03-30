@@ -1,15 +1,14 @@
 <?php
 
 
-namespace Core;
+namespace Core\Rule;
 
 
 use Core\Context\ApplicationContext;
 use Core\Context\QueryContext;
-use Core\Rule\Rule;
 use Doctrine\ORM\Query;
 
-class RuleProcessor {
+class Processor {
 
     /**
      * @param QueryContext $ctx

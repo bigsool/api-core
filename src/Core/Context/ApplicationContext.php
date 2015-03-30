@@ -18,7 +18,7 @@ use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
 use Core\Registry;
 use Core\Rule\Rule;
-use Core\RuleProcessor;
+use Core\Rule\Processor;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -36,7 +36,7 @@ class ApplicationContext {
     protected $entityManager;
 
     /**
-     * @var RuleProcessor
+     * @var \Core\Rule\Processor
      */
     protected $ruleProcessor;
 
@@ -208,7 +208,7 @@ class ApplicationContext {
     }
 
     /**
-     * @return RuleProcessor
+     * @return \Core\Rule\Processor
      */
     public function getRuleProcessor () {
 
@@ -217,9 +217,9 @@ class ApplicationContext {
     }
 
     /**
-     * @param RuleProcessor $ruleProcessor
+     * @param \Core\Rule\Processor $ruleProcessor
      */
-    public function setRuleProcessor (RuleProcessor $ruleProcessor) {
+    public function setRuleProcessor (Processor $ruleProcessor) {
 
         $this->ruleProcessor = $ruleProcessor;
 

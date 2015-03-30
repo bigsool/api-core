@@ -11,6 +11,7 @@ use Core\Expression\NAryExpression;
 use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
+use Core\Rule\Processor;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -89,7 +90,7 @@ class Registry implements EventSubscriber {
 
         $saveQueryContext = new SaveQueryContext($model);
 
-        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor = new Processor();
         $ruleProcessor->apply($saveQueryContext);
         $this->entityManager->persist($model);
         $this->entityManager->flush();
@@ -276,7 +277,7 @@ class Registry implements EventSubscriber {
             $qb->addGroupBy($groupByClause);
         }
 
-        $ruleProcessor = new RuleProcessor();
+        $ruleProcessor = new Processor();
         $ruleProcessor->apply($ctx);
 
         $expressions = [];

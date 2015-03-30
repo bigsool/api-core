@@ -5,6 +5,7 @@ namespace Core;
 
 use Core\Context\FindQueryContext;
 use Core\Rule\CallbackRule;
+use Core\Rule\Processor;
 
 class RuleProcessorTest extends TestCase {
 
@@ -56,7 +57,7 @@ class RuleProcessorTest extends TestCase {
             $appCtx->addRule($rule);
         }
 
-        $processor = new RuleProcessor();
+        $processor = new Processor();
 
         $processor->apply(new FindQueryContext('Product'));
 
