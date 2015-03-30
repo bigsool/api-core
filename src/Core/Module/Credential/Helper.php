@@ -7,6 +7,7 @@ use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
 use Core\Module\BasicHelper;
@@ -28,7 +29,7 @@ class Helper extends BasicHelper {
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), Auth::INTERNAL);
+        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
 
         $qryCtx->addKeyPath(new KeyPath('*'));
 
@@ -158,7 +159,7 @@ class Helper extends BasicHelper {
     public function findCredential (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
                                     array $filters = [],
                                     array $params = [],
-                                    array $rights) {
+                                    array $rights = []) {
 
         $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), $rights);
 
