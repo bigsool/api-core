@@ -97,6 +97,9 @@ class ModuleManager extends AbstractModuleManager {
         $context->addRule(new FieldRule(new Field('Credential', 'salt'),
                                         new StringFilter('Credential', 'saltIsForbidden', '1 = 0')));
 
+        $context->addRule(new FieldRule(new Field('Credential', 'password'),
+                                        new StringFilter('Credential', 'passwordIsForbidden', '1 = 0')));
+
     }
 
 }
