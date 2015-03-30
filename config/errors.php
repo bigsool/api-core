@@ -80,3 +80,7 @@ $errorManager->defineError(new Error(ERROR_MISSING_PARAM, "paramètre manquant",
                                      'missing parameter', ERROR_INVALID_PARAM));
 @define('ERROR_USER_NOT_FOUND', -7001);
 $errorManager->defineError(new Error(ERROR_USER_NOT_FOUND, "compte inexistant", 'user not found'));
+@define('ERROR_CREDENTIAL_ALREADY_EXIST', -7002);
+$errorManager->defineError(new Error(ERROR_CREDENTIAL_ALREADY_EXIST, "ce login est déjà utilisé",
+                                     'this login is already used'));
+

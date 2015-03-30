@@ -4,9 +4,12 @@
 namespace Core\Module\Credential;
 
 use Core\Action\SimpleAction;
+use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Context\RequestContext;
 use Core\Field\Field;
+use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
@@ -47,11 +50,27 @@ class ModuleManager extends AbstractModuleManager {
         ],
             function (ActionContext $context) use ($self) {
 
+                $appCtx = ApplicationContext::getInstance();
+
                 $params = $context->getVerifiedParams();
                 $helper = new Helper($this, $params);
-                $helper->createCredential($context, $params);
 
-                return $context['credential'];
+                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
+
+                $ctx = new ActionContext(new RequestContext());
+
+                $helper->findCredential($ctx, true, [new KeyPath('*')], [$filter], ['login' => $params['login']],
+                                        [Auth::INTERNAL]);
+
+                if (count($ctx['credentials']) != 0) {
+
+                    throw $appCtx->getErrorManager()->getFormattedError(ERROR_CREDENTIAL_ALREADY_EXIST);
+
+                }
+
+                $helper->createCredential($ctx, $params);
+
+                return $ctx['credential'];
 
             }));
 
@@ -82,6 +101,9 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addRule(new FieldRule(new Field('Credential', 'salt'),
                                         new StringFilter('Credential', 'saltIsForbidden', '1 = 0')));
+
+        $context->addRule(new FieldRule(new Field('Credential', 'password'),
+                                        new StringFilter('Credential', 'passwordIsForbidden', '1 = 0')));
 
     }
 

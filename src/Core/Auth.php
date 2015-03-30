@@ -4,7 +4,9 @@
 namespace Core;
 
 
+use Core\Model\Credential;
 use Core\Model\User;
+use Core\Module\BasicHelperTest;
 
 class Auth {
 
@@ -17,9 +19,9 @@ class Auth {
     const INTERNAL = 'INTERNAL';
 
     /**
-     * @var User
+     * @var Credential|null
      */
-    protected $user;
+    protected $credential;
 
     /**
      * @var string[]
@@ -35,23 +37,22 @@ class Auth {
 
     }
 
-    // Could be CREATE_PROJECT, SHARE_PROJECT ...
-
     /**
-     * @return User
+     * @return Credential|null
      */
-    public function getUser () {
+    public function getCredential () {
 
-        return $this->user;
+        return $this->credential;
     }
 
     /**
-     * @param User $user
+     * @param Credential $credential
      */
-    public function setUser (User $user) {
+    public function setCredential ($credential) {
 
-        $this->user = $user;
+        $this->credential = $credential;
         $this->rights[] = self::AUTHENTICATED;
+
     }
 
     /**

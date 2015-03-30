@@ -25,6 +25,7 @@ use Core\Module\ModelAspect;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
 use Core\Rule\Rule;
+use Core\Rule\Processor;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
@@ -206,11 +207,11 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return RuleProcessor
+     * @return Processor
      */
     public function getMockRuleProcessor () {
 
-        return $this->getMock('\Core\RuleProcessor');
+        return $this->getMock('\Core\Rule\Processor');
 
     }
 
@@ -233,6 +234,19 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         return $this->getMockBuilder('\Core\Context\RequestContext')
                     ->disableOriginalConstructor()
                     ->getMock();
+
+    }
+
+    /**
+     * @param Auth $auth
+     *
+     * @return RightsManager
+     */
+    public function getMockRightsManager (Auth $auth) {
+
+        return $this->getMockBuilder('\Core\RightManager')
+                ->setConstructorArgs([$auth])
+                ->getMockForAbstractClass();
 
     }
 
@@ -485,7 +499,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $em->getConnection()->query('PRAGMA foreign_keys = ON');
 
             $ctx = ApplicationContext::getInstance();
-            $ruleMgr = new RuleProcessor();
+            $ruleMgr = new Processor();
             $ctx->setRuleProcessor($ruleMgr);
             $ctx->setEntityManager($em);
 

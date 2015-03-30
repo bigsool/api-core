@@ -7,8 +7,9 @@ use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\RequestContext;
 use Core\Field\KeyPath;
-use Core\Model\Credential;
+use Core\Filter\Filter;
 use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
@@ -28,7 +29,7 @@ class Helper extends BasicHelper {
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), Auth::INTERNAL);
+        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
 
         $qryCtx->addKeyPath(new KeyPath('*'));
 
@@ -58,7 +59,8 @@ class Helper extends BasicHelper {
 
         $this->createLoginHistory($actionContext, $user);
 
-        return self::generateAuthToken($params['login'], $expiration, $hashedPassword, $salt, self::AUTH_TOKEN_TYPE_BASIC);
+        return self::generateAuthToken($params['login'], $expiration, $hashedPassword, $salt,
+                                       self::AUTH_TOKEN_TYPE_BASIC);
 
     }
 
@@ -76,6 +78,31 @@ class Helper extends BasicHelper {
         }
 
         return $hash;
+
+    }
+
+    /**
+     * @param ActionContext $actionContext
+     * @param               $credential
+     *
+     */
+    protected function createLoginHistory (ActionContext $actionContext, $credential) {
+
+        $this->checkRealModelType($credential, 'Credential');
+
+        $reqCtx = $actionContext->getRequestContext();
+
+        $loginHistory = $this->createRealModel('LoginHistory');
+
+        $this->basicSave($loginHistory, [
+            'credential'    => $credential,
+            'clientName'    => $reqCtx->getClientName(),
+            'clientVersion' => $reqCtx->getClientVersion(),
+            'IP'            => $reqCtx->getIpAddress(),
+            'date'          => new \DateTime(),
+        ]);
+
+        $actionContext['loginHistory'] = $loginHistory;
 
     }
 
@@ -98,7 +125,6 @@ class Helper extends BasicHelper {
      * @param ActionContext $actionContext
      * @param array         $params
      *
-     * @return mixed
      */
     public function createCredential (ActionContext $actionContext, array $params) {
 
@@ -124,27 +150,20 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actionContext
-     * @param               $credential
-     *
-     * @return mixed
+     * @param bool          $hydrateArray
+     * @param KeyPath[]     $keyPaths
+     * @param Filter[]      $filters
+     * @param array         $params
+     * @param string[]      $rights
      */
-    protected function createLoginHistory (ActionContext $actionContext, $credential) {
+    public function findCredential (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
+                                    array $filters = [],
+                                    array $params = [],
+                                    array $rights = []) {
 
-        $this->checkRealModelType($credential, 'Credential');
+        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), $rights);
 
-        $reqCtx = $actionContext->getRequestContext();
-
-        $loginHistory = $this->createRealModel('LoginHistory');
-
-        $this->basicSave($loginHistory, [
-            'credential'    => $credential,
-            'clientName'    => $reqCtx->getClientName(),
-            'clientVersion' => $reqCtx->getClientVersion(),
-            'IP'            => $reqCtx->getIpAddress(),
-            'date'          => new \DateTime(),
-        ]);
-
-        $actionContext['loginHistory'] = $loginHistory;
+        $actionContext['credentials'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
 
     }
 

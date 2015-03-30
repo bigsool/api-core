@@ -1,12 +1,12 @@
 <?php
 
-namespace Core;
+namespace Core\Rule;
 
 
 use Core\Context\FindQueryContext;
-use Core\Rule\CallbackRule;
+use Core\TestCase;
 
-class RuleProcessorTest extends TestCase {
+class ProcessorTest extends TestCase {
 
     public function testApply () {
 
@@ -56,7 +56,7 @@ class RuleProcessorTest extends TestCase {
             $appCtx->addRule($rule);
         }
 
-        $processor = new RuleProcessor();
+        $processor = new Processor();
 
         $processor->apply(new FindQueryContext('Product'));
 

@@ -13,6 +13,7 @@ use Core\Field\KeyPath;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
+use Core\Rule\Processor;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -97,7 +98,7 @@ class Application {
          * @var EntityManager $entityManager ;
          */
         $this->appCtx->setEntityManager($this->entityManager = $entityManager);
-        $this->appCtx->setRuleProcessor(new RuleProcessor());
+        $this->appCtx->setRuleProcessor(new Processor());
 
         $entityManager->beginTransaction();
 
