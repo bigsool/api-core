@@ -9,6 +9,7 @@ use Core\Error\FormattedError;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
+use Symfony\Component\HttpFoundation\Response;
 
 class RequestContext {
 
@@ -63,10 +64,33 @@ class RequestContext {
     protected $ipAddress;
 
     /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
      */
     public function __construct () {
 
         $this->auth = new Auth();
+
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse () {
+
+        return $this->response;
+
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse (Response $response) {
+
+        $this->response = $response;
 
     }
 
@@ -129,7 +153,7 @@ class RequestContext {
         if (count($this->formattedReturnedKeyPaths) == 0) {
             return $this->returnedKeyPaths;
         }
-        
+
         return $this->formattedReturnedKeyPaths;
 
     }

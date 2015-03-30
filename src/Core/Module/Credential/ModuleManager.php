@@ -11,8 +11,10 @@ use Core\Context\RequestContext;
 use Core\Field\Field;
 use Core\Field\KeyPath;
 use Core\Filter\StringFilter;
+use Core\Module\AddressBook\Validation;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class ModuleManager extends AbstractModuleManager {
 
@@ -28,9 +30,14 @@ class ModuleManager extends AbstractModuleManager {
         ],
             function (ActionContext $context) use ($self) {
 
+                $appCtx = ApplicationContext::getInstance();
+
                 $params = $context->getVerifiedParams();
                 $helper = new Helper($this, $params);
                 $authToken = $helper->login($context, $params);
+
+                $appCtx->getOnSuccessActionQueue()->enqueue($appCtx->getAction('Core\Credential', 'setAuthCookie'),
+                                                            ['authToken' => $authToken]);
 
                 return ['success' => true,
                         'data'    => [
@@ -38,6 +45,21 @@ class ModuleManager extends AbstractModuleManager {
                             'email'     => $params['login']
                         ]
                 ];
+
+            }));
+
+        $context->addAction(new SimpleAction('Core\Credential', 'setAuthCookie', [],
+                                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+
+                $response = $ctx->getRequestContext()->getResponse();
+
+                if (is_null($response)) {
+
+                    throw new \RuntimeException('Calling setAuthCookie while the response is not set');
+
+                }
+
+                $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken'))));
 
             }));
 
