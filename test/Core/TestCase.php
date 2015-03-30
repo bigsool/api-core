@@ -238,6 +238,19 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param Auth $auth
+     *
+     * @return RightsManager
+     */
+    public function getMockRightsManager (Auth $auth) {
+
+        return $this->getMockBuilder('\Core\RightManager')
+                ->setConstructorArgs([$auth])
+                ->getMockForAbstractClass();
+
+    }
+
+    /**
      * @return ActionContext
      */
     public function getMockActionContext () {
