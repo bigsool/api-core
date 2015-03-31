@@ -127,7 +127,7 @@ class RequestContext {
     public function getFormattedReturnedKeyPaths () {
 
         if (count($this->formattedReturnedKeyPaths) == 0) {
-            return $this->returnedKeyPaths;
+            return $this->getReturnedKeyPaths();
         }
         
         return $this->formattedReturnedKeyPaths;
