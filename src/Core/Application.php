@@ -340,6 +340,7 @@ class Application {
         $traceLogger->trace('controller called');
 
         $response = $rpcHandler->getSuccessResponse($this->getSerializer($reqCtx), $result);
+        $reqCtx->setResponse($response);
         $traceLogger->trace('response created');
 
         // handle queued actions before commit
@@ -364,9 +365,9 @@ class Application {
     }
 
     /**
-     * @param $reqCtx
+     * @param RequestContext $reqCtx
      */
-    protected function executeSuccessQueuedActions ($reqCtx) {
+    protected function executeSuccessQueuedActions (RequestContext $reqCtx) {
 
         $queue = $this->appCtx->getOnSuccessActionQueue();
         while (!$queue->isEmpty()) {

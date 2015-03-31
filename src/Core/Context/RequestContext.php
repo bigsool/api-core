@@ -9,6 +9,7 @@ use Core\Error\FormattedError;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
+use Symfony\Component\HttpFoundation\Response;
 
 class RequestContext {
 
@@ -63,10 +64,33 @@ class RequestContext {
     protected $ipAddress;
 
     /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
      */
     public function __construct () {
 
         $this->auth = new Auth();
+
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse () {
+
+        return $this->response;
+
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse (Response $response) {
+
+        $this->response = $response;
 
     }
 
@@ -129,7 +153,7 @@ class RequestContext {
         if (count($this->formattedReturnedKeyPaths) == 0) {
             return $this->getReturnedKeyPaths();
         }
-        
+
         return $this->formattedReturnedKeyPaths;
 
     }
@@ -243,17 +267,22 @@ class RequestContext {
      */
     public function setParams (array $params) {
 
-        if (isset($params['auth'])) {
-            // TODO: replace that part by the real authentication system
-            /*$findCtx = new FindQueryContext('User', $this);
-            $findCtx->addFilter(new StringFilter('User', '', 'id = :id'));
-            $findCtx->addKeyPath(new KeyPath('*'));
-            $findCtx->setParams(['id' => $params['auth']]);
-            $users = ApplicationContext::getInstance()->getNewRegistry()->find($findCtx, false);
-            if (count($users) == 1) {
-                $this->getAuth()->setUser($users[0]);
-            }*/
-            unset($params['auth']);
+        if (isset($params['authToken'])) {
+            $checkAuthCtx = new ActionContext(new RequestContext());
+            $checkAuthCtx->setParams(['authToken' => new UnsafeParameter(json_decode($params['authToken'], true),'authToken')]);
+            $appCtx = ApplicationContext::getInstance();
+            $cred = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
+            $auth = new Auth();
+            $auth->setCredential($cred);
+            $this->setAuth($auth);
+
+            // TODO THIERRY: get a new authToken
+            $authToken = $params['authToken'];
+            //////////////////
+            $setAuthAction = $appCtx->getAction('Core\Credential','setAuthCookie');
+            $appCtx->getOnSuccessActionQueue()->enqueue($setAuthAction, ['authToken' => $authToken]);
+            
+            unset($params['authToken']);
         }
 
         $this->params = $params;

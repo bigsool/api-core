@@ -18,21 +18,12 @@ class ActionQueue extends \SplQueue {
     }
 
     /**
-     * @param array $value
+     * @param Action $action
+     * @param array  $params
      */
-    public function enqueue ($value) {
+    public function enqueue (Action $action, array $params = []) {
 
-        if (!is_array($value) || !in_array(count($value), [1, 2]) || !($value[0] instanceof Action)
-            || (count($value) == 2 && !is_array($value[1]))
-        ) {
-            throw new \RuntimeException('invalid action queued');
-        }
-
-        if (count($value) == 1) {
-            $value[] = [];
-        }
-
-        parent::enqueue($value);
+        parent::enqueue([$action, $params]);
 
     }
 

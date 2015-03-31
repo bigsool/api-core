@@ -7,6 +7,7 @@ use Core\Validation\AbstractConstraintsProvider;
 use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\Object;
 use Core\Validation\Parameter\String;
 
 class Validation extends AbstractConstraintsProvider {
@@ -34,6 +35,12 @@ class Validation extends AbstractConstraintsProvider {
                 [
                     new String(),
                     new Length(['max' => 255]),
+                    new NotBlank(),
+                ]
+            ,
+            'authToken' =>
+                [
+                    new Object(),
                     new NotBlank(),
                 ]
         ];
