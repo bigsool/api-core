@@ -28,12 +28,12 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
                                                                                 'password' => [new Validation()]
         ],
-            function (ActionContext $context) use ($self) {
+            function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper($this, $params);
+                $helper = new Helper;
                 $authToken = $helper->login($context, $params);
 
                 $appCtx->getOnSuccessActionQueue()->enqueue($appCtx->getAction('Core\Credential', 'setAuthCookie'),
@@ -63,6 +63,27 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
+        $context->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
+                                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+
+                $appCtx = ApplicationContext::getInstance();
+                $authToken = $ctx->getParam('authToken');
+
+                // TODO THIERRY: real authentication //
+                $login = $authToken[1];
+                $helper = new Helper;
+                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
+                $ctx = new ActionContext(new RequestContext());
+                $helper->findCredential($ctx, false, [new KeyPath('*')], [$filter], ['login' => $login],
+                                        [Auth::INTERNAL]);
+                $credential = $ctx['credentials'][0];
+                //////////////////
+
+
+                return $credential;
+
+            }));
+
         /**
          * @param ApplicationContext $context
          */
@@ -70,12 +91,12 @@ class ModuleManager extends AbstractModuleManager {
                                                                                  'type'     => [new Validation()],
                                                                                  'password' => [new Validation()]
         ],
-            function (ActionContext $context) use ($self) {
+            function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper($this, $params);
+                $helper = new Helper;
 
                 $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
 
