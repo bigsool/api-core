@@ -289,6 +289,10 @@ class Registry implements EventSubscriber {
             $qb->andWhere($expression->resolve($this, $ctx));
         }
 
+        $auth = $ctx->getReqCtx()->getAuth();
+        if (isset($auth) && $credential = $auth->getCredential()) {
+            $this->params['__LOGIN__'] = $credential->getLogin();
+        }
         $qb->setParameters($this->params);
 
         $query = $qb->getQuery();
