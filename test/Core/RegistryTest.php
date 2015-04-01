@@ -498,7 +498,7 @@ class RegistryTest extends TestCase {
 
         $account = new TestAccount($user);
         $account->setCompany($company);
-        $account->setStorage($storage);
+        $account->setCompanyStorage($storage);
 
         $registry = $this->appCtx->getNewRegistry();
 
