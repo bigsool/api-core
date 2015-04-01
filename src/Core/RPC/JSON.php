@@ -7,6 +7,7 @@ namespace Core\RPC;
 use Core\Context\ApplicationContext;
 use Core\Error\FormattedError;
 use Core\Serializer;
+use Core\Util\ArrayExtra;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -240,7 +241,8 @@ class JSON implements Handler {
 
         $this->path = '/' . $this->service . '/' . $this->method;
 
-        $this->params = $request->query->get('params') ?: [];
+        $params = json_decode($request->query->get('params'), true) ?: [];
+        $this->params = ArrayExtra::array_merge_recursive_distinct($request->cookies->all(), $params);
 
         $this->id = $request->query->get('id');
 
