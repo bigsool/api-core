@@ -280,7 +280,7 @@ class RequestContext {
             $helper = new Helper();
             $authToken = $helper->getNewAuthToken($params['authToken']['login']);
             $setAuthAction = $appCtx->getAction('Core\Credential','setAuthCookie');
-            $appCtx->getOnSuccessActionQueue()->enqueue($setAuthAction, ['authToken' => $authToken]);
+            $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken]);
             
             unset($params['authToken']);
         }

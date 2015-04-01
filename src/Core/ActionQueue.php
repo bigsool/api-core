@@ -21,7 +21,7 @@ class ActionQueue extends \SplQueue {
      * @param Action $action
      * @param array  $params
      */
-    public function enqueue (Action $action, array $params = []) {
+    public function addAction (Action $action, array $params = []) {
 
         parent::enqueue([$action, $params]);
 
