@@ -563,7 +563,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->setParams($params);
 
-        $result = $registry->find($qryCtx, $hydrateArray, $reqCtxFormattedKeyPaths);
+        $result = $registry->find($qryCtx, $hydrateArray);
 
         return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
 

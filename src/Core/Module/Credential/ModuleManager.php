@@ -66,19 +66,10 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
-                $appCtx = ApplicationContext::getInstance();
                 $authToken = $ctx->getParam('authToken');
 
-                // TODO THIERRY: real authentication //
-                $login = $authToken[1];
-                $helper = new Helper;
-                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
-                $ctx = new ActionContext(new RequestContext());
-                $helper->findCredential($ctx, false, [new KeyPath('*')], [$filter], ['login' => $login],
-                                        [Auth::INTERNAL]);
-                $credential = $ctx['credentials'][0];
-                //////////////////
-
+                $helper = new Helper();
+                $credential = $helper->checkAuthToken($authToken);
 
                 return $credential;
 
