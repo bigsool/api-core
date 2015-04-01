@@ -242,7 +242,8 @@ class JSON implements Handler {
         $this->path = '/' . $this->service . '/' . $this->method;
 
         $params = json_decode($request->query->get('params'), true) ?: [];
-        $this->params = ArrayExtra::array_merge_recursive_distinct($request->cookies->all(), $params);
+        $cookies = $request->cookies->all();
+        $this->params = ArrayExtra::array_merge_recursive_distinct($cookies, $params);
 
         $this->id = $request->query->get('id');
 
