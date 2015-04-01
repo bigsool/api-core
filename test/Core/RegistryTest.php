@@ -435,7 +435,7 @@ class RegistryTest extends TestCase {
     public function testFindWithRequestedKeyPath () {
 
         $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getReturnedKeyPaths')->willReturn([
+        $reqCtx->method('getFormattedReturnedKeyPaths')->willReturn([
                                                                new FieldKeyPath('name')
                                                            ]);
 
