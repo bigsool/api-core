@@ -27,17 +27,7 @@ class Helper extends BasicHelper {
 
         $appCtx = ApplicationContext::getInstance();
 
-        $registry = $appCtx->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
-
-        $qryCtx->addKeyPath(new KeyPath('*'));
-
-        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
-
-        $qryCtx->setParams(['login' => $params['login']]);
-
-        $credential = $registry->find($qryCtx, false);
+        $credential = $this->getCredentialFromLogin($params['login']);
 
         if (count($credential) != 1) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
@@ -55,7 +45,7 @@ class Helper extends BasicHelper {
 
         $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
-        return self::generateAuthToken($params['login'], $expiration, $credential->getPassword(), self::AUTH_TOKEN_TYPE_BASIC);
+        return $this::generateAuthToken($params['login'], $expiration, $credential->getPassword(), self::AUTH_TOKEN_TYPE_BASIC);
 
     }
 
@@ -85,6 +75,35 @@ class Helper extends BasicHelper {
 
     }
 
+
+    public function getNewAuthToken ($login) {
+
+        $credential = $this->getCredentialFromLogin($login);
+
+        $expiration = time() + 10 * 60; //TODO//
+
+        return self::generateAuthToken($login,$expiration,$credential->getPassword(),self::AUTH_TOKEN_TYPE_BASIC);
+
+    }
+
+    private function getCredentialFromLogin ($login) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
+
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
+
+        $qryCtx->setParams(['login' => $login]);
+
+        return $registry->find($qryCtx, false);
+
+    }
+
     /**
      * @param string $login
      * @param string $expiration
@@ -93,9 +112,12 @@ class Helper extends BasicHelper {
      *
      * @return array
      */
-    public static function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
+     private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
 
-        return [sha1($login . $expiration . $hashedPassword . $type), $login, $expiration, $type];
+        return ['hash' => sha1($login . $expiration . $hashedPassword . $type),
+                'login' => $login,
+                'expiration' => $expiration,
+                'type' => $type];
 
     }
 
@@ -134,6 +156,21 @@ class Helper extends BasicHelper {
         $actionContext['credentials'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
 
     }
+
+    public function checkAuthToken ($authToken) {
+
+        $login = $authToken['login'];
+
+        $expiration = $authToken['expiration'];
+
+        if ($expiration < time() || !($credential = $this->getCredentialFromLogin($login))) {
+            throw new \RuntimeException('AuthToken invalid');
+        }
+
+        return $authToken;
+
+    }
+
 
 
 } 

@@ -8,6 +8,7 @@ use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
+use Core\Module\Credential\Helper;
 use Core\Parameter\UnsafeParameter;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -275,10 +276,9 @@ class RequestContext {
             $auth = new Auth();
             $auth->setCredential($cred);
             $this->setAuth($auth);
-
-            // TODO THIERRY: get a new authToken
-            $authToken = $params['authToken'];
-            //////////////////
+            
+            $helper = new Helper();
+            $authToken = $helper->getNewAuthToken($params['authToken']['login']);
             $setAuthAction = $appCtx->getAction('Core\Credential','setAuthCookie');
             $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken]);
             

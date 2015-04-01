@@ -924,7 +924,7 @@ class MagicalModuleManagerTest extends TestCase {
              'name'      => 'ferrier',
              'firstname' => 'julien',
              'password'  => 'bla',
-             'firm'      => new UnsafeParameter(['name' => 'bigsoole'], ''),
+             'firm'      => new UnsafeParameter(['name' => 'bigsoole'],''),
              's3'        => ['url' => 'http://www.bigsoole.com']
             ]);
 
@@ -1151,7 +1151,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $filters =
             [new StringFilter('TestUser', 'bla', 'id = 1')];
-        $values = ['user.*', 'company.*', 'storage.*'];
+        $values = ['user.*', 'firm.*', 's3.*'];
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
         $this->assertInternalType('array', $result);
@@ -1443,7 +1443,7 @@ class MagicalModuleManagerTest extends TestCase {
                 'firm'     => [
                     'name' => 'firm name',
                     's3'   => [
-                        'login' => 'firm storage login'
+                        'url' => 'firm storage url'
                     ]
                 ],
                 's3'       => [
@@ -1457,12 +1457,12 @@ class MagicalModuleManagerTest extends TestCase {
          * @var TestAccount $account
          * @var TestUser $user
          */
-        $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
-        $account = new TestAccount($user);
+        $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+
 
 
         $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
-        $values = ['name', 'firm.name', 'firm.s3.login', 's3.login'/*, 's3.url' => requested field (present in RequestContext) */];
+        $values = ['name', 'firm.name', 'firm.s3.url', 's3.login'/*, 's3.url' => requested field (present in RequestContext) */];
 
         $requestCtx = new RequestContext();
         $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
@@ -1488,7 +1488,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->assertArrayHasKey('s3', $result['firm']);
         $this->assertInternalType('array', $result['firm']['s3']);
-        $this->assertEquals('firm storage login', $result['firm']['s3']['login']);
+        $this->assertEquals('firm storage url', $result['firm']['s3']['url']);
 
         $this->assertArrayHasKey('s3', $result);
         $this->assertInternalType('array', $result['s3']);
