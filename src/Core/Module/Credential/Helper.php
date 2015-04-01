@@ -37,56 +37,35 @@ class Helper extends BasicHelper {
 
         $qryCtx->setParams(['login' => $params['login']]);
 
-        /**
-         * @var \Core\Model\Credential[] $users
-         */
-        $users = $registry->find($qryCtx, false);
+        $credential = $registry->find($qryCtx, false);
 
-        if (count($users) != 1) {
+        if (count($credential) != 1) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
         }
 
-        $user = $users[0];
+        $credential = $credential[0];
 
-        $salt = $user->getSalt();
-        $hashedPassword = self::encryptPassword($salt, $params['password']);
-        if ($hashedPassword != $user->getPassword()) {
+        if (!password_verify($params['password'],$credential->getPassword())) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
         }
+
         $configManager = $appCtx->getConfigManager();
         $config = $configManager->getConfig();
-        $expiration = time() + 10 * 60; //TOTEST//
+        $expiration = time() + 10 * 60; //TODO//
 
-        $this->createLoginHistory($actionContext, $user);
+        $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
-        return self::generateAuthToken($params['login'], $expiration, $hashedPassword, $salt,
-                                       self::AUTH_TOKEN_TYPE_BASIC);
-
-    }
-
-    /**
-     * @param string $salt
-     * @param string $password
-     *
-     * @return string
-     */
-    public static function encryptPassword ($salt, $password) {
-
-        $hash = $salt . $password;
-        for ($i = 0; $i < 3004; ++$i) {
-            $hash = hash('sha512', $salt . $hash);
-        }
-
-        return $hash;
+        return self::generateAuthToken($params['login'], $expiration, $credential->getPassword(), self::AUTH_TOKEN_TYPE_BASIC);
 
     }
+
 
     /**
      * @param ActionContext $actionContext
      * @param               $credential
      *
      */
-    protected function createLoginHistory (ActionContext $actionContext, $credential) {
+    protected function createLoginHistory (ActionContext $actionContext, $credential, $params) {
 
         $this->checkRealModelType($credential, 'Credential');
 
@@ -94,13 +73,13 @@ class Helper extends BasicHelper {
 
         $loginHistory = $this->createRealModel('LoginHistory');
 
-        $this->basicSave($loginHistory, [
-            'credential'    => $credential,
-            'clientName'    => $reqCtx->getClientName(),
-            'clientVersion' => $reqCtx->getClientVersion(),
-            'IP'            => $reqCtx->getIpAddress(),
-            'date'          => new \DateTime(),
-        ]);
+        $params['credential']    = $credential;
+        $params['date']          =  new \DateTime();
+        $params['clientName']    = $reqCtx->getClientName();
+        $params['clientVersion'] = $reqCtx->getClientVersion();
+        $params['IP']            = $reqCtx->getIpAddress();
+
+        $this->basicSave($loginHistory, $params);
 
         $actionContext['loginHistory'] = $loginHistory;
 
@@ -110,14 +89,13 @@ class Helper extends BasicHelper {
      * @param string $login
      * @param string $expiration
      * @param string $hashedPassword
-     * @param        $salt
      * @param string $type
      *
      * @return array
      */
-    public static function generateAuthToken ($login, $expiration, $hashedPassword, $salt, $type) {
+    public static function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
 
-        return [sha1($login . $expiration . $hashedPassword . $salt . $type), $login, $expiration, $type];
+        return [sha1($login . $expiration . $hashedPassword . $type), $login, $expiration, $type];
 
     }
 
@@ -130,21 +108,11 @@ class Helper extends BasicHelper {
 
         $credential = $this->createRealModel('Credential');
 
-        $params['salt'] = Helper::createSalt();
-        $params['password'] = Helper::encryptPassword($params['salt'], $params['password']);
+        $params['password'] = password_hash($params['password'],PASSWORD_BCRYPT);
 
         $this->basicSave($credential, $params);
 
         $actionContext['credential'] = $credential;
-
-    }
-
-    /**
-     * @return string
-     */
-    public static function createSalt () {
-
-        return uniqid('', true);
 
     }
 
