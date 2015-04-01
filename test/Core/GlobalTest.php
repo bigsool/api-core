@@ -34,7 +34,8 @@ class GlobalTest extends TestCase {
         foreach ($iterator as $info) {
 
             if (preg_match('/(archipad)|(archiweb)/', file_get_contents($info->getPathname()))) {
-                $this->fail($info->getPathname() . ' contains a reference to archipad or archiweb');
+                throw new \PHPUnit_Framework_RiskyTestError($info->getPathname()
+                                                            . ' contains a reference to archipad or archiweb');
             }
 
         }
