@@ -31,9 +31,9 @@ class ModuleManager extends AbstractModuleManager {
         }));
 
         $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserHelper', NULL, [
-            'lastName'  => [new Validation()],
-            'firstName' => [new Validation()],
-            'lang'      => [new Validation()],
+            'lastName'  => [new Validation(), true],
+            'firstName' => [new Validation(), true],
+            'lang'      => [new Validation(), true],
         ]));
 
     }
