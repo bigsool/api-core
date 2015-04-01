@@ -36,7 +36,7 @@ class ModuleManager extends AbstractModuleManager {
                 $helper = new Helper;
                 $authToken = $helper->login($context, $params);
 
-                $appCtx->getOnSuccessActionQueue()->enqueue($appCtx->getAction('Core\Credential', 'setAuthCookie'),
+                $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential', 'setAuthCookie'),
                                                             ['authToken' => $authToken]);
 
                 return ['success' => true,

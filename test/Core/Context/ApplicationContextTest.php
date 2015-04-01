@@ -209,11 +209,11 @@ class ApplicationContextTest extends TestCase {
         $this->assertInstanceOf('\Core\ActionQueue', $errorQueue);
         $this->assertEmpty($errorQueue);
 
-        $successQueue->enqueue($this->getMockAction());
+        $successQueue->addAction($this->getMockAction());
         $this->assertCount(1, $successQueue);
         $this->assertEmpty($errorQueue);
 
-        $errorQueue->enqueue($this->getMockAction(), []);
+        $errorQueue->addAction($this->getMockAction(), []);
         $successQueue->dequeue();
         $this->assertCount(1, $errorQueue);
         $this->assertEmpty($successQueue);
