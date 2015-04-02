@@ -42,10 +42,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
      *
      * @return mixed
      */
-    public function magicalCreate (ActionContext $ctx) {
+    public function magicalCreate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         return $this->magicalModify($ctx, 'create');
     }
@@ -166,6 +167,107 @@ abstract class MagicalModuleManager extends ModuleManager {
         $this->saveEntities();
 
         return $this->getMagicalEntityObject($this->mainEntity);
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    public function formatModifyParameters ($params) {
+
+        $formattedParams = [];
+
+        foreach ($this->modelAspects as $modelAspect) {
+
+            if ($modelAspect->getPrefix()) {
+                $explodedPrefix = explode('.', $modelAspect->getPrefix());
+                $data = $params;
+                $haveToContinue = false;
+                foreach ($explodedPrefix as $elem) {
+                    if (!isset($data[$elem])) {
+                        $haveToContinue = true;
+                        break;
+                    }
+                    $data = $data[$elem];
+                }
+                if ($haveToContinue) {
+                    continue;
+                }
+            }
+            else {
+                $data = $params;
+            }
+
+            if ($modelAspect->getKeyPath()) {
+                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+                $data = $this->buildArrayWithKeys($explodedKeyPath, $data);
+            }
+
+            $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
+
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getKeyPath()->getValue()) {
+                $formattedParams = $this->removeKeysFromArray($explodedPrefix, $formattedParams);
+            }
+
+        }
+
+        return $formattedParams;
+
+    }
+
+    /**
+     * @param array $keys
+     * @param array $data
+     *
+     * @return array
+     */
+    public function buildArrayWithKeys ($keys, $data) {
+
+        $tab = [];
+
+        if (count($keys) == 1) {
+            $tab[$keys[0]] = $data;
+        }
+        else {
+            $tab[$keys[0]] = $this->buildArrayWithKeys(array_slice($keys, 1, count($keys)), $data);
+        }
+
+        return $tab;
+
+    }
+
+    /**
+     * @param array $keysToRemove
+     * @param array $data
+     *
+     * @return array
+     */
+    private function removeKeysFromArray ($keysToRemove, $data) {
+
+        $newData = [];
+
+        if (is_array($data)) {
+
+            foreach ($data as $key => $value) {
+
+                if (count($keysToRemove) == 1 && $keysToRemove[0] == $key) {
+                    continue;
+                }
+                $newData[$key] =
+                    $this->removeKeysFromArray(array_slice($keysToRemove, 1, count($keysToRemove)), $value);
+
+            }
+
+        }
+        else {
+
+            $newData = $data;
+
+        }
+
+        return $newData;
 
     }
 
@@ -376,10 +478,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
      *
      * @return mixed
      */
-    public function magicalUpdate (ActionContext $ctx) {
+    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         return $this->magicalModify($ctx, 'update');
 
@@ -528,12 +631,13 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param Filter[]       $filters
      * @param array          $params
      * @param Boolean        $hydrateArray
+     * @param string[]       $disabledKeyPaths
      *
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
     protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
-                                    $hydrateArray = false) {
+                                    $hydrateArray = false, array $disabledKeyPaths = []) {
 
         $appCtx = ApplicationContext::getInstance();
 
@@ -566,6 +670,45 @@ abstract class MagicalModuleManager extends ModuleManager {
         $result = $registry->find($qryCtx, $hydrateArray);
 
         return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+
+    }
+
+    /**
+     * @param Array $values
+     *
+     * @return Array
+     */
+    private function formatFindValues ($values) {
+
+        $formattedValues = [];
+
+        foreach ($values as $value) {
+
+            $explodedValue = explode('.', $value);
+            $field = $explodedValue[count($explodedValue) - 1];
+            $prefixed = false;
+
+            if (count($explodedValue) > 1) {
+                array_splice($explodedValue, count($explodedValue) - 1, 1);
+                $value = implode('.', $explodedValue);
+                foreach ($this->modelAspects as $modelAspect) {
+                    if ($modelAspect->getPrefix() == $value) {
+                        $value = $modelAspect->getKeyPath()->getValue() . '.' . $field;
+                        $prefixed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$prefixed) {
+                $value = $field;
+            }
+
+            $formattedValues[] = $value;
+
+        }
+
+        return $formattedValues;
 
     }
 
@@ -628,107 +771,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param array $params
-     *
-     * @return array
-     */
-    public function formatModifyParameters ($params) {
-
-        $formattedParams = [];
-
-        foreach ($this->modelAspects as $modelAspect) {
-
-            if ($modelAspect->getPrefix()) {
-                $explodedPrefix = explode('.', $modelAspect->getPrefix());
-                $data = $params;
-                $haveToContinue = false;
-                foreach ($explodedPrefix as $elem) {
-                    if (!isset($data[$elem])) {
-                        $haveToContinue = true;
-                        break;
-                    }
-                    $data = $data[$elem];
-                }
-                if ($haveToContinue) {
-                    continue;
-                }
-            }
-            else {
-                $data = $params;
-            }
-
-            if ($modelAspect->getKeyPath()) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
-                $data = $this->buildArrayWithKeys($explodedKeyPath, $data);
-            }
-
-            $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
-
-            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getKeyPath()->getValue()) {
-                $formattedParams = $this->removeKeysFromArray($explodedPrefix, $formattedParams);
-            }
-
-        }
-
-        return $formattedParams;
-
-    }
-
-    /**
-     * @param array $keys
-     * @param array $data
-     *
-     * @return array
-     */
-    public function buildArrayWithKeys ($keys, $data) {
-
-        $tab = [];
-
-        if (count($keys) == 1) {
-            $tab[$keys[0]] = $data;
-        }
-        else {
-            $tab[$keys[0]] = $this->buildArrayWithKeys(array_slice($keys, 1, count($keys)), $data);
-        }
-
-        return $tab;
-
-    }
-
-    /**
-     * @param array $keysToRemove
-     * @param array $data
-     *
-     * @return array
-     */
-    private function removeKeysFromArray ($keysToRemove, $data) {
-
-        $newData = [];
-
-        if (is_array($data)) {
-
-            foreach ($data as $key => $value) {
-
-                if (count($keysToRemove) == 1 && $keysToRemove[0] == $key) {
-                    continue;
-                }
-                $newData[$key] =
-                    $this->removeKeysFromArray(array_slice($keysToRemove, 1, count($keysToRemove)), $value);
-
-            }
-
-        }
-        else {
-
-            $newData = $data;
-
-        }
-
-        return $newData;
-
-    }
-
-    /**
      * @param Array $result
      *
      * @return Array
@@ -748,45 +790,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entities;
-
-    }
-
-    /**
-     * @param Array $values
-     *
-     * @return Array
-     */
-    private function formatFindValues ($values) {
-
-        $formattedValues = [];
-
-        foreach ($values as $value) {
-
-            $explodedValue = explode('.', $value);
-            $field = $explodedValue[count($explodedValue) - 1];
-            $prefixed = false;
-
-            if (count($explodedValue) > 1) {
-                array_splice($explodedValue, count($explodedValue) - 1, 1);
-                $value = implode('.', $explodedValue);
-                foreach ($this->modelAspects as $modelAspect) {
-                    if ($modelAspect->getPrefix() == $value) {
-                        $value = $modelAspect->getKeyPath()->getValue() . '.' . $field;
-                        $prefixed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!$prefixed) {
-                $value = $field;
-            }
-
-            $formattedValues[] = $value;
-
-        }
-
-        return $formattedValues;
 
     }
 
