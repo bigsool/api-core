@@ -10,6 +10,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
+use Core\Model\Credential;
 use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
@@ -27,6 +28,9 @@ class Helper extends BasicHelper {
 
         $appCtx = ApplicationContext::getInstance();
 
+        /**
+         * @var Credential $credentials
+         */
         $credential = $this->getCredentialFromLogin($params['login']);
 
         if (is_null($credential)) {
@@ -51,9 +55,9 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actionContext
      * @param               $credential
-     *
+     * @param array         $params
      */
-    protected function createLoginHistory (ActionContext $actionContext, $credential, $params) {
+    protected function createLoginHistory (ActionContext $actionContext, $credential, array $params) {
 
         $this->checkRealModelType($credential, 'Credential');
 
@@ -73,6 +77,12 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param mixed $authToken
+     *
+     * @return array
+     * @throws \Core\Error\FormattedError
+     */
     public function getNewAuthToken ($authToken) {
 
         $errorManager = ApplicationContext::getInstance()->getErrorManager();
@@ -92,6 +102,11 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param string $login
+     *
+     * @return Credential|null
+     */
     private function getCredentialFromLogin ($login) {
 
         $appCtx = ApplicationContext::getInstance();
@@ -106,7 +121,9 @@ class Helper extends BasicHelper {
 
         $qryCtx->setParams(['login' => $login]);
 
-        return $registry->find($qryCtx, false);
+        $credentials = $registry->find($qryCtx, false);
+
+        return count($credentials) != 1 ? NULL : $credentials[0];
 
     }
 
@@ -164,6 +181,12 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param mixed $authToken
+     *
+     * @return Credential
+     * @throws \Core\Error\FormattedError
+     */
     public function checkAuthToken ($authToken) {
 
         $errorManager = ApplicationContext::getInstance()->getErrorManager();
@@ -176,7 +199,7 @@ class Helper extends BasicHelper {
         $type = $authToken['type'];
 
         if ($expiration < time() || !($credential = $this->getCredentialFromLogin($login))) {
-            throw new \RuntimeException('AuthToken invalid');
+            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
         $authTokenGenerated = $this->generateAuthToken($login, $expiration, $credential->getPassword(), $type);
@@ -185,10 +208,15 @@ class Helper extends BasicHelper {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        return $authToken;
+        return $credential;
 
     }
 
+    /**
+     * @param mixed $authToken
+     *
+     * @throws \Core\Error\FormattedError
+     */
     private function checkAuthTokenStructure ($authToken) {
 
         $errorManager = ApplicationContext::getInstance()->getErrorManager();
