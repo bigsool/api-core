@@ -16,6 +16,7 @@ class Helper extends BasicHelper {
 
     const AUTH_TOKEN_TYPE_BASIC = 'basic';
 
+
     /**
      * @param ActionContext $actionContext
      * @param array         $params
@@ -76,13 +77,21 @@ class Helper extends BasicHelper {
     }
 
 
-    public function getNewAuthToken ($login) {
+    public function getNewAuthToken ($authToken) {
 
-        $credential = $this->getCredentialFromLogin($login);
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+
+        $this->checkAuthTokenStructure($authToken);
+
+        $credential = $this->getCredentialFromLogin($authToken['login']);
+
+        if (is_null($credential)) {
+            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
 
         $expiration = time() + 10 * 60; //TODO//
 
-        return self::generateAuthToken($login,$expiration,$credential->getPassword(),self::AUTH_TOKEN_TYPE_BASIC);
+        return self::generateAuthToken($authToken['login'],$expiration,$credential->getPassword(),self::AUTH_TOKEN_TYPE_BASIC);
 
     }
 
@@ -159,15 +168,38 @@ class Helper extends BasicHelper {
 
     public function checkAuthToken ($authToken) {
 
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+
+        $this->checkAuthTokenStructure($authToken);
+
         $login = $authToken['login'];
 
         $expiration = $authToken['expiration'];
+        $type = $authToken['type'];
 
         if ($expiration < time() || !($credential = $this->getCredentialFromLogin($login))) {
             throw new \RuntimeException('AuthToken invalid');
         }
 
+        $authTokenGenerated = $this->generateAuthToken($login,$expiration,$credential->getPassword(),$type);
+
+        if ($authTokenGenerated != $authToken) {
+            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
+
         return $authToken;
+
+    }
+
+
+    private function checkAuthTokenStructure ($authToken) {
+
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+
+        if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
+            || !isset($authToken['type'])) {
+            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
 
     }
 
