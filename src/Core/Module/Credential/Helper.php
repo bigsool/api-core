@@ -53,6 +53,31 @@ class Helper extends BasicHelper {
     }
 
     /**
+     * @param string $login
+     *
+     * @return Credential|null
+     */
+    private function getCredentialFromLogin ($login) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
+
+        $qryCtx->addKeyPath(new KeyPath('*'));
+
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
+
+        $qryCtx->setParams(['login' => $login]);
+
+        $credentials = $registry->find($qryCtx, false);
+
+        return count($credentials) != 1 ? NULL : $credentials[0];
+
+    }
+
+    /**
      * @param ActionContext $actionContext
      * @param               $credential
      * @param array         $params
@@ -74,6 +99,24 @@ class Helper extends BasicHelper {
         $this->basicSave($loginHistory, $params);
 
         $actionContext['loginHistory'] = $loginHistory;
+
+    }
+
+    /**
+     * @param string $login
+     * @param string $expiration
+     * @param string $hashedPassword
+     * @param string $type
+     *
+     * @return array
+     */
+    private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
+
+        return ['hash'       => sha1($login . $expiration . $hashedPassword . $type),
+                'login'      => $login,
+                'expiration' => $expiration,
+                'type'       => $type
+        ];
 
     }
 
@@ -103,45 +146,19 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param string $login
+     * @param mixed $authToken
      *
-     * @return Credential|null
+     * @throws \Core\Error\FormattedError
      */
-    private function getCredentialFromLogin ($login) {
+    private function checkAuthTokenStructure ($authToken) {
 
-        $appCtx = ApplicationContext::getInstance();
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
 
-        $registry = $appCtx->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
-
-        $qryCtx->addKeyPath(new KeyPath('*'));
-
-        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
-
-        $qryCtx->setParams(['login' => $login]);
-
-        $credentials = $registry->find($qryCtx, false);
-
-        return count($credentials) != 1 ? NULL : $credentials[0];
-
-    }
-
-    /**
-     * @param string $login
-     * @param string $expiration
-     * @param string $hashedPassword
-     * @param string $type
-     *
-     * @return array
-     */
-    private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
-
-        return ['hash'       => sha1($login . $expiration . $hashedPassword . $type),
-                'login'      => $login,
-                'expiration' => $expiration,
-                'type'       => $type
-        ];
+        if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
+            || !isset($authToken['type'])
+        ) {
+            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
 
     }
 
@@ -209,23 +226,6 @@ class Helper extends BasicHelper {
         }
 
         return $credential;
-
-    }
-
-    /**
-     * @param mixed $authToken
-     *
-     * @throws \Core\Error\FormattedError
-     */
-    private function checkAuthTokenStructure ($authToken) {
-
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
-
-        if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
-            || !isset($authToken['type'])
-        ) {
-            throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
-        }
 
     }
 
