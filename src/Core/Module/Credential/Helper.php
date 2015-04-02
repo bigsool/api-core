@@ -30,11 +30,9 @@ class Helper extends BasicHelper {
 
         $credential = $this->getCredentialFromLogin($params['login']);
 
-        if (count($credential) != 1) {
+        if (is_null($credential)) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
         }
-
-        $credential = $credential[0];
 
         if (!password_verify($params['password'],$credential->getPassword())) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);

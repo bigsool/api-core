@@ -28,7 +28,7 @@ class JSONPTest extends TestCase {
         $req->method('getPathInfo')->willReturn('/protocol/client+version+locale/service/');
         $req->method('getClientIp')->willReturn('10.0.1.104');
         $params = ['param1' => 'value1', 'param2'];
-        $req->query->add(['method' => 'method', 'params' => $params]);
+        $req->query->add(['method' => 'method', 'params' => json_encode($params)]);
         $JSONP = new JSONP();
         $JSONP->parse($req);
 

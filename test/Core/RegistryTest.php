@@ -435,7 +435,7 @@ class RegistryTest extends TestCase {
     public function testFindWithRequestedKeyPath () {
 
         $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getReturnedKeyPaths')->willReturn([
+        $reqCtx->method('getFormattedReturnedKeyPaths')->willReturn([
                                                                new FieldKeyPath('name')
                                                            ]);
 
@@ -498,7 +498,7 @@ class RegistryTest extends TestCase {
 
         $account = new TestAccount($user);
         $account->setCompany($company);
-        $account->setStorage($storage);
+        $account->setCompanyStorage($storage);
 
         $registry = $this->appCtx->getNewRegistry();
 

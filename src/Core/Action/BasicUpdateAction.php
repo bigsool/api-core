@@ -6,6 +6,8 @@ namespace Core\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\RequestContext;
+use Core\Field\KeyPath as FieldKeyPath;
 use Core\Filter\StringFilter;
 use Core\Validation\Parameter\Int;
 use Core\Validation\Parameter\NotBlank;
@@ -36,8 +38,13 @@ class BasicUpdateAction extends SimpleAction {
 
                 $params = $context->getVerifiedParams();
 
-                $qryCtx = new FindQueryContext($model);
-                $qryCtx->addKeyPath(new \Core\Field\KeyPath('*'));
+                $reqCtx = new RequestContext();
+                $reqCtx->setAuth($context->getRequestContext()->getAuth());
+
+                $model = ucfirst($model);
+
+                $qryCtx = new FindQueryContext($model, $reqCtx);
+                $qryCtx->addKeyPath(new FieldKeyPath('*'));
                 $qryCtx->addFilter(new StringFilter($model, '', 'id = :id'));
                 $qryCtx->setParams(['id' => $params['id']]);
 
@@ -48,7 +55,7 @@ class BasicUpdateAction extends SimpleAction {
                     throw new \RuntimeException('more or less than one entity found');
                 }
 
-                $method = 'update' . ucfirst($model);
+                $method = 'update' . $model;
                 if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
