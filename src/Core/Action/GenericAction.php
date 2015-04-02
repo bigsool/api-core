@@ -4,7 +4,6 @@
 namespace Core\Action;
 
 
-use Closure;
 use Core\Context\ActionContext;
 
 class GenericAction extends Action {
@@ -54,9 +53,15 @@ class GenericAction extends Action {
         $this->module = $module;
         $this->name = $name;
         // TODO: IDE cannot detect that this = GenericAction
-        $this->process = /*Closure::bind(*/$process/*, $this)*/;
-        $this->validate = /*Closure::bind(*/$validate/*, $this)*/;
-        $this->authorize = /*Closure::bind(*/$authorize/*, $this)*/;
+        $this->process = /*Closure::bind(*/
+            $process/*, $this)*/
+        ;
+        $this->validate = /*Closure::bind(*/
+            $validate/*, $this)*/
+        ;
+        $this->authorize = /*Closure::bind(*/
+            $authorize/*, $this)*/
+        ;
 
     }
 

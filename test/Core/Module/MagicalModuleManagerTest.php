@@ -924,7 +924,7 @@ class MagicalModuleManagerTest extends TestCase {
              'name'      => 'ferrier',
              'firstname' => 'julien',
              'password'  => 'bla',
-             'firm'      => new UnsafeParameter(['name' => 'bigsoole'],''),
+             'firm'      => new UnsafeParameter(['name' => 'bigsoole'], ''),
              's3'        => ['url' => 'http://www.bigsoole.com']
             ]);
 
@@ -1455,14 +1455,19 @@ class MagicalModuleManagerTest extends TestCase {
 
         /**
          * @var TestAccount $account
-         * @var TestUser $user
+         * @var TestUser    $user
          */
         $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
 
 
-
         $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
-        $values = ['name', 'firm.name', 'firm.s3.url', 's3.login'/*, 's3.url' => requested field (present in RequestContext) */];
+        $values =
+            ['name',
+             'firm.name',
+             'firm.s3.url',
+             's3.login'
+             /*, 's3.url' => requested field (present in RequestContext) */
+            ];
 
         $requestCtx = new RequestContext();
         $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);

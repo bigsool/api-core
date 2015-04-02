@@ -271,18 +271,18 @@ class RequestContext {
         if (isset($params['authToken'])) {
             $authToken = json_decode($params['authToken'], true);
             $checkAuthCtx = new ActionContext(new RequestContext());
-            $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken,'authToken')]);
+            $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
             $appCtx = ApplicationContext::getInstance();
             $cred = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
             $auth = new Auth();
             $auth->setCredential($cred);
             $this->setAuth($auth);
-            
+
             $helper = new Helper();
             $authToken = $helper->getNewAuthToken($authToken);
-            $setAuthAction = $appCtx->getAction('Core\Credential','setAuthCookie');
+            $setAuthAction = $appCtx->getAction('Core\Credential', 'setAuthCookie');
             $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken]);
-            
+
             unset($params['authToken']);
         }
 

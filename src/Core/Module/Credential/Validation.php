@@ -18,20 +18,20 @@ class Validation extends AbstractConstraintsProvider {
     protected function listConstraints () {
 
         return [
-            'type'     =>
+            'type'      =>
                 [
                     new String(),
                     new Choice(['choices' => ['email']]),
                     new NotBlank(),
                 ]
             ,
-            'login'    =>
+            'login'     =>
                 [
                     new String(),
                     new NotBlank(),
                 ]
             ,
-            'password' =>
+            'password'  =>
                 [
                     new String(),
                     new Length(['max' => 255]),

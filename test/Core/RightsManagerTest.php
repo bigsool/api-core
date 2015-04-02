@@ -6,7 +6,7 @@ namespace Core;
 
 class RightsManagerTest extends TestCase {
 
-    public function testAuth() {
+    public function testAuth () {
 
         $auth = $this->getMockAuth();
         $rightsManager = $this->getMockRightsManager($auth);

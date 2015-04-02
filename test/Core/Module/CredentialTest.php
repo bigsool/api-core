@@ -3,9 +3,6 @@
 
 namespace Core\Module;
 
-use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
-use Core\Context\RequestContext;
 use Core\TestCase;
 
 class CredentialTest extends TestCase {

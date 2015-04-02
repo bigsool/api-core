@@ -436,8 +436,8 @@ class RegistryTest extends TestCase {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getFormattedReturnedKeyPaths')->willReturn([
-                                                               new FieldKeyPath('name')
-                                                           ]);
+                                                                        new FieldKeyPath('name')
+                                                                    ]);
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 
@@ -454,7 +454,7 @@ class RegistryTest extends TestCase {
 
     }
 
-    public function testFindWithTwoIdenticalEntities() {
+    public function testFindWithTwoIdenticalEntities () {
 
         $reqCtx = new RequestContext();
         //$reqCtx->setReturnedKeyPaths([new FieldKeyPath('email'),new FieldKeyPath('company.users.email')]);

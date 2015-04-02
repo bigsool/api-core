@@ -5,8 +5,6 @@ namespace Core;
 
 
 use Core\Model\Credential;
-use Core\Model\User;
-use Core\Module\BasicHelperTest;
 
 class Auth {
 

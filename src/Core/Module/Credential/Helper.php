@@ -16,7 +16,6 @@ class Helper extends BasicHelper {
 
     const AUTH_TOKEN_TYPE_BASIC = 'basic';
 
-
     /**
      * @param ActionContext $actionContext
      * @param array         $params
@@ -34,7 +33,7 @@ class Helper extends BasicHelper {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
         }
 
-        if (!password_verify($params['password'],$credential->getPassword())) {
+        if (!password_verify($params['password'], $credential->getPassword())) {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
         }
 
@@ -44,10 +43,10 @@ class Helper extends BasicHelper {
 
         $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
-        return $this::generateAuthToken($params['login'], $expiration, $credential->getPassword(), self::AUTH_TOKEN_TYPE_BASIC);
+        return $this::generateAuthToken($params['login'], $expiration, $credential->getPassword(),
+                                        self::AUTH_TOKEN_TYPE_BASIC);
 
     }
-
 
     /**
      * @param ActionContext $actionContext
@@ -62,18 +61,17 @@ class Helper extends BasicHelper {
 
         $loginHistory = $this->createRealModel('LoginHistory');
 
-        $params['credential']    = $credential;
-        $params['date']          =  new \DateTime();
-        $params['clientName']    = $reqCtx->getClientName();
+        $params['credential'] = $credential;
+        $params['date'] = new \DateTime();
+        $params['clientName'] = $reqCtx->getClientName();
         $params['clientVersion'] = $reqCtx->getClientVersion();
-        $params['IP']            = $reqCtx->getIpAddress();
+        $params['IP'] = $reqCtx->getIpAddress();
 
         $this->basicSave($loginHistory, $params);
 
         $actionContext['loginHistory'] = $loginHistory;
 
     }
-
 
     public function getNewAuthToken ($authToken) {
 
@@ -89,7 +87,8 @@ class Helper extends BasicHelper {
 
         $expiration = time() + 10 * 60; //TODO//
 
-        return self::generateAuthToken($authToken['login'],$expiration,$credential->getPassword(),self::AUTH_TOKEN_TYPE_BASIC);
+        return self::generateAuthToken($authToken['login'], $expiration, $credential->getPassword(),
+                                       self::AUTH_TOKEN_TYPE_BASIC);
 
     }
 
@@ -119,12 +118,13 @@ class Helper extends BasicHelper {
      *
      * @return array
      */
-     private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
+    private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
 
-        return ['hash' => sha1($login . $expiration . $hashedPassword . $type),
-                'login' => $login,
+        return ['hash'       => sha1($login . $expiration . $hashedPassword . $type),
+                'login'      => $login,
                 'expiration' => $expiration,
-                'type' => $type];
+                'type'       => $type
+        ];
 
     }
 
@@ -137,7 +137,7 @@ class Helper extends BasicHelper {
 
         $credential = $this->createRealModel('Credential');
 
-        $params['password'] = password_hash($params['password'],PASSWORD_BCRYPT);
+        $params['password'] = password_hash($params['password'], PASSWORD_BCRYPT);
 
         $this->basicSave($credential, $params);
 
@@ -179,7 +179,7 @@ class Helper extends BasicHelper {
             throw new \RuntimeException('AuthToken invalid');
         }
 
-        $authTokenGenerated = $this->generateAuthToken($login,$expiration,$credential->getPassword(),$type);
+        $authTokenGenerated = $this->generateAuthToken($login, $expiration, $credential->getPassword(), $type);
 
         if ($authTokenGenerated != $authToken) {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
@@ -189,18 +189,16 @@ class Helper extends BasicHelper {
 
     }
 
-
     private function checkAuthTokenStructure ($authToken) {
 
         $errorManager = ApplicationContext::getInstance()->getErrorManager();
 
         if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
-            || !isset($authToken['type'])) {
+            || !isset($authToken['type'])
+        ) {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
     }
 
-
-
-} 
+}
