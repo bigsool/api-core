@@ -683,7 +683,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return array
      */
     private function validateParams ($params, $action) {
-        
+
         foreach ($this->modelAspects as $modelAspect) {
 
             if (!$modelAspect->getPrefix()) continue;
@@ -860,24 +860,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
         $appCtx->addAction(new SimpleAction($module, $name, [], $params,$processFn));
-
-      /*  $appCtx->addAction(new SimpleAction($module, $name, [], $params,
-            function (ActionContext $actionContext) use ($processFn, &$params, &$name) {
-
-                $ctxParams = $actionContext->getParams();
-
-                if (count($ctxParams) > 0) {
-                    foreach ($ctxParams as $key => $value) {
-                        if (array_key_exists($key,$params)) {
-                            $validator = $params[$key][0];
-                            //$validator->validate($key, UnsafeParameter::getFinalValue($value), $key);
-                        }
-                    }
-                }
-
-                return $processFn($actionContext);
-
-            }));*/
 
     }
 

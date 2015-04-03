@@ -472,7 +472,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->defineAction($mgr, ['create',
                                    ['param1' => [new RuntimeConstraintsProvider(
                                                      [
-                                                         'params1' => [
+                                                         'param1' => [
                                                              new NotBlank(),
                                                              new Choice(['choices' => ['homme', 'femme']])
                                                          ]
@@ -481,7 +481,7 @@ class MagicalModuleManagerTest extends TestCase {
                                     ,
                                     'param2' => [new RuntimeConstraintsProvider(
                                                      [
-                                                         'params2' => [
+                                                         'param2' => [
                                                              new NotBlank(),
                                                              new DateTime()
                                                          ]
@@ -517,7 +517,13 @@ class MagicalModuleManagerTest extends TestCase {
         $mgr->method('getModuleName')->willReturn('ModuleName');
 
         $this->addUserAspect($mgr);
-        $this->defineAction($mgr, ['create', ['qwe' => [new NotBlank()]], $this->getCallable()]);
+        $this->defineAction($mgr, ['create',  ['qwe' => [new RuntimeConstraintsProvider(
+                                                  [
+                                                      'qwe' => [
+                                                          new NotBlank()
+                                                      ]
+                                                  ])]
+                                             ], $this->getCallable()]);
 
         $actionContext = $this->getActionContextWithParams(['aze' => new UnsafeParameter('qwe', '')]);
 
@@ -535,18 +541,19 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->addUserAspect($mgr);
         $this->defineAction($mgr, ['create',
-                                   ['param1' =>
-                                        [new NotBlank(), new Choice(['choices' => ['homme', 'femme']])]
-
-                                   ],
-                                   $this->getCallable()
-        ]);
-
-        $actionContext = $this->getActionContextWithParams(['params1' => new UnsafeParameter('homme', '')]);
-
-    ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
+                                   ['param1' => [new RuntimeConstraintsProvider(
+                                        [
+                                            'param1' => [
+                                                new NotBlank(),
+                                                new Choice(['choices' => ['homme', 'femme']])
+                                            ]
+                                        ])]
+                                   ], $this->getCallable()]);
 
 
+        $actionContext = $this->getActionContextWithParams(['param1' => new UnsafeParameter('hommes', '')]);
+
+        ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
 
     }
 
