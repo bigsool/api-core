@@ -9,11 +9,11 @@ use Core\Context\ApplicationContext;
 class BasicCreateAction extends SimpleAction {
 
     /**
-     * @param string   $module
-     * @param string   $model
-     * @param string   $helperName
-     * @param array    $minRights
-     * @param array    $params
+     * @param string $module
+     * @param string $model
+     * @param string $helperName
+     * @param array $minRights
+     * @param array $params
      * @param callable $preCreateCallable
      * @param callable $postCreateCallable
      */
@@ -31,7 +31,9 @@ class BasicCreateAction extends SimpleAction {
         }
 
         parent::__construct($module, 'create', $minRights, $params,
-            function (ActionContext $context, BasicCreateAction $action) use (&$model, &$helperName, &$preCreateCallable, &$postCreateCallable) {
+            function (ActionContext $context, BasicCreateAction $action) use (
+                &$model, &$helperName, &$preCreateCallable, &$postCreateCallable
+            ) {
 
                 $preCreateCallable($context, $action);
 

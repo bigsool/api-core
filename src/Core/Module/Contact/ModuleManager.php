@@ -5,7 +5,6 @@ namespace Core\Module\Contact;
 
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
-use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
@@ -18,7 +17,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadActions (ApplicationContext &$context) {
 
-        $context->addAction($a = new BasicCreateAction('Core\Contact', 'Contact','ContactHelper', [], [
+        $context->addAction($a = new BasicCreateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],
@@ -28,7 +27,7 @@ class ModuleManager extends AbstractModuleManager {
             'email'    => [new Validation()],
             'mobile'   => [new Validation()],
             'landLine' => [new Validation()],
-        ],function(ActionContext $context, BasicCreateAction $action){
+        ], function (ActionContext $context, BasicCreateAction $action) {
 
             foreach (array_keys($action->getParams()) as $field) {
 
@@ -40,7 +39,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\Contact', 'Contact','ContactHelper', [], [
+        $context->addAction(new BasicUpdateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],

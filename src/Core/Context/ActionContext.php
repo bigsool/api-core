@@ -104,7 +104,7 @@ class ActionContext extends \ArrayObject {
     /**
      * @param mixed $key
      */
-    public function unsetParam($key) {
+    public function unsetParam ($key) {
 
         unset($this->params[$key]);
 
@@ -117,14 +117,14 @@ class ActionContext extends \ArrayObject {
      */
     public function getParam ($key) {
 
-        $exploded = explode('.',$key);
+        $exploded = explode('.', $key);
         $params = $this->params;
         foreach ($exploded as $index => $key) {
             if (!isset($params[$key])) {
                 return NULL;
             }
             // it's not necessary to create an array for the last key
-            if ($index+1 == count($exploded)) {
+            if ($index + 1 == count($exploded)) {
                 break;
             }
             $params = UnsafeParameter::getFinalValue($params[$key]);
@@ -161,12 +161,12 @@ class ActionContext extends \ArrayObject {
             throw new \RuntimeException('invalid key type');
         }
 
-        $exploded = explode('.',$key);
+        $exploded = explode('.', $key);
         $params = &$this->params;
         foreach ($exploded as $index => $key) {
 
             // it's not necessary to create an array for the last key
-            if ($index+1 == count($exploded)) {
+            if ($index + 1 == count($exploded)) {
                 break;
             }
 

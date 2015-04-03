@@ -5,7 +5,6 @@ namespace Core\Module\AddressBook;
 
 
 use Core\Validation\AbstractConstraintsProvider;
-use Core\Validation\Parameter\Constraint;
 
 class Validation extends AbstractConstraintsProvider {
 

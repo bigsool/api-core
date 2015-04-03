@@ -6,6 +6,7 @@ namespace Core\Module;
 
 use Core\Action\ActionReference;
 use Core\Action\GenericAction;
+use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -929,6 +930,7 @@ class MagicalModuleManagerTest extends TestCase {
              'password'  => 'bla',
              'firm'      => new UnsafeParameter(['name' => 'bigsoole'],''),
              's3'        => ['url' => new UnsafeParameter('http://www.bigsoole.com','')]
+
             ]);
 
         /*
@@ -1203,7 +1205,7 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
 
-        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], [], $filters, [], true]);
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], $filters, [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
@@ -1221,7 +1223,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
-        $result = $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], [], [], [], true]);
+        $result = $this->magicalAction('Find', $mgrCompany, [new RequestContext(), ['company.*'], [], [], true]);
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) == 0);
@@ -1458,14 +1460,19 @@ class MagicalModuleManagerTest extends TestCase {
 
         /**
          * @var TestAccount $account
-         * @var TestUser $user
+         * @var TestUser    $user
          */
         $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
 
 
-
         $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
-        $values = ['name', 'firm.name', 'firm.s3.url', 's3.login'/*, 's3.url' => requested field (present in RequestContext) */];
+        $values =
+            ['name',
+             'firm.name',
+             'firm.s3.url',
+             's3.login'
+             /*, 's3.url' => requested field (present in RequestContext) */
+            ];
 
         $requestCtx = new RequestContext();
         $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
@@ -1492,6 +1499,265 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertArrayHasKey('s3', $result['firm']);
         $this->assertInternalType('array', $result['firm']['s3']);
         $this->assertEquals('firm storage url', $result['firm']['s3']['url']);
+
+        $this->assertArrayHasKey('s3', $result);
+        $this->assertInternalType('array', $result['s3']);
+        $this->assertArrayHasKey('url', $result['s3']);
+        $this->assertEquals('storage url', $result['s3']['url']);
+
+    }
+
+    public function testDisabledKeyPathsMagicalCreate() {
+
+        $mgr = $this->getMockMagicalModuleManager();
+
+        $userCreateCalled = false;
+        $companyCreateCalled = false;
+        $storageCreateCalled = false;
+        $companyStorageCreateCalled = false;
+
+        $this->setMainEntity($mgr, [
+            'model' => 'TestUser',
+            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$userCreateCalled) {
+
+                $userCreateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestCompany',
+            'keyPath' => 'company',
+            'prefix'  => 'firm',
+            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyCreateCalled) {
+
+                $companyCreateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'storage',
+            'prefix'  => 's3',
+            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$storageCreateCalled) {
+
+                $storageCreateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'firm.s3',
+            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyStorageCreateCalled) {
+
+                $companyStorageCreateCalled = true;
+
+            })]
+        ]);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'name'     => 'name',
+                'email'    => 'e@ma.il',
+                'password' => 'password',
+                'firm'     => [
+                    'name' => 'firm name',
+                    's3'   => [
+                        'url' => 'firm storage url'
+                    ]
+                ],
+                's3'       => [
+                    'login' => 'storage login',
+                    'url'   => 'storage url',
+                ]
+
+            ]);
+
+        $this->magicalAction('Create', $mgr, [$actionContext, ['company']]);
+
+        $this->assertTrue($userCreateCalled);
+        $this->assertTrue($storageCreateCalled);
+        $this->assertFalse($companyCreateCalled);
+        $this->assertFalse($companyStorageCreateCalled);
+
+    }
+
+    public function testDisabledKeyPathsMagicalUpdate() {
+
+        $mgr = $this->getMockMagicalModuleManager();
+
+        $userUpdateCalled = false;
+        $companyUpdateCalled = false;
+        $storageUpdateCalled = false;
+        $companyStorageUpdateCalled = false;
+
+        $this->setMainEntity($mgr, [
+            'model' => 'TestUser',
+            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$userUpdateCalled) {
+
+                $userUpdateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestCompany',
+            'keyPath' => 'company',
+            'prefix'  => 'firm',
+            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyUpdateCalled) {
+
+                $companyUpdateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'storage',
+            'prefix'  => 's3',
+            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$storageUpdateCalled) {
+
+                $storageUpdateCalled = true;
+
+            })]
+        ]);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'firm.s3',
+            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyStorageUpdateCalled) {
+
+                $companyStorageUpdateCalled = true;
+
+            })]
+        ]);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'name'     => 'name',
+                'email'    => 'e@ma.il',
+                'password' => 'password',
+                'firm'     => [
+                    'name' => 'firm name',
+                    's3'   => [
+                        'url' => 'firm storage url'
+                    ]
+                ],
+                's3'       => [
+                    'login' => 'storage login',
+                    'url'   => 'storage url',
+                ]
+
+            ]);
+
+        $this->magicalAction('Update', $mgr, [$actionContext, ['company']]);
+
+        $this->assertTrue($userUpdateCalled);
+        $this->assertTrue($storageUpdateCalled);
+        $this->assertFalse($companyUpdateCalled);
+        $this->assertFalse($companyStorageUpdateCalled);
+
+    }
+
+    public function testDisabledKeyPathsMagicalFind () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'TestUser',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestCompany',
+            'keyPath' => 'company',
+            'prefix'  => 'firm',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'storage',
+            'prefix'  => 's3',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'firm.s3',
+        ]);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'name'     => 'name',
+                'email'    => 'e@ma.il',
+                'password' => 'password',
+                'firm'     => [
+                    'name' => 'firm name',
+                    's3'   => [
+                        'url' => 'firm storage url'
+                    ]
+                ],
+                's3'       => [
+                    'login' => 'storage login',
+                    'url'   => 'storage url',
+                ]
+
+            ]);
+
+        /**
+         * @var TestAccount $account
+         * @var TestUser    $user
+         */
+        $account = $this->magicalAction('Create', $mgrUser, [$actionContext]);
+
+
+        $filters = [new StringFilter('TestUser', 'bla', 'id = :id')];
+        $values =
+            ['name',
+             'firm.name',
+             'firm.s3.url',
+             's3.login'
+             /*, 's3.url' => requested field (present in RequestContext) */
+            ];
+
+        $requestCtx = new RequestContext();
+        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
+
+        $result =
+            $this->magicalAction('Find', $mgrUser, [$requestCtx,
+                                                    $values,
+                                                    $filters,
+                                                    ['id' => $account->getUser()->getId()],
+                                                    true,
+                                                    ['company']
+            ]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertEquals('name', $result['name']);
+        $this->assertArrayNotHasKey('firm', $result);
 
         $this->assertArrayHasKey('s3', $result);
         $this->assertInternalType('array', $result['s3']);

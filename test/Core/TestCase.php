@@ -24,8 +24,8 @@ use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
-use Core\Rule\Rule;
 use Core\Rule\Processor;
+use Core\Rule\Rule;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
@@ -245,8 +245,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockRightsManager (Auth $auth) {
 
         return $this->getMockBuilder('\Core\RightsManager')
-                ->setConstructorArgs([$auth])
-                ->getMockForAbstractClass();
+                    ->setConstructorArgs([$auth])
+                    ->getMockForAbstractClass();
 
     }
 

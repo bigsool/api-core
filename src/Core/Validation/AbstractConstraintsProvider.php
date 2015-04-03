@@ -4,7 +4,6 @@
 namespace Core\Validation;
 
 use Core\Context\ApplicationContext;
-use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Collection;

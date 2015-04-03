@@ -79,7 +79,7 @@ class BasicHelperTest extends TestCase {
 
     public function testCheckRealModelType () {
 
-        $this->assertNull((new BasicHelper())->checkRealModelType(new TestUser(),'TestUser'));
+        $this->assertNull((new BasicHelper())->checkRealModelType(new TestUser(), 'TestUser'));
 
     }
 
@@ -88,7 +88,7 @@ class BasicHelperTest extends TestCase {
      */
     public function testInvalidRealModelType () {
 
-        (new BasicHelper())->checkRealModelType(new \stdClass(),'TestUser');
+        (new BasicHelper())->checkRealModelType(new \stdClass(), 'TestUser');
 
     }
 

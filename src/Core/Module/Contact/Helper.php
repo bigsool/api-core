@@ -5,7 +5,6 @@ namespace Core\Module\Contact;
 
 use Core\Context\ActionContext;
 use Core\Model\Address;
-use Core\Model\Contact;
 use Core\Model\Email;
 use Core\Model\Phone;
 use Core\Module\BasicHelper;

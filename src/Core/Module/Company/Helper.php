@@ -5,7 +5,6 @@ namespace Core\Module\Company;
 
 
 use Core\Context\ActionContext;
-use Core\Model\Company;
 use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {

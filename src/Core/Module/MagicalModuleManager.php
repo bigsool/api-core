@@ -43,10 +43,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
      *
      * @return mixed
      */
-    public function magicalCreate (ActionContext $ctx) {
+    public function magicalCreate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         return $this->magicalModify($ctx, 'create');
     }
@@ -83,7 +84,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 continue;
             }
 
-            $params = null;
+            $params = NULL;
             if ($modelAspect->getKeyPath()) {
                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
                $params = $formattedParams;
@@ -107,7 +108,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $subContext = NULL;
 
-            if (is_array($params) || $params != null) {
+            if (is_array($params) || $params != NULL) {
 
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
@@ -131,7 +132,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
                 foreach ($formattedParams as $key => $value) {
-                    if (!$this->isParamLinkedToAspectModel(null,$key)) {
+                    if (!$this->isParamLinkedToAspectModel(NULL, $key)) {
                         $subContext->setParam($key, $value);
                     }
                 }
@@ -205,7 +206,9 @@ abstract class MagicalModuleManager extends ModuleManager {
         $keyPath = $keyPath ? $keyPath.'.'.$paramKey : $paramKey;
 
         foreach ($this->modelAspects as $modelAspect) {
-            if (!$modelAspect->getKeyPath()) continue;
+            if (!$modelAspect->getKeyPath()) {
+                continue;
+            }
             if ($modelAspect->getKeyPath()->getValue() == $keyPath) {
                 return true;
             }
@@ -378,10 +381,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
      *
      * @return mixed
      */
-    public function magicalUpdate (ActionContext $ctx) {
+    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         return $this->magicalModify($ctx, 'update');
 
@@ -530,12 +534,13 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param Filter[]       $filters
      * @param array          $params
      * @param Boolean        $hydrateArray
+     * @param string[]       $disabledKeyPaths
      *
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
     protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
-                                    $hydrateArray = false) {
+                                    $hydrateArray = false, array $disabledKeyPaths = []) {
 
         $appCtx = ApplicationContext::getInstance();
 
