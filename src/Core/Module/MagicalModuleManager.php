@@ -15,6 +15,7 @@ use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Validation\Parameter\Constraint;
+use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
@@ -68,7 +69,8 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $params = $ctx->getParams();
-        $formattedParams = $this->formatModifyParameters($params);
+        $validatedParams = $this->validateParams($params,$action);
+        $formattedParams = $this->formatModifyParams($validatedParams);
 
         foreach ($this->modelAspects as $modelAspect) {
 
@@ -630,24 +632,23 @@ abstract class MagicalModuleManager extends ModuleManager {
      *
      * @return array
      */
-    public function formatModifyParameters ($params) {
+    public function formatModifyParams ($params) {
 
         $formattedParams = [];
 
         foreach ($this->modelAspects as $modelAspect) {
 
+
+
             if ($modelAspect->getPrefix()) {
                 $explodedPrefix = explode('.', $modelAspect->getPrefix());
                 $data = $params;
-                $haveToContinue = false;
                 foreach ($explodedPrefix as $elem) {
                     if (!isset($data[$elem])) {
-                        $haveToContinue = true;
-                        break;
+                        continue 2;
                     }
                     $data = $data[$elem];
                 }
-                if ($haveToContinue) continue;
             }
             else {
                 $data = $params;
@@ -668,6 +669,47 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $formattedParams;
 
+    }
+
+    /**
+     * @param array $params
+     * @param string $action
+     *
+     * @return array
+     */
+    private function validateParams ($params, $action) {
+
+        $newParams = [];
+
+        foreach ($this->modelAspects as $modelAspect) {
+
+            if (!$modelAspect->getPrefix()) continue;
+            $explodedPrefix = explode('.',$modelAspect->getPrefix());
+            $data = $params;
+            foreach ($explodedPrefix as $elem) {
+                if (!isset($data[$elem])) {
+                    continue 2;
+                }
+                $data = $data[$elem];
+            }
+            $name = $explodedPrefix[count($explodedPrefix) - 1];
+            $constraints = $modelAspect->getConstraints();
+            if (count($constraints) == 1) {
+                $constraints = $constraints[$action];
+                $validator =  new RuntimeConstraintsProvider([$name => $constraints]);
+                $isValid = $validator->validate($name, UnsafeParameter::getFinalValue($data), $name);
+                if (!$isValid) {
+                    throw new \RuntimeException('Model aspect contraints not respected'); //TODO//
+                }
+            }
+
+        }
+
+        foreach ($params as $key => $value) {
+            $newParams[$key] = UnsafeParameter::getFinalValue($value);
+        }
+
+        return $newParams;
     }
 
     /**
@@ -793,8 +835,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
+        $appCtx->addAction(new SimpleAction($module, $name, [], $params,$processFn));
 
-        $appCtx->addAction(new SimpleAction($module, $name, [], $params,
+      /*  $appCtx->addAction(new SimpleAction($module, $name, [], $params,
             function (ActionContext $actionContext) use ($processFn, &$params, &$name) {
 
                 $ctxParams = $actionContext->getParams();
@@ -803,14 +846,14 @@ abstract class MagicalModuleManager extends ModuleManager {
                     foreach ($ctxParams as $key => $value) {
                         if (array_key_exists($key,$params)) {
                             $validator = $params[$key][0];
-                            $validator->validate($key, UnsafeParameter::getFinalValue($value), $key);
+                            //$validator->validate($key, UnsafeParameter::getFinalValue($value), $key);
                         }
                     }
                 }
 
                 return $processFn($actionContext);
 
-            }));
+            }));*/
 
     }
 

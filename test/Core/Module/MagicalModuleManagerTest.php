@@ -30,6 +30,7 @@ use Core\Validation\Parameter\Null;
 use Core\Validation\Parameter\Object;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class MagicalModuleManagerTest extends TestCase {
 
@@ -479,7 +480,7 @@ class MagicalModuleManagerTest extends TestCase {
                                     ,
                                     'param2' => [new RuntimeConstraintsProvider(
                                                      [
-                                                         'params1' => [
+                                                         'params2' => [
                                                              new NotBlank(),
                                                              new DateTime()
                                                          ]
@@ -540,9 +541,11 @@ class MagicalModuleManagerTest extends TestCase {
                                    $this->getCallable()
         ]);
 
-        $actionContext = $this->getActionContextWithParams(['params1' => new UnsafeParameter('qwe', '')]);
+        $actionContext = $this->getActionContextWithParams(['params1' => new UnsafeParameter('homme', '')]);
 
-        ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
+    ApplicationContext::getInstance()->getActions()[0]->process($actionContext);
+
+
 
     }
 
@@ -665,7 +668,7 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'  => 's3',
             'keyPath' => 'company.storage',
             'create'  => [
-                'constraints' => [new Null()],
+                'constraints' => [new Object(), new NotBlank()],
             ]
         ]);
 
@@ -902,7 +905,7 @@ class MagicalModuleManagerTest extends TestCase {
             'prefix'  => 's3',
             'keyPath' => 'company.storage',
             'update'  => [
-                'constraints' => [new Null()],
+                'constraints' => [new Object(), new NotBlank()],
             ]
         ]);
 
@@ -925,7 +928,7 @@ class MagicalModuleManagerTest extends TestCase {
              'firstname' => 'julien',
              'password'  => 'bla',
              'firm'      => new UnsafeParameter(['name' => 'bigsoole'],''),
-             's3'        => ['url' => 'http://www.bigsoole.com']
+             's3'        => ['url' => new UnsafeParameter('http://www.bigsoole.com','')]
             ]);
 
         /*
