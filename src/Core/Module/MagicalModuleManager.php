@@ -683,9 +683,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return array
      */
     private function validateParams ($params, $action) {
-
-        $newParams = [];
-
+        
         foreach ($this->modelAspects as $modelAspect) {
 
             if (!$modelAspect->getPrefix()) continue;
@@ -708,13 +706,34 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
             }
 
+            $finalValue = UnsafeParameter::getFinalValue($data);
+            if ($data != $finalValue) {
+                $this->setFinalValue($params,$explodedPrefix,$finalValue);;
+            }
+
         }
 
-        foreach ($params as $key => $value) {
-            $newParams[$key] = UnsafeParameter::getFinalValue($value);
+        return $params;
+
+    }
+
+    /**
+     * @param array $params
+     * @param array $explodedPrefix
+     * @param mixed $finalValue
+     */
+    private function setFinalValue (&$params,$explodedPrefix,$finalValue) {
+
+        $currentPrefix = $explodedPrefix[0];
+
+        if (count($explodedPrefix) == 1) {
+            $params[$currentPrefix] = $finalValue;
+        }
+        else {
+            array_splice($explodedPrefix,0,1);
+            $this->setFinalValue($params[$currentPrefix],$explodedPrefix,$finalValue);
         }
 
-        return $newParams;
     }
 
     /**
