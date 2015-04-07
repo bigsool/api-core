@@ -1,7 +1,7 @@
 {
   "name": "api/core",
   "require": {
-    "doctrine/orm": "~2.4",
+    "doctrine/orm": "~2.5",
     "symfony/routing": "~2.5",
     "symfony/console": "~2.5",
     "symfony/yaml": "~2.5",

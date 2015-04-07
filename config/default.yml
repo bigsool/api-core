@@ -1,1 +1,1 @@
-expirationAuthToken: 30 * 60
+expirationAuthToken: 3600

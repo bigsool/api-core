@@ -280,6 +280,13 @@ class Registry implements EventSubscriber {
         $ruleProcessor = new Processor();
         $ruleProcessor->apply($ctx);
 
+        $auth = $ctx->getReqCtx()->getAuth();
+        $login = NULL;
+        if (isset($auth) && $credential = $auth->getCredential()) {
+            $login = $credential->getLogin();
+        }
+        $ctx->setParam('__LOGIN__',$login);
+
         $expressions = [];
         foreach ($ctx->getFilters() as $filter) {
             $expressions[] = $filter->getExpression();
@@ -287,11 +294,6 @@ class Registry implements EventSubscriber {
         if ($expressions) {
             $expression = new NAryExpression(new AndOperator(), $expressions);
             $qb->andWhere($expression->resolve($this, $ctx));
-        }
-
-        $auth = $ctx->getReqCtx()->getAuth();
-        if (isset($auth) && $credential = $auth->getCredential()) {
-            $this->params['__LOGIN__'] = $credential->getLogin();
         }
         $qb->setParameters($this->params);
 

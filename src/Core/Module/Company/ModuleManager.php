@@ -4,8 +4,8 @@
 namespace Core\Module\Company;
 
 use Core\Action\BasicCreateAction;
+use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
-use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
@@ -19,16 +19,15 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
             'name' => [new Validation()],
             'vat'  => [new Validation()],
-        ], function (ActionContext $context) {
-
-        }));
+        ]));
 
         $context->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
-            'name' => [new Validation()],
-            'vat'  => [new Validation()],
-        ], function (ActionContext $context) {
+            'name' => [new Validation(), true],
+            'vat'  => [new Validation(), true],
+        ]));
 
-        }));
+        $context->addAction(new BasicFindAction('Core\Company', 'company', 'CompanyHelper', NULL, [
+        ]));
 
     }
 

@@ -1590,6 +1590,18 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertFalse($companyCreateCalled);
         $this->assertFalse($companyStorageCreateCalled);
 
+        $userCreateCalled = false;
+        $companyCreateCalled = false;
+        $storageCreateCalled = false;
+        $companyStorageCreateCalled = false;
+
+        $this->magicalAction('Create', $mgr, [$actionContext]);
+
+        $this->assertTrue($userCreateCalled);
+        $this->assertTrue($storageCreateCalled);
+        $this->assertTrue($companyCreateCalled);
+        $this->assertTrue($companyStorageCreateCalled);
+
     }
 
     public function testDisabledKeyPathsMagicalUpdate() {

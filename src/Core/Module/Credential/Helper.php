@@ -41,9 +41,7 @@ class Helper extends BasicHelper {
             throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
         }
 
-        $configManager = $appCtx->getConfigManager();
-        $config = $configManager->getConfig();
-        $expiration = time() + 10 * 60; //TODO//
+        $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
         $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
@@ -128,7 +126,8 @@ class Helper extends BasicHelper {
      */
     public function getNewAuthToken ($authToken) {
 
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+        $appCtx = ApplicationContext::getInstance();
+        $errorManager = $appCtx->getErrorManager();
 
         $this->checkAuthTokenStructure($authToken);
 
@@ -138,7 +137,7 @@ class Helper extends BasicHelper {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        $expiration = time() + 10 * 60; //TODO//
+        $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
         return self::generateAuthToken($authToken['login'], $expiration, $credential->getPassword(),
                                        self::AUTH_TOKEN_TYPE_BASIC);

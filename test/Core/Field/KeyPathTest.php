@@ -29,6 +29,39 @@ class KeyPathTest extends TestCase {
 
     }
 
+    /**
+     *
+     */
+    public function testResolveUsedTwice () {
+
+        $registry = $this->getRegistry('TestCompany');
+        $context = $this->getFindQueryContext('TestCompany');
+
+        $param = 'owner.company.storage';
+
+        $param1 = new KeyPath($param);
+        $resolve1 = $param1->resolve($registry, $context);
+
+        $reflectedRegistry = new \ReflectionClass($registry);
+        $reflectedProperty = $reflectedRegistry->getProperty('joins');
+        $reflectedProperty->setAccessible(true);
+
+        $joins = $reflectedProperty->getValue($registry);
+        $this->assertCount(3, $joins);
+
+        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+
+        $registry2 = $this->getRegistry('TestCompany');
+        $context2 = $this->getFindQueryContext('TestCompany');
+
+        $resolve2 = $param1->resolve($registry2, $context2);
+        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve2);
+
+        $joins = $reflectedProperty->getValue($registry2);
+        $this->assertCount(3, $joins);
+
+    }
+
     public function testAlias () {
 
         $alias = 'qwe';

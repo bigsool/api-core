@@ -556,19 +556,20 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param array          $params
      * @param Boolean        $hydrateArray
      * @param string[]       $disabledKeyPaths
+     * @param string[]       $rights
      *
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
     protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
-                                    $hydrateArray = false, array $disabledKeyPaths = []) {
+                                    $hydrateArray = false, array $disabledKeyPaths = [], array $rights = []) {
 
 
         $appCtx = ApplicationContext::getInstance();
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext);
+        $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext, $rights);
 
         $values = $this->formatFindValues($values);
         $this->disableModelAspects($disabledKeyPaths);
