@@ -147,9 +147,9 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());//TODO//
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());//TODO// ADD TESTS 
                     if ($entity) {
-                        $subContext->setParam('id', $entity->getId()); //TODO//
+                        $subContext->setParam('id', $entity->getId());
                     }
                 }
 
@@ -265,11 +265,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $models = explode('.', $keyPath->getValue());
 
-        $entity = $this->mainEntity; //TODO //
+        $entity = $this->mainEntity;
 
-        foreach ($models as $model) {
-            $fn = 'get' . ucfirst($model);
-            $entity = $entity->$fn();
+        if ($entity) {
+            foreach ($models as $model) {
+                $fn = 'get' . ucfirst($model);
+                $entity = $entity->$fn();
+            }
+
         }
 
         return $entity;
