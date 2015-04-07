@@ -36,6 +36,11 @@ class ModelAspect {
     private $actions;
 
     /**
+     * @var boolean
+     */
+    private $enabled;
+
+    /**
      * @param string                          $model
      * @param string                          $prefix
      * @param AbstractConstraintsProvider[][] $constraints
@@ -49,6 +54,8 @@ class ModelAspect {
         $this->constraints = $constraints;
         $this->keyPath = $keyPath;
         $this->actions = $actions;
+        $this->enabled = true;
+
     }
 
     /**
@@ -57,6 +64,7 @@ class ModelAspect {
     public function getModel () {
 
         return $this->model;
+
     }
 
     /**
@@ -65,6 +73,7 @@ class ModelAspect {
     public function getPrefix () {
 
         return $this->prefix;
+
     }
 
     /**
@@ -106,6 +115,29 @@ class ModelAspect {
     public function getAction ($actionName) {
 
         return isset($this->actions[$actionName]) ? $this->actions[$actionName] : NULL;
+
     }
+
+    public function enable () {
+
+        $this->enabled = true;
+
+    }
+
+    public function disable () {
+
+        $this->enabled = false;
+
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isEnabled () {
+
+        return $this->enabled;
+
+    }
+
 
 } 

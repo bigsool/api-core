@@ -57,7 +57,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     public function magicalCreate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         $this->disableModelAspects($disabledKeyPaths);
-        return $this->magicalModify($ctx, 'create');
+        $result = $this->magicalModify($ctx, 'create');
+        $this->enableModelAspects();
+
+        return $result;
+
     }
 
     /**
@@ -69,7 +73,10 @@ abstract class MagicalModuleManager extends ModuleManager {
     public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
         $this->disableModelAspects($disabledKeyPaths);
-        return $this->magicalModify($ctx, 'update');
+        $result = $this->magicalModify($ctx, 'update');
+        $this->enableModelAspects();
+
+        return $result;
 
     }
 
@@ -86,7 +93,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $prefixes = [];
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             $prefixes[] = $modelAspect->getPrefix();
         }
 
@@ -94,7 +101,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $validatedParams = $this->validateParams($params,$action);
         $formattedParams = $this->formatModifyParams($validatedParams);
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             // TODO HANDLE ONETOMANY
             $actions = $modelAspect->getActions();
@@ -225,7 +232,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $keyPath = $keyPath ? $keyPath.'.'.$paramKey : $paramKey;
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             if (!$modelAspect->getKeyPath()) {
                 continue;
             }
@@ -273,7 +280,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $modelNameForKeyPath = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if ($this->isMainEntity($modelAspect)) {
                 continue;
@@ -321,7 +328,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private function getMainEntityName () {
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             if ($modelAspect->getKeyPath() == '') {
                 return $modelAspect->getModel();
             }
@@ -585,7 +592,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $result = $registry->find($qryCtx, $hydrateArray);
 
-        return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+        $result = $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+
+        $this->enableModelAspects();
+
+        return $result;
 
     }
 
@@ -612,7 +623,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $formattedResult = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             $keyPath = $modelAspect->getKeyPath();
             $prefix = $modelAspect->getPrefix();
@@ -654,9 +665,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $formattedParams = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
-
-
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if ($modelAspect->getPrefix()) {
                 $explodedPrefix = explode('.', $modelAspect->getPrefix());
@@ -697,7 +706,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private function validateParams ($params, $action) {
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if (!$modelAspect->getPrefix()) continue;
             $explodedPrefix = explode('.',$modelAspect->getPrefix());
@@ -882,8 +891,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             return;
         }
 
-        $newModelAspects = [];
-
         foreach ($this->modelAspects as $modelAspect) {
             if (!$modelAspect->getKeyPath()) {
                 $newModelAspects[] = $modelAspect;
@@ -892,15 +899,31 @@ abstract class MagicalModuleManager extends ModuleManager {
             $keyPath = $modelAspect->getKeyPath()->getValue();
             foreach ($disabledKeyPaths as $disabledKeyPath) {
                 if (strpos($keyPath,$disabledKeyPath) === 0) {
-                    continue 2;
+                    $modelAspect->disable();
                 }
             }
 
-            $newModelAspects[] = $modelAspect;
-
         }
 
-        $this->modelAspects = $newModelAspects;
+    }
+
+    private function enableModelAspects() {
+
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->isEnabled()) {
+                $modelAspect->enable();
+            }
+        }
+
+    }
+
+    private function getModelAspects () {
+
+        return array_filter($this->modelAspects,function($modelAspect) {
+
+            return $modelAspect->isEnabled();
+
+        });
 
     }
 
