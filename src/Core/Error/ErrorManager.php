@@ -61,17 +61,22 @@ class ErrorManager {
     }
 
     /**
-     * @param int $errorCode
+     * @param int    $errorCode
+     * @param string $field
      *
      * @return FormattedError
      */
-    public function getFormattedError ($errorCode = NULL) {
+    public function getFormattedError ($errorCode = NULL, $field = NULL) {
 
         if ($errorCode === NULL) {
             $errors = $this->errors;
         }
         else {
-            $errors = [$this->getErrorForErrorCode($errorCode)];
+            $error = clone $this->getErrorForErrorCode($errorCode);
+            if (!is_null($field)) {
+                $error->setField($field);
+            }
+            $errors = [$error];
         }
         $formattedErrors = [];
         $parentCode = $errors[0]->getParentCode();
