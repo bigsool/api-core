@@ -4,6 +4,7 @@ namespace Core\Module;
 
 use Core\Action\Action;
 use Core\Action\SimpleAction;
+use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
@@ -11,6 +12,7 @@ use Core\Context\RequestContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Field\KeyPath;
 use Core\Filter\Filter;
+use Core\Filter\StringFilter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
@@ -42,6 +44,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     private $mainEntity = NULL;
 
     /**
+     * @var mixed
+     */
+    private $disabledKeyPaths = NULL;
+
+    /**
      * @param ActionContext $ctx
      * @param string[]      $disabledKeyPaths
      *
@@ -49,7 +56,28 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     public function magicalCreate (ActionContext $ctx, array $disabledKeyPaths = []) {
 
-        return $this->magicalModify($ctx, 'create');
+        $this->disableModelAspects($disabledKeyPaths);
+        $result = $this->magicalModify($ctx, 'create');
+        $this->enableModelAspects();
+
+        return $result;
+
+    }
+
+    /**
+     * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
+     *
+     * @return mixed
+     */
+    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
+
+        $this->disableModelAspects($disabledKeyPaths);
+        $result = $this->magicalModify($ctx, 'update');
+        $this->enableModelAspects();
+
+        return $result;
+
     }
 
     /**
@@ -65,7 +93,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $prefixes = [];
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             $prefixes[] = $modelAspect->getPrefix();
         }
 
@@ -73,7 +101,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $validatedParams = $this->validateParams($params,$action);
         $formattedParams = $this->formatModifyParams($validatedParams);
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             // TODO HANDLE ONETOMANY
             $actions = $modelAspect->getActions();
@@ -119,9 +147,9 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());//TODO//
                     if ($entity) {
-                        $subContext->setParam('id', $entity->getId());
+                        $subContext->setParam('id', $entity->getId()); //TODO//
                     }
                 }
 
@@ -173,7 +201,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
     /**
      * @param string      $action
      * @param ModelAspect $modelAspect
@@ -205,7 +232,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $keyPath = $keyPath ? $keyPath.'.'.$paramKey : $paramKey;
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             if (!$modelAspect->getKeyPath()) {
                 continue;
             }
@@ -237,7 +264,9 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function getEntityFromKeyPath (AbstractKeyPath $keyPath) {
 
         $models = explode('.', $keyPath->getValue());
-        $entity = $this->mainEntity;
+
+        $entity = $this->mainEntity; //TODO //
+
         foreach ($models as $model) {
             $fn = 'get' . ucfirst($model);
             $entity = $entity->$fn();
@@ -251,7 +280,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $modelNameForKeyPath = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if ($this->isMainEntity($modelAspect)) {
                 continue;
@@ -299,7 +328,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private function getMainEntityName () {
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
             if ($modelAspect->getKeyPath() == '') {
                 return $modelAspect->getModel();
             }
@@ -379,17 +408,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
 
-    /**
-     * @param ActionContext $ctx
-     * @param string[]      $disabledKeyPaths
-     *
-     * @return mixed
-     */
-    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
-
-        return $this->magicalModify($ctx, 'update');
-
-    }
 
     /**
      * @param ApplicationContext $context
@@ -542,6 +560,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
                                     $hydrateArray = false, array $disabledKeyPaths = []) {
 
+
         $appCtx = ApplicationContext::getInstance();
 
         $registry = $appCtx->getNewRegistry();
@@ -549,6 +568,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext);
 
         $values = $this->formatFindValues($values);
+        $this->disableModelAspects($disabledKeyPaths);
 
         foreach ($values as $value) {
             $qryCtx->addKeyPath(new KeyPath($value));
@@ -572,7 +592,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $result = $registry->find($qryCtx, $hydrateArray);
 
-        return $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+        $result = $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+
+        $this->enableModelAspects();
+
+        return $result;
 
     }
 
@@ -599,7 +623,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $formattedResult = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             $keyPath = $modelAspect->getKeyPath();
             $prefix = $modelAspect->getPrefix();
@@ -641,9 +665,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $formattedParams = [];
 
-        foreach ($this->modelAspects as $modelAspect) {
-
-
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if ($modelAspect->getPrefix()) {
                 $explodedPrefix = explode('.', $modelAspect->getPrefix());
@@ -684,7 +706,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private function validateParams ($params, $action) {
 
-        foreach ($this->modelAspects as $modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
             if (!$modelAspect->getPrefix()) continue;
             $explodedPrefix = explode('.',$modelAspect->getPrefix());
@@ -862,6 +884,49 @@ abstract class MagicalModuleManager extends ModuleManager {
         $appCtx->addAction(new SimpleAction($module, $name, [], $params,$processFn));
 
     }
+
+    private function disableModelAspects ($disabledKeyPaths) {
+
+        if (!is_array($disabledKeyPaths) || count($disabledKeyPaths) < 1) {
+            return;
+        }
+
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->getKeyPath()) {
+                $newModelAspects[] = $modelAspect;
+                continue;
+            }
+            $keyPath = $modelAspect->getKeyPath()->getValue();
+            foreach ($disabledKeyPaths as $disabledKeyPath) {
+                if (strpos($keyPath,$disabledKeyPath) === 0) {
+                    $modelAspect->disable();
+                }
+            }
+
+        }
+
+    }
+
+    private function enableModelAspects() {
+
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->isEnabled()) {
+                $modelAspect->enable();
+            }
+        }
+
+    }
+
+    private function getModelAspects () {
+
+        return array_filter($this->modelAspects,function($modelAspect) {
+
+            return $modelAspect->isEnabled();
+
+        });
+
+    }
+
 
 
 }
