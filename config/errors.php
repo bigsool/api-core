@@ -78,6 +78,10 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, "paramètre v
 @define('ERROR_MISSING_PARAM', -110);
 $errorManager->defineError(new Error(ERROR_MISSING_PARAM, "paramètre manquant",
                                      'missing parameter', ERROR_INVALID_PARAM));
+
+@define('ERROR_COMPANY_NOT_FOUND', -6001);
+$errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, "société inexistante", 'company not found'));
+
 @define('ERROR_USER_NOT_FOUND', -7001);
 $errorManager->defineError(new Error(ERROR_USER_NOT_FOUND, "compte inexistant", 'user not found'));
 @define('ERROR_CREDENTIAL_ALREADY_EXIST', -7002);
