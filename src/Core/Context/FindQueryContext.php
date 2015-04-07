@@ -162,6 +162,16 @@ class FindQueryContext implements QueryContext {
 
     /**
      * @param mixed $key
+     * @param mixed $value
+     */
+    public function setParam ($key, $value) {
+
+        $this->params[$key] = $value;
+
+    }
+
+    /**
+     * @param mixed $key
      *
      * @return mixed
      */
