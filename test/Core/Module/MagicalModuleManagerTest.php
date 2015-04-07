@@ -31,7 +31,6 @@ use Core\Validation\Parameter\Null;
 use Core\Validation\Parameter\Object;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 class MagicalModuleManagerTest extends TestCase {
 
@@ -517,13 +516,17 @@ class MagicalModuleManagerTest extends TestCase {
         $mgr->method('getModuleName')->willReturn('ModuleName');
 
         $this->addUserAspect($mgr);
-        $this->defineAction($mgr, ['create',  ['qwe' => [new RuntimeConstraintsProvider(
+        $this->defineAction($mgr, ['create',
+                                   ['qwe' => [new RuntimeConstraintsProvider(
                                                   [
                                                       'qwe' => [
                                                           new NotBlank()
                                                       ]
-                                                  ])]
-                                             ], $this->getCallable()]);
+                                                  ])
+                                   ]
+                                   ],
+                                   $this->getCallable()
+        ]);
 
         $actionContext = $this->getActionContextWithParams(['aze' => new UnsafeParameter('qwe', '')]);
 
@@ -542,13 +545,16 @@ class MagicalModuleManagerTest extends TestCase {
         $this->addUserAspect($mgr);
         $this->defineAction($mgr, ['create',
                                    ['param1' => [new RuntimeConstraintsProvider(
-                                        [
-                                            'param1' => [
-                                                new NotBlank(),
-                                                new Choice(['choices' => ['homme', 'femme']])
-                                            ]
-                                        ])]
-                                   ], $this->getCallable()]);
+                                                     [
+                                                         'param1' => [
+                                                             new NotBlank(),
+                                                             new Choice(['choices' => ['homme', 'femme']])
+                                                         ]
+                                                     ])
+                                   ]
+                                   ],
+                                   $this->getCallable()
+        ]);
 
 
         $actionContext = $this->getActionContextWithParams(['param1' => new UnsafeParameter('hommes', '')]);
@@ -935,8 +941,8 @@ class MagicalModuleManagerTest extends TestCase {
              'name'      => 'ferrier',
              'firstname' => 'julien',
              'password'  => 'bla',
-             'firm'      => new UnsafeParameter(['name' => 'bigsoole'],''),
-             's3'        => ['url' => new UnsafeParameter('http://www.bigsoole.com','')]
+             'firm'      => new UnsafeParameter(['name' => 'bigsoole'], ''),
+             's3'        => ['url' => new UnsafeParameter('http://www.bigsoole.com', '')]
 
             ]);
 
@@ -1514,7 +1520,7 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    public function testDisabledKeyPathsMagicalCreate() {
+    public function testDisabledKeyPathsMagicalCreate () {
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -1524,45 +1530,50 @@ class MagicalModuleManagerTest extends TestCase {
         $companyStorageCreateCalled = false;
 
         $this->setMainEntity($mgr, [
-            'model' => 'TestUser',
-            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$userCreateCalled) {
+            'model'  => 'TestUser',
+            'create' => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$userCreateCalled) {
 
                 $userCreateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestCompany',
             'keyPath' => 'company',
             'prefix'  => 'firm',
-            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyCreateCalled) {
+            'create'  => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$companyCreateCalled) {
 
                 $companyCreateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
             'keyPath' => 'storage',
             'prefix'  => 's3',
-            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$storageCreateCalled) {
+            'create'  => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$storageCreateCalled) {
 
                 $storageCreateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
             'prefix'  => 'firm.s3',
-            'create'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyStorageCreateCalled) {
+            'create'  => ['action' => new SimpleAction('test', 'test', [], [],
+                function () use (&$companyStorageCreateCalled) {
 
-                $companyStorageCreateCalled = true;
+                    $companyStorageCreateCalled = true;
 
-            })]
+                })
+            ]
         ]);
 
         $actionContext = $this->getActionContextWithParams(
@@ -1604,7 +1615,7 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-    public function testDisabledKeyPathsMagicalUpdate() {
+    public function testDisabledKeyPathsMagicalUpdate () {
 
         $mgr = $this->getMockMagicalModuleManager();
 
@@ -1614,45 +1625,50 @@ class MagicalModuleManagerTest extends TestCase {
         $companyStorageUpdateCalled = false;
 
         $this->setMainEntity($mgr, [
-            'model' => 'TestUser',
-            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$userUpdateCalled) {
+            'model'  => 'TestUser',
+            'update' => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$userUpdateCalled) {
 
                 $userUpdateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestCompany',
             'keyPath' => 'company',
             'prefix'  => 'firm',
-            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyUpdateCalled) {
+            'update'  => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$companyUpdateCalled) {
 
                 $companyUpdateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
             'keyPath' => 'storage',
             'prefix'  => 's3',
-            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$storageUpdateCalled) {
+            'update'  => ['action' => new SimpleAction('test', 'test', [], [], function () use (&$storageUpdateCalled) {
 
                 $storageUpdateCalled = true;
 
-            })]
+            })
+            ]
         ]);
 
         $this->addAspect($mgr, [
             'model'   => 'TestStorage',
             'keyPath' => 'company.storage',
             'prefix'  => 'firm.s3',
-            'update'=> [ 'action' => new SimpleAction('test','test', [], [], function() use (&$companyStorageUpdateCalled) {
+            'update'  => ['action' => new SimpleAction('test', 'test', [], [],
+                function () use (&$companyStorageUpdateCalled) {
 
-                $companyStorageUpdateCalled = true;
+                    $companyStorageUpdateCalled = true;
 
-            })]
+                })
+            ]
         ]);
 
         $actionContext = $this->getActionContextWithParams(

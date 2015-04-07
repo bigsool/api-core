@@ -20,7 +20,7 @@ class Validation extends AbstractConstraintsProvider {
                 new String(),
                 new Length(['max' => 255]),
             ],
-            'number' => [
+            'number'     => [
                 new String(),
                 new Length(['max' => 255]),
             ],

@@ -30,7 +30,7 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addAction(new BasicCreateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
             'schoolName' => [new Validation()],
-            'number' => [new Validation()],
+            'number'     => [new Validation()],
         ]));
 
     }

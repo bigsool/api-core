@@ -44,10 +44,10 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actionContext
      * @param bool          $hydrateArray
-     * @param KeyPath[]         $keyPaths
-     * @param Filter[]         $filters
+     * @param KeyPath[]     $keyPaths
+     * @param Filter[]      $filters
      * @param array         $params
-     * @param string[]         $rights
+     * @param string[]      $rights
      */
     public function findCompany (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
                                  array $filters = [],

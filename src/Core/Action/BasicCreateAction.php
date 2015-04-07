@@ -9,11 +9,11 @@ use Core\Context\ApplicationContext;
 class BasicCreateAction extends SimpleAction {
 
     /**
-     * @param string $module
-     * @param string $model
-     * @param string $helperName
-     * @param array $minRights
-     * @param array $params
+     * @param string   $module
+     * @param string   $model
+     * @param string   $helperName
+     * @param array    $minRights
+     * @param array    $params
      * @param callable $preCreateCallable
      * @param callable $postCreateCallable
      */
