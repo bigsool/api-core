@@ -42,11 +42,14 @@ class KeyPathTest extends TestCase {
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $reflectedRegistry = new \ReflectionClass($registry);
-        $reflectedProperty = $reflectedRegistry->getProperty('joins');
-        $reflectedProperty->setAccessible(true);
+        $joins = $registry->getJoins();
+        $this->assertCount(3, $joins);
 
-        $joins = $reflectedProperty->getValue($registry);
+        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+
+        $resolve1 = $param1->resolve($registry, $context);
+
+        $joins = $registry->getJoins();
         $this->assertCount(3, $joins);
 
         $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
@@ -57,7 +60,7 @@ class KeyPathTest extends TestCase {
         $resolve2 = $param1->resolve($registry2, $context2);
         $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve2);
 
-        $joins = $reflectedProperty->getValue($registry2);
+        $joins = $registry2->getJoins();
         $this->assertCount(3, $joins);
 
     }

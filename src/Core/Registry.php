@@ -78,6 +78,14 @@ class Registry implements EventSubscriber {
     }
 
     /**
+     * @return \string[]
+     */
+    public function getJoins () {
+
+        return $this->joins;
+    }
+
+    /**
      * @param $model
      *
      * @return mixed
@@ -285,7 +293,7 @@ class Registry implements EventSubscriber {
         if (isset($auth) && $credential = $auth->getCredential()) {
             $login = $credential->getLogin();
         }
-        $ctx->setParam('__LOGIN__',$login);
+        $ctx->setParam('__LOGIN__', $login);
 
         $expressions = [];
         foreach ($ctx->getFilters() as $filter) {

@@ -79,7 +79,7 @@ abstract class AbstractKeyPath extends Value {
     }
 
     /**
-     * @param Registry $registry
+     * @param Registry     $registry
      * @param QueryContext $ctx
      *
      * @return string
@@ -91,12 +91,12 @@ abstract class AbstractKeyPath extends Value {
         }
 
         if ($this->result) {
-            return $this->result;
+            //return $this->result;
         }
 
-        if (!$this->field) {
-            $this->process($ctx);
-        }
+        //if (!$this->field) {
+        $this->process($ctx);
+        //}
 
         $aliasForEntity = $registry->findAliasForEntity($this->getEntity($ctx));
         if (count($aliasForEntity) == 0) {
@@ -159,7 +159,8 @@ abstract class AbstractKeyPath extends Value {
 
             if (in_array($field, $associations)) {
                 $entity = $metadata->getAssociationMapping($field)['targetEntity'];
-                $this->joinsToDo[] = ['field' => $field, 'entity' => $entity];
+                $this->joinsToDo[implode('.', array_slice($exploded, 0, $i + 1))] =
+                    ['field' => $field, 'entity' => $entity];
             }
             else {
                 throw new \RuntimeException("$field not found in $entity");
