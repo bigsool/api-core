@@ -1,0 +1,17 @@
+StudentInfo:
+    type: entity
+    table: student_info
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        schoolName:
+            type: string
+            length: 255
+            nullable: true
+        number:
+            type: string
+            length: 255
+            nullable: true
