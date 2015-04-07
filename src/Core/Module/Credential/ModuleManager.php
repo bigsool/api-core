@@ -59,8 +59,10 @@ class ModuleManager extends AbstractModuleManager {
 
                 }
 
-                $expire = time()+60*60; // TODO
-                $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')), $expire));
+                $appCtx = ApplicationContext::getInstance();
+                $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+                $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
+                                                         $expire));
 
             }));
 
