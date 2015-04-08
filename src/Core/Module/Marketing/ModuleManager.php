@@ -4,6 +4,7 @@
 namespace Core\Module\Marketing;
 
 use Core\Action\BasicCreateAction;
+use Core\Action\BasicUpdateAction;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
@@ -16,6 +17,10 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
             'knowsFrom' => [new Validation()]
+        ]));
+
+        $context->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
+            'knowsFrom' => [new Validation(), true]
         ]));
 
     }

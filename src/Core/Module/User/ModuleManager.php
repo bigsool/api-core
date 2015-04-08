@@ -4,6 +4,7 @@
 namespace Core\Module\User;
 
 use Core\Action\BasicCreateAction;
+use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
@@ -34,6 +35,9 @@ class ModuleManager extends AbstractModuleManager {
             'lastName'  => [new Validation(), true],
             'firstName' => [new Validation(), true],
             'lang'      => [new Validation(), true],
+        ]));
+
+        $context->addAction(new BasicFindAction('Core\User', 'user', 'UserHelper', NULL, [
         ]));
 
     }

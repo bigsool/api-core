@@ -37,6 +37,8 @@ class BasicFindAction extends SimpleAction {
 
                 $postFindCallable($context);
 
+                // TODO: pluralise $model
+
                 return $context[$model];
 
             });
