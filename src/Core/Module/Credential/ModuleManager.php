@@ -3,6 +3,7 @@
 
 namespace Core\Module\Credential;
 
+use Core\Action\BasicUpdateAction;
 use Core\Action\SimpleAction;
 use Core\Auth;
 use Core\Context\ActionContext;
@@ -27,7 +28,7 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
                                                                                 'password' => [new Validation()]
-        ],
+            ],
             function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
@@ -84,7 +85,7 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
                                                                                  'type'     => [new Validation()],
                                                                                  'password' => [new Validation()]
-        ],
+            ],
             function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
@@ -110,6 +111,39 @@ class ModuleManager extends AbstractModuleManager {
                 return $ctx['credential'];
 
             }));
+
+
+        $context->addAction(new BasicUpdateAction('Core\Credential', 'credential', 'CredentialHelper', NULL, [
+            'id'  => [new Validation(), true],
+            'login' => [new Validation(), true],
+            'password' => [new Validation(), true],
+            'currentPassword' => [new Validation(), true]
+        ],function(ActionContext $context) {
+
+            $appCtx = ApplicationContext::getInstance();
+
+            $params = $context->getVerifiedParams();
+
+            $password = $context->getAuth()->getCredential()->getPassword();
+
+            if(!password_verify($params['currentPassword'], $password)) {
+                throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
+            }
+
+            $context->unsetParam('currentPassword');
+
+        }));
+
+        $context->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
+            function (ActionContext $context) {
+
+
+                $response = $context->getRequestContext()->getResponse();
+                $response->headers->clearCookie('authToken');
+
+
+            }));
+
 
     }
 
