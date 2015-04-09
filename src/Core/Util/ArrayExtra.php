@@ -27,18 +27,33 @@ class ArrayExtra {
      *
      * @param array $array1
      * @param array $array2
+     * @param array $array2,...
      *
      * @return array
      * @author Daniel <daniel (at) danielsmedegaardbuus (dot) dk>
      * @author Gabriel Sobrinho <gabriel (dot) sobrinho (at) gmail (dot) com>
      */
+
     public static function array_merge_recursive_distinct (array &$array1, array &$array2) {
+
+        $merged = static::_array_merge_recursive_distinct($array1, $array2);
+        if (func_num_args() > 2) {
+            for ($i = 2; $i < func_num_args(); ++$i) {
+                $merged = static::_array_merge_recursive_distinct($merged, func_get_arg($i));
+            }
+        }
+
+        return $merged;
+
+    }
+
+    protected static function _array_merge_recursive_distinct (array &$array1, array &$array2) {
 
         $merged = $array1;
 
         foreach ($array2 as $key => &$value) {
             if (is_array($value) && isset ($merged [$key]) && is_array($merged [$key])) {
-                $merged [$key] = self::array_merge_recursive_distinct($merged [$key], $value);
+                $merged [$key] = self::_array_merge_recursive_distinct($merged [$key], $value);
             }
             else {
                 $merged [$key] = $value;
@@ -46,6 +61,7 @@ class ArrayExtra {
         }
 
         return $merged;
+
     }
 
 }
