@@ -31,22 +31,26 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public static function getWWWPath () {
+    /**
+     * @return string
+     */
+    protected static function getRootFolder() {
 
-        return 'api/core/www/run.php';
+        return __DIR__ . '/../../..';
 
     }
 
     public static function resetDatabase () {
 
-        require __DIR__ . '/../../../doctrine/config.php';
+        require static::getRootFolder() . '/doctrine/config.php';
+
         /**
          * @var array         $conn
          * @var EntityManager $entityManager
          */
 
         $schemaTool = new SchemaTool($entityManager);
-        $entityManager->getConnection()->query('PRAGMA foreign_keys = OFF');
+        $entityManager->getConnection()->query('SET FOREIGN_KEY_CHECKS=0');
         $schemaTool->dropDatabase();
 
         if (!isset(self::$createSchemaSQL)) {
@@ -60,6 +64,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         foreach (self::$createSchemaSQL as $sql) {
             $conn->executeQuery($sql);
         }
+        $entityManager->getConnection()->query('SET FOREIGN_KEY_CHECKS=1');
 
     }
 
@@ -118,6 +123,82 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
         try {
             return [$id => self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/])];
+        }
+        catch (\Exception $e) {
+            self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
+                       . self::$lastRequest->getBody());
+        }
+
+    }
+
+    public static function getWWWPath () {
+
+        return 'api/core/www/run.php';
+
+    }
+
+    /**
+     * @param string     $service
+     * @param string     $method
+     * @param array      $params
+     * @param string[]   $fields
+     * @param string     $auth
+     * @param string|int $id
+     * @param string     $clientName
+     * @param string     $clientVersion
+     * @param string     $clientLang
+     *
+     * @return mixed
+     */
+    public static function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
+                                 $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
+
+        if (!is_string($clientName)) {
+            $clientName = 'archipad-cloud';
+        }
+
+        if (!is_string($clientVersion)) {
+            $clientVersion = '1.0';
+        }
+
+        if (!is_string($clientLang)) {
+            $clientLang = 'fr';
+        }
+
+        $wwwPath = static::getWWWPath();
+        $config = [
+            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/{$clientName}+{$clientVersion}+{$clientLang}/",
+            'handler'  => new CurlHandler(),
+        ];
+        $client = new Client($config);
+
+        $url = '';
+        if (isset($service)) {
+            $url .= urlencode($service) . '/';
+        }
+
+        $postData = ['jsonrpc' => '2.0',
+                     'method'  => $method
+        ];
+        if (!is_null($id)) {
+            $postData['id'] = $id;
+        }
+        if (count($params)) {
+            $postData['params'] = $params;
+        }
+        if (count($fields)) {
+            $postData['fields'] = $fields;
+        }
+
+        $cookies = ['XDEBUG_SESSION' => 'PHPSTORM'];
+        if (is_string($auth)) {
+            $cookies['authToken'] = $auth;
+        }
+
+        self::$lastRequest = $client->post($url, ['json' => $postData, 'cookies' => $cookies]);
+
+        try {
+            return self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/]);
         }
         catch (\Exception $e) {
             self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
