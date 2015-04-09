@@ -39,7 +39,8 @@ class ArrayExtra {
         $merged = static::_array_merge_recursive_distinct($array1, $array2);
         if (func_num_args() > 2) {
             for ($i = 2; $i < func_num_args(); ++$i) {
-                $merged = static::_array_merge_recursive_distinct($merged, func_get_arg($i));
+                $argI = func_get_arg($i);
+                $merged = static::_array_merge_recursive_distinct($merged, $argI);
             }
         }
 
