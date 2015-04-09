@@ -54,11 +54,6 @@ class JSONP implements Handler {
     protected $params;
 
     /**
-     * @var string
-     */
-    protected $returnedRootEntity;
-
-    /**
      * @var string[]
      */
     protected $returnedFields;
@@ -179,15 +174,6 @@ class JSONP implements Handler {
     /**
      * @return string
      */
-    public function getReturnedRootEntity () {
-
-        return $this->returnedRootEntity;
-
-    }
-
-    /**
-     * @return string
-     */
     public function getService () {
 
         return $this->service;
@@ -239,25 +225,28 @@ class JSONP implements Handler {
         }
         $this->service = $explodedPathInfo[2];
 
-        $this->method = $request->query->get('method');
+        $JSONContent = json_decode($request->getContent(), true) ?: [];
+
+        $this->method = isset($JSONContent['method']) ? $JSONContent['method'] : $request->query->get('method');
         if (!isset($this->method) || !is_string($this->method)) {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_METHOD_NOT_FOUND);
         }
 
-        $this->callback = $request->query->get('callback');
+        $this->callback = isset($JSONContent['callback']) ? $JSONContent['callback'] : $request->query->get('callback');
 
         $this->path = '/' . $this->service . '/' . $this->method;
 
-        $params = json_decode($request->query->get('params'), true) ?: [];
+        $getParams = json_decode($request->query->get('params'), true) ?: [];
+        $jsonParams = isset($JSONContent['params']) && is_array($JSONContent['params']) ? $JSONContent['params'] : [];
         $cookies = $request->cookies->all();
-        $this->params = ArrayExtra::array_merge_recursive_distinct($cookies, $params);
+        $this->params = ArrayExtra::array_merge_recursive_distinct($cookies, $getParams, $jsonParams);
 
-        $this->id = $request->query->get('id');
+        $this->id = isset($JSONContent['id']) ? $JSONContent['id'] : $request->query->get('id');
 
         $this->ipAddress = $request->getClientIp();
 
-        $this->returnedRootEntity = $request->query->get('entity');
-        $this->setReturnedFields($request->query->get('fields'));
+        $this->setReturnedFields(isset($JSONContent['fields']) ? $JSONContent['fields']
+                                     : $request->query->get('fields'));
 
     }
 

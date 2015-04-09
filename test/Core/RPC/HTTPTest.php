@@ -38,7 +38,6 @@ class HTTPTest extends TestCase {
         $this->assertSame('client', $HTTP->getClientName());
         $this->assertSame('version', $HTTP->getClientVersion());
         $this->assertSame('en', $HTTP->getLocale());
-        $this->assertNull($HTTP->getReturnedRootEntity());
         $this->assertSame([], $HTTP->getReturnedFields());
         $this->assertSame('service', $HTTP->getService());
         $this->assertSame('method', $HTTP->getMethod());

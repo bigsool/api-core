@@ -35,7 +35,6 @@ class JSONTest extends TestCase {
         $this->assertSame('client', $JSON->getClientName());
         $this->assertSame('version', $JSON->getClientVersion());
         $this->assertSame('en', $JSON->getLocale());
-        $this->assertNull($JSON->getReturnedRootEntity());
         $this->assertSame([], $JSON->getReturnedFields());
         $this->assertSame('service', $JSON->getService());
         $this->assertSame('method', $JSON->getMethod());
@@ -56,7 +55,6 @@ class JSONTest extends TestCase {
         $this->assertSame('client', $JSON->getClientName());
         $this->assertSame('version', $JSON->getClientVersion());
         $this->assertSame('fr', $JSON->getLocale());
-        $this->assertSame($entity, $JSON->getReturnedRootEntity());
         $this->assertSame($fields, $JSON->getReturnedFields());
         $this->assertSame('service', $JSON->getService());
         $this->assertSame('method', $JSON->getMethod());
