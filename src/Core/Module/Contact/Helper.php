@@ -25,4 +25,19 @@ class Helper extends BasicHelper {
 
     }
 
+    /**
+     * @param ActionContext $actCtx
+     * @param               $contact
+     * @param array         $params
+     */
+    public function updateContact (ActionContext $actCtx, $contact, array $params) {
+
+        $this->checkRealModelType($contact, 'Contact');
+
+        $this->basicSave($contact, $params);
+
+        $actCtx['contact'] = $contact;
+
+    }
+
 } 

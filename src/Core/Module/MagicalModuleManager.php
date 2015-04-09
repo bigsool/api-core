@@ -547,7 +547,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param RequestContext $requestContext
-     * @param String[]       $values
+     * @param String[]       $fields
      * @param Filter[]       $filters
      * @param array          $params
      * @param Boolean        $hydrateArray
@@ -557,7 +557,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
-    protected function magicalFind (RequestContext $requestContext, $values, $filters, $params = [],
+    protected function magicalFind (RequestContext $requestContext, $fields, $filters, $params = [],
                                     $hydrateArray = false, array $disabledKeyPaths = [], array $rights = []) {
 
 
@@ -567,10 +567,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext, $rights);
 
-        $values = $this->formatFindValues($values);
+        $fields = $this->formatFindValues($fields);
         $this->disableModelAspects($disabledKeyPaths);
 
-        foreach ($values as $value) {
+        foreach ($fields as $value) {
             $qryCtx->addKeyPath(new KeyPath($value));
         }
 

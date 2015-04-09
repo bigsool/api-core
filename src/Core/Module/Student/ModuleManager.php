@@ -4,6 +4,7 @@
 namespace Core\Module\Student;
 
 use Core\Action\BasicCreateAction;
+use Core\Action\BasicUpdateAction;
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
@@ -31,6 +32,11 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new BasicCreateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
             'schoolName' => [new Validation()],
             'number'     => [new Validation()],
+        ]));
+
+        $context->addAction(new BasicUpdateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
+            'schoolName' => [new Validation(), true],
+            'number'     => [new Validation(), true],
         ]));
 
     }

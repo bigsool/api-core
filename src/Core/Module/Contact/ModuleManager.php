@@ -40,15 +40,15 @@ class ModuleManager extends AbstractModuleManager {
         }));
 
         $context->addAction(new BasicUpdateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
-            'label'    => [new Validation()],
-            'streets'  => [new Validation()],
-            'city'     => [new Validation()],
-            'zip'      => [new Validation()],
-            'state'    => [new Validation()],
-            'country'  => [new Validation()],
-            'email'    => [new Validation()],
-            'mobile'   => [new Validation()],
-            'landLine' => [new Validation()],
+            'label'    => [new Validation(), true],
+            'streets'  => [new Validation(), true],
+            'city'     => [new Validation(), true],
+            'zip'      => [new Validation(), true],
+            'state'    => [new Validation(), true],
+            'country'  => [new Validation(), true],
+            'email'    => [new Validation(), true],
+            'mobile'   => [new Validation(), true],
+            'landLine' => [new Validation(), true],
         ]));
 
     }
