@@ -47,6 +47,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     private $disabledKeyPaths = NULL;
 
     /**
+     * @var array
+     */
+    private $keysToRemove = [];
+
+    /**
      * @param ActionContext $ctx
      * @param string[]      $disabledKeyPaths
      *
@@ -78,6 +83,21 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /*private function getDataFromKeyPath(&$data,$explodedKeyPath) {
+
+        if (!isset($data[$explodedKeyPath[0]])) return [];
+        if (count($explodedKeyPath) == 1) {
+            return $data[$explodedKeyPath[0]];
+        }
+        else {
+            $rg = $explodedKeyPath[0];
+            array_splice($explodedKeyPath,0,1);
+            $this->getDataFromKeyPath($data[$rg],$explodedKeyPath);
+        }
+
+    }*/
+
+
     /**
      * @param ActionContext $ctx
      * @param string        $action
@@ -96,8 +116,10 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $params = $ctx->getParams();
+
         $validatedParams = $this->validateParams($params, $action);
         $formattedParams = $this->formatModifyParams($validatedParams);
+        $formattedParams = $this->handlePrefixedFields($formattedParams);
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
@@ -139,6 +161,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
                 $params = UnsafeParameter::getFinalValue($params);
+
                 foreach ($params as $key => $value) {
                     if (!$this->isParamLinkedToAspectModel($modelAspect->getKeyPath()->getValue(), $key)) {
                         $subContext->setParam($key, $value);
@@ -151,16 +174,21 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
 
+
+
             }
             else {
 
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
+
                 foreach ($formattedParams as $key => $value) {
                     if (!$this->isParamLinkedToAspectModel(NULL, $key)) {
                         $subContext->setParam($key, $value);
                     }
                 }
+
+
 
             }
 
@@ -913,6 +941,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+
+
     private function enableModelAspects () {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -930,6 +960,95 @@ abstract class MagicalModuleManager extends ModuleManager {
             return $modelAspect->isEnabled();
 
         });
+
+    }
+
+    private function isLinkedToModel ($field, $prefix) {
+
+        $prefix = $prefix ? $prefix . '.' . $field : $field;
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
+                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+                return $explodedKeyPath[count($explodedKeyPath) - 1];
+            }
+        }
+
+        return false;
+
+    }
+
+    private function formatPrefixedFields ($params, $prefix) {
+
+        foreach ($params as $key => $value) {
+
+            if (strpos($key,'_') === false || is_array($value)) {
+                continue;
+            }
+
+            $explodedKey = explode('_', $key);
+            $field = $explodedKey[0];
+
+            if (($bli = $this->isLinkedToModel($field, $prefix))) {
+
+                $this->keysToRemove[] = $key;
+
+                $params[$bli][substr($key, strlen($field . '_'))] = $value;
+
+            }
+
+        }
+
+        return $params;
+    }
+
+    private function removePrefixedFields ($params,$key = null) {
+
+        if (is_array($params)) {
+            foreach ($params as $key => $value) {
+                if ($key && in_array($key,$this->keysToRemove)) {
+                   unset($params[$key]);
+                }
+                else {
+                    $params[$key] = $this->removePrefixedFields($value, $key);
+                }
+            }
+        }
+
+        return $params;
+
+    }
+
+    private function handlePrefixedFields ($params) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            $data = $params;
+            if ($modelAspect->getKeyPath()) {
+                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+            }
+            else {
+                $explodedKeyPath = [];
+            }
+            foreach ($explodedKeyPath as $elem) {
+                if (!isset($data[$elem])) {
+                    $data = [];
+                    break;
+                }
+                $data = $data[$elem];
+            }
+            if ($data) {
+                $data = $this->formatPrefixedFields($data,$modelAspect->getPrefix());
+                if ($explodedKeyPath) {
+                    $data = $this->buildArrayWithKeys($explodedKeyPath,$data);
+                }
+                $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
+                $params = $this->removePrefixedFields($params);
+            }
+
+        }
+
+        return $params;
 
     }
 
