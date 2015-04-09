@@ -53,11 +53,6 @@ class HTTP implements Handler {
     protected $ipAddress;
 
     /**
-     * @var string|null
-     */
-    protected $returnedRootEntity;
-
-    /**
      * @var string[]
      */
     protected $returnedFields;
@@ -142,15 +137,6 @@ class HTTP implements Handler {
     public function getReturnedFields () {
 
         return $this->returnedFields;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getReturnedRootEntity () {
-
-        return $this->returnedRootEntity;
 
     }
 

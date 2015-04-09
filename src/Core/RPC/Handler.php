@@ -66,10 +66,6 @@ interface Handler {
      */
     public function getParams ();
 
-    /**
-     * @return string
-     */
-    public function getReturnedRootEntity ();
 
     /**
      * @return string[]
