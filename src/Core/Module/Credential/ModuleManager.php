@@ -28,7 +28,7 @@ class ModuleManager extends AbstractModuleManager {
 
         $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
                                                                                 'password' => [new Validation()]
-            ],
+        ],
             function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
@@ -40,11 +40,9 @@ class ModuleManager extends AbstractModuleManager {
                 $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential', 'setAuthCookie'),
                                                               ['authToken' => $authToken]);
 
-                return ['success' => true,
-                        'data'    => [
-                            'authToken' => $authToken,
-                            'email'     => $params['login']
-                        ]
+                return [
+                    'authToken' => $authToken,
+                    'email'     => $params['login']
                 ];
 
             }));
@@ -85,7 +83,7 @@ class ModuleManager extends AbstractModuleManager {
         $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
                                                                                  'type'     => [new Validation()],
                                                                                  'password' => [new Validation()]
-            ],
+        ],
             function (ActionContext $context) {
 
                 $appCtx = ApplicationContext::getInstance();
@@ -114,11 +112,11 @@ class ModuleManager extends AbstractModuleManager {
 
 
         $context->addAction(new BasicUpdateAction('Core\Credential', 'credential', 'CredentialHelper', NULL, [
-            'id'  => [new Validation(), true],
-            'login' => [new Validation(), true],
-            'password' => [new Validation(), true],
+            'id'              => [new Validation(), true],
+            'login'           => [new Validation(), true],
+            'password'        => [new Validation(), true],
             'currentPassword' => [new Validation(), true]
-        ],function(ActionContext $context) {
+        ], function (ActionContext $context) {
 
             $appCtx = ApplicationContext::getInstance();
 
@@ -126,7 +124,7 @@ class ModuleManager extends AbstractModuleManager {
 
             $password = $context->getAuth()->getCredential()->getPassword();
 
-            if(!password_verify($params['currentPassword'], $password)) {
+            if (!password_verify($params['currentPassword'], $password)) {
                 throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
             }
 
@@ -141,9 +139,7 @@ class ModuleManager extends AbstractModuleManager {
                 $response = $context->getRequestContext()->getResponse();
                 $response->headers->clearCookie('authToken');
 
-
             }));
-
 
     }
 

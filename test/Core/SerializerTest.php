@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
@@ -101,51 +102,57 @@ class SerializerTest extends TestCase {
         self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
 
         self::$expected = [
-            [
-                'email'   => self::$user1->getEmail(),
-                'company' => [
-                    'name'    => self::$company1->getName(),
-                    'storage' => [
-                        'id'  => self::$storage->getId(),
-                        'url' => self::$storage->getUrl(),
-                    ]
-                ]
-            ],
-            [
-                'email'   => self::$user3->getEmail(),
-                'company' => [
-                    'name'    => self::$company1->getName(),
-                    'storage' => [
-                        'id'  => self::$storage->getId(),
-                        'url' => self::$storage->getUrl(),
-                    ]
-                ]
-            ],
-            [
-                'email'   => self::$user2->getEmail(),
-                'company' => [
-                    'name'    => self::$company1->getName(),
-                    'storage' => [
-                        'id'  => self::$storage->getId(),
-                        'url' => self::$storage->getUrl(),
+            'success' => true,
+            'data'    => [
+                [
+                    'email'   => self::$user1->getEmail(),
+                    'company' => [
+                        'name'    => self::$company1->getName(),
+                        'storage' => [
+                            'id'  => self::$storage->getId(),
+                            'url' => self::$storage->getUrl(),
+                        ]
                     ]
                 ],
-            ],
+                [
+                    'email'   => self::$user3->getEmail(),
+                    'company' => [
+                        'name'    => self::$company1->getName(),
+                        'storage' => [
+                            'id'  => self::$storage->getId(),
+                            'url' => self::$storage->getUrl(),
+                        ]
+                    ]
+                ],
+                [
+                    'email'   => self::$user2->getEmail(),
+                    'company' => [
+                        'name'    => self::$company1->getName(),
+                        'storage' => [
+                            'id'  => self::$storage->getId(),
+                            'url' => self::$storage->getUrl(),
+                        ]
+                    ],
+                ],
+            ]
         ];
 
         self::$expectedWithAggregate = [
-            [
-                self::$expected[2],
-                'TestUserCount' => '1'
-            ],
-            [
-                self::$expected[0],
-                'TestUserCount' => '1'
-            ],
-            [
-                self::$expected[1],
-                'TestUserCount' => '1'
-            ],
+            'success' => true,
+            'data'    => [
+                [
+                    self::$expected['data'][2],
+                    'TestUserCount' => '1'
+                ],
+                [
+                    self::$expected['data'][0],
+                    'TestUserCount' => '1'
+                ],
+                [
+                    self::$expected['data'][1],
+                    'TestUserCount' => '1'
+                ],
+            ]
         ];
 
     }
@@ -163,7 +170,7 @@ class SerializerTest extends TestCase {
 
         $users = $this->findUsers($reqCtx);
 
-        $serializer = new Serializer($reqCtx);
+        $serializer = new Serializer(new ActionContext($reqCtx));
 
         $serializer->serialize($users);
         $this->assertSame(self::$expected, $serializer->get());
@@ -180,7 +187,7 @@ class SerializerTest extends TestCase {
 
         $users = $this->findUsers($reqCtx);
 
-        $serializer = new Serializer($reqCtx);
+        $serializer = new Serializer(new ActionContext($reqCtx));
 
         $serializer->serialize($users);
 
@@ -210,7 +217,7 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $serializer = new Serializer($reqCtx);
+        $serializer = new Serializer(new ActionContext($reqCtx));
 
         $users = $this->findUsers($reqCtx);
         $serializer->serialize($users);
@@ -222,7 +229,7 @@ class SerializerTest extends TestCase {
     public function testSerializeScalar () {
 
         $reqCtx = new RequestContext();
-        $serializer = new Serializer($reqCtx);
+        $serializer = new Serializer(new ActionContext($reqCtx));
 
         $string = 'qwe';
         $int = 123;
@@ -231,19 +238,19 @@ class SerializerTest extends TestCase {
         $false = false;
         $null = NULL;
 
-        $this->assertSame($string, $serializer->serialize($string)->get());
-        $this->assertSame($int, $serializer->serialize($int)->get());
-        $this->assertSame($float, $serializer->serialize($float)->get());
-        $this->assertSame($true, $serializer->serialize($true)->get());
-        $this->assertSame($false, $serializer->serialize($false)->get());
-        $this->assertSame($null, $serializer->serialize($null)->get());
+        $this->assertSame(['success' => true, 'data' => $string], $serializer->serialize($string)->get());
+        $this->assertSame(['success' => true, 'data' => $int], $serializer->serialize($int)->get());
+        $this->assertSame(['success' => true, 'data' => $float], $serializer->serialize($float)->get());
+        $this->assertSame(['success' => true, 'data' => $true], $serializer->serialize($true)->get());
+        $this->assertSame(['success' => true, 'data' => $false], $serializer->serialize($false)->get());
+        $this->assertSame(['success' => true, 'data' => $null], $serializer->serialize($null)->get());
 
     }
 
     public function testV1ListHostedProject () {
 
         $result = json_decode('{
-  "data": [
+[
     {
       "id": "4543434357486343",
       "creator": "3",
@@ -281,28 +288,29 @@ class SerializerTest extends TestCase {
       "path": "3-54e1f9c02bc99-qwe\/projects\/1b962fb018c97675"
     }
   ]
-}', true);
+', true);
 
         $reqCtx = new RequestContext();
-        $serializer = new Serializer($reqCtx);
+        $serializer = new Serializer(new ActionContext($reqCtx));
         $serializer->setInProxyMode(true);
 
-        $this->assertSame($result, $serializer->serialize($result)->get());
+        $this->assertSame(['success' => true, 'data' => $result], $serializer->serialize($result)->get());
 
     }
 
     public function testDateTime () {
 
         $data = [$datetime = new \DateTime()];
-        $serializer = new Serializer(new RequestContext());
+        $serializer = new Serializer(new ActionContext(new RequestContext()));
 
-        $this->assertSame([$datetime->format($datetime::ISO8601)], $serializer->serialize($data)->get());
+        $this->assertSame(['success' => true, 'data' => [$datetime->format($datetime::ISO8601)]],
+                          $serializer->serialize($data)->get());
 
     }
 
     public function testProxyMode () {
 
-        $serializer = new Serializer(new RequestContext());
+        $serializer = new Serializer(new ActionContext(new RequestContext()));
         $serializer->setInProxyMode(true);
         $this->assertTrue($serializer->isInProxyMode());
         $serializer->setInProxyMode(false);

@@ -122,7 +122,7 @@ class TestCompany
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -133,6 +133,7 @@ class TestCompany
      * Set name
      *
      * @param string $name
+     *
      * @return TestCompany
      */
     public function setName($name)
@@ -145,7 +146,7 @@ class TestCompany
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -156,6 +157,7 @@ class TestCompany
      * Set address
      *
      * @param string $address
+     *
      * @return TestCompany
      */
     public function setAddress($address)
@@ -168,7 +170,7 @@ class TestCompany
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
     public function getAddress()
     {
@@ -179,6 +181,7 @@ class TestCompany
      * Set zipCode
      *
      * @param string $zipCode
+     *
      * @return TestCompany
      */
     public function setZipCode($zipCode)
@@ -191,7 +194,7 @@ class TestCompany
     /**
      * Get zipCode
      *
-     * @return string 
+     * @return string
      */
     public function getZipCode()
     {
@@ -202,6 +205,7 @@ class TestCompany
      * Set city
      *
      * @param string $city
+     *
      * @return TestCompany
      */
     public function setCity($city)
@@ -214,7 +218,7 @@ class TestCompany
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
     public function getCity()
     {
@@ -225,6 +229,7 @@ class TestCompany
      * Set state
      *
      * @param string $state
+     *
      * @return TestCompany
      */
     public function setState($state)
@@ -237,7 +242,7 @@ class TestCompany
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
     public function getState()
     {
@@ -248,6 +253,7 @@ class TestCompany
      * Set country
      *
      * @param string $country
+     *
      * @return TestCompany
      */
     public function setCountry($country)
@@ -260,7 +266,7 @@ class TestCompany
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
     public function getCountry()
     {
@@ -271,6 +277,7 @@ class TestCompany
      * Set tel
      *
      * @param string $tel
+     *
      * @return TestCompany
      */
     public function setTel($tel)
@@ -283,7 +290,7 @@ class TestCompany
     /**
      * Get tel
      *
-     * @return string 
+     * @return string
      */
     public function getTel()
     {
@@ -294,6 +301,7 @@ class TestCompany
      * Set fax
      *
      * @param string $fax
+     *
      * @return TestCompany
      */
     public function setFax($fax)
@@ -306,7 +314,7 @@ class TestCompany
     /**
      * Get fax
      *
-     * @return string 
+     * @return string
      */
     public function getFax()
     {
@@ -317,6 +325,7 @@ class TestCompany
      * Set tva
      *
      * @param string $tva
+     *
      * @return TestCompany
      */
     public function setTva($tva)
@@ -329,7 +338,7 @@ class TestCompany
     /**
      * Get tva
      *
-     * @return string 
+     * @return string
      */
     public function getTva()
     {
@@ -340,6 +349,7 @@ class TestCompany
      * Set owner
      *
      * @param \Core\Model\TestUser $owner
+     *
      * @return TestCompany
      */
     public function setOwner(\Core\Model\TestUser $owner = null)
@@ -352,7 +362,7 @@ class TestCompany
     /**
      * Get owner
      *
-     * @return \Core\Model\TestUser 
+     * @return \Core\Model\TestUser
      */
     public function getOwner()
     {
@@ -363,6 +373,7 @@ class TestCompany
      * Set storage
      *
      * @param \Core\Model\TestStorage $storage
+     *
      * @return TestCompany
      */
     public function setStorage(\Core\Model\TestStorage $storage = null)
@@ -375,7 +386,7 @@ class TestCompany
     /**
      * Get storage
      *
-     * @return \Core\Model\TestStorage 
+     * @return \Core\Model\TestStorage
      */
     public function getStorage()
     {
@@ -383,35 +394,37 @@ class TestCompany
     }
 
     /**
-     * Add users
+     * Add user
      *
-     * @param \Core\Model\TestUser $users
+     * @param \Core\Model\TestUser $user
+     *
      * @return TestCompany
      */
-    public function addUser(\Core\Model\TestUser $users)
+    public function addUser(\Core\Model\TestUser $user)
     {
-        $this->users[] = $users;
+        $this->users[] = $user;
 
         return $this;
     }
 
     /**
-     * Remove users
+     * Remove user
      *
-     * @param \Core\Model\TestUser $users
+     * @param \Core\Model\TestUser $user
      */
-    public function removeUser(\Core\Model\TestUser $users)
+    public function removeUser(\Core\Model\TestUser $user)
     {
-        $this->users->removeElement($users);
+        $this->users->removeElement($user);
     }
 
     /**
      * Get users
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUsers()
     {
         return $this->users;
     }
 }
+

@@ -15,6 +15,11 @@ use PHPUnit_Framework_TestCase;
 abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     /**
+     * @var Client
+     */
+    protected static $client;
+
+    /**
      * @var string[]
      */
     protected static $createSchemaSQL;
@@ -27,7 +32,10 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
+
         self::resetDatabase();
+
+        self::createClient();
 
     }
 
@@ -68,69 +76,6 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @param       $service
-     * @param       $method
-     * @param array $params
-     * @param null  $entity
-     * @param array $fields
-     * @param null  $auth
-     * @param null  $id
-     *
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    public static function get ($service, $method, array $params = [], $entity = NULL, array $fields = [],
-                                $auth = NULL, $id = NULL) {
-
-        $config = ['base_url' => 'http://localhost/' . static::getWWWPath() . '/JSON/archipad-cloud+1+fr/'];
-        if (version_compare(PHP_VERSION, '5.5.0') >= 0) {
-            $config['handler'] = new CurlHandler();
-        }
-        $client = new Client($config);
-
-        $url = '';
-        if (isset($service)) {
-            $url .= urlencode($service) . '/';
-        }
-
-        $url .= '?';
-
-        if (isset($method)) {
-            $url .= 'method=' . urlencode($method) . '&';
-        }
-
-        $params['auth'] = $auth;
-        $paramsQuery = http_build_query(['params' => $params]);
-        if ($paramsQuery) {
-            $url .= $paramsQuery . '&';
-        }
-
-        if (isset($entity)) {
-            $url .= 'entity=' . urlencode($entity) . '&';
-        }
-
-        if (!isset($id)) {
-            $id = uniqid();
-        }
-        $url .= 'id=' . urlencode($id) . '&';
-
-        $url .= http_build_query(['fields' => $fields]);
-
-
-        self::$lastRequest = $client->get($url, ['cookies' => ['XDEBUG_SESSION' => 'PHPSTORM'],]);
-
-        try {
-            return [$id => self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/])];
-        }
-        catch (\Exception $e) {
-            self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
-                       . self::$lastRequest->getBody());
-        }
-
-    }
-
     public static function getWWWPath () {
 
         return 'api/core/www/run.php';
@@ -150,7 +95,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      *
      * @return mixed
      */
-    public static function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
+    public function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
                                  $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
 
         if (!is_string($clientName)) {
@@ -165,14 +110,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $clientLang = 'fr';
         }
 
-        $wwwPath = static::getWWWPath();
-        $config = [
-            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/{$clientName}+{$clientVersion}+{$clientLang}/",
-            'handler'  => new CurlHandler(),
-        ];
-        $client = new Client($config);
-
-        $url = '';
+        $url = "{$clientName}+{$clientVersion}+{$clientLang}/";
         if (isset($service)) {
             $url .= urlencode($service) . '/';
         }
@@ -195,7 +133,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $cookies['authToken'] = $auth;
         }
 
-        self::$lastRequest = $client->post($url, ['json' => $postData, 'cookies' => $cookies]);
+        self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => $cookies]);
 
         try {
             return self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/]);
@@ -208,26 +146,30 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param mixed       $result
+     * @param mixed       $response
      * @param string|null id
      * @param bool        $hasMoreProperties
      */
-    public function assertSuccess ($result, $id = NULL, $hasMoreProperties = false) {
+    public function assertSuccess ($response, $id = NULL, $hasMoreProperties = false) {
 
-        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $response);
 
         if ($hasMoreProperties) {
-            $this->assertGreaterThan(3, count($result));
+            $this->assertGreaterThan(3, count($response));
         }
         else {
-            $this->assertCount(3, $result);
+            $this->assertCount(3, $response);
         }
-        $this->assertArrayHasKey('jsonrpc', $result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayNotHasKey('error', $result);
-        $this->assertSame('2.0', $result['jsonrpc']);
-        $this->assertSame($id, $result['id']);
+        $this->assertArrayHasKey('jsonrpc', $response);
+        $this->assertArrayHasKey('id', $response);
+        $this->assertArrayHasKey('result', $response);
+        $this->assertArrayNotHasKey('error', $response);
+        $this->assertSame('2.0', $response['jsonrpc']);
+        $this->assertSame($id, $response['id']);
+        $this->assertInternalType('array', $response['result']);
+        $this->assertArrayHasKey('success', $response['result']);
+        $this->assertArrayHasKey('data', $response['result']);
+        $this->assertTrue($response['result']['success']);
 
     }
 
@@ -318,6 +260,20 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
                 $this->assertRecursiveErrorCodes($childErrors, $value);
             }
         }
+
+    }
+
+    /**
+     *
+     */
+    protected static function createClient() {
+
+        $wwwPath = static::getWWWPath();
+        $config = [
+            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'handler'  => new CurlHandler(),
+        ];
+        self::$client = new Client($config);
 
     }
 
