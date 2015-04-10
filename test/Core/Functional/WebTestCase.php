@@ -8,8 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Ring\Client\CurlHandler;
+use GuzzleHttp\Subscriber\Cookie;
 use PHPUnit_Framework_TestCase;
 
 abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
@@ -18,6 +21,11 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      * @var Client
      */
     protected static $client;
+
+    /**
+     * @var CookieJar
+     */
+    protected static $cookies;
 
     /**
      * @var string[]
@@ -36,15 +44,6 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         self::resetDatabase();
 
         self::createClient();
-
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getRootFolder() {
-
-        return __DIR__ . '/../../..';
 
     }
 
@@ -76,6 +75,31 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @return string
+     */
+    protected static function getRootFolder () {
+
+        return __DIR__ . '/../../..';
+
+    }
+
+    /**
+     *
+     */
+    protected static function createClient () {
+
+        $wwwPath = static::getWWWPath();
+        $config = [
+            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'handler'  => new CurlHandler(),
+        ];
+        self::$client = new Client($config);
+        self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
+        self::$client->getEmitter()->attach(new Cookie(self::$cookies));
+
+    }
+
     public static function getWWWPath () {
 
         return 'api/core/www/run.php';
@@ -96,7 +120,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      * @return mixed
      */
     public function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
-                                 $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
+                          $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
 
         if (!is_string($clientName)) {
             $clientName = 'archipad-cloud';
@@ -128,12 +152,16 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $postData['fields'] = $fields;
         }
 
-        $cookies = ['XDEBUG_SESSION' => 'PHPSTORM'];
         if (is_string($auth)) {
-            $cookies['authToken'] = $auth;
+            self::$cookies->setCookie(new SetCookie([
+                                                        'Domain'  => 'localhost',
+                                                        'Name'    => 'authToken',
+                                                        'Value'   => $auth,
+                                                        'Discard' => true
+                                                    ]));
         }
 
-        self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => $cookies]);
+        self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => self::$cookies]);
 
         try {
             return self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/]);
@@ -260,20 +288,6 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
                 $this->assertRecursiveErrorCodes($childErrors, $value);
             }
         }
-
-    }
-
-    /**
-     *
-     */
-    protected static function createClient() {
-
-        $wwwPath = static::getWWWPath();
-        $config = [
-            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
-            'handler'  => new CurlHandler(),
-        ];
-        self::$client = new Client($config);
 
     }
 
