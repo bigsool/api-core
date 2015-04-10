@@ -183,65 +183,64 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertInternalType('array', $response);
 
         if ($hasMoreProperties) {
-            $this->assertGreaterThan(3, count($response));
+            $this->assertGreaterThan(3, count($response), json_encode($response));
         }
         else {
-            $this->assertCount(3, $response);
+            $this->assertCount(3, $response, json_encode($response));
         }
-        $this->assertArrayHasKey('jsonrpc', $response);
-        $this->assertArrayHasKey('id', $response);
-        $this->assertArrayHasKey('result', $response);
-        $this->assertArrayNotHasKey('error', $response);
-        $this->assertSame('2.0', $response['jsonrpc']);
-        $this->assertSame($id, $response['id']);
-        $this->assertInternalType('array', $response['result']);
-        $this->assertArrayHasKey('success', $response['result']);
-        $this->assertArrayHasKey('data', $response['result']);
-        $this->assertTrue($response['result']['success']);
+        $this->assertArrayHasKey('jsonrpc', $response, json_encode($response));
+        $this->assertArrayHasKey('id', $response, json_encode($response));
+        $this->assertArrayHasKey('result', $response, json_encode($response));
+        $this->assertArrayNotHasKey('error', $response, json_encode($response));
+        $this->assertSame('2.0', $response['jsonrpc'], json_encode($response));
+        $this->assertSame($id, $response['id'], json_encode($response));
+        $this->assertInternalType('array', $response['result'], json_encode($response));
+        $this->assertArrayHasKey('success', $response['result'], json_encode($response));
+        $this->assertArrayHasKey('data', $response['result'], json_encode($response));
+        $this->assertTrue($response['result']['success'], json_encode($response));
 
     }
 
     /**
-     * @param mixed       $result
+     * @param mixed       $response
      * @param string|null id
      * @param int         $errorCode
      * @param array       $childErrorCodes
      * @param string      $field
      * @param bool        $hasMoreProperties
      */
-    public function assertFail ($result, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
+    public function assertFail ($response, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
                                 $hasMoreProperties = false) {
 
-        $this->assertInstanceOf('\stdClass', $result);
+        $this->assertInternalType('array', $response);
 
-        $properties = get_object_vars($result);
         if ($hasMoreProperties) {
-            $this->assertGreaterThan(3, count($result));
+            $this->assertGreaterThan(3, count($response), json_encode($response));
         }
         else {
-            $this->assertCount(3, $result);
+            $this->assertCount(3, $response, json_encode($response));
         }
 
-        $this->assertArrayNotHasKey('result', $result);
-        $this->assertSame('2.0', $result['jsonrpc']);
-        $this->assertSame($id, $result['id']);
+        $this->assertArrayNotHasKey('result', $response, json_encode($response));
+        $this->assertSame('2.0', $response['jsonrpc'], json_encode($response));
+        $this->assertSame($id, $response['id'], json_encode($response));
 
-        $this->assertArrayHasKey('error', $result);
-        $error = $result['error'];
-        $this->assertInternalType('array', $error);
+        $this->assertArrayHasKey('error', $response, json_encode($response));
+        $error = $response['error'];
+        $this->assertInternalType('array', $error, json_encode($response));
 
         if (is_null($errorCode)) {
-            $this->assertArrayNotHasKey('code', $error);
+            $this->assertArrayNotHasKey('code', $error, json_encode($response));
         }
         else {
-            $this->assertArrayHasKey('code', $error);
-            $this->assertEquals($errorCode, $error['code']);
+            $this->assertArrayHasKey('code', $error, json_encode($response));
+            $this->assertEquals($errorCode, $error['code'], json_encode($response));
         }
 
         if (count($childErrorCodes)) {
-            $this->assertArrayHasKey('errors', $error);
+            $this->assertArrayHasKey('errors', $error, json_encode($response));
             $errors = $error['errors'];
-            $this->assertInternalType('array', $errors);
+            $this->assertInternalType('array', $errors, json_encode($response));
             $this->assertRecursiveErrorCodes($errors, $childErrorCodes);
         }
         else {
@@ -259,17 +258,18 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param array $errors
-     * @param array $errorCodes
+     * @param array       $errors
+     * @param array       $errorCodes
+     * @param string|null $message
      */
-    protected function assertRecursiveErrorCodes (array $errors, array $errorCodes) {
+    protected function assertRecursiveErrorCodes (array $errors, array $errorCodes, $message = NULL) {
 
-        $this->assertCount(count($errors), $errorCodes);
+        $this->assertCount(count($errors), $errorCodes,$message);
 
         $reformattedErrors = [];
         foreach ($errors as $error) {
-            $this->assertInternalType('array', $error);
-            $this->assertArrayHasKey('code', $error);
+            $this->assertInternalType('array', $error,$message);
+            $this->assertArrayHasKey('code', $error,$message);
             $code = $error['code'];
             if (isset($reformattedErrors[$code])) {
                 $this->fail("Duplicated error code '{$code}' in childErrors");
@@ -279,13 +279,13 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
         foreach ($errorCodes as $key => $value) {
             $errorCode = is_array($value) ? $key : $value;
-            $this->assertArrayHasKey($errorCode, $reformattedErrors);
+            $this->assertArrayHasKey($errorCode, $reformattedErrors,$message);
             if (is_array($value)) { // if child errors
                 $reformattedError = $reformattedErrors[$errorCode];
-                $this->assertArrayHasKey('errors', $reformattedError);
+                $this->assertArrayHasKey('errors', $reformattedError,$message);
                 $childErrors = $reformattedError['errors'];
-                $this->assertInternalType('array', $childErrors);
-                $this->assertRecursiveErrorCodes($childErrors, $value);
+                $this->assertInternalType('array', $childErrors,$message);
+                $this->assertRecursiveErrorCodes($childErrors, $value, $message);
             }
         }
 
