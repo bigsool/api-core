@@ -16,9 +16,15 @@ class Helper extends BasicHelper {
 
         $storage = new TestStorage();
 
-        $params['usedSpace'] = '0';
-        $params['lastUsedSpaceUpdate'] = new \DateTime();
-        $params['isOutOfQuota'] = false;
+        if (!isset($params['usedSpace'])) {
+            $params['usedSpace'] = '0';
+        }
+        if (!isset($params['lastUsedSpaceUpdate'])) {
+            $params['lastUsedSpaceUpdate'] = new \DateTime();
+        }
+        if (!isset($params['isOutOfQuota'])) {
+            $params['isOutOfQuota'] = false;
+        }
 
         $this->basicSave($storage, $params);
 

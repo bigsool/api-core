@@ -83,21 +83,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    /*private function getDataFromKeyPath(&$data,$explodedKeyPath) {
-
-        if (!isset($data[$explodedKeyPath[0]])) return [];
-        if (count($explodedKeyPath) == 1) {
-            return $data[$explodedKeyPath[0]];
-        }
-        else {
-            $rg = $explodedKeyPath[0];
-            array_splice($explodedKeyPath,0,1);
-            $this->getDataFromKeyPath($data[$rg],$explodedKeyPath);
-        }
-
-    }*/
-
-
     /**
      * @param ActionContext $ctx
      * @param string        $action
@@ -963,14 +948,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function isLinkedToModel ($field, $prefix) {
-
-        $prefix = $prefix ? $prefix . '.' . $field : $field;
+    private function isLinkedToModel ($prefix) {
 
         foreach ($this->getModelAspects() as $modelAspect) {
             if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
-                return $explodedKeyPath[count($explodedKeyPath) - 1];
+                return $modelAspect->getKeyPath()->getValue();
             }
         }
 
@@ -978,28 +960,44 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function formatPrefixedFields ($params, $prefix) {
 
-        foreach ($params as $key => $value) {
+    private function formatPrefixedFields ($params,$data) {
+
+        foreach ($data as $key => $value) {
 
             if (strpos($key,'_') === false || is_array($value)) {
                 continue;
             }
 
-            $explodedKey = explode('_', $key);
-            $field = $explodedKey[0];
+            $field = $key;
 
-            if (($bli = $this->isLinkedToModel($field, $prefix))) {
+            for ($i = 0 ; ; ++$i) {
 
-                $this->keysToRemove[] = $key;
+                $explodedKey = explode('_', $field);
+                $prefix = implode('_',array_slice($explodedKey,0,$i+1));
+                $prefix = str_replace('_','.',$prefix);
 
-                $params[$bli][substr($key, strlen($field . '_'))] = $value;
+                if ($i + 1 == count($explodedKey)-1) {
+
+                    if (($keyPath = $this->isLinkedToModel($prefix))) {
+                        $explodedKeyPath = explode('.',$keyPath);
+                        $explodedKeyPath[] = $explodedKey[1];
+                        $data = $this->buildArrayWithKeys($explodedKeyPath,$value);
+                        $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
+                    }
+
+                    break;
+
+                }
 
             }
+
+            $this->keysToRemove[] = $field;
 
         }
 
         return $params;
+
     }
 
     private function removePrefixedFields ($params,$key = null) {
@@ -1038,11 +1036,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $data = $data[$elem];
             }
             if ($data) {
-                $data = $this->formatPrefixedFields($data,$modelAspect->getPrefix());
-                if ($explodedKeyPath) {
-                    $data = $this->buildArrayWithKeys($explodedKeyPath,$data);
-                }
-                $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
+                $params = $this->formatPrefixedFields($params,$data);
                 $params = $this->removePrefixedFields($params);
             }
 
@@ -1051,5 +1045,9 @@ abstract class MagicalModuleManager extends ModuleManager {
         return $params;
 
     }
+
+
+
+
 
 }
