@@ -40,9 +40,12 @@ class ModuleManager extends AbstractModuleManager {
                 $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential', 'setAuthCookie'),
                                                               ['authToken' => $authToken]);
 
+                $credential = $helper->getCredentialFromLogin($params['login']);
+
                 return [
                     'authToken' => $authToken,
-                    'email'     => $params['login']
+                    'email'     => $params['login'],
+                    'id'        => $credential->getId(),
                 ];
 
             }));
