@@ -159,8 +159,6 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
 
-
-
             }
             else {
 
@@ -172,8 +170,6 @@ abstract class MagicalModuleManager extends ModuleManager {
                         $subContext->setParam($key, $value);
                     }
                 }
-
-
 
             }
 
@@ -926,8 +922,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
-
     private function enableModelAspects () {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -960,30 +954,29 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
-    private function formatPrefixedFields ($params,$data) {
+    private function formatPrefixedFields ($params, $data) {
 
         foreach ($data as $key => $value) {
 
-            if (strpos($key,'_') === false || is_array($value)) {
+            if (strpos($key, '_') === false || is_array($value)) {
                 continue;
             }
 
             $field = $key;
 
-            for ($i = 0 ; ; ++$i) {
+            for ($i = 0; ; ++$i) {
 
                 $explodedKey = explode('_', $field);
-                $prefix = implode('_',array_slice($explodedKey,0,$i+1));
-                $prefix = str_replace('_','.',$prefix);
+                $prefix = implode('_', array_slice($explodedKey, 0, $i + 1));
+                $prefix = str_replace('_', '.', $prefix);
 
-                if ($i + 1 == count($explodedKey)-1) {
+                if ($i + 1 == count($explodedKey) - 1) {
 
                     if (($keyPath = $this->isLinkedToModel($prefix))) {
-                        $explodedKeyPath = explode('.',$keyPath);
+                        $explodedKeyPath = explode('.', $keyPath);
                         $explodedKeyPath[] = $explodedKey[1];
-                        $data = $this->buildArrayWithKeys($explodedKeyPath,$value);
-                        $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
+                        $data = $this->buildArrayWithKeys($explodedKeyPath, $value);
+                        $params = ArrayExtra::array_merge_recursive_distinct($params, $data);
                     }
 
                     break;
@@ -1000,12 +993,12 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function removePrefixedFields ($params,$key = null) {
+    private function removePrefixedFields ($params, $key = NULL) {
 
         if (is_array($params)) {
             foreach ($params as $key => $value) {
-                if ($key && in_array($key,$this->keysToRemove)) {
-                   unset($params[$key]);
+                if ($key && in_array($key, $this->keysToRemove)) {
+                    unset($params[$key]);
                 }
                 else {
                     $params[$key] = $this->removePrefixedFields($value, $key);
@@ -1036,7 +1029,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $data = $data[$elem];
             }
             if ($data) {
-                $params = $this->formatPrefixedFields($params,$data);
+                $params = $this->formatPrefixedFields($params, $data);
                 $params = $this->removePrefixedFields($params);
             }
 
@@ -1045,9 +1038,5 @@ abstract class MagicalModuleManager extends ModuleManager {
         return $params;
 
     }
-
-
-
-
 
 }

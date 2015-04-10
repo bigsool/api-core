@@ -264,12 +264,12 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      */
     protected function assertRecursiveErrorCodes (array $errors, array $errorCodes, $message = NULL) {
 
-        $this->assertCount(count($errors), $errorCodes,$message);
+        $this->assertCount(count($errors), $errorCodes, $message);
 
         $reformattedErrors = [];
         foreach ($errors as $error) {
-            $this->assertInternalType('array', $error,$message);
-            $this->assertArrayHasKey('code', $error,$message);
+            $this->assertInternalType('array', $error, $message);
+            $this->assertArrayHasKey('code', $error, $message);
             $code = $error['code'];
             if (isset($reformattedErrors[$code])) {
                 $this->fail("Duplicated error code '{$code}' in childErrors");
@@ -279,12 +279,12 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
         foreach ($errorCodes as $key => $value) {
             $errorCode = is_array($value) ? $key : $value;
-            $this->assertArrayHasKey($errorCode, $reformattedErrors,$message);
+            $this->assertArrayHasKey($errorCode, $reformattedErrors, $message);
             if (is_array($value)) { // if child errors
                 $reformattedError = $reformattedErrors[$errorCode];
-                $this->assertArrayHasKey('errors', $reformattedError,$message);
+                $this->assertArrayHasKey('errors', $reformattedError, $message);
                 $childErrors = $reformattedError['errors'];
-                $this->assertInternalType('array', $childErrors,$message);
+                $this->assertInternalType('array', $childErrors, $message);
                 $this->assertRecursiveErrorCodes($childErrors, $value, $message);
             }
         }

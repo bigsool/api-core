@@ -56,9 +56,9 @@ class Helper extends BasicHelper {
      * @param string[]      $rights
      */
     public function findUser (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
-                                 array $filters = [],
-                                 array $params = [],
-                                 array $rights = []) {
+                              array $filters = [],
+                              array $params = [],
+                              array $rights = []) {
 
         $qryCtx = new FindQueryContext('User', $actionContext->getRequestContext(), $rights);
 
