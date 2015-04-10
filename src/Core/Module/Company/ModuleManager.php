@@ -7,6 +7,7 @@ use Core\Action\BasicCreateAction;
 use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ApplicationContext;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 class ModuleManager extends AbstractModuleManager {
@@ -35,7 +36,9 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadFilters (ApplicationContext &$context) {
-        // TODO: Implement loadFilters() method.
+
+        $context->addFilter(new StringFilter('Company', 'filterById', 'id = :id'));
+
     }
 
     /**
