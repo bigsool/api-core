@@ -433,23 +433,23 @@ class TestCompany extends \Core\Model\TestCompany implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
-    public function addUser(\Core\Model\TestUser $users)
+    public function addUser(\Core\Model\TestUser $user)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addUser', array($users));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addUser', array($user));
 
-        return parent::addUser($users);
+        return parent::addUser($user);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeUser(\Core\Model\TestUser $users)
+    public function removeUser(\Core\Model\TestUser $user)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUser', array($users));
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeUser', array($user));
 
-        return parent::removeUser($users);
+        return parent::removeUser($user);
     }
 
     /**
