@@ -8,11 +8,24 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Ring\Client\CurlHandler;
+use GuzzleHttp\Subscriber\Cookie;
 use PHPUnit_Framework_TestCase;
 
 abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * @var Client
+     */
+    protected static $client;
+
+    /**
+     * @var CookieJar
+     */
+    protected static $cookies;
 
     /**
      * @var string[]
@@ -27,16 +40,10 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
+
         self::resetDatabase();
 
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getRootFolder() {
-
-        return __DIR__ . '/../../..';
+        self::createClient();
 
     }
 
@@ -69,65 +76,27 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param       $service
-     * @param       $method
-     * @param array $params
-     * @param null  $entity
-     * @param array $fields
-     * @param null  $auth
-     * @param null  $id
-     *
-     * @return mixed
-     *
-     * @throws \Exception
+     * @return string
      */
-    public static function get ($service, $method, array $params = [], $entity = NULL, array $fields = [],
-                                $auth = NULL, $id = NULL) {
+    protected static function getRootFolder () {
 
-        $config = ['base_url' => 'http://localhost/' . static::getWWWPath() . '/JSON/archipad-cloud+1+fr/'];
-        if (version_compare(PHP_VERSION, '5.5.0') >= 0) {
-            $config['handler'] = new CurlHandler();
-        }
-        $client = new Client($config);
+        return __DIR__ . '/../../..';
 
-        $url = '';
-        if (isset($service)) {
-            $url .= urlencode($service) . '/';
-        }
+    }
 
-        $url .= '?';
+    /**
+     *
+     */
+    protected static function createClient () {
 
-        if (isset($method)) {
-            $url .= 'method=' . urlencode($method) . '&';
-        }
-
-        $params['auth'] = $auth;
-        $paramsQuery = http_build_query(['params' => $params]);
-        if ($paramsQuery) {
-            $url .= $paramsQuery . '&';
-        }
-
-        if (isset($entity)) {
-            $url .= 'entity=' . urlencode($entity) . '&';
-        }
-
-        if (!isset($id)) {
-            $id = uniqid();
-        }
-        $url .= 'id=' . urlencode($id) . '&';
-
-        $url .= http_build_query(['fields' => $fields]);
-
-
-        self::$lastRequest = $client->get($url, ['cookies' => ['XDEBUG_SESSION' => 'PHPSTORM'],]);
-
-        try {
-            return [$id => self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/])];
-        }
-        catch (\Exception $e) {
-            self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
-                       . self::$lastRequest->getBody());
-        }
+        $wwwPath = static::getWWWPath();
+        $config = [
+            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'handler'  => new CurlHandler(),
+        ];
+        self::$client = new Client($config);
+        self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
+        self::$client->getEmitter()->attach(new Cookie(self::$cookies));
 
     }
 
@@ -150,8 +119,8 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      *
      * @return mixed
      */
-    public static function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
-                                 $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
+    public function post ($service, $method, array $params = [], array $fields = [], $auth = NULL, $id = NULL,
+                          $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
 
         if (!is_string($clientName)) {
             $clientName = 'archipad-cloud';
@@ -165,14 +134,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $clientLang = 'fr';
         }
 
-        $wwwPath = static::getWWWPath();
-        $config = [
-            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/{$clientName}+{$clientVersion}+{$clientLang}/",
-            'handler'  => new CurlHandler(),
-        ];
-        $client = new Client($config);
-
-        $url = '';
+        $url = "{$clientName}+{$clientVersion}+{$clientLang}/";
         if (isset($service)) {
             $url .= urlencode($service) . '/';
         }
@@ -190,12 +152,16 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
             $postData['fields'] = $fields;
         }
 
-        $cookies = ['XDEBUG_SESSION' => 'PHPSTORM'];
         if (is_string($auth)) {
-            $cookies['authToken'] = $auth;
+            self::$cookies->setCookie(new SetCookie([
+                                                        'Domain'  => 'localhost',
+                                                        'Name'    => 'authToken',
+                                                        'Value'   => $auth,
+                                                        'Discard' => true
+                                                    ]));
         }
 
-        self::$lastRequest = $client->post($url, ['json' => $postData, 'cookies' => $cookies]);
+        self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => self::$cookies]);
 
         try {
             return self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/]);
@@ -208,70 +174,73 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param mixed       $result
+     * @param mixed       $response
      * @param string|null id
      * @param bool        $hasMoreProperties
      */
-    public function assertSuccess ($result, $id = NULL, $hasMoreProperties = false) {
+    public function assertSuccess ($response, $id = NULL, $hasMoreProperties = false) {
 
-        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $response);
 
         if ($hasMoreProperties) {
-            $this->assertGreaterThan(3, count($result));
+            $this->assertGreaterThan(3, count($response), json_encode($response));
         }
         else {
-            $this->assertCount(3, $result);
+            $this->assertCount(3, $response, json_encode($response));
         }
-        $this->assertArrayHasKey('jsonrpc', $result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayNotHasKey('error', $result);
-        $this->assertSame('2.0', $result['jsonrpc']);
-        $this->assertSame($id, $result['id']);
+        $this->assertArrayHasKey('jsonrpc', $response, json_encode($response));
+        $this->assertArrayHasKey('id', $response, json_encode($response));
+        $this->assertArrayHasKey('result', $response, json_encode($response));
+        $this->assertArrayNotHasKey('error', $response, json_encode($response));
+        $this->assertSame('2.0', $response['jsonrpc'], json_encode($response));
+        $this->assertSame($id, $response['id'], json_encode($response));
+        $this->assertInternalType('array', $response['result'], json_encode($response));
+        $this->assertArrayHasKey('success', $response['result'], json_encode($response));
+        $this->assertArrayHasKey('data', $response['result'], json_encode($response));
+        $this->assertTrue($response['result']['success'], json_encode($response));
 
     }
 
     /**
-     * @param mixed       $result
+     * @param mixed       $response
      * @param string|null id
      * @param int         $errorCode
      * @param array       $childErrorCodes
      * @param string      $field
      * @param bool        $hasMoreProperties
      */
-    public function assertFail ($result, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
+    public function assertFail ($response, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
                                 $hasMoreProperties = false) {
 
-        $this->assertInstanceOf('\stdClass', $result);
+        $this->assertInternalType('array', $response);
 
-        $properties = get_object_vars($result);
         if ($hasMoreProperties) {
-            $this->assertGreaterThan(3, count($result));
+            $this->assertGreaterThan(3, count($response), json_encode($response));
         }
         else {
-            $this->assertCount(3, $result);
+            $this->assertCount(3, $response, json_encode($response));
         }
 
-        $this->assertArrayNotHasKey('result', $result);
-        $this->assertSame('2.0', $result['jsonrpc']);
-        $this->assertSame($id, $result['id']);
+        $this->assertArrayNotHasKey('result', $response, json_encode($response));
+        $this->assertSame('2.0', $response['jsonrpc'], json_encode($response));
+        $this->assertSame($id, $response['id'], json_encode($response));
 
-        $this->assertArrayHasKey('error', $result);
-        $error = $result['error'];
-        $this->assertInternalType('array', $error);
+        $this->assertArrayHasKey('error', $response, json_encode($response));
+        $error = $response['error'];
+        $this->assertInternalType('array', $error, json_encode($response));
 
         if (is_null($errorCode)) {
-            $this->assertArrayNotHasKey('code', $error);
+            $this->assertArrayNotHasKey('code', $error, json_encode($response));
         }
         else {
-            $this->assertArrayHasKey('code', $error);
-            $this->assertEquals($errorCode, $error['code']);
+            $this->assertArrayHasKey('code', $error, json_encode($response));
+            $this->assertEquals($errorCode, $error['code'], json_encode($response));
         }
 
         if (count($childErrorCodes)) {
-            $this->assertArrayHasKey('errors', $error);
+            $this->assertArrayHasKey('errors', $error, json_encode($response));
             $errors = $error['errors'];
-            $this->assertInternalType('array', $errors);
+            $this->assertInternalType('array', $errors, json_encode($response));
             $this->assertRecursiveErrorCodes($errors, $childErrorCodes);
         }
         else {
@@ -289,17 +258,18 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param array $errors
-     * @param array $errorCodes
+     * @param array       $errors
+     * @param array       $errorCodes
+     * @param string|null $message
      */
-    protected function assertRecursiveErrorCodes (array $errors, array $errorCodes) {
+    protected function assertRecursiveErrorCodes (array $errors, array $errorCodes, $message = NULL) {
 
-        $this->assertCount(count($errors), $errorCodes);
+        $this->assertCount(count($errors), $errorCodes,$message);
 
         $reformattedErrors = [];
         foreach ($errors as $error) {
-            $this->assertInternalType('array', $error);
-            $this->assertArrayHasKey('code', $error);
+            $this->assertInternalType('array', $error,$message);
+            $this->assertArrayHasKey('code', $error,$message);
             $code = $error['code'];
             if (isset($reformattedErrors[$code])) {
                 $this->fail("Duplicated error code '{$code}' in childErrors");
@@ -309,13 +279,13 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
         foreach ($errorCodes as $key => $value) {
             $errorCode = is_array($value) ? $key : $value;
-            $this->assertArrayHasKey($errorCode, $reformattedErrors);
+            $this->assertArrayHasKey($errorCode, $reformattedErrors,$message);
             if (is_array($value)) { // if child errors
                 $reformattedError = $reformattedErrors[$errorCode];
-                $this->assertArrayHasKey('errors', $reformattedError);
+                $this->assertArrayHasKey('errors', $reformattedError,$message);
                 $childErrors = $reformattedError['errors'];
-                $this->assertInternalType('array', $childErrors);
-                $this->assertRecursiveErrorCodes($childErrors, $value);
+                $this->assertInternalType('array', $childErrors,$message);
+                $this->assertRecursiveErrorCodes($childErrors, $value, $message);
             }
         }
 

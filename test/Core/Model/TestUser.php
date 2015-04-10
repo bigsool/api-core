@@ -122,7 +122,7 @@ class TestUser
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -133,6 +133,7 @@ class TestUser
      * Set email
      *
      * @param string $email
+     *
      * @return TestUser
      */
     public function setEmail($email)
@@ -145,7 +146,7 @@ class TestUser
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -156,6 +157,7 @@ class TestUser
      * Set password
      *
      * @param string $password
+     *
      * @return TestUser
      */
     public function setPassword($password)
@@ -168,7 +170,7 @@ class TestUser
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
     {
@@ -179,6 +181,7 @@ class TestUser
      * Set name
      *
      * @param string $name
+     *
      * @return TestUser
      */
     public function setName($name)
@@ -191,7 +194,7 @@ class TestUser
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -202,6 +205,7 @@ class TestUser
      * Set firstname
      *
      * @param string $firstname
+     *
      * @return TestUser
      */
     public function setFirstname($firstname)
@@ -214,7 +218,7 @@ class TestUser
     /**
      * Get firstname
      *
-     * @return string 
+     * @return string
      */
     public function getFirstname()
     {
@@ -225,6 +229,7 @@ class TestUser
      * Set lang
      *
      * @param string $lang
+     *
      * @return TestUser
      */
     public function setLang($lang)
@@ -237,7 +242,7 @@ class TestUser
     /**
      * Get lang
      *
-     * @return string 
+     * @return string
      */
     public function getLang()
     {
@@ -248,6 +253,7 @@ class TestUser
      * Set salt
      *
      * @param string $salt
+     *
      * @return TestUser
      */
     public function setSalt($salt)
@@ -260,7 +266,7 @@ class TestUser
     /**
      * Get salt
      *
-     * @return string 
+     * @return string
      */
     public function getSalt()
     {
@@ -271,6 +277,7 @@ class TestUser
      * Set registerDate
      *
      * @param \DateTime $registerDate
+     *
      * @return TestUser
      */
     public function setRegisterDate($registerDate)
@@ -283,7 +290,7 @@ class TestUser
     /**
      * Get registerDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getRegisterDate()
     {
@@ -294,6 +301,7 @@ class TestUser
      * Set lastLoginDate
      *
      * @param \DateTime $lastLoginDate
+     *
      * @return TestUser
      */
     public function setLastLoginDate($lastLoginDate)
@@ -306,7 +314,7 @@ class TestUser
     /**
      * Get lastLoginDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastLoginDate()
     {
@@ -317,6 +325,7 @@ class TestUser
      * Set knowsFrom
      *
      * @param string $knowsFrom
+     *
      * @return TestUser
      */
     public function setKnowsFrom($knowsFrom)
@@ -329,7 +338,7 @@ class TestUser
     /**
      * Get knowsFrom
      *
-     * @return string 
+     * @return string
      */
     public function getKnowsFrom()
     {
@@ -340,6 +349,7 @@ class TestUser
      * Set confirmationKey
      *
      * @param string $confirmationKey
+     *
      * @return TestUser
      */
     public function setConfirmationKey($confirmationKey)
@@ -352,7 +362,7 @@ class TestUser
     /**
      * Get confirmationKey
      *
-     * @return string 
+     * @return string
      */
     public function getConfirmationKey()
     {
@@ -363,6 +373,7 @@ class TestUser
      * Set ownedCompany
      *
      * @param \Core\Model\TestCompany $ownedCompany
+     *
      * @return TestUser
      */
     public function setOwnedCompany(\Core\Model\TestCompany $ownedCompany = null)
@@ -375,7 +386,7 @@ class TestUser
     /**
      * Get ownedCompany
      *
-     * @return \Core\Model\TestCompany 
+     * @return \Core\Model\TestCompany
      */
     public function getOwnedCompany()
     {
@@ -386,6 +397,7 @@ class TestUser
      * Set storage
      *
      * @param \Core\Model\TestStorage $storage
+     *
      * @return TestUser
      */
     public function setStorage(\Core\Model\TestStorage $storage = null)
@@ -398,7 +410,7 @@ class TestUser
     /**
      * Get storage
      *
-     * @return \Core\Model\TestStorage 
+     * @return \Core\Model\TestStorage
      */
     public function getStorage()
     {
@@ -409,6 +421,7 @@ class TestUser
      * Set company
      *
      * @param \Core\Model\TestCompany $company
+     *
      * @return TestUser
      */
     public function setCompany(\Core\Model\TestCompany $company = null)
@@ -421,10 +434,11 @@ class TestUser
     /**
      * Get company
      *
-     * @return \Core\Model\TestCompany 
+     * @return \Core\Model\TestCompany
      */
     public function getCompany()
     {
         return $this->company;
     }
 }
+

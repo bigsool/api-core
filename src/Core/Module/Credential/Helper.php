@@ -55,7 +55,7 @@ class Helper extends BasicHelper {
      *
      * @return Credential|null
      */
-    private function getCredentialFromLogin ($login) {
+    public function getCredentialFromLogin ($login) {
 
         $appCtx = ApplicationContext::getInstance();
 

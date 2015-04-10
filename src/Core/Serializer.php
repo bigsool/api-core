@@ -2,9 +2,14 @@
 
 namespace Core;
 
-use Core\Context\RequestContext;
+use Core\Context\ActionContext;
 
 class Serializer {
+
+    /**
+     * @var ActionContext
+     */
+    protected $actCtx;
 
     /**
      * @var bool
@@ -22,11 +27,13 @@ class Serializer {
     private $dataSerialized;
 
     /**
-     * @param RequestContext $reqCtx
+     * @param ActionContext $actCtx
      */
-    function __construct (RequestContext $reqCtx) {
+    function __construct (ActionContext $actCtx) {
 
-        $returnedKeyPaths = $reqCtx->getReturnedKeyPaths();
+        $this->actCtx = $actCtx;
+
+        $returnedKeyPaths = $actCtx->getRequestContext()->getReturnedKeyPaths();
 
         foreach ($returnedKeyPaths as $keyPath) {
             $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
@@ -67,6 +74,8 @@ class Serializer {
         else {
             $this->dataSerialized = $data;
         }
+
+        $this->dataSerialized = ['success' => true, 'data' => $this->dataSerialized];
 
         return $this;
 

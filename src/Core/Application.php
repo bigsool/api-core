@@ -336,10 +336,11 @@ class Application {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
-        $result = $controller->apply(new ActionContext($reqCtx));
+        $actCtx = new ActionContext($reqCtx);
+        $result = $controller->apply($actCtx);
         $traceLogger->trace('controller called');
 
-        $response = $rpcHandler->getSuccessResponse($this->getSerializer($reqCtx), $result);
+        $response = $rpcHandler->getSuccessResponse($this->getSerializer($actCtx), $result);
         $reqCtx->setResponse($response);
         $traceLogger->trace('response created');
 
@@ -354,13 +355,13 @@ class Application {
     }
 
     /**
-     * @param RequestContext $reqCtx
+     * @param ActionContext $actCtx
      *
      * @return Serializer
      */
-    protected function getSerializer (RequestContext $reqCtx) {
+    protected function getSerializer (ActionContext $actCtx) {
 
-        return new Serializer($reqCtx);
+        return new Serializer($actCtx);
 
     }
 

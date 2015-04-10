@@ -47,7 +47,7 @@ class TestStorage
      *
      * @ORM\Column(name="usedSpace", type="bigint", nullable=false)
      */
-    private $usedSpace;
+    private $usedSpace = '0';
 
     /**
      * @var \DateTime
@@ -61,7 +61,7 @@ class TestStorage
      *
      * @ORM\Column(name="isOutOfQuota", type="boolean", nullable=false)
      */
-    private $isOutOfQuota;
+    private $isOutOfQuota = '0';
 
     /**
      * @var \Core\Model\TestCompany
@@ -81,7 +81,7 @@ class TestStorage
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -92,6 +92,7 @@ class TestStorage
      * Set url
      *
      * @param string $url
+     *
      * @return TestStorage
      */
     public function setUrl($url)
@@ -104,7 +105,7 @@ class TestStorage
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
@@ -115,6 +116,7 @@ class TestStorage
      * Set login
      *
      * @param string $login
+     *
      * @return TestStorage
      */
     public function setLogin($login)
@@ -127,7 +129,7 @@ class TestStorage
     /**
      * Get login
      *
-     * @return string 
+     * @return string
      */
     public function getLogin()
     {
@@ -138,6 +140,7 @@ class TestStorage
      * Set password
      *
      * @param string $password
+     *
      * @return TestStorage
      */
     public function setPassword($password)
@@ -150,7 +153,7 @@ class TestStorage
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
     {
@@ -161,6 +164,7 @@ class TestStorage
      * Set usedSpace
      *
      * @param integer $usedSpace
+     *
      * @return TestStorage
      */
     public function setUsedSpace($usedSpace)
@@ -173,7 +177,7 @@ class TestStorage
     /**
      * Get usedSpace
      *
-     * @return integer 
+     * @return integer
      */
     public function getUsedSpace()
     {
@@ -184,6 +188,7 @@ class TestStorage
      * Set lastUsedSpaceUpdate
      *
      * @param \DateTime $lastUsedSpaceUpdate
+     *
      * @return TestStorage
      */
     public function setLastUsedSpaceUpdate($lastUsedSpaceUpdate)
@@ -196,7 +201,7 @@ class TestStorage
     /**
      * Get lastUsedSpaceUpdate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastUsedSpaceUpdate()
     {
@@ -207,6 +212,7 @@ class TestStorage
      * Set isOutOfQuota
      *
      * @param boolean $isOutOfQuota
+     *
      * @return TestStorage
      */
     public function setIsOutOfQuota($isOutOfQuota)
@@ -219,7 +225,7 @@ class TestStorage
     /**
      * Get isOutOfQuota
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsOutOfQuota()
     {
@@ -230,6 +236,7 @@ class TestStorage
      * Set company
      *
      * @param \Core\Model\TestCompany $company
+     *
      * @return TestStorage
      */
     public function setCompany(\Core\Model\TestCompany $company = null)
@@ -242,7 +249,7 @@ class TestStorage
     /**
      * Get company
      *
-     * @return \Core\Model\TestCompany 
+     * @return \Core\Model\TestCompany
      */
     public function getCompany()
     {
@@ -253,6 +260,7 @@ class TestStorage
      * Set user
      *
      * @param \Core\Model\TestUser $user
+     *
      * @return TestStorage
      */
     public function setUser(\Core\Model\TestUser $user = null)
@@ -265,10 +273,11 @@ class TestStorage
     /**
      * Get user
      *
-     * @return \Core\Model\TestUser 
+     * @return \Core\Model\TestUser
      */
     public function getUser()
     {
         return $this->user;
     }
 }
+
