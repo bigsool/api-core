@@ -18,10 +18,10 @@ class KeyPathTest extends TestCase {
 
         $param = 'owner.company.storage';
 
-        $param1 = new KeyPath($param);
+        $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $param2 = new KeyPath('*');
+        $param2 = new RelativeField('*');
 
         $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
 
@@ -39,7 +39,7 @@ class KeyPathTest extends TestCase {
 
         $param = 'owner.company.storage';
 
-        $param1 = new KeyPath($param);
+        $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
 
         $joins = $registry->getJoins();
@@ -69,7 +69,7 @@ class KeyPathTest extends TestCase {
 
         $alias = 'qwe';
 
-        $param = new KeyPath('owner.company.storage');
+        $param = new RelativeField('owner.company.storage');
         $param->setAlias($alias);
 
         $this->assertEquals($alias, $param->getAlias());

@@ -10,7 +10,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Model\TestAccount;
 use Core\Model\TestCompany;
@@ -1488,7 +1488,7 @@ class MagicalModuleManagerTest extends TestCase {
             ];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
+        $requestCtx->setReturnedFields([new RelativeField('s3.url')]);
 
         $result =
             $this->magicalAction('Find', $mgrUser, [$requestCtx,
@@ -1774,7 +1774,7 @@ class MagicalModuleManagerTest extends TestCase {
             ];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
+        $requestCtx->setReturnedFields([new RelativeField('s3.url')]);
 
         $result =
             $this->magicalAction('Find', $mgrUser, [$requestCtx,

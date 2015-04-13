@@ -7,7 +7,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\Aggregate;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
@@ -161,12 +161,12 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $emailKP = new KeyPath('email');
-        $companyIdKP = new KeyPath('company.name');
-        $storageIdKP = new KeyPath('company.storage.id');
-        $storageUrlKP = new KeyPath('company.storage.url');
+        $emailKP = new RelativeField('email');
+        $companyIdKP = new RelativeField('company.name');
+        $storageIdKP = new RelativeField('company.storage.id');
+        $storageUrlKP = new RelativeField('company.storage.url');
 
-        $reqCtx->setReturnedKeyPaths([$emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
+        $reqCtx->setReturnedFields([$emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
 
         $users = $this->findUsers($reqCtx);
 
@@ -177,13 +177,13 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $emailKP = new KeyPath('email');
+        $emailKP = new RelativeField('email');
         $nbUsersKP = new Aggregate('count', ['*']);
-        $companyIdKP = new KeyPath('company.name');
-        $storageIdKP = new KeyPath('company.storage.id');
-        $storageUrlKP = new KeyPath('company.storage.url');
+        $companyIdKP = new RelativeField('company.name');
+        $storageIdKP = new RelativeField('company.storage.id');
+        $storageUrlKP = new RelativeField('company.storage.url');
 
-        $reqCtx->setReturnedKeyPaths([$nbUsersKP, $emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
+        $reqCtx->setReturnedFields([$nbUsersKP, $emailKP, $companyIdKP, $storageIdKP, $storageUrlKP]);
 
         $users = $this->findUsers($reqCtx);
 
@@ -197,13 +197,18 @@ class SerializerTest extends TestCase {
 
     }
 
-    private function findUsers ($reqCtx) {
+    /**
+     * @param RequestContext $reqCtx
+     *
+     * @return array
+     */
+    private function findUsers (RequestContext $reqCtx) {
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 
-        $keyPaths = $reqCtx->getReturnedKeyPaths();
+        $keyPaths = $reqCtx->getReturnedFields();
         foreach ($keyPaths as $keyPath) {
-            $qryCtx->addKeyPath($keyPath, $keyPath->getAlias());
+            $qryCtx->addField($keyPath, $keyPath->getAlias());
         }
 
         return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);

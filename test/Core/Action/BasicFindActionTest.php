@@ -4,7 +4,7 @@
 namespace Core\Action;
 
 
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\TestCase;
@@ -58,7 +58,7 @@ class BasicCreateActionTest extends TestCase {
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'thierry@bigsool.com']);
         $reqCtx = $actCtx->getRequestContext();
-        $reqCtx->setReturnedKeyPaths([new KeyPath('email')]);
+        $reqCtx->setReturnedFields([new RelativeField('email')]);
 
 
         $action->process($actCtx);

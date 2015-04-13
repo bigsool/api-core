@@ -9,7 +9,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Expression\AbstractKeyPath;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
@@ -446,7 +446,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
 
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);
@@ -508,7 +508,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
+        $keyPath = isset($config['keyPath']) ? new RelativeField($config['keyPath']) : NULL;
         if (!$keyPath) {
             foreach ($this->modelAspects as $modelAspect) {
                 if (!$modelAspect->getKeyPath()) {
@@ -580,17 +580,17 @@ abstract class MagicalModuleManager extends ModuleManager {
         $this->disableModelAspects($disabledKeyPaths);
 
         foreach ($fields as $value) {
-            $qryCtx->addKeyPath(new KeyPath($value));
+            $qryCtx->addField(new RelativeField($value));
         }
 
-        $reqCtxKeyPaths = $requestContext->getReturnedKeyPaths();
+        $reqCtxKeyPaths = $requestContext->getReturnedFields();
         $reqCtxFormattedKeyPaths = [];
         foreach ($reqCtxKeyPaths as $keyPath) {
             $newValue = $this->formatFindValues([$keyPath->getValue()])[0];
-            $reqCtxFormattedKeyPaths[] = new KeyPath($newValue);
+            $reqCtxFormattedKeyPaths[] = new RelativeField($newValue);
         }
 
-        $requestContext->setFormattedReturnedKeyPaths($reqCtxFormattedKeyPaths);
+        $requestContext->setFormattedReturnedFields($reqCtxFormattedKeyPaths);
 
 
         foreach ($filters as $filter) {

@@ -10,7 +10,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Field\Field;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Module\AddressBook\Validation;
 use Core\Module\ModuleManager as AbstractModuleManager;
@@ -98,7 +98,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $ctx = new ActionContext(new RequestContext());
 
-                $helper->findCredential($ctx, true, [new KeyPath('*')], [$filter], ['login' => $params['login']],
+                $helper->findCredential($ctx, true, [new RelativeField('*')], [$filter], ['login' => $params['login']],
                                         [Auth::INTERNAL]);
 
                 if (count($ctx['credentials']) != 0) {

@@ -7,7 +7,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Field\KeyPath as FieldKeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Validation\Parameter\Int;
 use Core\Validation\Parameter\NotBlank;
@@ -44,7 +44,7 @@ class BasicUpdateAction extends SimpleAction {
                 $model = ucfirst($model);
 
                 $qryCtx = new FindQueryContext($model, $reqCtx);
-                $qryCtx->addKeyPath(new FieldKeyPath('*'));
+                $qryCtx->addField(new RelativeField('*'));
                 $qryCtx->addFilter(new StringFilter($model, '', 'id = :id'));
                 $qryCtx->setParams(['id' => $params['id']]);
 

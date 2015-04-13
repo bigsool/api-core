@@ -9,7 +9,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
@@ -282,9 +282,9 @@ class Application {
         $reqCtx->setClientVersion($rpcHandler->getClientVersion());
         $reqCtx->setLocale($rpcHandler->getLocale());
         $reqCtx->setIpAddress($rpcHandler->getIpAddress());
-        $reqCtx->setReturnedKeyPaths(array_map(function ($field) {
+        $reqCtx->setReturnedFields(array_map(function ($field) {
 
-            return new KeyPath($field);
+            return new RelativeField($field);
 
         }, $rpcHandler->getReturnedFields()));
 
@@ -307,12 +307,12 @@ class Application {
          */
         try {
             $match = $matcher->match($rpcHandler->getPath());
-            if (isset($match['fields']) && !$reqCtx->getReturnedKeyPaths()) {
+            if (isset($match['fields']) && !$reqCtx->getReturnedFields()) {
                 $fields = [];
                 foreach ($match['fields'] as $field) {
-                    $fields[] = new KeyPath($field);
+                    $fields[] = new RelativeField($field);
                 }
-                $reqCtx->setReturnedKeyPaths($fields);
+                $reqCtx->setReturnedFields($fields);
             }
             $controller = $match['controller'];
             $this->appCtx->getTraceLogger()->trace('controller found');

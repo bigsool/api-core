@@ -3,7 +3,7 @@
 namespace Core\Context;
 
 
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
 
@@ -109,9 +109,9 @@ class RequestContextTest extends TestCase {
     public function testKeyPaths () {
 
         $ctx = $this->getRequestContext();
-        $keyPaths = [new KeyPath('qwe'), new KeyPath('aze')];
-        $ctx->setReturnedKeyPaths($keyPaths);
-        $this->assertSame($keyPaths, $ctx->getReturnedKeyPaths());
+        $keyPaths = [new RelativeField('qwe'), new RelativeField('aze')];
+        $ctx->setReturnedFields($keyPaths);
+        $this->assertSame($keyPaths, $ctx->getReturnedFields());
 
     }
 
@@ -120,7 +120,7 @@ class RequestContextTest extends TestCase {
      */
     public function testInvalidKeyPathsType () {
 
-        $this->getRequestContext()->setReturnedKeyPaths([new \stdClass()]);
+        $this->getRequestContext()->setReturnedFields([new \stdClass()]);
 
     }
 
@@ -129,7 +129,7 @@ class RequestContextTest extends TestCase {
      */
     public function testInvalidKeyPathsValue () {
 
-        $this->getRequestContext()->setReturnedKeyPaths(['*']);
+        $this->getRequestContext()->setReturnedFields(['*']);
 
     }
 

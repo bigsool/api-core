@@ -67,26 +67,26 @@ class FindQueryContextTest extends TestCase {
 
         // empty keyPath list
         $ctx = $this->getFindQueryContext('TestCompany');
-        $this->assertSame([], $ctx->getKeyPaths());
+        $this->assertSame([], $ctx->getFields());
 
         // only one keyPath
-        $keyPath = $this->getMockFieldKeyPath();
-        $ctx->addKeyPath($keyPath);
-        $this->assertSame([$keyPath], $ctx->getKeyPaths());
+        $keyPath = $this->getMockRelativeField();
+        $ctx->addField($keyPath);
+        $this->assertSame([$keyPath], $ctx->getFields());
 
         // several keyPaths
-        $keyPaths = [$this->getMockFieldKeyPath(), $this->getMockFieldKeyPath()];
+        $keyPaths = [$this->getMockRelativeField(), $this->getMockRelativeField()];
         foreach ($keyPaths as $k) {
-            $ctx->addKeyPath($k);
+            $ctx->addField($k);
         }
         $keyPaths[] = $keyPath;
-        $this->assertSameSize($keyPaths, $ctx->getKeyPaths());
+        $this->assertSameSize($keyPaths, $ctx->getFields());
         foreach ($keyPaths as $f) {
-            $this->assertContains($f, $ctx->getKeyPaths());
+            $this->assertContains($f, $ctx->getFields());
         }
 
         // keyPath with alias
-        $keyPath = $this->getMockFieldKeyPath();
+        $keyPath = $this->getMockRelativeField();
         $setAliasCalled = false;
         $alias = 'qwe';
         $keyPath->method('setAlias')->will($this->returnCallback(function ($alias2) use (&$setAliasCalled, &$alias) {
@@ -94,7 +94,7 @@ class FindQueryContextTest extends TestCase {
             $setAliasCalled = $alias === $alias2;
 
         }));
-        $ctx->addKeyPath($keyPath, $alias);
+        $ctx->addField($keyPath, $alias);
         $this->assertTrue($setAliasCalled);
 
     }

@@ -13,12 +13,13 @@ use Core\Context\RequestContext;
 use Core\Context\SaveQueryContext;
 use Core\Error\Error;
 use Core\Error\ErrorManager;
+use Core\Error\FormattedError;
 use Core\Expression\Expression;
 use Core\Expression\ExpressionWithOperator;
-use Core\Expression\KeyPath as ExpressionKeyPath;
+use Core\Expression\KeyPath;
 use Core\Expression\Value;
 use Core\Field\Field;
-use Core\Field\KeyPath as FieldKeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
@@ -374,9 +375,9 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return ExpressionKeyPath
+     * @return KeyPath
      */
-    public function getMockExpressionKeyPath () {
+    public function getMockKeyPath () {
 
         return $this->getMockBuilder('\Core\Expression\KeyPath')
                     ->disableOriginalConstructor()
@@ -385,18 +386,18 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return FieldKeyPath
+     * @return RelativeField
      */
-    public function getMockFieldKeyPath () {
+    public function getMockRelativeField () {
 
-        return $this->getMockBuilder('\Core\Field\KeyPath')
+        return $this->getMockBuilder('\Core\Field\RelativeField')
                     ->disableOriginalConstructor()
                     ->getMock();
 
     }
 
     /**
-     * @return FieldKeyPath
+     * @return FormattedError
      */
     public function getMockFormattedError () {
 

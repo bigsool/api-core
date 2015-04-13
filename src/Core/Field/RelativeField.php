@@ -6,7 +6,7 @@ namespace Core\Field;
 
 use Core\Expression\AbstractKeyPath;
 
-class KeyPath extends AbstractKeyPath {
+class RelativeField extends AbstractKeyPath {
 
     /**
      * @var string|void

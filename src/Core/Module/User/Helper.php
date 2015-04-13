@@ -6,7 +6,7 @@ namespace Core\Module\User;
 
 use Core\Context\ActionContext;
 use Core\Context\FindQueryContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Model\User;
 use Core\Module\BasicHelper;
@@ -50,7 +50,7 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actionContext
      * @param bool          $hydrateArray
-     * @param KeyPath[]     $keyPaths
+     * @param RelativeField[]     $keyPaths
      * @param Filter[]      $filters
      * @param array         $params
      * @param string[]      $rights

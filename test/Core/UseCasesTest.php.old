@@ -10,7 +10,7 @@ use Core\Context\RequestContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath as ExprKeyPath;
 use Core\Expression\Parameter;
-use Core\Field\KeyPath as FieldKeyPath;
+use Core\Field\Field as FieldKeyPath;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Filter\StringFilter;

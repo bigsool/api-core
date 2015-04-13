@@ -5,7 +5,7 @@ namespace Core\Field;
 use Core\Context\QueryContext;
 use Core\Registry;
 
-class Aggregate extends keyPath {
+class Aggregate extends RelativeField {
 
     /**
      * @var string
@@ -39,7 +39,7 @@ class Aggregate extends keyPath {
 
         $values = "";
         foreach ($this->args as $arg) {
-            $keyPath = new KeyPath($arg);
+            $keyPath = new RelativeField($arg);
             $values .= $keyPath->resolve($registry, $ctx) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);

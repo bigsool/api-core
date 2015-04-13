@@ -6,7 +6,7 @@ namespace Core\Module;
 
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 
 class BasicHelper {
@@ -84,7 +84,7 @@ class BasicHelper {
     /**
      * @param FindQueryContext $context
      * @param bool             $hydrateArray
-     * @param KeyPath[]        $keyPaths
+     * @param RelativeField[]        $keyPaths
      * @param Filter[]         $filters
      * @param array            $params
      *
@@ -95,7 +95,7 @@ class BasicHelper {
                                array $params = []) {
 
         foreach ($keyPaths as $keyPath) {
-            $context->addKeyPath($keyPath);
+            $context->addField($keyPath);
         }
 
         foreach ($filters as $filter) {
