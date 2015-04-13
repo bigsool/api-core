@@ -23,7 +23,7 @@ class KeyPathTest extends TestCase {
 
         $param2 = new RelativeField('*');
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
 
@@ -45,20 +45,20 @@ class KeyPathTest extends TestCase {
         $joins = $registry->getJoins();
         $this->assertCount(3, $joins);
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $resolve1 = $param1->resolve($registry, $context);
 
         $joins = $registry->getJoins();
         $this->assertCount(3, $joins);
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $registry2 = $this->getRegistry('TestCompany');
         $context2 = $this->getFindQueryContext('TestCompany');
 
         $resolve2 = $param1->resolve($registry2, $context2);
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve2);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve2);
 
         $joins = $registry2->getJoins();
         $this->assertCount(3, $joins);

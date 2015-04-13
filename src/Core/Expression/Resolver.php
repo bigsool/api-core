@@ -28,6 +28,12 @@ trait Resolver {
      */
     protected $resolvedEntity;
 
+    /**
+     * @param Registry     $registry
+     * @param QueryContext $ctx
+     *
+     * @return string
+     */
     public function resolve (Registry $registry, QueryContext $ctx) {
 
         if (!($ctx instanceof FindQueryContext)) {

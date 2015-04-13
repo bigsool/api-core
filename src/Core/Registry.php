@@ -243,17 +243,19 @@ class Registry implements EventSubscriber {
         // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
         $entities = [];
         foreach ($relativeFields as $relativeField) {
-            $field = $relativeField->resolve($this, $ctx);
-            $exploded = explode('.', $field);
-            if (!$hydrateArray || count($exploded) == 1 || $relativeField->isAggregate()) {
-                if ($relativeField->getAlias()) {
-                    $field .= ' AS ' . $relativeField->getAlias();
+            $fields = $relativeField->resolve($this, $ctx);
+            foreach ($fields as $field) {
+                $exploded = explode('.', $field);
+                if (!$hydrateArray || count($exploded) == 1 || $relativeField->isAggregate()) {
+                    if ($relativeField->getAlias()) {
+                        $field .= ' AS ' . $relativeField->getAlias();
+                    }
+                    $qb->addSelect($field);
                 }
-                $qb->addSelect($field);
-            }
-            else {
-                if (count($exploded) == 2) {
-                    $entities[$exploded[0]][] = $exploded[1];
+                else {
+                    if (count($exploded) == 2) {
+                        $entities[$exploded[0]][] = $exploded[1];
+                    }
                 }
             }
 
@@ -276,7 +278,7 @@ class Registry implements EventSubscriber {
                 }
                 continue;
             }
-            $groupByClause .= $relativeField->resolve($this, $ctx) . ',';
+            $groupByClause .= implode(',', $relativeField->resolve($this, $ctx)) . ',';
         }
 
         $groupByClause = substr($groupByClause, 0, strlen($groupByClause) - 1);

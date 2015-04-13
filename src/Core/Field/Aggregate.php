@@ -33,14 +33,14 @@ class Aggregate extends RelativeField {
      * @param Registry     $registry
      * @param QueryContext $ctx
      *
-     * @return string
+     * @return string[]
      */
     public function resolve (Registry $registry, QueryContext $ctx) {
 
         $values = "";
         foreach ($this->args as $arg) {
             $keyPath = new RelativeField($arg);
-            $values .= $keyPath->resolve($registry, $ctx) . ',';
+            $values .= implode(',', $keyPath->resolve($registry, $ctx)) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);
 
@@ -49,7 +49,7 @@ class Aggregate extends RelativeField {
             $this->setAlias($entity . ucfirst($this->value));
         }
 
-        return $this->fn . '(' . $values . ')';
+        return [$this->fn . '(' . $values . ')'];
 
     }
 

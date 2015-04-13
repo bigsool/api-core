@@ -4,12 +4,16 @@
 namespace Core\Field;
 
 
+use Core\Context\QueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
+use Core\Registry;
 
 class RelativeField {
 
-    use Resolver;
+    use Resolver {
+        Resolver::resolve as _resolve;
+    }
 
     /**
      * @var string
@@ -20,6 +24,18 @@ class RelativeField {
      * @var string|void
      */
     protected $alias;
+
+    /**
+     * @param Registry     $registry
+     * @param QueryContext $ctx
+     *
+     * @return string[]
+     */
+    public function resolve(Registry $registry, QueryContext $ctx) {
+
+        return [$this->_resolve($registry, $ctx)];
+
+    }
 
     /**
      * @param string $value
