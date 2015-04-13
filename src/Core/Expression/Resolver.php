@@ -151,7 +151,7 @@ trait Resolver {
      */
     public function getEntity (QueryContext $ctx) {
 
-        return $ctx->getEntity();
+        return isset($this->rootEntity) ? $this->rootEntity : $ctx->getEntity();
 
     }
 
