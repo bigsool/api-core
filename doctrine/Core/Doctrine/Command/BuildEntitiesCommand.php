@@ -255,7 +255,7 @@ class BuildEntitiesCommand extends Command {
             $class .= $this->createMagicalMainEntityMethods($mainEntity->getModel());
 
             foreach ($modelAspects as $modelAspect) {
-                if (!$modelAspect->getKeyPath()) {
+                if (!$modelAspect->getRelativeField()) {
                     // if mainEntity don't write getter and setter
                     continue;
                 }
@@ -346,7 +346,7 @@ CONSTRUCTOR;
         $varName = lcfirst($modelName);
 
         $getterChain = $getterChainUntilEntity = "\$this->get$mainModelName()";
-        foreach (explode('.', $modelAspect->getKeyPath()->getValue()) as $fieldName) {
+        foreach (explode('.', $modelAspect->getRelativeField()->getValue()) as $fieldName) {
             $getterChainUntilEntity = $getterChain;
             $getterChain .= '->get' . ucfirst($fieldName) . '()';
         }
@@ -422,7 +422,7 @@ GETTER_AND_SETTER;
         $metadata = $appCtx->getClassMetadata($entityClassName);
         $mapping = NULL;
 
-        foreach (explode('.', $modelAspect->getKeyPath()->getValue()) as $fieldName) {
+        foreach (explode('.', $modelAspect->getRelativeField()->getValue()) as $fieldName) {
             $mapping = $metadata->getAssociationMapping($fieldName);
             $metadata = $appCtx->getClassMetadata($mapping['targetEntity']);
         }

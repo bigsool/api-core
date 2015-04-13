@@ -4,6 +4,9 @@
 namespace Core\Field;
 
 
+use Core\Context\FindQueryContext;
+use Core\Registry;
+
 class Field {
 
     /**
@@ -46,6 +49,16 @@ class Field {
     public function getName () {
 
         return $this->name;
+
+    }
+
+    /**
+     * @param Registry         $registry
+     * @param FindQueryContext $context
+     *
+     * @return string
+     */
+    public function resolve (Registry $registry, FindQueryContext $context) {
 
     }
 

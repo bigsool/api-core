@@ -5,13 +5,34 @@ namespace Core\Field;
 
 
 use Core\Expression\AbstractKeyPath;
+use Core\Expression\Resolver;
 
-class RelativeField extends AbstractKeyPath {
+class RelativeField {
+
+    use Resolver;
+
+    /**
+     * @var string
+     */
+    protected $value;
 
     /**
      * @var string|void
      */
     protected $alias;
+
+    /**
+     * @param string $value
+     */
+    public function __construct ($value) {
+
+        if (!AbstractKeyPath::isValidKeyPath($value)) {
+            throw new \RuntimeException('invalid KeyPath');
+        }
+
+        $this->value = $value;
+
+    }
 
     /**
      * @return string|void
@@ -39,12 +60,33 @@ class RelativeField extends AbstractKeyPath {
     public function isEqual ($keyPath) {
 
         return ($keyPath instanceof self)
-               && ($keyPath->entity === $this->entity)
-               && ($keyPath->field === $this->field)
+               && ($keyPath->resolvedEntity === $this->resolvedEntity)
+               && ($keyPath->resolvedField === $this->resolvedField)
                && ($keyPath->getValue() === $this->getValue());
 
     }
 
+    /**
+     * @return bool
+     */
+    public function shouldResolveForAWhere () {
+
+        return false;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue () {
+
+        return $this->value;
+
+    }
+
+    /**
+     * @return bool
+     */
     public function isAggregate () {
 
         return is_a($this, 'Core\Field\Aggregate');
@@ -59,5 +101,4 @@ class RelativeField extends AbstractKeyPath {
         return false;
 
     }
-
 }
