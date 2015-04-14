@@ -213,47 +213,49 @@ class Registry implements EventSubscriber {
 
         $qb = $this->getQueryBuilder($entity);
 
-        $keyPaths = $ctx->getKeyPaths();
+        $relativeFields = $ctx->getFields();
 
-        // KeyPath as to be resolve to do the isEqual()
-        foreach ($keyPaths as $keyPath) {
-            $keyPath->resolve($this, $ctx);
+        // Field as to be resolve to do the isEqual()
+        foreach ($relativeFields as $relativeField) {
+            $relativeField->resolve($this, $ctx);
         }
 
-        $reqCtxKeyPaths = $ctx->getReqCtx()->getFormattedReturnedKeyPaths();
+        $reqCtxFields = $ctx->getReqCtx()->getFormattedReturnedFields();
 
-        foreach ($reqCtxKeyPaths as &$keyPathFromRequest) {
-            // KeyPath as to be resolve to do the isEqual()
-            $keyPathFromRequest->resolve($this, $ctx);
-            foreach ($keyPaths as $alreadyAddedKeyPath) {
-                if ($keyPathFromRequest->isEqual($alreadyAddedKeyPath)) {
+        foreach ($reqCtxFields as $fieldFromRequest) {
+            // Field as to be resolve to do the isEqual()
+            $fieldFromRequest->resolve($this, $ctx);
+            foreach ($relativeFields as $alreadyAddedField) {
+                if ($fieldFromRequest->isEqual($alreadyAddedField)) {
                     continue 2;
                 }
             }
 
-            $keyPaths[] = $keyPathFromRequest;
+            $relativeFields[] = $fieldFromRequest;
         }
 
 
-        if (empty($keyPaths)) {
+        if (empty($relativeFields)) {
             throw new \RuntimeException('fields are required');
         }
 
         // TODO: fix problem with partial objects
         // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
         $entities = [];
-        foreach ($keyPaths as $keyPath) {
-            $field = $keyPath->resolve($this, $ctx);
-            $exploded = explode('.', $field);
-            if (!$hydrateArray || count($exploded) == 1 || $keyPath->isAggregate()) {
-                if ($keyPath->getAlias()) {
-                    $field .= ' AS ' . $keyPath->getAlias();
+        foreach ($relativeFields as $relativeField) {
+            $fields = $relativeField->resolve($this, $ctx);
+            foreach ($fields as $field) {
+                $exploded = explode('.', $field);
+                if (!$hydrateArray || count($exploded) == 1 || $relativeField->isAggregate()) {
+                    if ($relativeField->getAlias()) {
+                        $field .= ' AS ' . $relativeField->getAlias();
+                    }
+                    $qb->addSelect($field);
                 }
-                $qb->addSelect($field);
-            }
-            else {
-                if (count($exploded) == 2) {
-                    $entities[$exploded[0]][] = $exploded[1];
+                else {
+                    if (count($exploded) == 2) {
+                        $entities[$exploded[0]][] = $exploded[1];
+                    }
                 }
             }
 
@@ -269,14 +271,14 @@ class Registry implements EventSubscriber {
         $needGroupByClause = false;
         $groupByClause = "";
 
-        foreach ($keyPaths as $keyPath) {
-            if ($keyPath->isAggregate()) {
-                if (count($keyPaths) > 1) {
+        foreach ($relativeFields as $relativeField) {
+            if ($relativeField->isAggregate()) {
+                if (count($relativeFields) > 1) {
                     $needGroupByClause = true;
                 }
                 continue;
             }
-            $groupByClause .= $keyPath->resolve($this, $ctx) . ',';
+            $groupByClause .= implode(',', $relativeField->resolve($this, $ctx)) . ',';
         }
 
         $groupByClause = substr($groupByClause, 0, strlen($groupByClause) - 1);

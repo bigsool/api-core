@@ -33,7 +33,7 @@ class Serializer {
 
         $this->actCtx = $actCtx;
 
-        $returnedKeyPaths = $actCtx->getRequestContext()->getReturnedKeyPaths();
+        $returnedKeyPaths = $actCtx->getRequestContext()->getReturnedFields();
 
         foreach ($returnedKeyPaths as $keyPath) {
             $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());

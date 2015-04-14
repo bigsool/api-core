@@ -9,7 +9,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Expression\AbstractKeyPath;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
@@ -79,6 +79,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $result = $this->magicalModify($ctx, 'update');
         $this->enableModelAspects();
 
+        
         return $result;
 
     }
@@ -118,8 +119,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
 
             $params = NULL;
-            if ($modelAspect->getKeyPath()) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+            if ($modelAspect->getRelativeField()) {
+                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
                 $params = $formattedParams;
                 $data = $params;
                 foreach ($explodedKeyPath as $elem) {
@@ -148,12 +149,12 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $params = UnsafeParameter::getFinalValue($params);
 
                 foreach ($params as $key => $value) {
-                    if (!$this->isParamLinkedToAspectModel($modelAspect->getKeyPath()->getValue(), $key)) {
+                    if (!$this->isParamLinkedToAspectModel($modelAspect->getRelativeField()->getValue(), $key)) {
                         $subContext->setParam($key, $value);
                     }
                 }
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $entity = $this->getEntityFromKeyPath($modelAspect->getKeyPath());//TODO// ADD TESTS 
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getRelativeField());//TODO// ADD TESTS 
                     if ($entity) {
                         $subContext->setParam('id', $entity->getId());
                     }
@@ -179,7 +180,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $result = $modifyAction->process($subContext);
 
-            $key = $modelAspect->getKeyPath() ? $modelAspect->getKeyPath()->getValue() : 'main';
+            $key = $modelAspect->getRelativeField() ? $modelAspect->getRelativeField()->getValue() : 'main';
             $this->models[$key] = $result;
 
             if ($this->isMainEntity($modelAspect)) {
@@ -244,10 +245,10 @@ abstract class MagicalModuleManager extends ModuleManager {
         $keyPath = $keyPath ? $keyPath . '.' . $paramKey : $paramKey;
 
         foreach ($this->getModelAspects() as $modelAspect) {
-            if (!$modelAspect->getKeyPath()) {
+            if (!$modelAspect->getRelativeField()) {
                 continue;
             }
-            if ($modelAspect->getKeyPath()->getValue() == $keyPath) {
+            if ($modelAspect->getRelativeField()->getValue() == $keyPath) {
                 return true;
             }
         }
@@ -263,7 +264,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     private function isMainEntity ($modelAspect) {
 
-        return !$modelAspect->getKeyPath();
+        return !$modelAspect->getRelativeField();
 
     }
 
@@ -300,7 +301,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 continue;
             }
 
-            $keyPath = $modelAspect->getKeyPath()->getValue();
+            $keyPath = $modelAspect->getRelativeField()->getValue();
             $modelNameForKeyPath[$keyPath] = $modelAspect->getModel();
 
             $pos = strrpos($keyPath, '.');
@@ -343,7 +344,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function getMainEntityName () {
 
         foreach ($this->getModelAspects() as $modelAspect) {
-            if ($modelAspect->getKeyPath() == '') {
+            if ($modelAspect->getRelativeField() == '') {
                 return $modelAspect->getModel();
             }
         }
@@ -515,7 +516,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
         if (!$keyPath) {
             foreach ($this->modelAspects as $modelAspect) {
-                if (!$modelAspect->getKeyPath()) {
+                if (!$modelAspect->getRelativeField()) {
                     throw new \RuntimeException('two main entities');
                 }
             }
@@ -650,7 +651,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
-            $keyPath = $modelAspect->getKeyPath();
+            $keyPath = $modelAspect->getRelativeField();
             $prefix = $modelAspect->getPrefix();
 
             if ($keyPath) {
@@ -707,14 +708,14 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $data = $params;
             }
 
-            if ($modelAspect->getKeyPath()) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+            if ($modelAspect->getRelativeField()) {
+                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
                 $data = $this->buildArrayWithKeys($explodedKeyPath, $data);
             }
 
             $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
 
-            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getKeyPath()->getValue()) {
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getRelativeField()->getValue()) {
                 $formattedParams = $this->removeKeysFromArray($explodedPrefix, $formattedParams);
             }
 
@@ -883,7 +884,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $value = implode('.', $explodedValue);
                 foreach ($this->modelAspects as $modelAspect) {
                     if ($modelAspect->getPrefix() == $value) {
-                        $value = $modelAspect->getKeyPath()->getValue() . '.' . $field;
+                        $value = $modelAspect->getRelativeField()->getValue() . '.' . $field;
                         $prefixed = true;
                         break;
                     }
@@ -922,11 +923,11 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         foreach ($this->modelAspects as $modelAspect) {
-            if (!$modelAspect->getKeyPath()) {
+            if (!$modelAspect->getRelativeField()) {
                 $newModelAspects[] = $modelAspect;
                 continue;
             }
-            $keyPath = $modelAspect->getKeyPath()->getValue();
+            $keyPath = $modelAspect->getRelativeField()->getValue();
             foreach ($disabledKeyPaths as $disabledKeyPath) {
                 if (strpos($keyPath, $disabledKeyPath) === 0) {
                     $modelAspect->disable();
@@ -1009,8 +1010,8 @@ abstract class MagicalModuleManager extends ModuleManager {
         foreach ($this->getModelAspects() as $modelAspect) {
 
             $data = $params;
-            if ($modelAspect->getKeyPath()) {
-                $explodedKeyPath = explode('.', $modelAspect->getKeyPath()->getValue());
+            if ($modelAspect->getRelativeField()) {
+                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
             }
             else {
                 $explodedKeyPath = [];
@@ -1081,7 +1082,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspectsWithPrefixedField() as $modelAspect) {
 
-            $keyPath = $modelAspect->getKeyPath();
+            $keyPath = $modelAspect->getRelativeField();
 
             if ($keyPath) {
 
@@ -1139,7 +1140,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
-            $keyPath = $modelAspect->getKeyPath();
+            $keyPath = $modelAspect->getRelativeField();
 
             if ($modelAspect->isWithPrefixedFields() && $keyPath) {
                 $newResult = $this->removeKeysFromArray(explode('.',$keyPath->getValue()),$newResult);
@@ -1156,7 +1157,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->modelAspects as $modelAspect) {
 
-            if ($modelAspect->getKeyPath() && $modelAspect->getKeyPath()->getValue() == $keyPath) {
+            if ($modelAspect->getRelativeField() && $modelAspect->getRelativeField()->getValue() == $keyPath) {
                 return $modelAspect;
             }
 
@@ -1193,7 +1194,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspects() as $modelAspect) {
             if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
-                return $modelAspect->getKeyPath()->getValue();
+                return $modelAspect->getRelativeField()->getValue();
             }
         }
 

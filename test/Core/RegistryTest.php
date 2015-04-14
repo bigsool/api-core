@@ -9,11 +9,11 @@ use Core\Context\FindQueryContext;
 use Core\Context\QueryContext;
 use Core\Context\RequestContext;
 use Core\Expression\BinaryExpression;
-use Core\Expression\KeyPath as ExpressionKeyPath;
+use Core\Expression\KeyPath;
 use Core\Expression\Parameter;
 use Core\Expression\Value;
 use Core\Field\Aggregate;
-use Core\Field\KeyPath as FieldKeyPath;
+use Core\Field\RelativeField;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Model\TestAccount;
@@ -63,7 +63,7 @@ class RegistryTest extends TestCase {
 
         $this->appCtx = $this->getApplicationContext(self::$doctrineConnectionSettings);
 
-        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('confirmationKey'), new Value(1));
+        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('confirmationKey'), new Value(1));
         $userConfKeyFilter = new ExpressionFilter('TestUser', 'confirmationKey', $expression);
         $this->appCtx->addFilter($userConfKeyFilter);
 
@@ -272,7 +272,7 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsArray () {
 
         $qryCtx = new FindQueryContext('TestCompany');
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -290,8 +290,8 @@ class RegistryTest extends TestCase {
     public function testFindFieldsWithoutFilter () {
 
         $qryCtx = new FindQueryContext('TestCompany');
-        $qryCtx->addKeyPath(new FieldKeyPath('name'));
-        $qryCtx->addKeyPath(new FieldKeyPath('tva'));
+        $qryCtx->addField(new RelativeField('name'));
+        $qryCtx->addField(new RelativeField('tva'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx);
@@ -312,7 +312,7 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFilterAsObject () {
 
         $qryCtx = new FindQueryContext('TestCompany');
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
@@ -337,9 +337,9 @@ class RegistryTest extends TestCase {
     public function testFindWithFilters () {
 
         $qryCtx = new FindQueryContext('TestCompany');
-        $qryCtx->addKeyPath(new FieldKeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
-        $expression = new BinaryExpression(new EqualOperator(), new ExpressionKeyPath('tva'), new Value(17));
+        $expression = new BinaryExpression(new EqualOperator(), new KeyPath('tva'), new Value(17));
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
         $result = $registry->find($qryCtx, false);
@@ -349,7 +349,7 @@ class RegistryTest extends TestCase {
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
         $parameter = new Parameter(':tva');
-        $expression = new BinaryExpression(new EqualOperator(), $parameter, new ExpressionKeyPath('tva'));
+        $expression = new BinaryExpression(new EqualOperator(), $parameter, new KeyPath('tva'));
         $qryCtx->setParams(['tva' => 126]);
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
@@ -367,11 +367,11 @@ class RegistryTest extends TestCase {
      */
     public function testFindRuleOnFields () {
 
-        $fieldKeyPath = new FieldKeyPath('name');
+        $RelativeField = new RelativeField('name');
         $reqCtx = $this->getRequestContext();
-        $reqCtx->setReturnedKeyPaths([$fieldKeyPath]);
+        $reqCtx->setReturnedFields([$RelativeField]);
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-        $qryCtx->addKeyPath($fieldKeyPath);
+        $qryCtx->addField($RelativeField);
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
@@ -389,10 +389,10 @@ class RegistryTest extends TestCase {
     public function testFindWithAlias () {
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addKeyPath(new Aggregate('count', ['*']), 'nbUsers');
-        $qryCtx->addKeyPath(new FieldKeyPath('email'));
-        $qryCtx->addKeyPath(new FieldKeyPath('name'), 'userName');
-        $qryCtx->addKeyPath(new FieldKeyPath('company.name'), 'companyName');
+        $qryCtx->addField(new Aggregate('count', ['*']), 'nbUsers');
+        $qryCtx->addField(new RelativeField('email'));
+        $qryCtx->addField(new RelativeField('name'), 'userName');
+        $qryCtx->addField(new RelativeField('company.name'), 'companyName');
 
 
         $registry = $this->appCtx->getNewRegistry();
@@ -435,13 +435,13 @@ class RegistryTest extends TestCase {
     public function testFindWithRequestedKeyPath () {
 
         $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getFormattedReturnedKeyPaths')->willReturn([
-                                                                        new FieldKeyPath('name')
+        $reqCtx->method('getFormattedReturnedFields')->willReturn([
+                                                                        new RelativeField('name')
                                                                     ]);
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 
-        $qryCtx->addKeyPath(new FieldKeyPath('email'));
+        $qryCtx->addField(new RelativeField('email'));
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
@@ -457,13 +457,13 @@ class RegistryTest extends TestCase {
     public function testFindWithTwoIdenticalEntities () {
 
         $reqCtx = new RequestContext();
-        //$reqCtx->setReturnedKeyPaths([new FieldKeyPath('email'),new FieldKeyPath('company.users.email')]);
+        //$reqCtx->setReturnedKeyPaths([new RelativeField('email'),new RelativeField('company.users.email')]);
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 
-        $qryCtx->addKeyPath(new FieldKeyPath('name'));
-        $qryCtx->addKeyPath(new FieldKeyPath('company.users.name'));
-        $qryCtx->addKeyPath(new FieldKeyPath('company.users.email'));
+        $qryCtx->addField(new RelativeField('name'));
+        $qryCtx->addField(new RelativeField('company.users.name'));
+        $qryCtx->addField(new RelativeField('company.users.email'));
 
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);

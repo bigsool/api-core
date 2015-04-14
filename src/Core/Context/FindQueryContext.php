@@ -4,7 +4,7 @@
 namespace Core\Context;
 
 
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
@@ -26,9 +26,9 @@ class FindQueryContext implements QueryContext {
     protected $joinedEntities = [];
 
     /**
-     * @var KeyPath[]
+     * @var RelativeField[]
      */
-    protected $keyPaths = [];
+    protected $fields = [];
 
     /**
      * @var Filter[]
@@ -104,11 +104,11 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @return KeyPath[]
+     * @return RelativeField[]
      */
-    public function getKeyPaths () {
+    public function getFields () {
 
-        return $this->keyPaths;
+        return $this->fields;
 
     }
 
@@ -122,14 +122,14 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param KeyPath $keyPath
+     * @param RelativeField $field
      * @param string  $alias
      */
-    public function addKeyPath (KeyPath $keyPath, $alias = NULL) {
+    public function addField (RelativeField $field, $alias = NULL) {
 
-        $keyPath->setAlias($alias);
+        $field->setAlias($alias);
 
-        $this->keyPaths[] = $keyPath;
+        $this->fields[] = $field;
 
     }
 

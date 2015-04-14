@@ -7,7 +7,7 @@ namespace Core\Module\TestCompany;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Model\TestCompany;
 use Core\Module\BasicHelper;
@@ -43,7 +43,7 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext $actCtx
-     * @param KeyPath[]     $keyPaths
+     * @param RelativeField[]     $keyPaths
      * @param Filter[]      $filters
      * @param bool          $hydrateArray
      */
@@ -54,7 +54,7 @@ class Helper extends BasicHelper {
 
         $qryCtx = new FindQueryContext('TestCompany');
         foreach ($keyPaths as $keyPath) {
-            $qryCtx->addKeyPath($keyPath);
+            $qryCtx->addField($keyPath);
         }
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);

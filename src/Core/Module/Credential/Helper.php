@@ -8,7 +8,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Model\Credential;
 use Core\Module\BasicHelper;
@@ -63,7 +63,7 @@ class Helper extends BasicHelper {
 
         $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
 
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
         $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
 
@@ -181,7 +181,7 @@ class Helper extends BasicHelper {
     /**
      * @param ActionContext $actionContext
      * @param bool          $hydrateArray
-     * @param KeyPath[]     $keyPaths
+     * @param RelativeField[]     $keyPaths
      * @param Filter[]      $filters
      * @param array         $params
      * @param string[]      $rights

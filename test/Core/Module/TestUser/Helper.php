@@ -85,7 +85,7 @@ class Helper extends BasicHelper {
         $qryCtx = new FindQueryContext('TestUser');
 
         foreach ($keyPaths as $keyPath) {
-            $qryCtx->addKeyPath($keyPath);
+            $qryCtx->addField($keyPath);
         }
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);

@@ -6,7 +6,7 @@ namespace Core\Context;
 
 use Core\Auth;
 use Core\Error\FormattedError;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Module\Credential\Helper;
 use Core\Parameter\UnsafeParameter;
@@ -45,14 +45,14 @@ class RequestContext {
     protected $returnedRootEntity;
 
     /**
-     * @var KeyPath[]
+     * @var RelativeField[]
      */
-    protected $returnedKeyPaths = [];
+    protected $returnedFields = [];
 
     /**
-     * @var KeyPath[]
+     * @var RelativeField[]
      */
-    protected $formattedReturnedKeyPaths = [];
+    protected $formattedReturnedFields = [];
 
     /**
      * @var Filter
@@ -114,71 +114,72 @@ class RequestContext {
     }
 
     /**
-     * @return KeyPath[]
+     * @return RelativeField[]
      */
-    public function getReturnedKeyPaths () {
+    public function getFormattedReturnedFields () {
 
-        return $this->returnedKeyPaths;
+        if (count($this->formattedReturnedFields) == 0) {
+            return $this->getReturnedFields();
+        }
+
+        return $this->formattedReturnedFields;
 
     }
 
     /**
-     * @param KeyPath[] $returnedKeyPaths
+     * @param RelativeField[] $formattedReturnedFields
      *
      * @throws FormattedError
      */
-    public function setReturnedKeyPaths (array $returnedKeyPaths) {
+    public function setFormattedReturnedFields (array $formattedReturnedFields) {
 
-        foreach ($returnedKeyPaths as $returnedKeyPath) {
+        $this->verifyFields($formattedReturnedFields);
 
-            if (!($returnedKeyPath instanceof KeyPath)) {
-                throw new \RuntimeException('invalid $returnedKeyPath');
+        $this->formattedReturnedFields = $formattedReturnedFields;
+
+    }
+
+    /**
+     * @return RelativeField[]
+     */
+    public function getReturnedFields () {
+
+        return $this->returnedFields;
+
+    }
+
+    /**
+     * @param RelativeField[] $returnedFields
+     *
+     * @throws FormattedError
+     */
+    public function setReturnedFields (array $returnedFields) {
+
+        $this->verifyFields($returnedFields);
+
+        $this->returnedFields = $returnedFields;
+
+    }
+
+    /**
+     * @param array $returnedFields
+     *
+     * @throws FormattedError
+     */
+    protected function verifyFields (array $returnedFields) {
+
+        foreach ($returnedFields as $returnedField) {
+
+            if (!($returnedField instanceof RelativeField)) {
+                throw new \RuntimeException('invalid $returnedField');
             }
 
-            $value = $returnedKeyPath->getValue();
+            $value = $returnedField->getValue();
             if (!is_string($value) || $value == '*') {
                 throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_BAD_FIELD);
             }
 
         }
-
-        $this->returnedKeyPaths = $returnedKeyPaths;
-
-    }
-
-    /**
-     * @return KeyPath[]
-     */
-    public function getFormattedReturnedKeyPaths () {
-
-        if (count($this->formattedReturnedKeyPaths) == 0) {
-            return $this->getReturnedKeyPaths();
-        }
-
-        return $this->formattedReturnedKeyPaths;
-
-    }
-
-    /**
-     * @param KeyPath[] $formattedReturnedKeyPaths
-     *
-     * @throws FormattedError
-     */
-    public function setFormattedReturnedKeyPaths (array $formattedReturnedKeyPaths) {
-
-        foreach ($formattedReturnedKeyPaths as $formattedReturnedKeyPath) {
-            if (!($formattedReturnedKeyPath instanceof KeyPath)) {
-                throw new \RuntimeException('invalid $returnedKeyPath');
-            }
-
-            $value = $formattedReturnedKeyPath->getValue();
-            if (!is_string($value) || $value == '*') {
-                throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_BAD_FIELD);
-            }
-        }
-
-        $this->formattedReturnedKeyPaths = $formattedReturnedKeyPaths;
-
     }
 
     /**

@@ -10,7 +10,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Model\TestAccount;
 use Core\Model\TestCompany;
@@ -78,7 +78,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertNull($modelAspect->getPrefix());
         $this->assertSame('TestUser', $modelAspect->getModel());
         $this->assertSame([], $modelAspect->getConstraints());
-        $this->assertNull($modelAspect->getKeyPath());
+        $this->assertNull($modelAspect->getRelativeField());
 
     }
 
@@ -216,13 +216,13 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertNull($modelAspect->getPrefix());
         $this->assertSame('TestUser', $modelAspect->getModel());
         $this->assertSame([], $modelAspect->getConstraints());
-        $this->assertNull($modelAspect->getKeyPath());
+        $this->assertNull($modelAspect->getRelativeField());
 
         $modelAspect = $modelAspects[1];
         $this->assertSame('firm', $modelAspect->getPrefix());
         $this->assertSame('TestCompany', $modelAspect->getModel());
-        $keyPath = $modelAspect->getKeyPath();
-        $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
+        $keyPath = $modelAspect->getRelativeField();
+        $this->assertInstanceOf('\Core\Field\RelativeField', $keyPath);
         $this->assertSame('company', $keyPath->getValue());
         $validators = $modelAspect->getConstraints('create');
         $this->assertInternalType('array', $validators);
@@ -234,8 +234,8 @@ class MagicalModuleManagerTest extends TestCase {
         $modelAspect = $modelAspects[2];
         $this->assertSame('s3', $modelAspect->getPrefix());
         $this->assertSame('TestStorage', $modelAspect->getModel());
-        $keyPath = $modelAspect->getKeyPath();
-        $this->assertInstanceOf('\Core\Expression\AbstractKeyPath', $keyPath);
+        $keyPath = $modelAspect->getRelativeField();
+        $this->assertInstanceOf('\Core\Field\RelativeField', $keyPath);
         $this->assertSame('company.storage', $keyPath->getValue());
         $validators = $modelAspect->getConstraints('create');
         $this->assertInternalType('array', $validators);
@@ -1488,7 +1488,7 @@ class MagicalModuleManagerTest extends TestCase {
             ];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
+        $requestCtx->setReturnedFields([new RelativeField('s3.url')]);
 
         $result =
             $this->magicalAction('Find', $mgrUser, [$requestCtx,
@@ -1774,7 +1774,7 @@ class MagicalModuleManagerTest extends TestCase {
             ];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedKeyPaths([new KeyPath('s3.url')]);
+        $requestCtx->setReturnedFields([new RelativeField('s3.url')]);
 
         $result =
             $this->magicalAction('Find', $mgrUser, [$requestCtx,

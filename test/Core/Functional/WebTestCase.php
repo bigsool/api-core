@@ -4,7 +4,6 @@
 namespace Core\Functional;
 
 
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
@@ -16,6 +15,11 @@ use GuzzleHttp\Subscriber\Cookie;
 use PHPUnit_Framework_TestCase;
 
 abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * @var EntityManager
+     */
+    protected static $entityManager;
 
     /**
      * @var Client
@@ -37,6 +41,9 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      */
     protected static $lastRequest;
 
+    /**
+     *
+     */
     public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
@@ -47,31 +54,39 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public static function resetDatabase () {
 
-        require static::getRootFolder() . '/doctrine/config.php';
+        if (!isset(self::$entityManager)) {
 
-        /**
-         * @var array         $conn
-         * @var EntityManager $entityManager
-         */
+            require static::getRootFolder() . '/doctrine/config.php';
 
-        $schemaTool = new SchemaTool($entityManager);
-        $entityManager->getConnection()->query('SET FOREIGN_KEY_CHECKS=0');
+            /**
+             * @var EntityManager $entityManager
+             */
+
+            self::$entityManager = $entityManager;
+
+        }
+
+        $schemaTool = new SchemaTool(self::$entityManager);
+        $conn = self::$entityManager->getConnection();
+
+        $conn->query('SET FOREIGN_KEY_CHECKS=0');
         $schemaTool->dropDatabase();
 
+        // use a static property instead of a var to keep the result which is expensive to construct
         if (!isset(self::$createSchemaSQL)) {
             self::$createSchemaSQL =
-                $schemaTool->getCreateSchemaSql($entityManager->getMetadataFactory()->getAllMetadata());
+                $schemaTool->getCreateSchemaSql(self::$entityManager->getMetadataFactory()->getAllMetadata());
         }
-        /**
-         * @var Connection $conn
-         */
-        $conn = $entityManager->getConnection();
+
         foreach (self::$createSchemaSQL as $sql) {
             $conn->executeQuery($sql);
         }
-        $entityManager->getConnection()->query('SET FOREIGN_KEY_CHECKS=1');
+        $conn->query('SET FOREIGN_KEY_CHECKS=1');
 
     }
 
@@ -100,6 +115,9 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
+    /**
+     * @return string
+     */
     public static function getWWWPath () {
 
         return 'api/core/www/run.php';
@@ -264,12 +282,12 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      */
     protected function assertRecursiveErrorCodes (array $errors, array $errorCodes, $message = NULL) {
 
-        $this->assertCount(count($errors), $errorCodes,$message);
+        $this->assertCount(count($errors), $errorCodes, $message);
 
         $reformattedErrors = [];
         foreach ($errors as $error) {
-            $this->assertInternalType('array', $error,$message);
-            $this->assertArrayHasKey('code', $error,$message);
+            $this->assertInternalType('array', $error, $message);
+            $this->assertArrayHasKey('code', $error, $message);
             $code = $error['code'];
             if (isset($reformattedErrors[$code])) {
                 $this->fail("Duplicated error code '{$code}' in childErrors");
@@ -279,12 +297,12 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
         foreach ($errorCodes as $key => $value) {
             $errorCode = is_array($value) ? $key : $value;
-            $this->assertArrayHasKey($errorCode, $reformattedErrors,$message);
+            $this->assertArrayHasKey($errorCode, $reformattedErrors, $message);
             if (is_array($value)) { // if child errors
                 $reformattedError = $reformattedErrors[$errorCode];
-                $this->assertArrayHasKey('errors', $reformattedError,$message);
+                $this->assertArrayHasKey('errors', $reformattedError, $message);
                 $childErrors = $reformattedError['errors'];
-                $this->assertInternalType('array', $childErrors,$message);
+                $this->assertInternalType('array', $childErrors, $message);
                 $this->assertRecursiveErrorCodes($childErrors, $value, $message);
             }
         }

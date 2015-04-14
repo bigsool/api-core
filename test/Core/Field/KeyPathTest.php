@@ -18,12 +18,12 @@ class KeyPathTest extends TestCase {
 
         $param = 'owner.company.storage';
 
-        $param1 = new KeyPath($param);
+        $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $param2 = new KeyPath('*');
+        $param2 = new RelativeField('*');
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
 
@@ -39,26 +39,26 @@ class KeyPathTest extends TestCase {
 
         $param = 'owner.company.storage';
 
-        $param1 = new KeyPath($param);
+        $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
 
         $joins = $registry->getJoins();
         $this->assertCount(3, $joins);
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $resolve1 = $param1->resolve($registry, $context);
 
         $joins = $registry->getJoins();
         $this->assertCount(3, $joins);
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve1);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
 
         $registry2 = $this->getRegistry('TestCompany');
         $context2 = $this->getFindQueryContext('TestCompany');
 
         $resolve2 = $param1->resolve($registry2, $context2);
-        $this->assertEquals('testCompanyOwnerCompanyStorage', $resolve2);
+        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve2);
 
         $joins = $registry2->getJoins();
         $this->assertCount(3, $joins);
@@ -69,7 +69,7 @@ class KeyPathTest extends TestCase {
 
         $alias = 'qwe';
 
-        $param = new KeyPath('owner.company.storage');
+        $param = new RelativeField('owner.company.storage');
         $param->setAlias($alias);
 
         $this->assertEquals($alias, $param->getAlias());

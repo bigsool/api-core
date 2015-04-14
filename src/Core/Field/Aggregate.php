@@ -5,7 +5,7 @@ namespace Core\Field;
 use Core\Context\QueryContext;
 use Core\Registry;
 
-class Aggregate extends keyPath {
+class Aggregate extends RelativeField {
 
     /**
      * @var string
@@ -33,14 +33,14 @@ class Aggregate extends keyPath {
      * @param Registry     $registry
      * @param QueryContext $ctx
      *
-     * @return string
+     * @return string[]
      */
     public function resolve (Registry $registry, QueryContext $ctx) {
 
         $values = "";
         foreach ($this->args as $arg) {
-            $keyPath = new KeyPath($arg);
-            $values .= $keyPath->resolve($registry, $ctx) . ',';
+            $keyPath = new RelativeField($arg);
+            $values .= implode(',', $keyPath->resolve($registry, $ctx)) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);
 
@@ -49,7 +49,7 @@ class Aggregate extends keyPath {
             $this->setAlias($entity . ucfirst($this->value));
         }
 
-        return $this->fn . '(' . $values . ')';
+        return [$this->fn . '(' . $values . ')'];
 
     }
 

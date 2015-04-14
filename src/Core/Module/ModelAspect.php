@@ -6,6 +6,7 @@ namespace Core\Module;
 
 use Core\Action\Action;
 use Core\Expression\AbstractKeyPath;
+use Core\Field\RelativeField;
 use Core\Validation\AbstractConstraintsProvider;
 
 class ModelAspect {
@@ -26,9 +27,9 @@ class ModelAspect {
     private $constraints;
 
     /**
-     * @var AbstractKeyPath|null
+     * @var RelativeField|null
      */
-    private $keyPath;
+    private $relativeField;
 
     /**
      * @var Action[]
@@ -45,14 +46,15 @@ class ModelAspect {
      * @param string                          $prefix
      * @param AbstractConstraintsProvider[][] $constraints
      * @param Action[]                        $actions
-     * @param AbstractKeyPath                 $keyPath
+     * @param RelativeField|null              $relativeField
      */
-    public function __construct ($model, $prefix, array $constraints, array $actions, $keyPath) {
+    public function __construct ($model, $prefix, array $constraints, array $actions,
+                                 RelativeField $relativeField = NULL) {
 
         $this->model = $model;
         $this->prefix = $prefix;
         $this->constraints = $constraints;
-        $this->keyPath = $keyPath;
+        $this->relativeField = $relativeField;
         $this->actions = $actions;
         $this->enabled = true;
 
@@ -94,9 +96,9 @@ class ModelAspect {
     /**
      * @return AbstractKeyPath|null
      */
-    public function getKeyPath () {
+    public function getRelativeField () {
 
-        return $this->keyPath;
+        return $this->relativeField;
     }
 
     /**

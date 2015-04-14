@@ -32,7 +32,7 @@ class BasicFindAction extends SimpleAction {
                 if (!is_callable([$helper, $method], false, $callableName)) {
                     throw new \RuntimeException($callableName . ' is not callable');
                 }
-                $helper->$method($context, $reqCtx->getReturnedKeyPaths(),
+                $helper->$method($context, $reqCtx->getReturnedFields(),
                                  $reqCtx->getFilter() ? [$reqCtx->getFilter()] : []);
 
                 $postFindCallable($context);

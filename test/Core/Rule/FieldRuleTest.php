@@ -8,7 +8,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Context\SaveQueryContext;
 use Core\Field\Field;
-use Core\Field\KeyPath;
+use Core\Field\RelativeField;
 use Core\Field\StarField;
 use Core\Model\TestCompany;
 use Core\TestCase;
@@ -80,17 +80,17 @@ class FieldRuleTest extends TestCase {
 
         $reqUserCtx = new RequestContext();
         $qryCtx = new FindQueryContext('TestUser', $reqUserCtx);
-        $reqUserCtx->setReturnedKeyPaths([new KeyPath('name')]);
-        $qryCtx->addKeyPath(new KeyPath('name'));
+        $reqUserCtx->setReturnedFields([new RelativeField('name')]);
+        $qryCtx->addField(new RelativeField('name'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
         $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
-        $reqCtx->setReturnedKeyPaths([new KeyPath('city')]);
-        $qryCtx->addKeyPath(new KeyPath('city'));
+        $reqCtx->setReturnedFields([new RelativeField('city')]);
+        $qryCtx->addField(new RelativeField('city'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
-        $reqCtx->setReturnedKeyPaths([new KeyPath('city'), new KeyPath('name')]);
-        $qryCtx->addKeyPath(new KeyPath('name'));
+        $reqCtx->setReturnedFields([new RelativeField('city'), new RelativeField('name')]);
+        $qryCtx->addField(new RelativeField('name'));
         $this->assertTrue($rule->shouldApply($qryCtx));
 
         $rule = new FieldRule($starField, $this->getMockFilter());
@@ -108,10 +108,10 @@ class FieldRuleTest extends TestCase {
         $rule = new FieldRule($field, $filter);
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedKeyPaths([new KeyPath('name')]);
+        $reqCtx->setReturnedFields([new RelativeField('name')]);
 
         $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
-        $qryCtx->addKeyPath(new KeyPath('name'));
+        $qryCtx->addField(new RelativeField('name'));
 
         $filters = $qryCtx->getFilters();
         $this->assertCount(0, $filters);
