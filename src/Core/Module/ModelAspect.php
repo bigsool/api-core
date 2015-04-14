@@ -42,14 +42,20 @@ class ModelAspect {
     private $enabled;
 
     /**
+     * @var boolean
+     */
+    private $withPrefixedFields;
+
+    /**
      * @param string                          $model
      * @param string                          $prefix
      * @param AbstractConstraintsProvider[][] $constraints
      * @param Action[]                        $actions
      * @param RelativeField|null              $relativeField
+     * @param Boolean                         $withPrefixedFields
      */
     public function __construct ($model, $prefix, array $constraints, array $actions,
-                                 RelativeField $relativeField = NULL) {
+                                 RelativeField $relativeField = NULL, $withPrefixedFields = false) {
 
         $this->model = $model;
         $this->prefix = $prefix;
@@ -57,7 +63,9 @@ class ModelAspect {
         $this->relativeField = $relativeField;
         $this->actions = $actions;
         $this->enabled = true;
+        $this->withPrefixedFields = $withPrefixedFields;
 
+        
     }
 
     /**
@@ -138,6 +146,15 @@ class ModelAspect {
     public function isEnabled () {
 
         return $this->enabled;
+
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isWithPrefixedFields () {
+
+        return $this->withPrefixedFields;
 
     }
 
