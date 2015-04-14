@@ -99,7 +99,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $validatedParams = $this->validateParams($params, $action);
         $formattedParams = $this->formatModifyParams($validatedParams);
-        $formattedParams = $this->handlePrefixedFields($formattedParams);
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
@@ -580,7 +579,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         $fields = $this->formatFindValues($fields);
         $this->disableModelAspects($disabledKeyPaths);
 
-        $fields = $this->transformPrefixedFields($fields);
         foreach ($fields as $value) {
             $qryCtx->addField(new RelativeField($value));
         }
@@ -594,7 +592,6 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $returnedFields = $this->formatFindValues($returnedFields);
-        $returnedFields = $this->transformPrefixedFields($returnedFields);
 
         foreach ($returnedFields as $returnedField) {
             $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
@@ -610,7 +607,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $result = $registry->find($qryCtx, $hydrateArray);
 
-        $result = $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultObject($result);
+        $result = $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultToObject($result);
 
         $this->enableModelAspects();
 
@@ -629,7 +626,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $resultFormatted = [];
 
         if ($result) {
-            $result = $this->formatArrayWithPrefixedFields($result);
+            $result = $this->formatResultWithPrefixedFields($result);
             $result = [$result];
             foreach ($result as $elem) {
                 $resultFormatted[] = $this->formatArrayWithPrefix($elem);
@@ -720,6 +717,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
 
         }
+
+        $formattedParams = $this->handlePrefixedFields($formattedParams);
 
         return $formattedParams;
 
@@ -846,7 +845,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      *
      * @return Array
      */
-    protected function formatFindResultObject ($result) {
+    protected function formatFindResultToObject ($result) {
 
         $entities = [];
         foreach ($result as $elem) {
@@ -899,6 +898,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
+        $formattedValues = $this->transformPrefixedFields($formattedValues);
+
         return $formattedValues;
 
     }
@@ -916,6 +917,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param array    $disabledRelativeFields
+     */
     private function disableModelAspects ($disabledRelativeFields) {
 
         if (!is_array($disabledRelativeFields) || count($disabledRelativeFields) < 1) {
@@ -938,6 +942,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+
     private function enableModelAspects () {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -948,8 +953,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
-    private function formatPrefixedFields ($params,$data) {
+    /**
+     * @param array $params
+     * @param array $data
+     */
+    private function formatPrefixedFieldsToArray ($params,$data) {
 
         foreach ($data as $key => $value) {
 
@@ -984,10 +992,16 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
+        $params = $this->removePrefixedFields($params);
+
         return $params;
 
     }
 
+    /**
+     * @param mixed $params
+     * @return mixed
+     */
     private function removePrefixedFields ($params) {
 
         if (is_array($params)) {
@@ -1005,17 +1019,21 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param array $params
+     * @return array
+     */
     private function handlePrefixedFields ($params) {
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
             $data = $params;
+            $explodedRelativeField = [];
+
             if ($modelAspect->getRelativeField()) {
                 $explodedRelativeField = explode('.', $modelAspect->getRelativeField()->getValue());
             }
-            else {
-                $explodedRelativeField = [];
-            }
+
             foreach ($explodedRelativeField as $elem) {
                 if (!isset($data[$elem])) {
                     $data = [];
@@ -1023,9 +1041,9 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
                 $data = $data[$elem];
             }
+
             if ($data) {
-                $params = $this->formatPrefixedFields($params,$data);
-                $params = $this->removePrefixedFields($params);
+                $params = $this->formatPrefixedFieldsToArray($params,$data);
             }
 
 
@@ -1035,12 +1053,16 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function transformPrefixedFields ($params) {
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function transformPrefixedFields ($fields) {
 
         $newParams = [];
-        $params = is_array($params) ? $params : [$params];
+        $fields = is_array($fields) ? $fields : [$fields];
 
-        foreach ($params as $key) {
+        foreach ($fields as $key) {
 
             if (strpos($key,'_') === false) {
                 $newParams[] = $key;
@@ -1076,7 +1098,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    public function formatArrayWithPrefixedFields ($result) {
+    /**
+     * @param array $result
+     * @return array
+     */
+    public function formatResultWithPrefixedFields ($result) {
 
         $newResult = $result[0];
 
@@ -1160,6 +1186,10 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
 
+    /**
+     * @param string $relativeField
+     * @return mixed
+     */
     private function getModelAspectByRelativeField ($relativeField) {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -1196,7 +1226,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
+    /**
+     * @param string $prefix
+     * @return mixed
+     */
     private function isLinkedToModel ($prefix) {
 
         foreach ($this->getModelAspects() as $modelAspect) {
