@@ -389,7 +389,7 @@ class RegistryTest extends TestCase {
     public function testFindWithAlias () {
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new Aggregate('count', ['*']), 'nbUsers');
+        $qryCtx->addField(new RelativeField(new Aggregate('count', ['*'])), 'nbUsers');
         $qryCtx->addField(new RelativeField('email'));
         $qryCtx->addField(new RelativeField('name'), 'userName');
         $qryCtx->addField(new RelativeField('company.name'), 'companyName');
@@ -436,8 +436,8 @@ class RegistryTest extends TestCase {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getFormattedReturnedFields')->willReturn([
-                                                                        new RelativeField('name')
-                                                                    ]);
+                                                                      new RelativeField('name')
+                                                                  ]);
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 

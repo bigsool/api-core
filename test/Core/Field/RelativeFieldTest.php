@@ -6,7 +6,7 @@ namespace Core\Field;
 
 use Core\TestCase;
 
-class KeyPathTest extends TestCase {
+class RelativeFieldTest extends TestCase {
 
     /**
      *
@@ -23,7 +23,11 @@ class KeyPathTest extends TestCase {
 
         $param2 = new RelativeField('*');
 
-        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
+        $this->assertInternalType('array', $resolve1);
+        $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
+        $this->assertCount(1, $resolve1);
+
+        $this->assertEquals($param, $resolve1[0]->getValue());
 
         $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
 
@@ -42,26 +46,28 @@ class KeyPathTest extends TestCase {
         $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $joins = $registry->getJoins();
-        $this->assertCount(3, $joins);
+        $this->assertInternalType('array', $resolve1);
+        $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
+        $this->assertCount(1, $resolve1);
 
-        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
+        $this->assertEquals($param, $resolve1[0]->getValue());
 
         $resolve1 = $param1->resolve($registry, $context);
 
-        $joins = $registry->getJoins();
-        $this->assertCount(3, $joins);
+        $this->assertInternalType('array', $resolve1);
+        $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
+        $this->assertCount(1, $resolve1);
 
-        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve1);
+        $this->assertEquals($param, $resolve1[0]->getValue());
 
         $registry2 = $this->getRegistry('TestCompany');
         $context2 = $this->getFindQueryContext('TestCompany');
 
         $resolve2 = $param1->resolve($registry2, $context2);
-        $this->assertEquals(['testCompanyOwnerCompanyStorage'], $resolve2);
 
-        $joins = $registry2->getJoins();
-        $this->assertCount(3, $joins);
+        $this->assertInternalType('array', $resolve2);
+        $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve2);
+        $this->assertCount(1, $resolve2);
 
     }
 

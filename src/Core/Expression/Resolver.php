@@ -72,6 +72,9 @@ trait Resolver {
 
     /**
      * @param FindQueryContext $ctx
+     *
+     * @return bool
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function process (FindQueryContext $ctx) {
 
@@ -99,7 +102,7 @@ trait Resolver {
                 $this->resolvedEntity = $this->getEntityForClass($entity);
                 $this->resolvedField = $field;
 
-                return;
+                return true;
             }
 
             $associations = $metadata->getAssociationNames();
@@ -110,13 +113,35 @@ trait Resolver {
                     ['field' => $field, 'entity' => $entity];
             }
             else {
-                throw new \RuntimeException("$field not found in $entity");
+                if ($this->shouldThrowExceptionIfFieldNotFound()) {
+                    throw new \RuntimeException("$field not found in $entity");
+                }
+
+                return false;
             }
 
         }
 
         $this->resolvedEntity = $this->getEntityForClass($entity);
         $this->resolvedField = '*';
+
+        return true;
+
+    }
+
+    /**
+     * @return string
+     */
+    public abstract function getValue ();
+
+    /**
+     * @param QueryContext $ctx
+     *
+     * @return string
+     */
+    public function getEntity (QueryContext $ctx) {
+
+        return isset($this->rootEntity) ? $this->rootEntity : $ctx->getEntity();
 
     }
 
@@ -134,6 +159,15 @@ trait Resolver {
     /**
      * @return bool
      */
+    public function shouldThrowExceptionIfFieldNotFound () {
+
+        return true;
+
+    }
+
+    /**
+     * @return bool
+     */
     public function shouldUseLeftJoin () {
 
         return false;
@@ -144,22 +178,6 @@ trait Resolver {
      * @return bool
      */
     public abstract function shouldResolveForAWhere ();
-
-    /**
-     * @return string
-     */
-    public abstract function getValue ();
-
-    /**
-     * @param QueryContext $ctx
-     *
-     * @return string
-     */
-    public function getEntity (QueryContext $ctx) {
-
-        return isset($this->rootEntity) ? $this->rootEntity : $ctx->getEntity();
-
-    }
 
     /**
      * @param FindQueryContext $ctx
