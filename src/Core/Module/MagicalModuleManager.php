@@ -8,7 +8,6 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Expression\AbstractKeyPath;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
@@ -40,11 +39,6 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @var mixed
      */
     private $mainEntity = NULL;
-
-    /**
-     * @var mixed
-     */
-    private $disabledKeyPaths = NULL;
 
     /**
      * @var array
@@ -79,7 +73,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $result = $this->magicalModify($ctx, 'update');
         $this->enableModelAspects();
 
-        
+
         return $result;
 
     }
@@ -154,7 +148,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
                 if (!$this->isMainEntity($modelAspect) && $action == 'update') {
-                    $entity = $this->getEntityFromKeyPath($modelAspect->getRelativeField());//TODO// ADD TESTS 
+                    $entity = $this->getEntityFromKeyPath($modelAspect->getRelativeField());//TODO// ADD TESTS
                     if ($entity) {
                         $subContext->setParam('id', $entity->getId());
                     }
@@ -235,20 +229,20 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param string $keyPath
+     * @param string $relativeField
      * @param string $paramKey
      *
      * @return boolean
      */
-    private function isParamLinkedToAspectModel ($keyPath, $paramKey) {
+    private function isParamLinkedToAspectModel ($relativeField, $paramKey) {
 
-        $keyPath = $keyPath ? $keyPath . '.' . $paramKey : $paramKey;
+        $relativeField = $relativeField ? $relativeField . '.' . $paramKey : $paramKey;
 
         foreach ($this->getModelAspects() as $modelAspect) {
             if (!$modelAspect->getRelativeField()) {
                 continue;
             }
-            if ($modelAspect->getRelativeField()->getValue() == $keyPath) {
+            if ($modelAspect->getRelativeField()->getValue() == $relativeField) {
                 return true;
             }
         }
@@ -269,13 +263,13 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param AbstractKeyPath $keyPath
+     * @param RelativeField $relativeField
      *
      * @return mixed
      */
-    private function getEntityFromKeyPath (AbstractKeyPath $keyPath) {
+    private function getEntityFromKeyPath (RelativeField $relativeField) {
 
-        $models = explode('.', $keyPath->getValue());
+        $models = explode('.', $relativeField->getValue());
 
         $entity = $this->mainEntity;
 
@@ -301,28 +295,28 @@ abstract class MagicalModuleManager extends ModuleManager {
                 continue;
             }
 
-            $keyPath = $modelAspect->getRelativeField()->getValue();
-            $modelNameForKeyPath[$keyPath] = $modelAspect->getModel();
+            $relativeField = $modelAspect->getRelativeField()->getValue();
+            $modelNameForKeyPath[$relativeField] = $modelAspect->getModel();
 
-            $pos = strrpos($keyPath, '.');
+            $pos = strrpos($relativeField, '.');
 
             if ($pos === false) {
                 $modelName = $this->getMainEntityName();
-                $lastKeyPath = $keyPath;
+                $lastKeyPath = $relativeField;
             }
             else {
-                if (!isset($modelNameForKeyPath[substr($keyPath, 0, $pos)])) {
+                if (!isset($modelNameForKeyPath[substr($relativeField, 0, $pos)])) {
                     throw new \RuntimeException('model name not defined for this prefix');
                 }
-                $modelName = $modelNameForKeyPath[substr($keyPath, 0, $pos)];
-                $lastKeyPath = substr($keyPath, $pos + 1);
+                $modelName = $modelNameForKeyPath[substr($relativeField, 0, $pos)];
+                $lastKeyPath = substr($relativeField, $pos + 1);
             }
 
             $mainEntityClassName = Registry::realModelClassName($modelName);
             $metadata = ApplicationContext::getInstance()->getClassMetadata($mainEntityClassName);
             $mapping = $metadata->getAssociationMapping($lastKeyPath);
 
-            $explodedKeyPath = explode('.', $keyPath);
+            $explodedKeyPath = explode('.', $relativeField);
             if (count($explodedKeyPath) == 1) {
                 $sourceKeyPath = 'main';
             }
@@ -330,7 +324,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 array_pop($explodedKeyPath);
                 $sourceKeyPath = implode('.', $explodedKeyPath);;
             }
-            $targetKeyPath = $keyPath;
+            $targetKeyPath = $relativeField;
 
             $this->setRelationshipsFromAssociationMapping($sourceKeyPath, $targetKeyPath, $mapping);
 
@@ -354,11 +348,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param string $sourceKeyPath
-     * @param string $targetKeyPath
+     * @param string $sourceRelativeField
+     * @param string $targetRelativeField
      * @param        $mapping
      */
-    private function setRelationshipsFromAssociationMapping ($sourceKeyPath, $targetKeyPath, array $mapping) {
+    private function setRelationshipsFromAssociationMapping ($sourceRelativeField, $targetRelativeField, array $mapping) {
 
         $field1 = $mapping['fieldName'];
         $field2 = isset($mapping['mappedBy']) ? $mapping['mappedBy'] : $mapping['inversedBy'];
@@ -378,10 +372,10 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $fn = $prefix1 . ucfirst($field1);
-        $this->models[$sourceKeyPath]->$fn($this->models[$targetKeyPath]);
+        $this->models[$sourceRelativeField]->$fn($this->models[$targetRelativeField]);
 
         $fn = $prefix2 . ucfirst($field2);
-        $this->models[$targetKeyPath]->$fn($this->models[$sourceKeyPath]);
+        $this->models[$targetRelativeField]->$fn($this->models[$sourceRelativeField]);
 
     }
 
@@ -451,7 +445,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
 
-        $qryCtx->addKeyPath(new KeyPath('*'));
+        $qryCtx->addField(new RelativeField('*'));
 
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);
@@ -513,8 +507,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-        $keyPath = isset($config['keyPath']) ? new KeyPath($config['keyPath']) : NULL;
-        if (!$keyPath) {
+        $relativeField = isset($config['keyPath']) ? new RelativeField($config['keyPath']) : NULL;
+        if (!$relativeField) {
             foreach ($this->modelAspects as $modelAspect) {
                 if (!$modelAspect->getRelativeField()) {
                     throw new \RuntimeException('two main entities');
@@ -557,7 +551,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath, $withPrefixedFields);
+        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
 
     }
 
@@ -588,18 +582,18 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $fields = $this->transformPrefixedFields($fields);
         foreach ($fields as $value) {
-            $qryCtx->addKeyPath(new KeyPath($value));
+            $qryCtx->addField(new RelativeField($value));
         }
 
-        $reqCtxKeyPaths = $requestContext->getReturnedKeyPaths();
-        $reqCtxFormattedKeyPaths = [];
-        foreach ($reqCtxKeyPaths as $keyPath) {
-            $newValue = $this->formatFindValues([$keyPath->getValue()])[0];
+        $reqCtxReturnedFields = $requestContext->getReturnedFields();
+        $reqCtxFormattedReturnedFields = [];
+        foreach ($reqCtxReturnedFields as $returnedField) {
+            $newValue = $this->formatFindValues([$returnedField->getValue()])[0];
             //$newValue = $this->e($newValue);
-            $reqCtxFormattedKeyPaths[] = new KeyPath($newValue);
+            $reqCtxFormattedReturnedFields[] = new RelativeField($newValue);
         }
 
-        $requestContext->setFormattedReturnedKeyPaths($reqCtxFormattedKeyPaths);
+        $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
 
 
         foreach ($filters as $filter) {
@@ -651,13 +645,13 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
-            $keyPath = $modelAspect->getRelativeField();
+            $relativeField = $modelAspect->getRelativeField();
             $prefix = $modelAspect->getPrefix();
 
-            if ($keyPath) {
-                $explodedKeyPath = explode('.', $keyPath->getValue());
+            if ($relativeField) {
+                $explodedRelativeField = explode('.', $relativeField->getValue());
                 $data = $result;
-                foreach ($explodedKeyPath as $elem) {
+                foreach ($explodedRelativeField as $elem) {
                     if (!isset($data[$elem])) continue 2;
                     $data = $data[$elem];
                 }
@@ -673,8 +667,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $formattedResult = ArrayExtra::array_merge_recursive_distinct($formattedResult, $data);
 
-            if ($keyPath && $keyPath->getValue() != $prefix) {
-                $formattedResult = $this->removeKeysFromArray($explodedKeyPath, $formattedResult);
+            if ($relativeField && $relativeField->getValue() != $prefix) {
+                $formattedResult = $this->removeKeysFromArray($explodedRelativeField, $formattedResult);
             }
 
         }
@@ -916,9 +910,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function disableModelAspects ($disabledKeyPaths) {
+    private function disableModelAspects ($disabledRelativeFields) {
 
-        if (!is_array($disabledKeyPaths) || count($disabledKeyPaths) < 1) {
+        if (!is_array($disabledRelativeFields) || count($disabledRelativeFields) < 1) {
             return;
         }
 
@@ -927,9 +921,9 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $newModelAspects[] = $modelAspect;
                 continue;
             }
-            $keyPath = $modelAspect->getRelativeField()->getValue();
-            foreach ($disabledKeyPaths as $disabledKeyPath) {
-                if (strpos($keyPath, $disabledKeyPath) === 0) {
+            $relativeField = $modelAspect->getRelativeField()->getValue();
+            foreach ($disabledRelativeFields as $disabledRelativeField) {
+                if (strpos($relativeField, $disabledRelativeField) === 0) {
                     $modelAspect->disable();
                 }
             }
@@ -967,10 +961,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
                 if ($i + 1 == count($explodedKey)-1) {
 
-                    if (($keyPath = $this->isLinkedToModel($prefix))) {
-                        $explodedKeyPath = explode('.',$keyPath);
-                        $explodedKeyPath[] = $explodedKey[count($explodedKey) -1];
-                        $data = $this->buildArrayWithKeys($explodedKeyPath,$value);
+                    if (($relativeField = $this->isLinkedToModel($prefix))) {
+                        $explodedRelativeField = explode('.',$relativeField);
+                        $explodedRelativeField[] = $explodedKey[count($explodedKey) -1];
+                        $data = $this->buildArrayWithKeys($explodedRelativeField,$value);
                         $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
                     }
 
@@ -988,7 +982,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-    private function removePrefixedFields ($params,$key = null) {
+    private function removePrefixedFields ($params) {
 
         if (is_array($params)) {
             foreach ($params as $key => $value) {
@@ -996,7 +990,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                    unset($params[$key]);
                 }
                 else {
-                    $params[$key] = $this->removePrefixedFields($value, $key);
+                    $params[$key] = $this->removePrefixedFields($value);
                 }
             }
         }
@@ -1011,12 +1005,12 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             $data = $params;
             if ($modelAspect->getRelativeField()) {
-                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
+                $explodedRelativeField = explode('.', $modelAspect->getRelativeField()->getValue());
             }
             else {
-                $explodedKeyPath = [];
+                $explodedRelativeField = [];
             }
-            foreach ($explodedKeyPath as $elem) {
+            foreach ($explodedRelativeField as $elem) {
                 if (!isset($data[$elem])) {
                     $data = [];
                     break;
@@ -1057,10 +1051,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
                 if ($i + 1 == count($explodedKey)-1) {
 
-                    if (($keyPath = $this->isLinkedToModel($prefix))) {
-                        $explodedKeyPath = explode('.',$keyPath);
-                        $explodedKeyPath[] = $explodedKey[count($explodedKey) -1];
-                        $newParams[] = implode('.',$explodedKeyPath);
+                    if (($relativeField = $this->isLinkedToModel($prefix))) {
+                        $explodedRelativeField = explode('.',$relativeField);
+                        $explodedRelativeField[] = $explodedKey[count($explodedKey) -1];
+                        $newParams[] = implode('.',$explodedRelativeField);
                     }
 
                     break;
@@ -1082,14 +1076,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspectsWithPrefixedField() as $modelAspect) {
 
-            $keyPath = $modelAspect->getRelativeField();
+            $relativeField = $modelAspect->getRelativeField();
 
-            if ($keyPath) {
+            if ($relativeField) {
 
-                $explodedKeyPath = explode('.',$keyPath->getValue());
+                $explodedRelativeField = explode('.',$relativeField->getValue());
 
                 $data = $newResult;
-                foreach ($explodedKeyPath as $elem) {
+                foreach ($explodedRelativeField as $elem) {
                     if (!isset($data[$elem])) {
                         $data = [];
                         break;
@@ -1097,24 +1091,31 @@ abstract class MagicalModuleManager extends ModuleManager {
                     $data = $data[$elem];
                 }
 
-                for ($i = count($explodedKeyPath) - 1; $i >= 0 ; --$i) {
+                for ($i = count($explodedRelativeField) - 1; $i >= 0 ; --$i) {
 
-                    $currentKeyPath = implode('.',array_slice($explodedKeyPath,0,$i));
+                    $currentRelativeField = implode('.',array_slice($explodedRelativeField,0,$i));
 
-                    $currentModelAspect = $this->getModelAspectByKeyPath($currentKeyPath);
+                    $currentModelAspect = $this->getModelAspectByRelativeField($currentRelativeField);
 
-                    if (!$currentKeyPath || ($currentModelAspect && !$currentModelAspect->isWithPrefixedFields())) {
+                    if (!$currentRelativeField || ($currentModelAspect && !$currentModelAspect->isWithPrefixedFields())) {
 
                         foreach ($data as $key => $value) {
 
-                            $oneModelAspect = $this->getModelAspectByKeyPath($keyPath->getValue().'.'.$key);
+                            $oneModelAspect = $this->getModelAspectByRelativeField($relativeField->getValue().'.'.$key);
 
                             if (!$oneModelAspect || !$oneModelAspect->isWithPrefixedFields()) {
 
-                                $currentExplodedPrefix = $currentKeyPath ? explode('.',$currentModelAspect->getPrefix()) : [];
+                                $currentExplodedPrefix = $currentRelativeField ? explode('.',$currentModelAspect->getPrefix()) : [];
                                 $explodedPrefix = explode('.',$modelAspect->getPrefix());
                                 $explodedDiffPrefix = array_diff($explodedPrefix,$currentExplodedPrefix);
-                                $data[str_replace('.','_',implode('.',$explodedDiffPrefix)).'.'.$key] = $value;
+
+                                $prefixedKey = $key;
+                                if ($oneModelAspect) {
+                                    $explodedPrefix = explode('.',$oneModelAspect->getPrefix());
+                                    $prefixedKey = $explodedPrefix[count($explodedPrefix) - 1];
+                                }
+
+                                $data[str_replace('.','_',implode('.',$explodedDiffPrefix)).'_'.$prefixedKey] = $value;
 
                             }
 
@@ -1122,8 +1123,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
                         }
 
-                        if ($currentKeyPath) {
-                            $data = $this->buildArrayWithKeys(explode('.',$currentKeyPath),$data);
+                        if ($currentRelativeField) {
+                            $data = $this->buildArrayWithKeys(explode('.',$currentRelativeField),$data);
                         }
 
                         break;
@@ -1140,10 +1141,10 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
-            $keyPath = $modelAspect->getRelativeField();
+            $relativeField = $modelAspect->getRelativeField();
 
-            if ($modelAspect->isWithPrefixedFields() && $keyPath) {
-                $newResult = $this->removeKeysFromArray(explode('.',$keyPath->getValue()),$newResult);
+            if ($modelAspect->isWithPrefixedFields() && $relativeField) {
+                $newResult = $this->removeKeysFromArray(explode('.',$relativeField->getValue()),$newResult);
             }
 
         }
@@ -1153,11 +1154,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
 
-    private function getModelAspectByKeyPath($keyPath) {
+    private function getModelAspectByRelativeField ($relativeField) {
 
         foreach ($this->modelAspects as $modelAspect) {
 
-            if ($modelAspect->getRelativeField() && $modelAspect->getRelativeField()->getValue() == $keyPath) {
+            if ($modelAspect->getRelativeField() && $modelAspect->getRelativeField()->getValue() == $relativeField) {
                 return $modelAspect;
             }
 
@@ -1179,7 +1180,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
 
-    private function getModelAspectsWithPrefixedField() {
+    private function getModelAspectsWithPrefixedField () {
 
         return array_filter($this->modelAspects, function ($modelAspect) {
 
