@@ -587,14 +587,20 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $reqCtxReturnedFields = $requestContext->getReturnedFields();
         $reqCtxFormattedReturnedFields = [];
+        $returnedFields = [];
+
         foreach ($reqCtxReturnedFields as $returnedField) {
-            $newValue = $this->formatFindValues([$returnedField->getValue()])[0];
-            //$newValue = $this->e($newValue);
-            $reqCtxFormattedReturnedFields[] = new RelativeField($newValue);
+            $returnedFields[] = $returnedField->getValue();
+        }
+
+        $returnedFields = $this->formatFindValues($returnedFields);
+        $returnedFields = $this->transformPrefixedFields($returnedFields);
+
+        foreach ($returnedFields as $returnedField) {
+            $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
         }
 
         $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
-
 
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);
