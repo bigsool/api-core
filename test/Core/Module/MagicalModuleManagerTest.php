@@ -1801,4 +1801,207 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    public function testsMagicalCreateWithPrefixedFields () {
+
+        $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
+        $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
+
+            return $this->getMainEntity($mgr);
+
+        }));
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+        $this->setMainEntity($mgr, [
+            'model' => 'TestUser',
+        ]);
+        $this->addCompanyAspect($mgr);
+
+        $this->addAspect($mgr, [
+            'model'   => 'TestStorage',
+            'prefix'  => 'firm.s3',
+            'keyPath' => 'company.storage',
+            'create'  => [
+                'constraints' => [new Object(), new NotBlank()],
+            ]
+        ]);
+
+
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setProduct('Core');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+        $actionContext = $this->getActionContextWithParams(
+            [
+                'email'    => 'qwe@qwe2.com',
+                'name'     => 'thierry',
+                'password' => new UnsafeParameter('qwe', ''),
+                'firm_name' => 'bigsoolee',
+                'firm_s3_url' => 'http://storage.fr',
+                'firm_s3_usedSpace' => '123',
+
+
+            ]);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->magicalAction('Create', $mgr, [$actionContext]);
+
+        $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
+        $this->assertSame('qwe@qwe2.com', $user->getEmail());
+        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertSame('bigsoolee', $user->getCompany()->getName());
+        $this->assertSame('http://storage.fr', $user->getCompany()->getStorage()->getUrl());
+        $this->assertSame('123', $user->getCompany()->getStorage()->getUsedSpace());
+        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+
+
+    }
+
+
+    private function getMagicalUser ($firmWithPrefixedFields,$s3WithPrefixedFields) {
+
+        $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
+        $mgrUser->method('getModuleName')->willReturn('TestAccount');
+
+
+        $this->setMainEntity($mgrUser, [
+            'model' => 'TestUser',
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestCompany',
+            'keyPath' => 'company',
+            'prefix'  => 'firm',
+            'withPrefixedFields' => $firmWithPrefixedFields
+        ]);
+
+        $this->addAspect($mgrUser, [
+            'model'   => 'TestStorage',
+            'keyPath' => 'company.storage',
+            'prefix'  => 'firm.s3',
+            'withPrefixedFields' => $s3WithPrefixedFields
+        ]);
+
+        return $mgrUser;
+
+    }
+
+
+    public function testMagicalFindWithPrefixedFields () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMagicalUser(true,true);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1')];
+        $values = ['email','firm_name','firm_s3_url'];
+
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertEquals(1, $result['firm_id']);
+        $this->assertEquals('Bigsool', $result['firm_name']);
+        $this->assertEquals(1, $result['firm_s3_id']);
+        $this->assertEquals('http://www.amazon.com/', $result['firm_s3_url']);
+
+        $mgrUser = $this->getMagicalUser(true,false);
+
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertEquals(1, $result['firm_id']);
+        $this->assertEquals('Bigsool', $result['firm_name']);
+        $this->assertInternalType('array', $result['firm_s3']);
+        $this->assertEquals(1, $result['firm_s3']['id']);
+        $this->assertEquals('http://www.amazon.com/', $result['firm_s3']['url']);
+
+
+        $mgrUser = $this->getMagicalUser(false,true);
+
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertInternalType('array', $result['firm']);
+        $this->assertEquals(1, $result['firm']['id']);
+        $this->assertEquals('Bigsool', $result['firm']['name']);
+        $this->assertEquals(1, $result['firm']['s3_id']);
+        $this->assertEquals('http://www.amazon.com/', $result['firm']['s3_url']);
+
+        $mgrUser = $this->getMagicalUser(false,false);
+
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertInternalType('array', $result['firm']);
+        $this->assertEquals(1, $result['firm']['id']);
+        $this->assertEquals('Bigsool', $result['firm']['name']);
+        $this->assertInternalType('array', $result['firm']['s3']);
+        $this->assertEquals(1, $result['firm']['s3']['id']);
+        $this->assertEquals('http://www.amazon.com/', $result['firm']['s3']['url']);
+
+        $mgrUser = $this->getMagicalUser(true,true);
+
+        $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertEquals(1, $result['firm_id']);
+        $this->assertEquals('Bigsool', $result['firm_name']);
+        $this->assertEquals(1, $result['firm_s3_id']);
+        $this->assertEquals('http://www.amazon.com/', $result['firm_s3_url']);
+
+    }
+
 }
