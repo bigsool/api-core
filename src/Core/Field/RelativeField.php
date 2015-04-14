@@ -4,7 +4,7 @@
 namespace Core\Field;
 
 
-use Core\Context\QueryContext;
+use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
 use Core\Registry;
@@ -12,7 +12,7 @@ use Core\Registry;
 class RelativeField {
 
     use Resolver {
-        Resolver::resolve as _resolve;
+        Resolver::resolve as protected _resolve;
     }
 
     /**
@@ -21,42 +21,35 @@ class RelativeField {
     protected $value;
 
     /**
-     * @var string|void
+     * @var string
      */
     protected $alias;
 
     /**
-     * @param Registry     $registry
-     * @param QueryContext $ctx
-     *
-     * @return string[]
-     */
-    public function resolve(Registry $registry, QueryContext $ctx) {
-
-        return [$this->_resolve($registry, $ctx)];
-
-    }
-
-    /**
-     * @param string $value
+     * @param string|ResolvableField $value
      */
     public function __construct ($value) {
 
-        if (!AbstractKeyPath::isValidKeyPath($value)) {
-            throw new \RuntimeException('invalid KeyPath');
+        if ($value instanceof ResolvableField) {
+            $this->value = $value;
         }
+        else {
 
-        $this->value = $value;
+            if (!AbstractKeyPath::isValidKeyPath($value)) {
+                throw new \RuntimeException('invalid KeyPath');
+            }
+
+            $this->value = $value;
+        }
 
     }
 
     /**
-     * @return string|void
+     * @return string
      */
     public function getAlias () {
 
         return $this->alias;
-
     }
 
     /**
@@ -65,20 +58,39 @@ class RelativeField {
     public function setAlias ($alias) {
 
         $this->alias = $alias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue () {
+
+        return $this->value instanceof ResolvableField ? $this->value->getValue() : $this->value;
 
     }
 
     /**
-     * @param $keyPath
+     * @param Registry         $registry
+     * @param FindQueryContext $ctx
      *
-     * @return bool
+     * @return ResolvableField[]
      */
-    public function isEqual ($keyPath) {
+    public function resolve (Registry $registry, FindQueryContext $ctx) {
 
-        return ($keyPath instanceof self)
-               && ($keyPath->resolvedEntity === $this->resolvedEntity)
-               && ($keyPath->resolvedField === $this->resolvedField)
-               && ($keyPath->getValue() === $this->getValue());
+        if ($this->value instanceof ResolvableField) {
+
+            $this->value->setAlias($this->getAlias());
+
+            return [$this->value];
+
+        }
+
+        $this->process($ctx);
+
+        $field = new RealField($this->getValue());
+        $field->setAlias($this->getAlias());
+
+        return [$field];
 
     }
 
@@ -87,32 +99,14 @@ class RelativeField {
      */
     public function shouldResolveForAWhere () {
 
-        return false;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue () {
-
-        return $this->value;
+        false;
 
     }
 
     /**
      * @return bool
      */
-    public function isAggregate () {
-
-        return is_a($this, 'Core\Field\Aggregate');
-
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isUsedInExpression () {
+    public function shouldThrowExceptionIfFieldNotFound () {
 
         return false;
 

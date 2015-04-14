@@ -8,6 +8,8 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
+use Core\Field\Aggregate;
+use Core\Field\ResolvableField;
 use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
@@ -213,42 +215,68 @@ class Registry implements EventSubscriber {
 
         $qb = $this->getQueryBuilder($entity);
 
-        $relativeFields = $ctx->getFields();
+        /**
+         * @var ResolvableField[] $resolvableFields
+         */
+        $resolvableFields = [];
 
         // Field as to be resolve to do the isEqual()
-        foreach ($relativeFields as $relativeField) {
-            $relativeField->resolve($this, $ctx);
+        foreach ($ctx->getFields() as $relativeField) {
+            $tmpResolvableFields = $relativeField->resolve($this, $ctx);
+            foreach ($tmpResolvableFields as $resolvableField) {
+                $resolvableField->resolve($this, $ctx);
+            }
+            $resolvableFields = array_merge($resolvableFields, $tmpResolvableFields);
         }
 
         $reqCtxFields = $ctx->getReqCtx()->getFormattedReturnedFields();
 
         foreach ($reqCtxFields as $fieldFromRequest) {
             // Field as to be resolve to do the isEqual()
-            $fieldFromRequest->resolve($this, $ctx);
-            foreach ($relativeFields as $alreadyAddedField) {
-                if ($fieldFromRequest->isEqual($alreadyAddedField)) {
-                    continue 2;
-                }
+            $tmpResolvableFields = $fieldFromRequest->resolve($this, $ctx);
+            foreach ($tmpResolvableFields as $resolvableField) {
+                $resolvableField->resolve($this, $ctx);
             }
-
-            $relativeFields[] = $fieldFromRequest;
+            $resolvableFields = array_merge($resolvableFields, $tmpResolvableFields);
         }
 
+        // cleanup duplicated fields
+        $resolvableFields = array_filter($resolvableFields,
+            function (ResolvableField &$currentResolvableField) {
 
-        if (empty($relativeFields)) {
+                /**
+                 * @var ResolvableField[] $resolvableFields
+                 */
+                static $resolvableFields = [];
+
+                foreach ($resolvableFields as $resolvableField) {
+                    if ($resolvableField->isEqual($currentResolvableField)) {
+                        return false;
+                    }
+                }
+
+                $resolvableFields[] = $currentResolvableField;
+
+                return true;
+
+            }
+        );
+
+
+        if (empty($resolvableFields)) {
             throw new \RuntimeException('fields are required');
         }
 
         // TODO: fix problem with partial objects
         // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
         $entities = [];
-        foreach ($relativeFields as $relativeField) {
-            $fields = $relativeField->resolve($this, $ctx);
+        foreach ($resolvableFields as $resolvableField) {
+            $fields = $resolvableField->resolve($this, $ctx);
             foreach ($fields as $field) {
                 $exploded = explode('.', $field);
-                if (!$hydrateArray || count($exploded) == 1 || $relativeField->isAggregate()) {
-                    if ($relativeField->getAlias()) {
-                        $field .= ' AS ' . $relativeField->getAlias();
+                if (!$hydrateArray || count($exploded) == 1 || $resolvableField instanceof Aggregate) {
+                    if ($resolvableField->getAlias()) {
+                        $field .= ' AS ' . $resolvableField->getAlias();
                     }
                     $qb->addSelect($field);
                 }
@@ -271,14 +299,14 @@ class Registry implements EventSubscriber {
         $needGroupByClause = false;
         $groupByClause = "";
 
-        foreach ($relativeFields as $relativeField) {
-            if ($relativeField->isAggregate()) {
-                if (count($relativeFields) > 1) {
+        foreach ($resolvableFields as $resolvableField) {
+            if ($resolvableField instanceof Aggregate) {
+                if (count($resolvableFields) > 1) {
                     $needGroupByClause = true;
                 }
                 continue;
             }
-            $groupByClause .= implode(',', $relativeField->resolve($this, $ctx)) . ',';
+            $groupByClause .= implode(',', $resolvableField->resolve($this, $ctx)) . ',';
         }
 
         $groupByClause = substr($groupByClause, 0, strlen($groupByClause) - 1);

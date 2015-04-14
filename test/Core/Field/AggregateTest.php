@@ -127,7 +127,7 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new Aggregate('count', ['*']), 'nbUsers');
+        $qryCtx->addField(new RelativeField(new Aggregate('count', ['*'])), 'nbUsers');
 
         $result = $registry->find($qryCtx);
 
@@ -138,7 +138,7 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new Aggregate('max', ['company.id']), 'maxCompanyId');
+        $qryCtx->addField(new RelativeField(new Aggregate('max', ['company.id'])), 'maxCompanyId');
 
         $result = $registry->find($qryCtx);
 
@@ -149,7 +149,7 @@ class AggregateTest extends TestCase {
         $registry = self::getApplicationContext()->getNewRegistry();
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new Aggregate('min', ['company.id']), 'minCompanyId');
+        $qryCtx->addField(new RelativeField(new Aggregate('min', ['company.id'])), 'minCompanyId');
         $qryCtx->addField(new RelativeField('*'));
 
         $result = $registry->find($qryCtx, false);

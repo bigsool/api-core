@@ -178,7 +178,7 @@ class SerializerTest extends TestCase {
         $reqCtx = new RequestContext();
 
         $emailKP = new RelativeField('email');
-        $nbUsersKP = new Aggregate('count', ['*']);
+        $nbUsersKP = new RelativeField(new Aggregate('count', ['*']));
         $companyIdKP = new RelativeField('company.name');
         $storageIdKP = new RelativeField('company.storage.id');
         $storageUrlKP = new RelativeField('company.storage.url');
