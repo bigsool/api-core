@@ -521,6 +521,8 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
+        $withPrefixedFields =  isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
+
         $actionNames = ['create', 'find', 'update', 'delete'];
         $constraints = [];
         $actions = [];
@@ -554,7 +556,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath);
+        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $keyPath, $withPrefixedFields);
 
     }
 
@@ -583,6 +585,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $fields = $this->formatFindValues($fields);
         $this->disableModelAspects($disabledKeyPaths);
 
+        $fields = $this->transformPrefixedFields($fields);
         foreach ($fields as $value) {
             $qryCtx->addKeyPath(new KeyPath($value));
         }
@@ -591,6 +594,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         $reqCtxFormattedKeyPaths = [];
         foreach ($reqCtxKeyPaths as $keyPath) {
             $newValue = $this->formatFindValues([$keyPath->getValue()])[0];
+            //$newValue = $this->e($newValue);
             $reqCtxFormattedKeyPaths[] = new KeyPath($newValue);
         }
 
@@ -609,6 +613,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $this->enableModelAspects();
 
+
         return $result;
 
     }
@@ -621,8 +626,13 @@ abstract class MagicalModuleManager extends ModuleManager {
     private function formatFindResultArray ($result) {
 
         $resultFormatted = [];
-        foreach ($result as $elem) {
-            $resultFormatted[] = $this->formatArrayWithPrefix($elem);
+
+        if ($result) {
+            $result = $this->formatArrayWithPrefixedFields($result);
+            $result = [$result];
+            foreach ($result as $elem) {
+                $resultFormatted[] = $this->formatArrayWithPrefix($elem);
+            }
         }
 
         return $resultFormatted;
@@ -647,6 +657,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $explodedKeyPath = explode('.', $keyPath->getValue());
                 $data = $result;
                 foreach ($explodedKeyPath as $elem) {
+                    if (!isset($data[$elem])) continue 2;
                     $data = $data[$elem];
                 }
             }
@@ -926,8 +937,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
-
     private function enableModelAspects () {
 
         foreach ($this->modelAspects as $modelAspect) {
@@ -935,28 +944,6 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $modelAspect->enable();
             }
         }
-
-    }
-
-    private function getModelAspects () {
-
-        return array_filter($this->modelAspects, function ($modelAspect) {
-
-            return $modelAspect->isEnabled();
-
-        });
-
-    }
-
-    private function isLinkedToModel ($prefix) {
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
-                return $modelAspect->getKeyPath()->getValue();
-            }
-        }
-
-        return false;
 
     }
 
@@ -981,7 +968,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
                     if (($keyPath = $this->isLinkedToModel($prefix))) {
                         $explodedKeyPath = explode('.',$keyPath);
-                        $explodedKeyPath[] = $explodedKey[1];
+                        $explodedKeyPath[] = $explodedKey[count($explodedKey) -1];
                         $data = $this->buildArrayWithKeys($explodedKeyPath,$value);
                         $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
                     }
@@ -1040,14 +1027,179 @@ abstract class MagicalModuleManager extends ModuleManager {
                 $params = $this->removePrefixedFields($params);
             }
 
+
         }
 
         return $params;
 
     }
 
+    private function transformPrefixedFields ($params) {
+
+        $newParams = [];
+        $params = is_array($params) ? $params : [$params];
+
+        foreach ($params as $key) {
+
+            if (strpos($key,'_') === false) {
+                $newParams[] = $key;
+                continue;
+            }
+
+            $field = $key;
+
+            for ($i = 0 ; ; ++$i) {
+
+                $explodedKey = explode('_', $field);
+                $prefix = implode('_',array_slice($explodedKey,0,$i+1));
+                $prefix = str_replace('_','.',$prefix);
+
+                if ($i + 1 == count($explodedKey)-1) {
+
+                    if (($keyPath = $this->isLinkedToModel($prefix))) {
+                        $explodedKeyPath = explode('.',$keyPath);
+                        $explodedKeyPath[] = $explodedKey[count($explodedKey) -1];
+                        $newParams[] = implode('.',$explodedKeyPath);
+                    }
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        return $newParams;
 
 
+    }
+
+    public function formatArrayWithPrefixedFields ($result) {
+
+        $newResult = $result[0];
+
+        foreach ($this->getModelAspectsWithPrefixedField() as $modelAspect) {
+
+            $keyPath = $modelAspect->getKeyPath();
+
+            if ($keyPath) {
+
+                $explodedKeyPath = explode('.',$keyPath->getValue());
+
+                $data = $newResult;
+                foreach ($explodedKeyPath as $elem) {
+                    if (!isset($data[$elem])) {
+                        $data = [];
+                        break;
+                    }
+                    $data = $data[$elem];
+                }
+
+                for ($i = count($explodedKeyPath) - 1; $i >= 0 ; --$i) {
+
+                    $currentKeyPath = implode('.',array_slice($explodedKeyPath,0,$i));
+
+                    $currentModelAspect = $this->getModelAspectByKeyPath($currentKeyPath);
+
+                    if (!$currentKeyPath || ($currentModelAspect && !$currentModelAspect->isWithPrefixedFields())) {
+
+                        foreach ($data as $key => $value) {
+
+                            $oneModelAspect = $this->getModelAspectByKeyPath($keyPath->getValue().'.'.$key);
+
+                            if (!$oneModelAspect || !$oneModelAspect->isWithPrefixedFields()) {
+
+                                $currentExplodedPrefix = $currentKeyPath ? explode('.',$currentModelAspect->getPrefix()) : [];
+                                $explodedPrefix = explode('.',$modelAspect->getPrefix());
+                                $explodedDiffPrefix = array_diff($explodedPrefix,$currentExplodedPrefix);
+                                $data[str_replace('.','_',implode('.',$explodedDiffPrefix)).'.'.$key] = $value;
+
+                            }
+
+                            unset($data[$key]);
+
+                        }
+
+                        if ($currentKeyPath) {
+                            $data = $this->buildArrayWithKeys(explode('.',$currentKeyPath),$data);
+                        }
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+            $newResult = ArrayExtra::array_merge_recursive_distinct($newResult, $data);
+
+        }
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            $keyPath = $modelAspect->getKeyPath();
+
+            if ($modelAspect->isWithPrefixedFields() && $keyPath) {
+                $newResult = $this->removeKeysFromArray(explode('.',$keyPath->getValue()),$newResult);
+            }
+
+        }
+
+        return $newResult;
+
+    }
+
+
+    private function getModelAspectByKeyPath($keyPath) {
+
+        foreach ($this->modelAspects as $modelAspect) {
+
+            if ($modelAspect->getKeyPath() && $modelAspect->getKeyPath()->getValue() == $keyPath) {
+                return $modelAspect;
+            }
+
+        }
+
+        return false;
+
+    }
+
+
+    private function getModelAspects () {
+
+        return array_filter($this->modelAspects, function ($modelAspect) {
+
+            return $modelAspect->isEnabled();
+
+        });
+
+    }
+
+
+    private function getModelAspectsWithPrefixedField() {
+
+        return array_filter($this->modelAspects, function ($modelAspect) {
+
+            return $modelAspect->isEnabled() && $modelAspect->isWithPrefixedFields();
+
+        });
+
+    }
+
+
+    private function isLinkedToModel ($prefix) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
+                return $modelAspect->getKeyPath()->getValue();
+            }
+        }
+
+        return false;
+
+    }
 
 
 }
