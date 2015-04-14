@@ -5,9 +5,15 @@ namespace Core\Field;
 
 
 use Core\Context\FindQueryContext;
+use Core\Expression\AbstractKeyPath;
+use Core\Expression\Resolver;
 use Core\Registry;
 
-class CalculatedField extends RelativeField {
+class CalculatedField implements ResolvableField {
+
+    use Resolver {
+        Resolver::resolve as protected _resolve;
+    }
 
     /**
      * @var array[][]
@@ -20,9 +26,27 @@ class CalculatedField extends RelativeField {
     protected $shouldThrowExceptionIfFieldNotFound = true;
 
     /**
-     * @var null|string
+     * @var string|void
      */
-    protected $_value;
+    protected $alias;
+
+    /**
+     * @var string
+     */
+    protected $value;
+
+    /**
+     * @param string $value
+     */
+    public function __construct ($value) {
+
+        if (!AbstractKeyPath::isValidKeyPath($value)) {
+            throw new \RuntimeException('invalid KeyPath');
+        }
+
+        $this->value = $value;
+
+    }
 
     /**
      * @param string   $entity
@@ -37,11 +61,20 @@ class CalculatedField extends RelativeField {
     }
 
     /**
-     * return string
+     * @return string
      */
-    public function _getValue () {
+    public function getAlias () {
 
-        return $this->_value ?: $this->getValue();
+        return $this->alias;
+
+    }
+
+    /**
+     * @param string $alias
+     */
+    public function setAlias ($alias) {
+
+        $this->alias = $alias;
 
     }
 
@@ -49,9 +82,9 @@ class CalculatedField extends RelativeField {
      * @param Registry         $registry
      * @param FindQueryContext $ctx
      *
-     * @return string[]
+     * @return ResolvableField[]
      */
-    public function resolve (Registry $registry, FindQueryContext $ctx) {
+    public function getFinalFields (Registry $registry, FindQueryContext $ctx) {
 
         $this->shouldThrowExceptionIfFieldNotFound = false;
         $this->process($ctx);
@@ -67,20 +100,58 @@ class CalculatedField extends RelativeField {
         list(, $requiredFields) = static::$calculatedFields[$this->resolvedEntity][$this->getValue()];
 
         $fields = [];
-        $pos = strrpos($this->getValue(), '.');
-        $prefix = '';
-        if ($pos !== false) {
-            $prefix = substr($this->getValue(), 0, $pos + 1);
-        }
 
         foreach ($requiredFields as $requiredField) {
 
-            $relativeField = new RelativeField($prefix . $requiredField);
-            $fields = array_merge($fields, $relativeField->resolve($registry, $ctx));
+            $fields[] = new RealField($requiredField);
 
         }
 
         return $fields;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue () {
+
+        return $this->value;
+
+    }
+
+    /**
+     * @param ResolvableField $field
+     *
+     * @return bool
+     */
+    public function isEqual (ResolvableField $field) {
+
+        return $field instanceof self && $this->resolvedEntity == $field->resolvedEntity
+               && $this->resolvedField == $field->resolvedField;
+
+    }
+
+    /**
+     * @param Registry         $registry
+     * @param FindQueryContext $ctx
+     *
+     * @return string[]
+     */
+    public function resolve (Registry $registry, FindQueryContext $ctx) {
+
+        $this->getFinalFields($registry, $ctx);
+
+        return [];
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldResolveForAWhere () {
+
+        return false;
 
     }
 
@@ -92,5 +163,4 @@ class CalculatedField extends RelativeField {
         return $this->shouldThrowExceptionIfFieldNotFound;
 
     }
-
 }

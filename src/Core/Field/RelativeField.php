@@ -85,12 +85,25 @@ class RelativeField {
 
         }
 
-        $this->process($ctx);
+        $isRealField = $this->process($ctx);
 
-        $field = new RealField($this->getValue());
-        $field->setAlias($this->getAlias());
+        $fields = [];
 
-        return [$field];
+        if ($isRealField) {
+
+            $field = new RealField($this->getValue());
+            $field->setAlias($this->getAlias());
+            $fields = [$field];
+
+        } else {
+
+            $field = new CalculatedField($this->getValue());
+            $fields = $field->getFinalFields($registry, $ctx);
+            $fields[] = $field;
+
+        }
+
+        return $fields;
 
     }
 
@@ -99,7 +112,7 @@ class RelativeField {
      */
     public function shouldResolveForAWhere () {
 
-        false;
+        return false;
 
     }
 
