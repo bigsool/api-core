@@ -87,4 +87,7 @@ $errorManager->defineError(new Error(ERROR_USER_NOT_FOUND, "compte inexistant", 
 @define('ERROR_CREDENTIAL_ALREADY_EXIST', -7002);
 $errorManager->defineError(new Error(ERROR_CREDENTIAL_ALREADY_EXIST, "ce login est déjà utilisé",
                                      'this login is already used'));
+@define('ERROR_ACCOUNT_ALREADY_CONFIRMED', -7004);
+$errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED, "compte déjà vérifié",
+                                     'account already confirmed'));
 
