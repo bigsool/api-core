@@ -114,7 +114,7 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
 
-        $context->addAction(new BasicUpdateAction('Core\Credential', 'credential', 'CredentialHelper', NULL, [
+        $context->addAction(new BasicUpdateAction('Core\Credential', 'credential', 'CredentialHelper', [Auth::AUTHENTICATED], [
             'id'              => [new Validation(), true],
             'login'           => [new Validation(), true],
             'password'        => [new Validation(), true],
