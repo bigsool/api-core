@@ -48,12 +48,12 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param ActionContext $actionContext
-     * @param bool          $hydrateArray
-     * @param RelativeField[]     $keyPaths
-     * @param Filter[]      $filters
-     * @param array         $params
-     * @param string[]      $rights
+     * @param ActionContext   $actionContext
+     * @param bool            $hydrateArray
+     * @param RelativeField[] $keyPaths
+     * @param Filter[]        $filters
+     * @param array           $params
+     * @param string[]        $rights
      */
     public function findUser (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
                               array $filters = [],

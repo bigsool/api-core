@@ -13,20 +13,6 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
-        // TODO: Implement loadFilters() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
-        // TODO: Implement loadRules() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public function loadActions (ApplicationContext &$context) {
 
         $context->addAction(new BasicCreateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
@@ -44,10 +30,24 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
+    public function loadFilters (ApplicationContext &$context) {
+        // TODO: Implement loadFilters() method.
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
     public function loadHelpers (ApplicationContext &$context) {
 
         $this->addHelper($context, 'StudentHelper');
 
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadRules (ApplicationContext &$context) {
+        // TODO: Implement loadRules() method.
     }
 
 }

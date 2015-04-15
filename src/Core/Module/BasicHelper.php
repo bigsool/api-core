@@ -84,7 +84,7 @@ class BasicHelper {
     /**
      * @param FindQueryContext $context
      * @param bool             $hydrateArray
-     * @param RelativeField[]        $keyPaths
+     * @param RelativeField[]  $keyPaths
      * @param Filter[]         $filters
      * @param array            $params
      *

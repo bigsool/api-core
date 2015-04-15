@@ -5,7 +5,6 @@ namespace Core\Field;
 
 
 use Core\Context\FindQueryContext;
-use Core\Context\QueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
 use Core\Registry;
@@ -59,28 +58,11 @@ class RealField implements ResolvableField {
     }
 
     /**
-     * @param ResolvableField $resolvableField
-     *
      * @return bool
      */
-    public function isEqual (ResolvableField $resolvableField) {
+    public function shouldResolveForAWhere () {
 
-        return ($resolvableField instanceof self)
-               && ($resolvableField->resolvedEntity === $this->resolvedEntity)
-               && ($resolvableField->resolvedField === $this->resolvedField)
-               && ($resolvableField->getValue() === $this->getValue());
-
-    }
-
-    /**
-     * @param Registry     $registry
-     * @param FindQueryContext $ctx
-     *
-     * @return string[]
-     */
-    public function resolve (Registry $registry, FindQueryContext $ctx) {
-
-        return [$this->_resolve($registry, $ctx)];
+        return false;
 
     }
 
@@ -103,11 +85,28 @@ class RealField implements ResolvableField {
     }
 
     /**
+     * @param ResolvableField $resolvableField
+     *
      * @return bool
      */
-    public function shouldResolveForAWhere () {
+    public function isEqual (ResolvableField $resolvableField) {
 
-        return false;
+        return ($resolvableField instanceof self)
+               && ($resolvableField->resolvedEntity === $this->resolvedEntity)
+               && ($resolvableField->resolvedField === $this->resolvedField)
+               && ($resolvableField->getValue() === $this->getValue());
+
+    }
+
+    /**
+     * @param Registry         $registry
+     * @param FindQueryContext $ctx
+     *
+     * @return string[]
+     */
+    public function resolve (Registry $registry, FindQueryContext $ctx) {
+
+        return [$this->_resolve($registry, $ctx)];
 
     }
 

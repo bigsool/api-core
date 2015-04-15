@@ -4,12 +4,6 @@
 namespace Core\Expression;
 
 
-use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
-use Core\Context\QueryContext;
-use Core\Field\Field;
-use Core\Field\StarField;
-use Core\Registry;
 use Doctrine\ORM\Query;
 
 abstract class AbstractKeyPath extends Value {
@@ -74,8 +68,6 @@ abstract class AbstractKeyPath extends Value {
         return true;
 
     }
-
-
 
     /**
      * @param string $entity

@@ -1840,11 +1840,11 @@ class MagicalModuleManagerTest extends TestCase {
 
         $actionContext = $this->getActionContextWithParams(
             [
-                'email'    => 'qwe@qwe2.com',
-                'name'     => 'thierry',
-                'password' => new UnsafeParameter('qwe', ''),
-                'firm_name' => 'bigsoolee',
-                'firm_s3_url' => 'http://storage.fr',
+                'email'             => 'qwe@qwe2.com',
+                'name'              => 'thierry',
+                'password'          => new UnsafeParameter('qwe', ''),
+                'firm_name'         => 'bigsoolee',
+                'firm_s3_url'       => 'http://storage.fr',
                 'firm_s3_usedSpace' => '123',
 
 
@@ -1863,11 +1863,9 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('123', $user->getCompany()->getStorage()->getUsedSpace());
         $this->assertContainsOnly($user, $user->getCompany()->getUsers());
 
-
     }
 
-
-    private function getMagicalUser ($firmWithPrefixedFields,$s3WithPrefixedFields) {
+    private function getMagicalUser ($firmWithPrefixedFields, $s3WithPrefixedFields) {
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('TestAccount');
@@ -1878,16 +1876,16 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'TestCompany',
-            'keyPath' => 'company',
-            'prefix'  => 'firm',
+            'model'              => 'TestCompany',
+            'keyPath'            => 'company',
+            'prefix'             => 'firm',
             'withPrefixedFields' => $firmWithPrefixedFields
         ]);
 
         $this->addAspect($mgrUser, [
-            'model'   => 'TestStorage',
-            'keyPath' => 'company.storage',
-            'prefix'  => 'firm.s3',
+            'model'              => 'TestStorage',
+            'keyPath'            => 'company.storage',
+            'prefix'             => 'firm.s3',
             'withPrefixedFields' => $s3WithPrefixedFields
         ]);
 
@@ -1895,14 +1893,13 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
-
     public function testMagicalFindWithPrefixedFields () {
 
         $userModuleManager = new UserModuleManager();
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMagicalUser(true,true);
+        $mgrUser = $this->getMagicalUser(true, true);
 
         $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
@@ -1917,7 +1914,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $filters =
             [new StringFilter('TestUser', 'bla', 'id = 1')];
-        $values = ['email','firm_name','firm_s3_url'];
+        $values = ['email', 'firm_name', 'firm_s3_url'];
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
 
@@ -1933,7 +1930,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertEquals(1, $result['firm_s3_id']);
         $this->assertEquals('http://www.amazon.com/', $result['firm_s3_url']);
 
-        $mgrUser = $this->getMagicalUser(true,false);
+        $mgrUser = $this->getMagicalUser(true, false);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
 
@@ -1951,7 +1948,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertEquals('http://www.amazon.com/', $result['firm_s3']['url']);
 
 
-        $mgrUser = $this->getMagicalUser(false,true);
+        $mgrUser = $this->getMagicalUser(false, true);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
 
@@ -1968,7 +1965,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertEquals(1, $result['firm']['s3_id']);
         $this->assertEquals('http://www.amazon.com/', $result['firm']['s3_url']);
 
-        $mgrUser = $this->getMagicalUser(false,false);
+        $mgrUser = $this->getMagicalUser(false, false);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
 
@@ -1986,7 +1983,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertEquals(1, $result['firm']['s3']['id']);
         $this->assertEquals('http://www.amazon.com/', $result['firm']['s3']['url']);
 
-        $mgrUser = $this->getMagicalUser(true,true);
+        $mgrUser = $this->getMagicalUser(true, true);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), $values, $filters, [], true]);
 
@@ -2010,7 +2007,7 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMagicalUser(true,false);
+        $mgrUser = $this->getMagicalUser(true, false);
 
         $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
@@ -2028,7 +2025,7 @@ class MagicalModuleManagerTest extends TestCase {
         $values = ['email'];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedFields([new RelativeField('email'),new RelativeField('firm_name')]);
+        $requestCtx->setReturnedFields([new RelativeField('email'), new RelativeField('firm_name')]);
 
         $result = $this->magicalAction('Find', $mgrUser, [$requestCtx, $values, $filters, [], true]);
 
@@ -2050,7 +2047,7 @@ class MagicalModuleManagerTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $storageModuleManager = new StorageModuleManager();
 
-        $mgrUser = $this->getMagicalUser(true,false);
+        $mgrUser = $this->getMagicalUser(true, false);
 
         $appCtx = $this->getApplicationContext();
         $appCtx->setProduct('Archipad');
@@ -2065,7 +2062,7 @@ class MagicalModuleManagerTest extends TestCase {
         $values = ['email'];
 
         $requestCtx = new RequestContext();
-        $requestCtx->setReturnedFields([new RelativeField('firm_name'),new RelativeField('firm_s3_url')]);
+        $requestCtx->setReturnedFields([new RelativeField('firm_name'), new RelativeField('firm_s3_url')]);
 
         $result = $this->magicalAction('Find', $mgrUser, [$requestCtx, $values, [], [], true]);
 

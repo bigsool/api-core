@@ -42,10 +42,10 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param ActionContext $actCtx
-     * @param RelativeField[]     $keyPaths
-     * @param Filter[]      $filters
-     * @param bool          $hydrateArray
+     * @param ActionContext   $actCtx
+     * @param RelativeField[] $keyPaths
+     * @param Filter[]        $filters
+     * @param bool            $hydrateArray
      */
     public function findTestCompany (ActionContext $actCtx, array $keyPaths = [], array $filters = [],
                                      $hydrateArray = true) {

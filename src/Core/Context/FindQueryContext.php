@@ -123,7 +123,7 @@ class FindQueryContext implements QueryContext {
 
     /**
      * @param RelativeField $field
-     * @param string  $alias
+     * @param string        $alias
      */
     public function addField (RelativeField $field, $alias = NULL) {
 

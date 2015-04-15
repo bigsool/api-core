@@ -9,7 +9,7 @@ class KeyPath extends AbstractKeyPath {
     /**
      * @return bool
      */
-    protected function isUsedInExpression () {
+    public function shouldResolveForAWhere () {
 
         return true;
 
@@ -18,7 +18,7 @@ class KeyPath extends AbstractKeyPath {
     /**
      * @return bool
      */
-    public function shouldResolveForAWhere () {
+    protected function isUsedInExpression () {
 
         return true;
 

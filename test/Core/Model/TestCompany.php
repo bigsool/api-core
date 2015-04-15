@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="company")
  * @ORM\Entity
  */
-class TestCompany
-{
+class TestCompany {
+
     /**
      * @var integer
      *
@@ -114,8 +114,8 @@ class TestCompany
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -124,9 +124,19 @@ class TestCompany
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
@@ -136,33 +146,9 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     *
-     * @return TestCompany
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -172,21 +158,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set zipCode
+     * Set address
      *
-     * @param string $zipCode
+     * @param string $address
      *
      * @return TestCompany
      */
-    public function setZipCode($zipCode)
-    {
-        $this->zipCode = $zipCode;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -196,21 +182,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getZipCode()
-    {
+    public function getZipCode () {
+
         return $this->zipCode;
     }
 
     /**
-     * Set city
+     * Set zipCode
      *
-     * @param string $city
+     * @param string $zipCode
      *
      * @return TestCompany
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setZipCode ($zipCode) {
+
+        $this->zipCode = $zipCode;
 
         return $this;
     }
@@ -220,21 +206,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
      *
      * @return TestCompany
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -244,21 +230,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set country
+     * Set state
      *
-     * @param string $country
+     * @param string $state
      *
      * @return TestCompany
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -268,21 +254,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set tel
+     * Set country
      *
-     * @param string $tel
+     * @param string $country
      *
      * @return TestCompany
      */
-    public function setTel($tel)
-    {
-        $this->tel = $tel;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -292,21 +278,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getTel()
-    {
+    public function getTel () {
+
         return $this->tel;
     }
 
     /**
-     * Set fax
+     * Set tel
      *
-     * @param string $fax
+     * @param string $tel
      *
      * @return TestCompany
      */
-    public function setFax($fax)
-    {
-        $this->fax = $fax;
+    public function setTel ($tel) {
+
+        $this->tel = $tel;
 
         return $this;
     }
@@ -316,21 +302,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getFax()
-    {
+    public function getFax () {
+
         return $this->fax;
     }
 
     /**
-     * Set tva
+     * Set fax
      *
-     * @param string $tva
+     * @param string $fax
      *
      * @return TestCompany
      */
-    public function setTva($tva)
-    {
-        $this->tva = $tva;
+    public function setFax ($fax) {
+
+        $this->fax = $fax;
 
         return $this;
     }
@@ -340,21 +326,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getTva()
-    {
+    public function getTva () {
+
         return $this->tva;
     }
 
     /**
-     * Set owner
+     * Set tva
      *
-     * @param \Core\Model\TestUser $owner
+     * @param string $tva
      *
      * @return TestCompany
      */
-    public function setOwner(\Core\Model\TestUser $owner = null)
-    {
-        $this->owner = $owner;
+    public function setTva ($tva) {
+
+        $this->tva = $tva;
 
         return $this;
     }
@@ -364,21 +350,21 @@ class TestCompany
      *
      * @return \Core\Model\TestUser
      */
-    public function getOwner()
-    {
+    public function getOwner () {
+
         return $this->owner;
     }
 
     /**
-     * Set storage
+     * Set owner
      *
-     * @param \Core\Model\TestStorage $storage
+     * @param \Core\Model\TestUser $owner
      *
      * @return TestCompany
      */
-    public function setStorage(\Core\Model\TestStorage $storage = null)
-    {
-        $this->storage = $storage;
+    public function setOwner (\Core\Model\TestUser $owner = NULL) {
+
+        $this->owner = $owner;
 
         return $this;
     }
@@ -388,9 +374,23 @@ class TestCompany
      *
      * @return \Core\Model\TestStorage
      */
-    public function getStorage()
-    {
+    public function getStorage () {
+
         return $this->storage;
+    }
+
+    /**
+     * Set storage
+     *
+     * @param \Core\Model\TestStorage $storage
+     *
+     * @return TestCompany
+     */
+    public function setStorage (\Core\Model\TestStorage $storage = NULL) {
+
+        $this->storage = $storage;
+
+        return $this;
     }
 
     /**
@@ -400,8 +400,8 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function addUser(\Core\Model\TestUser $user)
-    {
+    public function addUser (\Core\Model\TestUser $user) {
+
         $this->users[] = $user;
 
         return $this;
@@ -412,8 +412,8 @@ class TestCompany
      *
      * @param \Core\Model\TestUser $user
      */
-    public function removeUser(\Core\Model\TestUser $user)
-    {
+    public function removeUser (\Core\Model\TestUser $user) {
+
         $this->users->removeElement($user);
     }
 
@@ -422,8 +422,8 @@ class TestCompany
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUsers()
-    {
+    public function getUsers () {
+
         return $this->users;
     }
 }

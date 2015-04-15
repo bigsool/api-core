@@ -47,22 +47,6 @@ class RelativeField {
     /**
      * @return string
      */
-    public function getAlias () {
-
-        return $this->alias;
-    }
-
-    /**
-     * @param string $alias
-     */
-    public function setAlias ($alias) {
-
-        $this->alias = $alias;
-    }
-
-    /**
-     * @return string
-     */
     public function getValue () {
 
         return $this->value instanceof ResolvableField ? $this->value->getValue() : $this->value;
@@ -95,7 +79,8 @@ class RelativeField {
             $field->setAlias($this->getAlias());
             $fields = [$field];
 
-        } else {
+        }
+        else {
 
             $field = new CalculatedField($this->getValue());
             $fields = $field->getFinalFields($registry, $ctx);
@@ -123,5 +108,21 @@ class RelativeField {
 
         return false;
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias () {
+
+        return $this->alias;
+    }
+
+    /**
+     * @param string $alias
+     */
+    public function setAlias ($alias) {
+
+        $this->alias = $alias;
     }
 }

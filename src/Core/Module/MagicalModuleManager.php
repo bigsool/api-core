@@ -62,19 +62,27 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param ActionContext $ctx
-     * @param string[]      $disabledKeyPaths
-     *
-     * @return mixed
+     * @param array $disabledRelativeFields
      */
-    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
+    private function disableModelAspects ($disabledRelativeFields) {
 
-        $this->disableModelAspects($disabledKeyPaths);
-        $result = $this->magicalModify($ctx, 'update');
-        $this->enableModelAspects();
+        if (!is_array($disabledRelativeFields) || count($disabledRelativeFields) < 1) {
+            return;
+        }
 
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->getRelativeField()) {
+                $newModelAspects[] = $modelAspect;
+                continue;
+            }
+            $relativeField = $modelAspect->getRelativeField()->getValue();
+            foreach ($disabledRelativeFields as $disabledRelativeField) {
+                if (strpos($relativeField, $disabledRelativeField) === 0) {
+                    $modelAspect->disable();
+                }
+            }
 
-        return $result;
+        }
 
     }
 
@@ -198,6 +206,296 @@ abstract class MagicalModuleManager extends ModuleManager {
         $this->saveEntities();
 
         return $this->getMagicalEntityObject($this->mainEntity);
+
+    }
+
+    private function getModelAspects () {
+
+        return array_filter($this->modelAspects, function ($modelAspect) {
+
+            return $modelAspect->isEnabled();
+
+        });
+
+    }
+
+    /**
+     * @param array  $params
+     * @param string $action
+     *
+     * @return array
+     */
+    private function validateParams ($params, $action) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            if (!$modelAspect->getPrefix()) {
+                continue;
+            }
+            $explodedPrefix = explode('.', $modelAspect->getPrefix());
+            $data = $params;
+            foreach ($explodedPrefix as $elem) {
+                if (!isset($data[$elem])) {
+                    continue 2;
+                }
+                $data = $data[$elem];
+            }
+            $name = $explodedPrefix[count($explodedPrefix) - 1];
+            $constraints = $modelAspect->getConstraints();
+            if (count($constraints) == 1) {
+                $constraints = $constraints[$action];
+                $validator = new RuntimeConstraintsProvider([$name => $constraints]);
+                $isValid = $validator->validate($name, UnsafeParameter::getFinalValue($data), $name);
+                if (!$isValid) {
+                    throw new \RuntimeException('Model aspect contraints not respected'); //TODO//
+                }
+            }
+
+            $finalValue = UnsafeParameter::getFinalValue($data);
+            if ($data != $finalValue) {
+                $this->setFinalValue($params, $explodedPrefix, $finalValue);;
+            }
+
+        }
+
+        return $params;
+
+    }
+
+    /**
+     * @param array $params
+     * @param array $explodedPrefix
+     * @param mixed $finalValue
+     */
+    private function setFinalValue (&$params, $explodedPrefix, $finalValue) {
+
+        $currentPrefix = $explodedPrefix[0];
+
+        if (count($explodedPrefix) == 1) {
+            $params[$currentPrefix] = $finalValue;
+        }
+        else {
+            array_splice($explodedPrefix, 0, 1);
+            $this->setFinalValue($params[$currentPrefix], $explodedPrefix, $finalValue);
+        }
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    public function formatModifyParams ($params) {
+
+        $formattedParams = [];
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            if ($modelAspect->getPrefix()) {
+                $explodedPrefix = explode('.', $modelAspect->getPrefix());
+                $data = $params;
+                foreach ($explodedPrefix as $elem) {
+                    if (!isset($data[$elem])) {
+                        continue 2;
+                    }
+                    $data = $data[$elem];
+                }
+            }
+            else {
+                $data = $params;
+            }
+
+            if ($modelAspect->getRelativeField()) {
+                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
+                $data = $this->buildArrayWithKeys($explodedKeyPath, $data);
+            }
+
+            $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
+
+            if ($modelAspect->getPrefix()
+                && $modelAspect->getPrefix() != $modelAspect->getRelativeField()->getValue()
+            ) {
+                $formattedParams = $this->removeKeysFromArray($explodedPrefix, $formattedParams);
+            }
+
+        }
+
+        $formattedParams = $this->handlePrefixedFields($formattedParams);
+
+        return $formattedParams;
+
+    }
+
+    /**
+     * @param array $keys
+     * @param array $data
+     *
+     * @return array
+     */
+    public function buildArrayWithKeys ($keys, $data) {
+
+        $tab = [];
+
+        if (count($keys) == 1) {
+            $tab[$keys[0]] = $data;
+        }
+        else {
+            $tab[$keys[0]] = $this->buildArrayWithKeys(array_slice($keys, 1, count($keys)), $data);
+        }
+
+        return $tab;
+
+    }
+
+    /**
+     * @param array $keysToRemove
+     * @param array $data
+     *
+     * @return array
+     */
+    private function removeKeysFromArray ($keysToRemove, $data) {
+
+        $newData = [];
+
+        if (is_array($data)) {
+
+            foreach ($data as $key => $value) {
+
+                if (count($keysToRemove) == 1 && $keysToRemove[0] == $key) {
+                    continue;
+                }
+                $newData[$key] =
+                    $this->removeKeysFromArray(array_slice($keysToRemove, 1, count($keysToRemove)), $value);
+
+            }
+
+        }
+        else {
+
+            $newData = $data;
+
+        }
+
+        return $newData;
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
+    private function handlePrefixedFields ($params) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            $data = $params;
+            $explodedRelativeField = [];
+
+            if ($modelAspect->getRelativeField()) {
+                $explodedRelativeField = explode('.', $modelAspect->getRelativeField()->getValue());
+            }
+
+            foreach ($explodedRelativeField as $elem) {
+                if (!isset($data[$elem])) {
+                    $data = [];
+                    break;
+                }
+                $data = $data[$elem];
+            }
+
+            if ($data) {
+                $params = $this->formatPrefixedFieldsToArray($params, $data);
+            }
+
+        }
+
+        return $params;
+
+    }
+
+    /**
+     * @param array $params
+     * @param array $data
+     */
+    private function formatPrefixedFieldsToArray ($params, $data) {
+
+        foreach ($data as $key => $value) {
+
+            if (strpos($key, '_') === false || is_array($value)) {
+                continue;
+            }
+
+            $field = $key;
+
+            for ($i = 0; ; ++$i) {
+
+                $explodedKey = explode('_', $field);
+                $prefix = implode('_', array_slice($explodedKey, 0, $i + 1));
+                $prefix = str_replace('_', '.', $prefix);
+
+                if ($i + 1 == count($explodedKey) - 1) {
+
+                    if (($relativeField = $this->isLinkedToModel($prefix))) {
+                        $explodedRelativeField = explode('.', $relativeField);
+                        $explodedRelativeField[] = $explodedKey[count($explodedKey) - 1];
+                        $data = $this->buildArrayWithKeys($explodedRelativeField, $value);
+                        $params = ArrayExtra::array_merge_recursive_distinct($params, $data);
+                    }
+
+                    break;
+
+                }
+
+            }
+
+            $this->keysToRemove[] = $field;
+
+        }
+
+        $params = $this->removePrefixedFields($params);
+
+        return $params;
+
+    }
+
+    /**
+     * @param string $prefix
+     *
+     * @return mixed
+     */
+    private function isLinkedToModel ($prefix) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
+                return $modelAspect->getRelativeField()->getValue();
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * @param mixed $params
+     *
+     * @return mixed
+     */
+    private function removePrefixedFields ($params) {
+
+        if (is_array($params)) {
+            foreach ($params as $key => $value) {
+                if ($key && in_array($key, $this->keysToRemove)) {
+                    unset($params[$key]);
+                }
+                else {
+                    $params[$key] = $this->removePrefixedFields($value);
+                }
+            }
+        }
+
+        return $params;
 
     }
 
@@ -347,7 +645,8 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param string $targetRelativeField
      * @param        $mapping
      */
-    private function setRelationshipsFromAssociationMapping ($sourceRelativeField, $targetRelativeField, array $mapping) {
+    private function setRelationshipsFromAssociationMapping ($sourceRelativeField, $targetRelativeField,
+                                                             array $mapping) {
 
         $field1 = $mapping['fieldName'];
         $field2 = isset($mapping['mappedBy']) ? $mapping['mappedBy'] : $mapping['inversedBy'];
@@ -408,6 +707,33 @@ abstract class MagicalModuleManager extends ModuleManager {
         $classNameExploded = explode('\\', $className);
 
         return $classNameExploded[count($classNameExploded) - 2];
+
+    }
+
+    private function enableModelAspects () {
+
+        foreach ($this->modelAspects as $modelAspect) {
+            if (!$modelAspect->isEnabled()) {
+                $modelAspect->enable();
+            }
+        }
+
+    }
+
+    /**
+     * @param ActionContext $ctx
+     * @param string[]      $disabledKeyPaths
+     *
+     * @return mixed
+     */
+    public function magicalUpdate (ActionContext $ctx, array $disabledKeyPaths = []) {
+
+        $this->disableModelAspects($disabledKeyPaths);
+        $result = $this->magicalModify($ctx, 'update');
+        $this->enableModelAspects();
+
+
+        return $result;
 
     }
 
@@ -511,7 +837,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
         }
 
-        $withPrefixedFields =  isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
+        $withPrefixedFields = isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
 
         $actionNames = ['create', 'find', 'update', 'delete'];
         $constraints = [];
@@ -546,7 +872,8 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         }
 
-        $this->modelAspects[] = new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
+        $this->modelAspects[] =
+            new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
 
     }
 
@@ -613,252 +940,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param array $result
-     *
-     * @return array
-     */
-    private function formatFindResultArray ($result) {
-
-        $resultFormatted = [];
-
-        if ($result) {
-            foreach ($result as $elem) {
-                $elem = $this->formatResultWithPrefixedFields($elem);
-                $resultFormatted[] = $this->formatArrayWithPrefix($elem);
-            }
-        }
-
-        return $resultFormatted;
-
-    }
-
-    /**
-     * @param array $result
-     *
-     * @return array
-     */
-    private function formatArrayWithPrefix ($result) {
-
-        $formattedResult = [];
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-
-            $relativeField = $modelAspect->getRelativeField();
-            $prefix = $modelAspect->getPrefix();
-
-            if ($relativeField) {
-                $explodedRelativeField = explode('.', $relativeField->getValue());
-                $data = $result;
-                foreach ($explodedRelativeField as $elem) {
-                    if (!isset($data[$elem])) continue 2;
-                    $data = $data[$elem];
-                }
-            }
-            else {
-                $data = $result;
-            }
-
-            if ($modelAspect->getPrefix()) {
-                $explodedPrefix = explode('.', $modelAspect->getPrefix());
-                $data = $this->buildArrayWithKeys($explodedPrefix, $data);
-            }
-
-            $formattedResult = ArrayExtra::array_merge_recursive_distinct($formattedResult, $data);
-
-            if ($relativeField && $relativeField->getValue() != $prefix) {
-                $formattedResult = $this->removeKeysFromArray($explodedRelativeField, $formattedResult);
-            }
-
-        }
-
-        return $formattedResult;
-
-    }
-
-    /**
-     * @param array $params
-     *
-     * @return array
-     */
-    public function formatModifyParams ($params) {
-
-        $formattedParams = [];
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-
-            if ($modelAspect->getPrefix()) {
-                $explodedPrefix = explode('.', $modelAspect->getPrefix());
-                $data = $params;
-                foreach ($explodedPrefix as $elem) {
-                    if (!isset($data[$elem])) {
-                        continue 2;
-                    }
-                    $data = $data[$elem];
-                }
-            }
-            else {
-                $data = $params;
-            }
-
-            if ($modelAspect->getRelativeField()) {
-                $explodedKeyPath = explode('.', $modelAspect->getRelativeField()->getValue());
-                $data = $this->buildArrayWithKeys($explodedKeyPath, $data);
-            }
-
-            $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
-
-            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getRelativeField()->getValue()) {
-                $formattedParams = $this->removeKeysFromArray($explodedPrefix, $formattedParams);
-            }
-
-        }
-
-        $formattedParams = $this->handlePrefixedFields($formattedParams);
-
-        return $formattedParams;
-
-    }
-
-    /**
-     * @param array  $params
-     * @param string $action
-     *
-     * @return array
-     */
-    private function validateParams ($params, $action) {
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-
-            if (!$modelAspect->getPrefix()) {
-                continue;
-            }
-            $explodedPrefix = explode('.', $modelAspect->getPrefix());
-            $data = $params;
-            foreach ($explodedPrefix as $elem) {
-                if (!isset($data[$elem])) {
-                    continue 2;
-                }
-                $data = $data[$elem];
-            }
-            $name = $explodedPrefix[count($explodedPrefix) - 1];
-            $constraints = $modelAspect->getConstraints();
-            if (count($constraints) == 1) {
-                $constraints = $constraints[$action];
-                $validator = new RuntimeConstraintsProvider([$name => $constraints]);
-                $isValid = $validator->validate($name, UnsafeParameter::getFinalValue($data), $name);
-                if (!$isValid) {
-                    throw new \RuntimeException('Model aspect contraints not respected'); //TODO//
-                }
-            }
-
-            $finalValue = UnsafeParameter::getFinalValue($data);
-            if ($data != $finalValue) {
-                $this->setFinalValue($params, $explodedPrefix, $finalValue);;
-            }
-
-        }
-
-        return $params;
-
-    }
-
-    /**
-     * @param array $params
-     * @param array $explodedPrefix
-     * @param mixed $finalValue
-     */
-    private function setFinalValue (&$params, $explodedPrefix, $finalValue) {
-
-        $currentPrefix = $explodedPrefix[0];
-
-        if (count($explodedPrefix) == 1) {
-            $params[$currentPrefix] = $finalValue;
-        }
-        else {
-            array_splice($explodedPrefix, 0, 1);
-            $this->setFinalValue($params[$currentPrefix], $explodedPrefix, $finalValue);
-        }
-
-    }
-
-    /**
-     * @param array $keys
-     * @param array $data
-     *
-     * @return array
-     */
-    public function buildArrayWithKeys ($keys, $data) {
-
-        $tab = [];
-
-        if (count($keys) == 1) {
-            $tab[$keys[0]] = $data;
-        }
-        else {
-            $tab[$keys[0]] = $this->buildArrayWithKeys(array_slice($keys, 1, count($keys)), $data);
-        }
-
-        return $tab;
-
-    }
-
-    /**
-     * @param array $keysToRemove
-     * @param array $data
-     *
-     * @return array
-     */
-    private function removeKeysFromArray ($keysToRemove, $data) {
-
-        $newData = [];
-
-        if (is_array($data)) {
-
-            foreach ($data as $key => $value) {
-
-                if (count($keysToRemove) == 1 && $keysToRemove[0] == $key) {
-                    continue;
-                }
-                $newData[$key] =
-                    $this->removeKeysFromArray(array_slice($keysToRemove, 1, count($keysToRemove)), $value);
-
-            }
-
-        }
-        else {
-
-            $newData = $data;
-
-        }
-
-        return $newData;
-
-    }
-
-    /**
-     * @param Array $result
-     *
-     * @return Array
-     */
-    protected function formatFindResultToObject ($result) {
-
-        $entities = [];
-        foreach ($result as $elem) {
-
-            if (is_array($elem)) {
-                $entities[] = $this->getMagicalEntityObject($elem[0]);
-            }
-            else {
-                $entities[] = $this->getMagicalEntityObject($elem);
-            }
-
-        }
-
-        return $entities;
-
-    }
-
-    /**
      * @param Array $values
      *
      * @return Array
@@ -900,155 +981,6 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param string   $name
-     * @param array    $params
-     * @param callable $processFn
-     */
-    protected function defineAction ($name, array $params, callable $processFn) {
-
-        $module = $this->getModuleName();
-        $appCtx = ApplicationContext::getInstance();
-        $appCtx->addAction(new SimpleAction($module, $name, [], $params, $processFn));
-
-    }
-
-    /**
-     * @param array    $disabledRelativeFields
-     */
-    private function disableModelAspects ($disabledRelativeFields) {
-
-        if (!is_array($disabledRelativeFields) || count($disabledRelativeFields) < 1) {
-            return;
-        }
-
-        foreach ($this->modelAspects as $modelAspect) {
-            if (!$modelAspect->getRelativeField()) {
-                $newModelAspects[] = $modelAspect;
-                continue;
-            }
-            $relativeField = $modelAspect->getRelativeField()->getValue();
-            foreach ($disabledRelativeFields as $disabledRelativeField) {
-                if (strpos($relativeField, $disabledRelativeField) === 0) {
-                    $modelAspect->disable();
-                }
-            }
-
-        }
-
-    }
-
-
-    private function enableModelAspects () {
-
-        foreach ($this->modelAspects as $modelAspect) {
-            if (!$modelAspect->isEnabled()) {
-                $modelAspect->enable();
-            }
-        }
-
-    }
-
-    /**
-     * @param array $params
-     * @param array $data
-     */
-    private function formatPrefixedFieldsToArray ($params,$data) {
-
-        foreach ($data as $key => $value) {
-
-            if (strpos($key,'_') === false || is_array($value)) {
-                continue;
-            }
-
-            $field = $key;
-
-            for ($i = 0 ; ; ++$i) {
-
-                $explodedKey = explode('_', $field);
-                $prefix = implode('_',array_slice($explodedKey,0,$i+1));
-                $prefix = str_replace('_','.',$prefix);
-
-                if ($i + 1 == count($explodedKey)-1) {
-
-                    if (($relativeField = $this->isLinkedToModel($prefix))) {
-                        $explodedRelativeField = explode('.',$relativeField);
-                        $explodedRelativeField[] = $explodedKey[count($explodedKey) -1];
-                        $data = $this->buildArrayWithKeys($explodedRelativeField,$value);
-                        $params = ArrayExtra::array_merge_recursive_distinct($params,$data);
-                    }
-
-                    break;
-
-                }
-
-            }
-
-            $this->keysToRemove[] = $field;
-
-        }
-
-        $params = $this->removePrefixedFields($params);
-
-        return $params;
-
-    }
-
-    /**
-     * @param mixed $params
-     * @return mixed
-     */
-    private function removePrefixedFields ($params) {
-
-        if (is_array($params)) {
-            foreach ($params as $key => $value) {
-                if ($key && in_array($key,$this->keysToRemove)) {
-                   unset($params[$key]);
-                }
-                else {
-                    $params[$key] = $this->removePrefixedFields($value);
-                }
-            }
-        }
-
-        return $params;
-
-    }
-
-    /**
-     * @param array $params
-     * @return array
-     */
-    private function handlePrefixedFields ($params) {
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-
-            $data = $params;
-            $explodedRelativeField = [];
-
-            if ($modelAspect->getRelativeField()) {
-                $explodedRelativeField = explode('.', $modelAspect->getRelativeField()->getValue());
-            }
-
-            foreach ($explodedRelativeField as $elem) {
-                if (!isset($data[$elem])) {
-                    $data = [];
-                    break;
-                }
-                $data = $data[$elem];
-            }
-
-            if ($data) {
-                $params = $this->formatPrefixedFieldsToArray($params,$data);
-            }
-
-
-        }
-
-        return $params;
-
-    }
-
-    /**
      * @param array $fields
      *
      * @return array
@@ -1060,25 +992,25 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         foreach ($fields as $key) {
 
-            if (strpos($key,'_') === false) {
+            if (strpos($key, '_') === false) {
                 $newParams[] = $key;
                 continue;
             }
 
             $field = $key;
 
-            for ($i = 0 ; ; ++$i) {
+            for ($i = 0; ; ++$i) {
 
                 $explodedKey = explode('_', $field);
-                $prefix = implode('_',array_slice($explodedKey,0,$i+1));
-                $prefix = str_replace('_','.',$prefix);
+                $prefix = implode('_', array_slice($explodedKey, 0, $i + 1));
+                $prefix = str_replace('_', '.', $prefix);
 
-                if ($i + 1 == count($explodedKey)-1) {
+                if ($i + 1 == count($explodedKey) - 1) {
 
                     if (($relativeField = $this->isLinkedToModel($prefix))) {
-                        $explodedRelativeField = explode('.',$relativeField);
-                        $explodedRelativeField[] = $explodedKey[count($explodedKey) -1];
-                        $newParams[] = implode('.',$explodedRelativeField);
+                        $explodedRelativeField = explode('.', $relativeField);
+                        $explodedRelativeField[] = $explodedKey[count($explodedKey) - 1];
+                        $newParams[] = implode('.', $explodedRelativeField);
                     }
 
                     break;
@@ -1091,11 +1023,31 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $newParams;
 
+    }
+
+    /**
+     * @param array $result
+     *
+     * @return array
+     */
+    private function formatFindResultArray ($result) {
+
+        $resultFormatted = [];
+
+        if ($result) {
+            foreach ($result as $elem) {
+                $elem = $this->formatResultWithPrefixedFields($elem);
+                $resultFormatted[] = $this->formatArrayWithPrefix($elem);
+            }
+        }
+
+        return $resultFormatted;
 
     }
 
     /**
      * @param array $result
+     *
      * @return array
      */
     public function formatResultWithPrefixedFields ($result) {
@@ -1108,7 +1060,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             if ($relativeField) {
 
-                $explodedRelativeField = explode('.',$relativeField->getValue());
+                $explodedRelativeField = explode('.', $relativeField->getValue());
 
                 $data = $newResult;
                 foreach ($explodedRelativeField as $elem) {
@@ -1119,31 +1071,37 @@ abstract class MagicalModuleManager extends ModuleManager {
                     $data = $data[$elem];
                 }
 
-                for ($i = count($explodedRelativeField) - 1; $i >= 0 ; --$i) {
+                for ($i = count($explodedRelativeField) - 1; $i >= 0; --$i) {
 
-                    $currentRelativeField = implode('.',array_slice($explodedRelativeField,0,$i));
+                    $currentRelativeField = implode('.', array_slice($explodedRelativeField, 0, $i));
 
                     $currentModelAspect = $this->getModelAspectByRelativeField($currentRelativeField);
 
-                    if (!$currentRelativeField || ($currentModelAspect && !$currentModelAspect->isWithPrefixedFields())) {
+                    if (!$currentRelativeField
+                        || ($currentModelAspect
+                            && !$currentModelAspect->isWithPrefixedFields())
+                    ) {
 
                         foreach ($data as $key => $value) {
 
-                            $oneModelAspect = $this->getModelAspectByRelativeField($relativeField->getValue().'.'.$key);
+                            $oneModelAspect =
+                                $this->getModelAspectByRelativeField($relativeField->getValue() . '.' . $key);
 
                             if (!$oneModelAspect || !$oneModelAspect->isWithPrefixedFields()) {
 
-                                $currentExplodedPrefix = $currentRelativeField ? explode('.',$currentModelAspect->getPrefix()) : [];
-                                $explodedPrefix = explode('.',$modelAspect->getPrefix());
-                                $explodedDiffPrefix = array_diff($explodedPrefix,$currentExplodedPrefix);
+                                $currentExplodedPrefix =
+                                    $currentRelativeField ? explode('.', $currentModelAspect->getPrefix()) : [];
+                                $explodedPrefix = explode('.', $modelAspect->getPrefix());
+                                $explodedDiffPrefix = array_diff($explodedPrefix, $currentExplodedPrefix);
 
                                 $prefixedKey = $key;
                                 if ($oneModelAspect) {
-                                    $explodedPrefix = explode('.',$oneModelAspect->getPrefix());
+                                    $explodedPrefix = explode('.', $oneModelAspect->getPrefix());
                                     $prefixedKey = $explodedPrefix[count($explodedPrefix) - 1];
                                 }
 
-                                $data[str_replace('.','_',implode('.',$explodedDiffPrefix)).'_'.$prefixedKey] = $value;
+                                $data[str_replace('.', '_', implode('.', $explodedDiffPrefix)) . '_' . $prefixedKey] =
+                                    $value;
 
                             }
 
@@ -1152,7 +1110,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                         }
 
                         if ($currentRelativeField) {
-                            $data = $this->buildArrayWithKeys(explode('.',$currentRelativeField),$data);
+                            $data = $this->buildArrayWithKeys(explode('.', $currentRelativeField), $data);
                         }
 
                         break;
@@ -1172,7 +1130,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $relativeField = $modelAspect->getRelativeField();
 
             if ($modelAspect->isWithPrefixedFields() && $relativeField) {
-                $newResult = $this->removeKeysFromArray(explode('.',$relativeField->getValue()),$newResult);
+                $newResult = $this->removeKeysFromArray(explode('.', $relativeField->getValue()), $newResult);
             }
 
         }
@@ -1181,9 +1139,19 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    private function getModelAspectsWithPrefixedField () {
+
+        return array_filter($this->modelAspects, function ($modelAspect) {
+
+            return $modelAspect->isEnabled() && $modelAspect->isWithPrefixedFields();
+
+        });
+
+    }
 
     /**
      * @param string $relativeField
+     *
      * @return mixed
      */
     private function getModelAspectByRelativeField ($relativeField) {
@@ -1200,41 +1168,84 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @param array $result
+     *
+     * @return array
+     */
+    private function formatArrayWithPrefix ($result) {
 
-    private function getModelAspects () {
+        $formattedResult = [];
 
-        return array_filter($this->modelAspects, function ($modelAspect) {
+        foreach ($this->getModelAspects() as $modelAspect) {
 
-            return $modelAspect->isEnabled();
+            $relativeField = $modelAspect->getRelativeField();
+            $prefix = $modelAspect->getPrefix();
 
-        });
+            if ($relativeField) {
+                $explodedRelativeField = explode('.', $relativeField->getValue());
+                $data = $result;
+                foreach ($explodedRelativeField as $elem) {
+                    if (!isset($data[$elem])) {
+                        continue 2;
+                    }
+                    $data = $data[$elem];
+                }
+            }
+            else {
+                $data = $result;
+            }
 
-    }
+            if ($modelAspect->getPrefix()) {
+                $explodedPrefix = explode('.', $modelAspect->getPrefix());
+                $data = $this->buildArrayWithKeys($explodedPrefix, $data);
+            }
 
+            $formattedResult = ArrayExtra::array_merge_recursive_distinct($formattedResult, $data);
 
-    private function getModelAspectsWithPrefixedField () {
+            if ($relativeField && $relativeField->getValue() != $prefix) {
+                $formattedResult = $this->removeKeysFromArray($explodedRelativeField, $formattedResult);
+            }
 
-        return array_filter($this->modelAspects, function ($modelAspect) {
+        }
 
-            return $modelAspect->isEnabled() && $modelAspect->isWithPrefixedFields();
-
-        });
+        return $formattedResult;
 
     }
 
     /**
-     * @param string $prefix
-     * @return mixed
+     * @param Array $result
+     *
+     * @return Array
      */
-    private function isLinkedToModel ($prefix) {
+    protected function formatFindResultToObject ($result) {
 
-        foreach ($this->getModelAspects() as $modelAspect) {
-            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
-                return $modelAspect->getRelativeField()->getValue();
+        $entities = [];
+        foreach ($result as $elem) {
+
+            if (is_array($elem)) {
+                $entities[] = $this->getMagicalEntityObject($elem[0]);
             }
+            else {
+                $entities[] = $this->getMagicalEntityObject($elem);
+            }
+
         }
 
-        return false;
+        return $entities;
+
+    }
+
+    /**
+     * @param string   $name
+     * @param array    $params
+     * @param callable $processFn
+     */
+    protected function defineAction ($name, array $params, callable $processFn) {
+
+        $module = $this->getModuleName();
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->addAction(new SimpleAction($module, $name, [], $params, $processFn));
 
     }
 

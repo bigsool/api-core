@@ -47,14 +47,6 @@ class Controller {
 
     }
 
-    protected function getAction () {
-
-        return isset($this->action)
-            ? $this->action
-            : ApplicationContext::getInstance()->getAction($this->module, $this->actionName);
-
-    }
-
     /**
      * @param ActionContext $context
      *
@@ -63,6 +55,14 @@ class Controller {
     public function apply (ActionContext $context) {
 
         return $this->getAction()->process($context);
+
+    }
+
+    protected function getAction () {
+
+        return isset($this->action)
+            ? $this->action
+            : ApplicationContext::getInstance()->getAction($this->module, $this->actionName);
 
     }
 

@@ -12,22 +12,15 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
-        // TODO: Implement loadFilters() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
-        // TODO: Implement loadRules() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public function loadActions (ApplicationContext &$context) {
         // TODO: Implement loadActions() method.
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadFilters (ApplicationContext &$context) {
+        // TODO: Implement loadFilters() method.
     }
 
     /**
@@ -37,5 +30,12 @@ class ModuleManager extends AbstractModuleManager {
 
         $this->addHelper($context, 'AddressBookHelper');
 
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadRules (ApplicationContext &$context) {
+        // TODO: Implement loadRules() method.
     }
 }

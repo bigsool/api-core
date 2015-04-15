@@ -7,6 +7,9 @@ use Symfony\Component\Validator\Constraints;
 
 class Choice extends Constraint {
 
+    /**
+     * @param array $options
+     */
     public function __construct (array $options = []) {
 
         $this->setConstraint(new Constraints\Choice($options));

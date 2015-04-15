@@ -65,7 +65,6 @@ class ModelAspect {
         $this->enabled = true;
         $this->withPrefixedFields = $withPrefixedFields;
 
-        
     }
 
     /**
