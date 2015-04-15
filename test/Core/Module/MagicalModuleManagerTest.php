@@ -2004,4 +2004,78 @@ class MagicalModuleManagerTest extends TestCase {
 
     }
 
+    public function testMagicalFindWithReturnedPrefixedFields () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMagicalUser(true,false);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+
+        $filters =
+            [new StringFilter('TestUser', 'bla', 'id = 1')];
+        $values = ['email'];
+
+        $requestCtx = new RequestContext();
+        $requestCtx->setReturnedFields([new RelativeField('email'),new RelativeField('firm_name')]);
+
+        $result = $this->magicalAction('Find', $mgrUser, [$requestCtx, $values, $filters, [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 1);
+        $result = $result[0];
+        $this->assertInternalType('array', $result);
+
+        $this->assertEquals(1, $result['id']);
+        $this->assertEquals('u1@bigsool.com', $result['email']);
+        $this->assertEquals(1, $result['firm_id']);
+        $this->assertEquals('Bigsool', $result['firm_name']);
+
+    }
+
+    public function testMagicalFindWithPrefixedFieldsAndManyRows () {
+
+        $userModuleManager = new UserModuleManager();
+        $companyModuleManager = new CompanyModuleManager();
+        $storageModuleManager = new StorageModuleManager();
+
+        $mgrUser = $this->getMagicalUser(true,false);
+
+        $appCtx = $this->getApplicationContext();
+        $appCtx->setProduct('Archipad');
+
+        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->loadActions($appCtx);
+        $storageModuleManager->loadHelpers($appCtx);
+
+        $values = ['email'];
+
+        $requestCtx = new RequestContext();
+        $requestCtx->setReturnedFields([new RelativeField('firm_name'),new RelativeField('firm_s3_url')]);
+
+        $result = $this->magicalAction('Find', $mgrUser, [$requestCtx, $values, [], [], true]);
+
+        $this->assertInternalType('array', $result);
+        $this->assertTrue(count($result) == 3);
+        foreach ($result as $elem) {
+            $this->assertInternalType('array', $elem);
+            $this->assertEquals('Bigsool', $elem['firm_name']);
+        }
+
+    }
+
 }
