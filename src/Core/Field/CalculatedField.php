@@ -186,4 +186,22 @@ class CalculatedField implements ResolvableField {
         return $this->shouldThrowExceptionIfFieldNotFound;
 
     }
+
+    /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->resolvedField;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return $this->resolvedEntity;
+
+    }
 }

@@ -1249,5 +1249,4 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
-
 }

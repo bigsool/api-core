@@ -39,4 +39,14 @@ interface ResolvableField {
      */
     public function getValue ();
 
+    /**
+     * @return string
+     */
+    public function getResolvedField ();
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity ();
+
 }

@@ -275,13 +275,16 @@ class Registry implements EventSubscriber {
             $fields = $resolvableField->resolve($this, $ctx);
             foreach ($fields as $field) {
                 $exploded = explode('.', $field);
-                if (!$hydrateArray || count($exploded) == 1 || $resolvableField instanceof Aggregate) {
+                if ($resolvableField instanceof Aggregate
+                    || $resolvableField->getResolvedField() == '*'
+                ) {
                     if ($resolvableField->getAlias()) {
                         $field .= ' AS ' . $resolvableField->getAlias();
                     }
                     $qb->addSelect($field);
                 }
                 else {
+
                     if (count($exploded) == 2) {
                         $entities[$exploded[0]][] = $exploded[1];
                     }

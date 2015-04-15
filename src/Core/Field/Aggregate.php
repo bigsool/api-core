@@ -105,4 +105,22 @@ class Aggregate implements ResolvableField {
 
     }
 
+    /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->getValue();
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return NULL;
+
+    }
+
 }

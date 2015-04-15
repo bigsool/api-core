@@ -118,4 +118,22 @@ class RealField implements ResolvableField {
         return false;
 
     }
+
+    /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->resolvedField;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return $this->resolvedEntity;
+
+    }
 }
