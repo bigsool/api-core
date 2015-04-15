@@ -179,6 +179,21 @@ class Helper extends BasicHelper {
     }
 
     /**
+     * @param ActionContext $actCtx
+     * @param               $credential
+     * @param array         $params
+     */
+    public function updateCredential (ActionContext $actCtx, $credential, array $params) {
+
+        $this->checkRealModelType($credential, 'Credential');
+
+        $this->basicSave($credential, $params);
+
+        $actCtx['credential'] = $credential;
+
+    }
+
+    /**
      * @param ActionContext   $actionContext
      * @param bool            $hydrateArray
      * @param RelativeField[] $keyPaths
