@@ -79,39 +79,6 @@ class CalculatedField implements ResolvableField {
     }
 
     /**
-     * @param Registry         $registry
-     * @param FindQueryContext $ctx
-     *
-     * @return ResolvableField[]
-     */
-    public function getFinalFields (Registry $registry, FindQueryContext $ctx) {
-
-        $this->shouldThrowExceptionIfFieldNotFound = false;
-        $this->process($ctx);
-        $this->shouldThrowExceptionIfFieldNotFound = true;
-
-        $entity = $this->resolvedEntity;
-        $field = $this->getValue();
-
-        if (!isset(static::$calculatedFields[$entity][$field])) {
-            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
-        }
-
-        list(, $requiredFields) = static::$calculatedFields[$this->resolvedEntity][$this->getValue()];
-
-        $fields = [];
-
-        foreach ($requiredFields as $requiredField) {
-
-            $fields[] = new RealField($requiredField);
-
-        }
-
-        return $fields;
-
-    }
-
-    /**
      * @return string
      */
     public function getValue () {
@@ -143,6 +110,62 @@ class CalculatedField implements ResolvableField {
         $this->getFinalFields($registry, $ctx);
 
         return [];
+
+    }
+
+    /**
+     * @param Registry         $registry
+     * @param FindQueryContext $ctx
+     *
+     * @return ResolvableField[]
+     */
+    public function getFinalFields (Registry $registry, FindQueryContext $ctx) {
+
+        $this->shouldThrowExceptionIfFieldNotFound = false;
+        $this->process($ctx);
+        $this->shouldThrowExceptionIfFieldNotFound = true;
+
+        $entity = $this->resolvedEntity;
+        $field = $this->getValue();
+
+        if (!isset(static::$calculatedFields[$entity][$field])) {
+            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
+        }
+
+        list(, $requiredFields) = static::$calculatedFields[$entity][$field];
+
+        $fields = [];
+
+        foreach ($requiredFields as $requiredField) {
+
+            $fields[] = new RealField($requiredField);
+
+        }
+
+        return $fields;
+
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return mixed
+     */
+    public function exec (array &$data) {
+
+        $entity = $this->resolvedEntity;
+        $field = $this->getValue();
+
+        if (!isset(static::$calculatedFields[$entity][$field])) {
+            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
+        }
+
+        list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
+
+        // Call $callable only with requiredFields
+        // TODO: handle fields like company.name
+        // TODO: handle alias ?
+        return $data[$field] = call_user_func_array($callable, array_intersect_key($data, array_flip($requiredFields)));
 
     }
 
