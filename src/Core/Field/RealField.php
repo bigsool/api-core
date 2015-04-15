@@ -119,5 +119,4 @@ class RealField implements ResolvableField {
         return false;
 
     }
-
 }

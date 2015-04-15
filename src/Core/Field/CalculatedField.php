@@ -5,9 +5,15 @@ namespace Core\Field;
 
 
 use Core\Context\FindQueryContext;
+use Core\Expression\AbstractKeyPath;
+use Core\Expression\Resolver;
 use Core\Registry;
 
-class CalculatedField extends RelativeField {
+class CalculatedField implements ResolvableField {
+
+    use Resolver {
+        Resolver::resolve as protected _resolve;
+    }
 
     /**
      * @var array[][]
@@ -20,9 +26,27 @@ class CalculatedField extends RelativeField {
     protected $shouldThrowExceptionIfFieldNotFound = true;
 
     /**
-     * @var null|string
+     * @var string|void
      */
-    protected $_value;
+    protected $alias;
+
+    /**
+     * @var string
+     */
+    protected $value;
+
+    /**
+     * @param string $value
+     */
+    public function __construct ($value) {
+
+        if (!AbstractKeyPath::isValidKeyPath($value)) {
+            throw new \RuntimeException('invalid KeyPath');
+        }
+
+        $this->value = $value;
+
+    }
 
     /**
      * @param string   $entity
@@ -37,11 +61,41 @@ class CalculatedField extends RelativeField {
     }
 
     /**
-     * return string
+     * @return string
      */
-    public function _getValue () {
+    public function getAlias () {
 
-        return $this->_value ?: $this->getValue();
+        return $this->alias;
+
+    }
+
+    /**
+     * @param string $alias
+     */
+    public function setAlias ($alias) {
+
+        $this->alias = $alias;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue () {
+
+        return $this->value;
+
+    }
+
+    /**
+     * @param ResolvableField $field
+     *
+     * @return bool
+     */
+    public function isEqual (ResolvableField $field) {
+
+        return $field instanceof self && $this->resolvedEntity == $field->resolvedEntity
+               && $this->resolvedField == $field->resolvedField;
 
     }
 
@@ -52,6 +106,20 @@ class CalculatedField extends RelativeField {
      * @return string[]
      */
     public function resolve (Registry $registry, FindQueryContext $ctx) {
+
+        $this->getFinalFields($registry, $ctx);
+
+        return [];
+
+    }
+
+    /**
+     * @param Registry         $registry
+     * @param FindQueryContext $ctx
+     *
+     * @return ResolvableField[]
+     */
+    public function getFinalFields (Registry $registry, FindQueryContext $ctx) {
 
         $this->shouldThrowExceptionIfFieldNotFound = false;
         $this->process($ctx);
@@ -64,23 +132,49 @@ class CalculatedField extends RelativeField {
             throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
         }
 
-        list(, $requiredFields) = static::$calculatedFields[$this->resolvedEntity][$this->getValue()];
+        list(, $requiredFields) = static::$calculatedFields[$entity][$field];
 
         $fields = [];
-        $pos = strrpos($this->getValue(), '.');
-        $prefix = '';
-        if ($pos !== false) {
-            $prefix = substr($this->getValue(), 0, $pos + 1);
-        }
 
         foreach ($requiredFields as $requiredField) {
 
-            $relativeField = new RelativeField($prefix . $requiredField);
-            $fields = array_merge($fields, $relativeField->resolve($registry, $ctx));
+            $fields[] = new RealField($requiredField);
 
         }
 
         return $fields;
+
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return mixed
+     */
+    public function exec (array &$data) {
+
+        $entity = $this->resolvedEntity;
+        $field = $this->getValue();
+
+        if (!isset(static::$calculatedFields[$entity][$field])) {
+            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
+        }
+
+        list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
+
+        // Call $callable only with requiredFields
+        // TODO: handle fields like company.name
+        // TODO: handle alias ?
+        return $data[$field] = call_user_func_array($callable, array_intersect_key($data, array_flip($requiredFields)));
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldResolveForAWhere () {
+
+        return false;
 
     }
 
@@ -92,5 +186,4 @@ class CalculatedField extends RelativeField {
         return $this->shouldThrowExceptionIfFieldNotFound;
 
     }
-
 }

@@ -117,6 +117,9 @@ trait Resolver {
                     throw new \RuntimeException("$field not found in $entity");
                 }
 
+                $this->resolvedEntity = $this->getEntityForClass($entity);
+                $this->resolvedField = $field;
+
                 return false;
             }
 

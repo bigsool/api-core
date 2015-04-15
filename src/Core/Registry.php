@@ -9,6 +9,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
 use Core\Field\Aggregate;
+use Core\Field\CalculatedField;
 use Core\Field\ResolvableField;
 use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
@@ -338,7 +339,25 @@ class Registry implements EventSubscriber {
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
-        return $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+        $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+
+        if ($hydrateArray == Query::HYDRATE_ARRAY) {
+
+            foreach ($resolvableFields as $resolvableField) {
+
+                if (!($resolvableField instanceof CalculatedField)) {
+                    continue;
+                }
+
+                foreach ($result as &$data) {
+                    $resolvableField->exec($data);
+                }
+
+            }
+
+        }
+
+        return $result;
 
     }
 
