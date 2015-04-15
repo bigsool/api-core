@@ -1049,10 +1049,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param array $params
+     * @param array $fields
+     *
      * @return array
      */
-    private function transformPrefixedFields ($fields) {
+    private function transformPrefixedFields (array $fields) {
 
         $newParams = [];
         $fields = is_array($fields) ? $fields : [$fields];
