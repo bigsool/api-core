@@ -153,8 +153,6 @@ abstract class MagicalModuleManager extends ModuleManager {
                     }
                 }
 
-
-
             }
             else {
 
@@ -166,8 +164,6 @@ abstract class MagicalModuleManager extends ModuleManager {
                         $subContext->setParam($key, $value);
                     }
                 }
-
-
 
             }
 
@@ -626,9 +622,8 @@ abstract class MagicalModuleManager extends ModuleManager {
         $resultFormatted = [];
 
         if ($result) {
-            $result = $this->formatResultWithPrefixedFields($result);
-            $result = [$result];
             foreach ($result as $elem) {
+                $elem = $this->formatResultWithPrefixedFields($elem);
                 $resultFormatted[] = $this->formatArrayWithPrefix($elem);
             }
         }
@@ -1104,7 +1099,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      */
     public function formatResultWithPrefixedFields ($result) {
 
-        $newResult = $result[0];
+        $newResult = $result;
 
         foreach ($this->getModelAspectsWithPrefixedField() as $modelAspect) {
 

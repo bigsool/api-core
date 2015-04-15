@@ -65,7 +65,7 @@ abstract class AbstractKeyPath extends Value {
     public static function isValidKeyPath ($value) {
 
         if (!is_string($value)
-            || (!preg_match('/^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)*(\.\*)?$/', $value)
+            || (!preg_match('/^[a-zA-Z][a-zA-Z0-9]*([\.|_][a-zA-Z][a-zA-Z0-9]*)*(\.\*)?$/', $value)
                 && $value != '*')
         ) {
             return false;
