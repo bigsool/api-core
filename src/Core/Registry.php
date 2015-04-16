@@ -242,27 +242,10 @@ class Registry implements EventSubscriber {
         }
 
         // cleanup duplicated fields
-        $resolvableFields = array_filter($resolvableFields,
-            function (ResolvableField &$currentResolvableField) {
+        $resolvableFields = self::removeDuplicatedFields($resolvableFields);
 
-                /**
-                 * @var ResolvableField[] $resolvableFields
-                 */
-                static $resolvableFields = [];
-
-                foreach ($resolvableFields as $resolvableField) {
-                    if ($resolvableField->isEqual($currentResolvableField)) {
-                        return false;
-                    }
-                }
-
-                $resolvableFields[] = $currentResolvableField;
-
-                return true;
-
-            }
-        );
-
+        // removed not necessary fields
+        $resolvableFields = self::removedNotNecessaryFields($resolvableFields);
 
         if (empty($resolvableFields)) {
             throw new \RuntimeException('fields are required');
@@ -294,7 +277,10 @@ class Registry implements EventSubscriber {
         }
 
         foreach ($entities as $entity => $fields) {
-            $selectClause = 'partial ' . $entity . '.{id,';
+            $selectClause = 'partial ' . $entity . '.{';
+            if (!in_array('id', $fields)) {
+                $selectClause .= 'id,';
+            }
             $selectClause .= implode(',', $fields);
             $selectClause .= '}';
             $qb->addSelect($selectClause);
@@ -344,7 +330,7 @@ class Registry implements EventSubscriber {
 
         $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
-        if ($hydrateArray == Query::HYDRATE_ARRAY) {
+        if ($hydrateArray) {
 
             foreach ($resolvableFields as $resolvableField) {
 
@@ -362,6 +348,72 @@ class Registry implements EventSubscriber {
 
         return $result;
 
+    }
+
+    /**
+     * @param ResolvableField[] $resolvableFields
+     *
+     * @return ResolvableField[]
+     */
+    public static function removeDuplicatedFields (array &$resolvableFields) {
+
+        return array_filter($resolvableFields,
+            function (ResolvableField &$currentResolvableField) {
+
+                /**
+                 * @var ResolvableField[] $resolvableFields
+                 */
+                static $resolvableFields = [];
+
+                foreach ($resolvableFields as $resolvableField) {
+                    if ($resolvableField->isEqual($currentResolvableField)) {
+                        return false;
+                    }
+                }
+
+                $resolvableFields[] = $currentResolvableField;
+
+                return true;
+
+            }
+        );
+    }
+
+    /**
+     * @param ResolvableField[] $resolvableFields
+     *
+     * @return ResolvableField[]
+     */
+    protected static function removedNotNecessaryFields (array $resolvableFields) {
+
+        $finalResolvableFields = [];
+        $resolvableFields = array_values($resolvableFields);
+        for ($i = 0; $i < count($resolvableFields); ++$i) {
+            $resolvableField = $resolvableFields[$i];
+            $entity = $resolvableField->getResolvedEntity();
+            $field = $resolvableField->getResolvedField();
+            if (array_key_exists($entity, $finalResolvableFields)) {
+                continue;
+            }
+            if ($field == '*') {
+                $finalResolvableFields[$entity] = $resolvableField;
+                continue;
+            }
+            for ($j = $i + 1; $j < count($resolvableFields); ++$j) {
+                $_resolvableField = $resolvableFields[$j];
+                $_entity = $_resolvableField->getResolvedEntity();
+                $_field = $_resolvableField->getResolvedField();
+                if ($_entity != $entity) {
+                    continue;
+                }
+                if ($_field == '*') {
+                    continue 2;
+                }
+            }
+            $finalResolvableFields[] = $resolvableField;
+        }
+
+        return array_values($finalResolvableFields);
     }
 
     public function delete ($model) {

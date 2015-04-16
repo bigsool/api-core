@@ -75,9 +75,22 @@ class RelativeField {
 
         if ($isRealField) {
 
+            $components = explode('.', $this->getValue());
+            $strComponents = '';
+            foreach ($components as $component) {
+                if ($strComponents) {
+                    $fields[] = new RealField("{$strComponents}.id");
+                    $strComponents .= ".{$component}";
+                }
+                else {
+                    $strComponents = $component;
+                }
+
+            }
+
             $field = new RealField($this->getValue());
             $field->setAlias($this->getAlias());
-            $fields = [$field];
+            $fields[] = $field;
 
         }
         else {
