@@ -279,11 +279,8 @@ class RequestContext {
             $auth->setCredential($cred);
             $this->setAuth($auth);
 
-            $helper = new Helper();
-            $authToken = $helper->getNewAuthToken($authToken);
-            $setAuthAction = $appCtx->getAction('Core\Credential', 'setAuthCookie');
-            $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken]);
-
+            $setAuthAction = $appCtx->getAction('Core\Credential', 'renewAuthCookie');
+            $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken,'credentialId' => $cred->getId()]);
             unset($params['authToken']);
         }
 
