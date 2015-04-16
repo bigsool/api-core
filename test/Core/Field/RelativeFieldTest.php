@@ -25,9 +25,9 @@ class RelativeFieldTest extends TestCase {
 
         $this->assertInternalType('array', $resolve1);
         $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
-        $this->assertCount(1, $resolve1);
+        $this->assertCount(3, $resolve1);
 
-        $this->assertEquals($param, $resolve1[0]->getValue());
+        $this->assertEquals($param, $resolve1[2]->getValue());
 
         $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
 
@@ -48,17 +48,17 @@ class RelativeFieldTest extends TestCase {
 
         $this->assertInternalType('array', $resolve1);
         $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
-        $this->assertCount(1, $resolve1);
+        $this->assertCount(3, $resolve1);
 
-        $this->assertEquals($param, $resolve1[0]->getValue());
+        $this->assertEquals($param, $resolve1[2]->getValue());
 
         $resolve1 = $param1->resolve($registry, $context);
 
         $this->assertInternalType('array', $resolve1);
         $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
-        $this->assertCount(1, $resolve1);
+        $this->assertCount(3, $resolve1);
 
-        $this->assertEquals($param, $resolve1[0]->getValue());
+        $this->assertEquals($param, $resolve1[2]->getValue());
 
         $registry2 = $this->getRegistry('TestCompany');
         $context2 = $this->getFindQueryContext('TestCompany');
@@ -67,7 +67,7 @@ class RelativeFieldTest extends TestCase {
 
         $this->assertInternalType('array', $resolve2);
         $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve2);
-        $this->assertCount(1, $resolve2);
+        $this->assertCount(3, $resolve2);
 
     }
 
