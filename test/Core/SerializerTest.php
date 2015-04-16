@@ -177,6 +177,8 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
+        // TODO: this test has no sens. We cannot ask for a aggregate field. We may ask for a calculated field.
+        /*
         $emailKP = new RelativeField('email');
         $nbUsersKP = new RelativeField(new Aggregate('count', ['*']));
         $companyIdKP = new RelativeField('company.name');
@@ -193,7 +195,7 @@ class SerializerTest extends TestCase {
 
         $this->assertSame(self::$expectedWithAggregate, $serializer->get());
 
-        $this->assertSame(json_encode(self::$expectedWithAggregate), $serializer->getJSON());
+        $this->assertSame(json_encode(self::$expectedWithAggregate), $serializer->getJSON());*/
 
     }
 

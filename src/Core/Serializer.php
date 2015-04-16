@@ -83,31 +83,6 @@ class Serializer {
 
     }
 
-    /**
-     * @param array $data
-     *
-     * @return array
-     */
-    public function keepOnlyRequestedFields($data) {
-
-        $isAssociative = ArrayExtra::isAssociative($data);
-        if ($isAssociative) {
-            $data = [$data];
-        }
-
-        $newData = [];
-        foreach ($data as $currData) {
-            $currNewData = [];
-            foreach ($this->actCtx->getRequestContext()->getReturnedFields() as $field) {
-                ArrayExtra::magicalSet($currNewData, $field->getValue(), ArrayExtra::magicalGet($currData, $field->getValue()));
-            }
-            $newData[] = $currNewData;
-        }
-
-        return $isAssociative ? $newData[0] : $newData;
-
-    }
-
     public function convertDateTime (array &$data) {
 
         array_walk_recursive($data, function (&$value) {
@@ -192,6 +167,36 @@ class Serializer {
         }
 
         return $newKeyPaths ? $newKeyPaths : $keyPaths;
+
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    public function keepOnlyRequestedFields ($data) {
+
+        $isAssociative = ArrayExtra::isAssociative($data);
+        if ($isAssociative) {
+            $data = [$data];
+        }
+
+        $newData = [];
+        foreach ($data as $currData) {
+            if (!is_array($currData)) {
+                $newData[] = $currData;
+                continue;
+            }
+            $currNewData = [];
+            foreach ($this->actCtx->getRequestContext()->getReturnedFields() as $field) {
+                ArrayExtra::magicalSet($currNewData, $field->getValue(),
+                                       ArrayExtra::magicalGet($currData, $field->getValue()));
+            }
+            $newData[] = $currNewData;
+        }
+
+        return $isAssociative ? $newData[0] : $newData;
 
     }
 
