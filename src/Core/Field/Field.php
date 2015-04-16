@@ -52,14 +52,4 @@ class Field {
 
     }
 
-    /**
-     * @param Registry         $registry
-     * @param FindQueryContext $context
-     *
-     * @return string
-     */
-    public function resolve (Registry $registry, FindQueryContext $context) {
-
-    }
-
 } 

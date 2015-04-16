@@ -125,7 +125,7 @@ class CalculatedField implements ResolvableField {
         $this->process($ctx);
         $this->shouldThrowExceptionIfFieldNotFound = true;
 
-        $entity = $this->resolvedEntity;
+        $entity = $this->getResolvedEntity();
         $field = $this->getValue();
 
         if (!isset(static::$calculatedFields[$entity][$field])) {
@@ -153,7 +153,7 @@ class CalculatedField implements ResolvableField {
      */
     public function exec (array &$data) {
 
-        $entity = $this->resolvedEntity;
+        $entity = $this->getResolvedEntity();
         $field = $this->getValue();
 
         if (!isset(static::$calculatedFields[$entity][$field])) {

@@ -19,6 +19,44 @@ class CalculatedFieldTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testInvalidKeyPath() {
+
+        new CalculatedField('qweé"\'é" -"');
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCalculatedFieldNotFound() {
+
+        $calculatedField = new CalculatedField('qwe');
+        $arr = [];
+        $calculatedField->exec($arr);
+
+    }
+
+    public function testShouldResolveForAWhere() {
+
+        $this->assertFalse((new CalculatedField('qwe'))->shouldResolveForAWhere());
+
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCalculatedFieldNotFoundInExec() {
+
+        $calculatedField = new CalculatedField('qwe');
+        $ctx = new FindQueryContext('testUser');
+        $registry = $this->getRegistry();
+        $calculatedField->getFinalFields($registry, $ctx);
+
+    }
+
     public function testAlias () {
 
         $alias = 'alias';
@@ -38,7 +76,13 @@ class CalculatedFieldTest extends TestCase {
 
     public function testGetFinalFields () {
 
-        $calculatedField = new CalculatedField('fullName');
+        CalculatedField::create('TestUser', 'fullName2', function () {
+
+            return json_encode(func_get_args());
+
+        }, ['name', 'lastName']);
+
+        $calculatedField = new CalculatedField('fullName2');
         $ctx = new FindQueryContext('testUser');
         $registry = $this->getRegistry();
         $fields = $calculatedField->getFinalFields($registry, $ctx);
