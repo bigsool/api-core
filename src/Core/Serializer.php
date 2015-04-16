@@ -3,6 +3,7 @@
 namespace Core;
 
 use Core\Context\ActionContext;
+use Core\Util\ArrayExtra;
 
 class Serializer {
 
@@ -70,6 +71,7 @@ class Serializer {
 
         if (is_array($data) && !$this->inProxyMode) {
             $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths, $data);
+            $this->dataSerialized = $this->keepOnlyRequestedFields($this->dataSerialized);
         }
         else {
             $this->dataSerialized = $data;
@@ -78,6 +80,31 @@ class Serializer {
         $this->dataSerialized = ['success' => true, 'data' => $this->dataSerialized];
 
         return $this;
+
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    public function keepOnlyRequestedFields($data) {
+
+        $isAssociative = ArrayExtra::isAssociative($data);
+        if ($isAssociative) {
+            $data = [$data];
+        }
+
+        $newData = [];
+        foreach ($data as $currData) {
+            $currNewData = [];
+            foreach ($this->actCtx->getRequestContext()->getReturnedFields() as $field) {
+                ArrayExtra::magicalSet($currNewData, $field->getValue(), ArrayExtra::magicalGet($currData, $field->getValue()));
+            }
+            $newData[] = $currNewData;
+        }
+
+        return $isAssociative ? $newData[0] : $newData;
 
     }
 

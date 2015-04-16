@@ -65,4 +65,75 @@ class ArrayExtra {
 
     }
 
+    /**
+     * add the possibility to use a dot (.) to separate the different dimensions of an array
+     * E.g. : $arr = []; magicalSet($arr,'a.b.c','abc'); <=> $arr['a']['b']['c'] = 'abc';
+     *
+     * @param array $array
+     * @param mixed $key
+     * @param mixed $value
+     */
+    public static function magicalSet (array &$array, $key, $value) {
+
+        if (!is_scalar($key)) {
+            throw new \RuntimeException('invalid key type');
+        }
+
+        $exploded = explode('.', $key);
+        foreach ($exploded as $index => $key) {
+
+            // it's not necessary to create an array for the last key
+            if ($index + 1 == count($exploded)) {
+                break;
+            }
+
+            if (!isset($array[$key])) {
+                $array[$key] = [];
+            }
+            $array = &$array[$key];
+
+        }
+
+        $array[$key] = $value;
+
+    }
+
+    /**
+     * add the possibility to use a dot (.) to separate the different dimensions of an arraY
+     * E.g. : $arr['a']['b']['c'] = 'abc'; echo magicalGet($arr,'a.b.c'); <=> echo $arr['a']['b']['c'];
+     *
+     * @param array $array
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public static function magicalGet (array $array, $key) {
+
+        $exploded = explode('.', $key);
+        foreach ($exploded as $index => $key) {
+            if (!isset($array[$key])) {
+                return NULL;
+            }
+            // it's not necessary to create an array for the last key
+            if ($index + 1 == count($exploded)) {
+                break;
+            }
+            $array = $array[$key];
+        }
+
+        return $array[$key];
+
+    }
+
+    /**
+     * @param array $array
+     *
+     * @return bool
+     */
+    public static function isAssociative(array &$array) {
+
+        return array_keys($array) !== range(0, count($array) - 1);
+
+    }
+
 }

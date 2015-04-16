@@ -330,7 +330,7 @@ class Registry implements EventSubscriber {
 
         $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
-        if ($hydrateArray == Query::HYDRATE_ARRAY) {
+        if ($hydrateArray) {
 
             foreach ($resolvableFields as $resolvableField) {
 
