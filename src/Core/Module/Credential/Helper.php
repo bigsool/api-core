@@ -76,6 +76,31 @@ class Helper extends BasicHelper {
     }
 
     /**
+     * @param integer $id
+     *
+     * @return Credential|null
+     */
+    public function getCredentialFromId ($id) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
+
+        $qryCtx->addField(new RelativeField('*'));
+
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterById'));
+
+        $qryCtx->setParams(['id' => $id]);
+
+        $credentials = $registry->find($qryCtx, false);
+
+        return count($credentials) != 1 ? NULL : $credentials[0];
+
+    }
+
+    /**
      * @param ActionContext $actionContext
      * @param               $credential
      * @param array         $params
@@ -120,18 +145,18 @@ class Helper extends BasicHelper {
 
     /**
      * @param mixed $authToken
-     *
+     * @param integer $credentialId
      * @return array
      * @throws \Core\Error\FormattedError
      */
-    public function getNewAuthToken ($authToken) {
+    public function getNewAuthToken ($authToken, $credentialId) {
 
         $appCtx = ApplicationContext::getInstance();
         $errorManager = $appCtx->getErrorManager();
 
         $this->checkAuthTokenStructure($authToken);
 
-        $credential = $this->getCredentialFromLogin($authToken['login']);
+        $credential = $this->getCredentialFromId($credentialId);
 
         if (is_null($credential)) {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
@@ -139,8 +164,8 @@ class Helper extends BasicHelper {
 
         $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
-        return self::generateAuthToken($authToken['login'], $expiration, $credential->getPassword(),
-                                       self::AUTH_TOKEN_TYPE_BASIC);
+        return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
+                                       $authToken['type']);
 
     }
 
@@ -186,6 +211,8 @@ class Helper extends BasicHelper {
     public function updateCredential (ActionContext $actCtx, $credential, array $params) {
 
         $this->checkRealModelType($credential, 'Credential');
+
+        $params['password'] = password_hash($params['password'], PASSWORD_BCRYPT);
 
         $this->basicSave($credential, $params);
 

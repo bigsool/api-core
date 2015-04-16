@@ -80,6 +80,31 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
+        $context->addAction(new SimpleAction('Core\Credential', 'renewAuthCookie', [],
+                                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+
+                $response = $ctx->getRequestContext()->getResponse();
+
+                if (is_null($response)) {
+
+                    throw new \RuntimeException('Calling setAuthCookie while the response is not set');
+
+                }
+
+                $authToken = $ctx->getParam('authToken');
+                $credentialId = $ctx->getParam('credentialId');
+
+                $helper = new Helper();
+                $newAuthToken = $helper->getNewAuthToken($authToken,$credentialId);
+
+                $appCtx = ApplicationContext::getInstance();
+                $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+
+                $response->headers->setCookie(new Cookie('authToken', json_encode($newAuthToken),
+                                                         $expire));
+
+            }));
+
         /**
          * @param ApplicationContext $context
          */
@@ -114,10 +139,10 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
 
-        $context->addAction(new BasicUpdateAction('Core\Credential', 'credential', 'CredentialHelper', [Auth::AUTHENTICATED], [
+        $context->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
             'id'              => [new Validation(), true],
-            'login'           => [new Validation(), true],
-            'password'        => [new Validation(), true],
+            'login'           => [new Validation()],
+            'password'        => [new Validation()],
             'currentPassword' => [new Validation(), true]
         ], function (ActionContext $context) {
 
@@ -127,17 +152,30 @@ class ModuleManager extends AbstractModuleManager {
 
             $password = $context->getAuth()->getCredential()->getPassword();
 
+            $helper = new Helper;
+
+            $credential = $helper->getCredentialFromId($params['id']);
+
+            unset($params['id']);
+
             if (!password_verify($params['currentPassword'], $password)) {
                 throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
             }
 
-            $context->unsetParam('currentPassword');
+            unset($params['currentPassword']);
+
+
+
+            $helper->updateCredential($context,$credential,$params);
+
+            $credential = $context['credential'];
+
+            return $credential;
 
         }));
 
         $context->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
             function (ActionContext $context) {
-
 
                 $response = $context->getRequestContext()->getResponse();
                 $response->headers->clearCookie('authToken');
@@ -152,6 +190,7 @@ class ModuleManager extends AbstractModuleManager {
     public function loadFilters (ApplicationContext &$context) {
 
         $context->addFilter(new StringFilter('Credential', 'filterByLogin', 'login = :login'));
+        $context->addFilter(new StringFilter('Credential', 'filterById', 'id = :id'));
 
     }
 
