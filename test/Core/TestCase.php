@@ -410,7 +410,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     /**
      * @return callable
      */
-    public function getCallable () {
+    public static function getCallable () {
 
         return function () {
         };

@@ -33,6 +33,7 @@ class KeyPathTest extends TestCase {
     public function testInvalidFormat () {
 
         new KeyPath('qwe/qwe');
+
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Core\Context;
 
 
+use Core\Auth;
 use Core\TestCase;
 
 class FindQueryContextTest extends TestCase {

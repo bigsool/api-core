@@ -6,6 +6,7 @@ namespace Core\Context;
 use Core\Field\RelativeField;
 use Core\Parameter\UnsafeParameter;
 use Core\TestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class RequestContextTest extends TestCase {
 
@@ -24,6 +25,17 @@ class RequestContextTest extends TestCase {
         $this->assertSame($array[0], $ctx->getParam(0));
         $this->assertSame($array['b'], $ctx->getParam('b'));
         $this->assertSame(NULL, $ctx->getParam('qwe'));
+
+    }
+
+    public function testResponse () {
+
+        $ctx = $this->getRequestContext();
+
+        $response = new Response();
+        
+        $ctx->setResponse($response);
+        $this->assertSame($response, $ctx->getResponse());
 
     }
 

@@ -56,10 +56,6 @@ class FindQueryContext implements QueryContext {
             throw new RuntimeException('$entity must be a string');
         }
 
-        if (!is_array($rights)) {
-            throw new RuntimeException('$rights must be a array');
-        }
-
         $this->entity = $entity;
         $this->rights = $rights;
 

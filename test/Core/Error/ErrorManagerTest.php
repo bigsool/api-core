@@ -125,9 +125,12 @@ class ErrorManagerTest extends TestCase {
 
     public function testGetFormattedErrorWithError () {
 
-        $formattedError = $this->errorManager->getFormattedError($this->error1000->getCode());
+        $field = 'field';
+        $formattedError = $this->errorManager->getFormattedError($this->error1000->getCode(), $field);
         $this->assertEquals($formattedError->getCode(), __TEST__ERR_1);
         $this->assertCount(1, $formattedError->getChildErrors());
+        $this->assertSame($field,
+                          $formattedError->getChildErrors()[0]->getChildErrors()[0]->getChildErrors()[0]->getField());
 
         $formattedChildErrors = $formattedError->getChildErrors();
 
