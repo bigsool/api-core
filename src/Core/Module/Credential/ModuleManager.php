@@ -95,7 +95,7 @@ class ModuleManager extends AbstractModuleManager {
                 $credentialId = $ctx->getParam('credentialId');
 
                 $helper = new Helper();
-                $newAuthToken = $helper->getNewAuthToken($authToken,$credentialId);
+                $newAuthToken = $helper->renewAuthToken($authToken,$credentialId);
 
                 $appCtx = ApplicationContext::getInstance();
                 $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
@@ -164,8 +164,6 @@ class ModuleManager extends AbstractModuleManager {
 
             unset($params['currentPassword']);
 
-
-
             $helper->updateCredential($context,$credential,$params);
 
             $credential = $context['credential'];
@@ -181,6 +179,7 @@ class ModuleManager extends AbstractModuleManager {
                 $response->headers->clearCookie('authToken');
 
             }));
+
 
     }
 
@@ -215,5 +214,6 @@ class ModuleManager extends AbstractModuleManager {
                                         new StringFilter('Credential', 'passwordIsForbidden', '1 = 0')));
 
     }
+
 
 }

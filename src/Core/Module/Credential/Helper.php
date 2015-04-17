@@ -15,8 +15,9 @@ use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
-    const AUTH_TOKEN_TYPE_BASIC = 'basic';
+    const AUTH_TOKEN_BASIC = 'basic';
 
+    const AUTH_TOKEN_RESET_PASSWORD = 'resetPassword';
     /**
      * @param ActionContext $actionContext
      * @param array         $params
@@ -46,7 +47,7 @@ class Helper extends BasicHelper {
         $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
         return $this::generateAuthToken($params['login'], $expiration, $credential->getPassword(),
-                                        self::AUTH_TOKEN_TYPE_BASIC);
+                                        self::AUTH_TOKEN_BASIC);
 
     }
 
@@ -149,7 +150,7 @@ class Helper extends BasicHelper {
      * @return array
      * @throws \Core\Error\FormattedError
      */
-    public function getNewAuthToken ($authToken, $credentialId) {
+    public function renewAuthToken ($authToken, $credentialId) {
 
         $appCtx = ApplicationContext::getInstance();
         $errorManager = $appCtx->getErrorManager();
@@ -166,6 +167,24 @@ class Helper extends BasicHelper {
 
         return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
                                        $authToken['type']);
+
+    }
+
+    /**
+     * @param Credential $credential
+     * @param string $authTokenType
+     * @return array
+     */
+    public function getNewAuthToken ($credential,$authTokenType, $expiration) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        if (!$expiration) {
+            $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+        }
+
+        return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
+                                       $authTokenType);
 
     }
 
