@@ -56,6 +56,7 @@ class Auth {
     public function getCredential () {
 
         return $this->credential;
+
     }
 
     /**
