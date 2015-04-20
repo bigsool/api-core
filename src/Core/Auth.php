@@ -27,19 +27,6 @@ class Auth {
     protected $rights = [];
 
     /**
-     * @return Auth
-     */
-    public static function createInternalAuth() {
-
-        $auth = new static;
-        $auth->rights[] = static::ROOT;
-        $auth->rights[] = static::INTERNAL;
-
-        return $auth;
-
-    }
-
-    /**
      * @param mixed $credential
      */
     public function __construct ($credential = NULL) {
@@ -47,6 +34,19 @@ class Auth {
         $this->rights[] = self::GUEST;
 
         $this->setCredential($credential);
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public static function createInternalAuth () {
+
+        $auth = new static;
+        $auth->rights[] = static::ROOT;
+        $auth->rights[] = static::INTERNAL;
+
+        return $auth;
 
     }
 
@@ -64,7 +64,15 @@ class Auth {
     public function setCredential ($credential) {
 
         $this->credential = $credential;
-        $this->rights[] = self::AUTHENTICATED;
+        if (is_null($credential)) {
+            $key = array_search(self::AUTHENTICATED, $this->rights);
+            if ($key !== false) {
+                unset($this->rights[$key]);
+            }
+        }
+        else {
+            $this->rights[] = self::AUTHENTICATED;
+        }
 
     }
 
