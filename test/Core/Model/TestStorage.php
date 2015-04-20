@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="storage")
  * @ORM\Entity
  */
-class TestStorage {
-
+class TestStorage
+{
     /**
      * @var integer
      *
@@ -77,24 +77,15 @@ class TestStorage {
      */
     private $user;
 
+
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId () {
-
+    public function getId()
+    {
         return $this->id;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl () {
-
-        return $this->url;
     }
 
     /**
@@ -104,21 +95,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setUrl ($url) {
-
+    public function setUrl($url)
+    {
         $this->url = $url;
 
         return $this;
     }
 
     /**
-     * Get login
+     * Get url
      *
      * @return string
      */
-    public function getLogin () {
-
-        return $this->login;
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     /**
@@ -128,21 +119,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setLogin ($login) {
-
+    public function setLogin($login)
+    {
         $this->login = $login;
 
         return $this;
     }
 
     /**
-     * Get password
+     * Get login
      *
      * @return string
      */
-    public function getPassword () {
-
-        return $this->password;
+    public function getLogin()
+    {
+        return $this->login;
     }
 
     /**
@@ -152,21 +143,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setPassword ($password) {
-
+    public function setPassword($password)
+    {
         $this->password = $password;
 
         return $this;
     }
 
     /**
-     * Get usedSpace
+     * Get password
      *
-     * @return integer
+     * @return string
      */
-    public function getUsedSpace () {
-
-        return $this->usedSpace;
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -176,21 +167,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setUsedSpace ($usedSpace) {
-
+    public function setUsedSpace($usedSpace)
+    {
         $this->usedSpace = $usedSpace;
 
         return $this;
     }
 
     /**
-     * Get lastUsedSpaceUpdate
+     * Get usedSpace
      *
-     * @return \DateTime
+     * @return integer
      */
-    public function getLastUsedSpaceUpdate () {
-
-        return $this->lastUsedSpaceUpdate;
+    public function getUsedSpace()
+    {
+        return $this->usedSpace;
     }
 
     /**
@@ -200,21 +191,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setLastUsedSpaceUpdate ($lastUsedSpaceUpdate) {
-
+    public function setLastUsedSpaceUpdate($lastUsedSpaceUpdate)
+    {
         $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
 
         return $this;
     }
 
     /**
-     * Get isOutOfQuota
+     * Get lastUsedSpaceUpdate
      *
-     * @return boolean
+     * @return \DateTime
      */
-    public function getIsOutOfQuota () {
-
-        return $this->isOutOfQuota;
+    public function getLastUsedSpaceUpdate()
+    {
+        return $this->lastUsedSpaceUpdate;
     }
 
     /**
@@ -224,21 +215,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setIsOutOfQuota ($isOutOfQuota) {
-
+    public function setIsOutOfQuota($isOutOfQuota)
+    {
         $this->isOutOfQuota = $isOutOfQuota;
 
         return $this;
     }
 
     /**
-     * Get company
+     * Get isOutOfQuota
      *
-     * @return \Core\Model\TestCompany
+     * @return boolean
      */
-    public function getCompany () {
-
-        return $this->company;
+    public function getIsOutOfQuota()
+    {
+        return $this->isOutOfQuota;
     }
 
     /**
@@ -248,21 +239,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setCompany (\Core\Model\TestCompany $company = NULL) {
-
+    public function setCompany(\Core\Model\TestCompany $company = null)
+    {
         $this->company = $company;
 
         return $this;
     }
 
     /**
-     * Get user
+     * Get company
      *
-     * @return \Core\Model\TestUser
+     * @return \Core\Model\TestCompany
      */
-    public function getUser () {
-
-        return $this->user;
+    public function getCompany()
+    {
+        return $this->company;
     }
 
     /**
@@ -272,11 +263,21 @@ class TestStorage {
      *
      * @return TestStorage
      */
-    public function setUser (\Core\Model\TestUser $user = NULL) {
-
+    public function setUser(\Core\Model\TestUser $user = null)
+    {
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Core\Model\TestUser
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
 

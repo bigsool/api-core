@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="userEmail", columns={"email"})})
  * @ORM\Entity
  */
-class TestUser {
-
+class TestUser
+{
     /**
      * @var integer
      *
@@ -118,24 +118,15 @@ class TestUser {
      */
     private $company;
 
+
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId () {
-
+    public function getId()
+    {
         return $this->id;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail () {
-
-        return $this->email;
     }
 
     /**
@@ -145,21 +136,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setEmail ($email) {
-
+    public function setEmail($email)
+    {
         $this->email = $email;
 
         return $this;
     }
 
     /**
-     * Get password
+     * Get email
      *
      * @return string
      */
-    public function getPassword () {
-
-        return $this->password;
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     /**
@@ -169,21 +160,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setPassword ($password) {
-
+    public function setPassword($password)
+    {
         $this->password = $password;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get password
      *
      * @return string
      */
-    public function getName () {
-
-        return $this->name;
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -193,21 +184,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setName ($name) {
-
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get firstname
+     * Get name
      *
      * @return string
      */
-    public function getFirstname () {
-
-        return $this->firstname;
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -217,21 +208,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setFirstname ($firstname) {
-
+    public function setFirstname($firstname)
+    {
         $this->firstname = $firstname;
 
         return $this;
     }
 
     /**
-     * Get lang
+     * Get firstname
      *
      * @return string
      */
-    public function getLang () {
-
-        return $this->lang;
+    public function getFirstname()
+    {
+        return $this->firstname;
     }
 
     /**
@@ -241,21 +232,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setLang ($lang) {
-
+    public function setLang($lang)
+    {
         $this->lang = $lang;
 
         return $this;
     }
 
     /**
-     * Get salt
+     * Get lang
      *
      * @return string
      */
-    public function getSalt () {
-
-        return $this->salt;
+    public function getLang()
+    {
+        return $this->lang;
     }
 
     /**
@@ -265,21 +256,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setSalt ($salt) {
-
+    public function setSalt($salt)
+    {
         $this->salt = $salt;
 
         return $this;
     }
 
     /**
-     * Get registerDate
+     * Get salt
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getRegisterDate () {
-
-        return $this->registerDate;
+    public function getSalt()
+    {
+        return $this->salt;
     }
 
     /**
@@ -289,21 +280,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setRegisterDate ($registerDate) {
-
+    public function setRegisterDate($registerDate)
+    {
         $this->registerDate = $registerDate;
 
         return $this;
     }
 
     /**
-     * Get lastLoginDate
+     * Get registerDate
      *
      * @return \DateTime
      */
-    public function getLastLoginDate () {
-
-        return $this->lastLoginDate;
+    public function getRegisterDate()
+    {
+        return $this->registerDate;
     }
 
     /**
@@ -313,21 +304,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setLastLoginDate ($lastLoginDate) {
-
+    public function setLastLoginDate($lastLoginDate)
+    {
         $this->lastLoginDate = $lastLoginDate;
 
         return $this;
     }
 
     /**
-     * Get knowsFrom
+     * Get lastLoginDate
      *
-     * @return string
+     * @return \DateTime
      */
-    public function getKnowsFrom () {
-
-        return $this->knowsFrom;
+    public function getLastLoginDate()
+    {
+        return $this->lastLoginDate;
     }
 
     /**
@@ -337,21 +328,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setKnowsFrom ($knowsFrom) {
-
+    public function setKnowsFrom($knowsFrom)
+    {
         $this->knowsFrom = $knowsFrom;
 
         return $this;
     }
 
     /**
-     * Get confirmationKey
+     * Get knowsFrom
      *
      * @return string
      */
-    public function getConfirmationKey () {
-
-        return $this->confirmationKey;
+    public function getKnowsFrom()
+    {
+        return $this->knowsFrom;
     }
 
     /**
@@ -361,21 +352,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setConfirmationKey ($confirmationKey) {
-
+    public function setConfirmationKey($confirmationKey)
+    {
         $this->confirmationKey = $confirmationKey;
 
         return $this;
     }
 
     /**
-     * Get ownedCompany
+     * Get confirmationKey
      *
-     * @return \Core\Model\TestCompany
+     * @return string
      */
-    public function getOwnedCompany () {
-
-        return $this->ownedCompany;
+    public function getConfirmationKey()
+    {
+        return $this->confirmationKey;
     }
 
     /**
@@ -385,21 +376,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setOwnedCompany (\Core\Model\TestCompany $ownedCompany = NULL) {
-
+    public function setOwnedCompany(\Core\Model\TestCompany $ownedCompany = null)
+    {
         $this->ownedCompany = $ownedCompany;
 
         return $this;
     }
 
     /**
-     * Get storage
+     * Get ownedCompany
      *
-     * @return \Core\Model\TestStorage
+     * @return \Core\Model\TestCompany
      */
-    public function getStorage () {
-
-        return $this->storage;
+    public function getOwnedCompany()
+    {
+        return $this->ownedCompany;
     }
 
     /**
@@ -409,21 +400,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setStorage (\Core\Model\TestStorage $storage = NULL) {
-
+    public function setStorage(\Core\Model\TestStorage $storage = null)
+    {
         $this->storage = $storage;
 
         return $this;
     }
 
     /**
-     * Get company
+     * Get storage
      *
-     * @return \Core\Model\TestCompany
+     * @return \Core\Model\TestStorage
      */
-    public function getCompany () {
-
-        return $this->company;
+    public function getStorage()
+    {
+        return $this->storage;
     }
 
     /**
@@ -433,11 +424,21 @@ class TestUser {
      *
      * @return TestUser
      */
-    public function setCompany (\Core\Model\TestCompany $company = NULL) {
-
+    public function setCompany(\Core\Model\TestCompany $company = null)
+    {
         $this->company = $company;
 
         return $this;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getCompany()
+    {
+        return $this->company;
     }
 }
 

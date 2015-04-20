@@ -89,6 +89,21 @@ class RequestContext {
     }
 
     /**
+     * @param RequestContext $current
+     *
+     * @return RequestContext
+     */
+    public static function copyWithoutRequestedFields(RequestContext $current) {
+
+        $reqCtx = clone $current;
+        $reqCtx->setReturnedFields([]);
+        $reqCtx->setFormattedReturnedFields([]);
+
+        return $reqCtx;
+
+    }
+
+    /**
      */
     public function __construct () {
 
