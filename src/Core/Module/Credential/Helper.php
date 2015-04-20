@@ -3,7 +3,6 @@
 
 namespace Core\Module\Credential;
 
-use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
@@ -18,6 +17,7 @@ class Helper extends BasicHelper {
     const AUTH_TOKEN_BASIC = 'basic';
 
     const AUTH_TOKEN_RESET_PASSWORD = 'resetPassword';
+
     /**
      * @param ActionContext $actionContext
      * @param array         $params
@@ -62,38 +62,13 @@ class Helper extends BasicHelper {
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
+        $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
 
         $qryCtx->addField(new RelativeField('*'));
 
         $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
 
         $qryCtx->setParams(['login' => $login]);
-
-        $credentials = $registry->find($qryCtx, false);
-
-        return count($credentials) != 1 ? NULL : $credentials[0];
-
-    }
-
-    /**
-     * @param integer $id
-     *
-     * @return Credential|null
-     */
-    public function getCredentialFromId ($id) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('Credential', new RequestContext(), [Auth::INTERNAL]);
-
-        $qryCtx->addField(new RelativeField('*'));
-
-        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterById'));
-
-        $qryCtx->setParams(['id' => $id]);
 
         $credentials = $registry->find($qryCtx, false);
 
@@ -145,8 +120,9 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param mixed $authToken
+     * @param mixed   $authToken
      * @param integer $credentialId
+     *
      * @return array
      * @throws \Core\Error\FormattedError
      */
@@ -171,24 +147,6 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param Credential $credential
-     * @param string $authTokenType
-     * @return array
-     */
-    public function getNewAuthToken ($credential,$authTokenType, $expiration) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        if (!$expiration) {
-            $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
-        }
-
-        return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
-                                       $authTokenType);
-
-    }
-
-    /**
      * @param mixed $authToken
      *
      * @throws \Core\Error\FormattedError
@@ -202,6 +160,50 @@ class Helper extends BasicHelper {
         ) {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
+
+    }
+
+    /**
+     * @param integer $id
+     *
+     * @return Credential|null
+     */
+    public function getCredentialFromId ($id) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        $registry = $appCtx->getNewRegistry();
+
+        $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
+
+        $qryCtx->addField(new RelativeField('*'));
+
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterById'));
+
+        $qryCtx->setParams(['id' => $id]);
+
+        $credentials = $registry->find($qryCtx, false);
+
+        return count($credentials) != 1 ? NULL : $credentials[0];
+
+    }
+
+    /**
+     * @param Credential $credential
+     * @param string     $authTokenType
+     *
+     * @return array
+     */
+    public function getNewAuthToken ($credential, $authTokenType, $expiration) {
+
+        $appCtx = ApplicationContext::getInstance();
+
+        if (!$expiration) {
+            $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+        }
+
+        return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
+                                       $authTokenType);
 
     }
 
@@ -252,7 +254,7 @@ class Helper extends BasicHelper {
                                     array $params = [],
                                     array $rights = []) {
 
-        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext(), $rights);
+        $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext());
 
         $actionContext['credentials'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
 

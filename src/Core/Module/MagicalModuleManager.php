@@ -897,7 +897,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $registry = $appCtx->getNewRegistry();
 
-        $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext, $rights);
+        $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext);
 
         $fields = $this->formatFindValues($fields);
         $this->disableModelAspects($disabledKeyPaths);

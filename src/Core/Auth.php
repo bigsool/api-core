@@ -27,11 +27,26 @@ class Auth {
     protected $rights = [];
 
     /**
-     *
+     * @return Auth
      */
-    public function __construct () {
+    public static function createInternalAuth() {
+
+        $auth = new static;
+        $auth->rights[] = static::ROOT;
+        $auth->rights[] = static::INTERNAL;
+
+        return $auth;
+
+    }
+
+    /**
+     * @param mixed $credential
+     */
+    public function __construct ($credential = NULL) {
 
         $this->rights[] = self::GUEST;
+
+        $this->setCredential($credential);
 
     }
 
