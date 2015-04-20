@@ -17,4 +17,36 @@ class ArrayExtraTest extends TestCase {
 
     }
 
+    public function testMagicalGet () {
+
+        $array = [
+            'A' => 'a',
+            'B' => [
+                'C' => 'bc'
+            ],
+            'D' => [
+                [
+                    'E' => 'de1'
+                ],
+                [
+                    'E' => 'de2'
+                ]
+            ],
+            'F' => [
+                [],
+                1
+            ],
+            'I' => [
+            ],
+        ];
+
+        $this->assertSame($array['A'], ArrayExtra::magicalGet($array, 'A'));
+        $this->assertSame($array['B']['C'], ArrayExtra::magicalGet($array, 'B.C'));
+        $this->assertSame([$array['D'][0]['E'], $array['D'][1]['E']], ArrayExtra::magicalGet($array, 'D.E'));
+        $this->assertSame([], ArrayExtra::magicalGet($array, 'F.G'));
+        $this->assertSame(NULL, ArrayExtra::magicalGet($array, 'H'));
+        $this->assertSame([], ArrayExtra::magicalGet($array, 'I'));
+
+    }
+
 }

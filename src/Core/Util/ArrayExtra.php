@@ -110,18 +110,50 @@ class ArrayExtra {
     public static function magicalGet (array $array, $key) {
 
         $exploded = explode('.', $key);
-        foreach ($exploded as $index => $key) {
+        $return = NULL;
+        for ($i = 0; $i < count($exploded); ++$i) {
+            $key = $exploded[$i];
+
+            // if [{},{},{}...]
+            if (!static::isAssociative($array)) {
+                $return = [];
+                $newKey = implode('.', array_slice($exploded, $i));
+
+                // foreach {} in [{},{},{}...]
+                foreach ($array as $subArray) {
+                    if (!is_array($subArray)) {
+                        continue;
+                    }
+                    $tmpGet = static::magicalGet($subArray, $newKey);
+                    if (is_null($tmpGet)) {
+                        continue;
+                    }
+
+                    // if not [{},{},{}...]
+                    if (!is_array($tmpGet) || !static::isAssociative($tmpGet)) {
+                        $return[] = $tmpGet;
+                    }
+                    // if [{},{},{}...]
+                    elseif (is_array($tmpGet)) {
+                        foreach ($tmpGet as $subTmpGet) {
+                            $return[] = $subTmpGet;
+                        }
+                    }
+                }
+                continue;
+            }
+
             if (!isset($array[$key])) {
                 return NULL;
             }
             // it's not necessary to create an array for the last key
-            if ($index + 1 == count($exploded)) {
-                break;
+            if ($i + 1 == count($exploded)) {
+                $return = $array[$key];
             }
             $array = $array[$key];
         }
 
-        return $array[$key];
+        return $return;
 
     }
 
@@ -130,7 +162,7 @@ class ArrayExtra {
      *
      * @return bool
      */
-    public static function isAssociative(array &$array) {
+    public static function isAssociative (array &$array) {
 
         return array_keys($array) !== range(0, count($array) - 1);
 
