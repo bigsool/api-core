@@ -27,6 +27,11 @@ class RealField implements ResolvableField {
     protected $alias;
 
     /**
+     * @var boolean
+     */
+    protected $useLeftJoin = false;
+
+    /**
      * @param string $value
      */
     public function __construct ($value) {
@@ -37,6 +42,14 @@ class RealField implements ResolvableField {
 
         $this->value = $value;
 
+    }
+
+    /**
+     * @param boolean $useLeftJoin
+     */
+    public function setUseLeftJoin ($useLeftJoin) {
+
+        $this->useLeftJoin = !!$useLeftJoin;
     }
 
     /**
@@ -58,11 +71,38 @@ class RealField implements ResolvableField {
     }
 
     /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return $this->resolvedEntity;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->resolvedField;
+
+    }
+
+    /**
      * @return bool
      */
     public function shouldResolveForAWhere () {
 
         return false;
+
+    }
+
+    /**
+     * @return boolean
+     */
+    public function shouldUseLeftJoin () {
+
+        return $this->useLeftJoin;
 
     }
 
@@ -116,24 +156,6 @@ class RealField implements ResolvableField {
     protected function isUsedInExpression () {
 
         return false;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getResolvedField () {
-
-        return $this->resolvedField;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getResolvedEntity () {
-
-        return $this->resolvedEntity;
 
     }
 }

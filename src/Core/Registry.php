@@ -121,6 +121,7 @@ class Registry implements EventSubscriber {
 
         $join = $alias . '.' . $field;
 
+        // TODO: even if a left join was done, we should replace it by a inner join if it is
         if (!isset($this->joins[$join])) {
 
             $newAlias = $alias . ucfirst($field);

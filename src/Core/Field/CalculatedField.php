@@ -8,6 +8,7 @@ use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
 use Core\Registry;
+use Core\Util\ArrayExtra;
 
 class CalculatedField implements ResolvableField {
 
@@ -36,6 +37,11 @@ class CalculatedField implements ResolvableField {
     protected $value;
 
     /**
+     * @var boolean
+     */
+    protected $useLeftJoin;
+
+    /**
      * @param string $value
      */
     public function __construct ($value) {
@@ -53,11 +59,21 @@ class CalculatedField implements ResolvableField {
      * @param string   $field
      * @param callable $function
      * @param array    $requiredFields
+     * @param boolean  $useLeftJoin
      */
-    public static function create ($entity, $field, callable $function, array $requiredFields = []) {
+    public static function create ($entity, $field, callable $function, array $requiredFields = [],
+                                   $useLeftJoin = false) {
 
-        static::$calculatedFields[$entity][$field] = [$function, $requiredFields];
+        static::$calculatedFields[$entity][$field] = [$function, $requiredFields, !!$useLeftJoin];
 
+    }
+
+    /**
+     * @param boolean $useLeftJoin
+     */
+    public function setUseLeftJoin ($useLeftJoin) {
+
+        $this->useLeftJoin = !!$useLeftJoin;
     }
 
     /**
@@ -75,6 +91,24 @@ class CalculatedField implements ResolvableField {
     public function setAlias ($alias) {
 
         $this->alias = $alias;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return $this->resolvedEntity;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->resolvedField;
 
     }
 
@@ -132,13 +166,14 @@ class CalculatedField implements ResolvableField {
             throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
         }
 
-        list(, $requiredFields) = static::$calculatedFields[$entity][$field];
+        list(, $requiredFields, $useLeftJoin) = static::$calculatedFields[$entity][$field];
 
         $fields = [];
 
         foreach ($requiredFields as $requiredField) {
 
-            $fields[] = new RealField($requiredField);
+            $fields[] = $field = new RealField($requiredField);
+            $field->setUseLeftJoin($useLeftJoin);
 
         }
 
@@ -162,10 +197,13 @@ class CalculatedField implements ResolvableField {
 
         list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
 
+        $params = [];
+        foreach ($requiredFields as $requiredField) {
+            $params[] = ArrayExtra::magicalGet($data, $requiredField);
+        }
         // Call $callable only with requiredFields
-        // TODO: handle fields like company.name
         // TODO: handle alias ?
-        return $data[$field] = call_user_func_array($callable, array_intersect_key($data, array_flip($requiredFields)));
+        return $data[$field] = call_user_func_array($callable, $params);
 
     }
 
@@ -188,20 +226,12 @@ class CalculatedField implements ResolvableField {
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getResolvedField () {
+    public function shouldUseLeftJoin () {
 
-        return $this->resolvedField;
+        return $this->useLeftJoin;
 
     }
 
-    /**
-     * @return string
-     */
-    public function getResolvedEntity () {
-
-        return $this->resolvedEntity;
-
-    }
 }
