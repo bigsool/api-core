@@ -40,11 +40,6 @@ class RequestContext {
     protected $auth;
 
     /**
-     * @var string
-     */
-    protected $returnedRootEntity;
-
-    /**
      * @var RelativeField[]
      */
     protected $returnedFields = [];
@@ -68,6 +63,45 @@ class RequestContext {
      * @var Response
      */
     protected $response;
+
+    /**
+     * @param RequestContext $current
+     *
+     * @return RequestContext
+     */
+    public static function createNewInternalRequestContext(RequestContext $current = NULL) {
+
+        $reqCtx = new static;
+
+        if ($current) {
+
+            $reqCtx->setLocale($current->getLocale());
+            $reqCtx->setClientVersion($current->getClientVersion());
+            $reqCtx->setClientName($current->getClientName());
+            $reqCtx->setIpAddress($current->getIpAddress());
+
+        }
+
+        $reqCtx->setAuth(Auth::createInternalAuth());
+
+        return $reqCtx;
+
+    }
+
+    /**
+     * @param RequestContext $current
+     *
+     * @return RequestContext
+     */
+    public static function copyWithoutRequestedFields(RequestContext $current) {
+
+        $reqCtx = clone $current;
+        $reqCtx->setReturnedFields([]);
+        $reqCtx->setFormattedReturnedFields([]);
+
+        return $reqCtx;
+
+    }
 
     /**
      */

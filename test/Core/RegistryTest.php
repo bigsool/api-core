@@ -433,10 +433,10 @@ class RegistryTest extends TestCase {
 
     public function testFindWithRequestedKeyPath () {
 
-        $reqCtx = $this->getMockRequestContext();
-        $reqCtx->method('getFormattedReturnedFields')->willReturn([
-                                                                      new RelativeField('name')
-                                                                  ]);
+        $reqCtx = new RequestContext();
+        $reqCtx->setFormattedReturnedFields([
+                                                new RelativeField('name')
+                                            ]);
 
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
 

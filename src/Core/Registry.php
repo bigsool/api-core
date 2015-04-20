@@ -330,21 +330,7 @@ class Registry implements EventSubscriber {
 
         $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
 
-        if ($hydrateArray) {
-
-            foreach ($resolvableFields as $resolvableField) {
-
-                if (!($resolvableField instanceof CalculatedField)) {
-                    continue;
-                }
-
-                foreach ($result as &$data) {
-                    $resolvableField->exec($data);
-                }
-
-            }
-
-        }
+        $result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
 
         return $result;
 
@@ -387,6 +373,9 @@ class Registry implements EventSubscriber {
     protected static function removedNotNecessaryFields (array $resolvableFields) {
 
         $finalResolvableFields = [];
+        /**
+         * @var ResolvableField[] $resolvableFields
+         */
         $resolvableFields = array_values($resolvableFields);
         for ($i = 0; $i < count($resolvableFields); ++$i) {
             $resolvableField = $resolvableFields[$i];
@@ -414,6 +403,34 @@ class Registry implements EventSubscriber {
         }
 
         return array_values($finalResolvableFields);
+    }
+
+    /**
+     * @param bool              $hydrateArray
+     * @param ResolvableField[] $resolvableFields
+     * @param array             $result
+     *
+     * @return mixed
+     */
+    protected function insertCalculatedFields ($hydrateArray, $resolvableFields, $result) {
+
+        if ($hydrateArray) {
+
+            foreach ($resolvableFields as $resolvableField) {
+
+                if (!($resolvableField instanceof CalculatedField)) {
+                    continue;
+                }
+
+                foreach ($result as &$data) {
+                    $resolvableField->exec($data);
+                }
+
+            }
+
+        }
+
+        return $result;
     }
 
     public function delete ($model) {

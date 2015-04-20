@@ -3,9 +3,7 @@
 
 namespace Core\Module\Credential;
 
-use Core\Action\BasicUpdateAction;
 use Core\Action\SimpleAction;
-use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -95,7 +93,7 @@ class ModuleManager extends AbstractModuleManager {
                 $credentialId = $ctx->getParam('credentialId');
 
                 $helper = new Helper();
-                $newAuthToken = $helper->renewAuthToken($authToken,$credentialId);
+                $newAuthToken = $helper->renewAuthToken($authToken, $credentialId);
 
                 $appCtx = ApplicationContext::getInstance();
                 $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
@@ -121,10 +119,9 @@ class ModuleManager extends AbstractModuleManager {
 
                 $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
 
-                $ctx = new ActionContext(new RequestContext());
+                $ctx = new ActionContext(RequestContext::createNewInternalRequestContext());
 
-                $helper->findCredential($ctx, true, [new RelativeField('*')], [$filter], ['login' => $params['login']],
-                                        [Auth::INTERNAL]);
+                $helper->findCredential($ctx, true, [new RelativeField('*')], [$filter], ['login' => $params['login']]);
 
                 if (count($ctx['credentials']) != 0) {
 
@@ -164,7 +161,7 @@ class ModuleManager extends AbstractModuleManager {
 
             unset($params['currentPassword']);
 
-            $helper->updateCredential($context,$credential,$params);
+            $helper->updateCredential($context, $credential, $params);
 
             $credential = $context['credential'];
 
@@ -179,7 +176,6 @@ class ModuleManager extends AbstractModuleManager {
                 $response->headers->clearCookie('authToken');
 
             }));
-
 
     }
 

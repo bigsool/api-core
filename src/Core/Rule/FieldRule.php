@@ -75,8 +75,11 @@ class FieldRule implements Rule {
             return false;
         }
 
+        if (is_null($ctx->getReqCtx()->getAuth())) {
+            throw new \Exception;
+        }
         // Do not apply rule if the Query is defined as INTERNAL
-        if (Auth::staticHasRights($ctx->getRights(), Auth::INTERNAL)) {
+        if ($ctx->getReqCtx()->getAuth()->hasRights(Auth::INTERNAL)) {
             return false;
         }
 

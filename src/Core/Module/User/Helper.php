@@ -60,7 +60,7 @@ class Helper extends BasicHelper {
                               array $params = [],
                               array $rights = []) {
 
-        $qryCtx = new FindQueryContext('User', $actionContext->getRequestContext(), $rights);
+        $qryCtx = new FindQueryContext('User', $actionContext->getRequestContext());
 
         $actionContext['users'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
 
