@@ -3,3 +3,7 @@ db:
   user: root
   password: ''
   dbname: core
+mailer:
+  APITestKey: 'tZtwGas0NG_4zyCOpImmqw'
+  APIKey: ''
+  from: 'support@archipad.com'
