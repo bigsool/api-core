@@ -17,6 +17,7 @@ abstract class ModuleManager {
         $this->loadRules($context);
         $this->loadActions($context);
         $this->loadHelpers($context);
+        $this->loadFields($context);
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
@@ -27,6 +28,13 @@ abstract class ModuleManager {
             $API = new $classname();
             $API->load();
         }
+
+    }
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadFields(ApplicationContext &$context) {
 
     }
 
