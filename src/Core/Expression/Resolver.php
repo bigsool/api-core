@@ -29,6 +29,22 @@ trait Resolver {
     protected $resolvedEntity;
 
     /**
+     * @return string
+     */
+    public function getResolvedField () {
+
+        return $this->resolvedField;
+    }
+
+    /**
+     * @return string
+     */
+    public function getResolvedEntity () {
+
+        return $this->resolvedEntity;
+    }
+
+    /**
      * @param Registry     $registry
      * @param QueryContext $ctx
      *

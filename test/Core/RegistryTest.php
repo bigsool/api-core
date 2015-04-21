@@ -376,7 +376,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT partial testUser.{id,name} ' .
+        $dql = 'SELECT testUser ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
@@ -443,7 +443,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('email'));
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->find($qryCtx, false);
+        $registry->find($qryCtx, true);
 
         $dql = 'SELECT partial testUser.{id,email,name} ' .
                'FROM \Core\Model\TestUser testUser ' .
@@ -467,8 +467,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, false);
 
-        $dql = 'SELECT partial testUser.{id,name}, partial testUserCompany.{id}, '.
-               'partial testUserCompanyUsers.{id,name,email} ' .
+        $dql = 'SELECT testUser, testUserCompany, testUserCompanyUsers ' .
                'FROM \Core\Model\TestUser testUser ' .
                'INNER JOIN testUser.company testUserCompany ' .
                'INNER JOIN testUserCompany.users testUserCompanyUsers';

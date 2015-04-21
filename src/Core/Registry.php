@@ -10,6 +10,8 @@ use Core\Context\SaveQueryContext;
 use Core\Expression\NAryExpression;
 use Core\Field\Aggregate;
 use Core\Field\CalculatedField;
+use Core\Field\RealField;
+use Core\Field\RelativeField;
 use Core\Field\ResolvableField;
 use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
@@ -218,42 +220,27 @@ class Registry implements EventSubscriber {
         $qb = $this->getQueryBuilder($entity);
 
         /**
-         * @var ResolvableField[] $resolvableFields
+         * @var RelativeField[] $relativeFields
          */
-        $resolvableFields = [];
+        $relativeFields = array_merge($ctx->getFields(), $ctx->getReqCtx()->getFormattedReturnedFields());
 
-        // Field as to be resolve to do the isEqual()
-        foreach ($ctx->getFields() as $relativeField) {
-            $tmpResolvableFields = $relativeField->resolve($this, $ctx);
-            foreach ($tmpResolvableFields as $resolvableField) {
-                $resolvableField->resolve($this, $ctx);
-            }
-            $resolvableFields = array_merge($resolvableFields, $tmpResolvableFields);
-        }
+        $resolvableFields = $this->resolveRelativeFields($relativeFields, $ctx);
 
-        $reqCtxFields = $ctx->getReqCtx()->getFormattedReturnedFields();
-
-        foreach ($reqCtxFields as $fieldFromRequest) {
-            // Field as to be resolve to do the isEqual()
-            $tmpResolvableFields = $fieldFromRequest->resolve($this, $ctx);
-            foreach ($tmpResolvableFields as $resolvableField) {
-                $resolvableField->resolve($this, $ctx);
-            }
-            $resolvableFields = array_merge($resolvableFields, $tmpResolvableFields);
+        // in case of object, we don't want to specify fields but entities
+        if (!$hydrateArray) {
+            $resolvableFields = $this->addStarFields($ctx, $resolvableFields);
         }
 
         // cleanup duplicated fields
         $resolvableFields = self::removeDuplicatedFields($resolvableFields);
 
         // removed not necessary fields
-        $resolvableFields = self::removedNotNecessaryFields($resolvableFields);
+        $resolvableFields = $this->removedNotNecessaryFields($resolvableFields, $ctx);
 
         if (empty($resolvableFields)) {
             throw new \RuntimeException('fields are required');
         }
 
-        // TODO: fix problem with partial objects
-        // http://docs.doctrine-project.org/en/latest/reference/dql-doctrine-query-language.html#partial-object-syntax
         $entities = [];
         foreach ($resolvableFields as $resolvableField) {
             $fields = $resolvableField->resolve($this, $ctx);
@@ -268,8 +255,10 @@ class Registry implements EventSubscriber {
                     $qb->addSelect($field);
                 }
                 else {
-
                     if (count($exploded) == 2) {
+                        if (!$hydrateArray) {
+                            throw new \RuntimeException('cannot do partial object with Object Hydration');
+                        }
                         $entities[$exploded[0]][] = $exploded[1];
                     }
                 }
@@ -338,6 +327,72 @@ class Registry implements EventSubscriber {
     }
 
     /**
+     * @param RelativeField[]  $relativeFields
+     * @param FindQueryContext $ctx
+     *
+     * @return ResolvableField[]
+     */
+    protected function resolveRelativeFields (array $relativeFields, FindQueryContext $ctx) {
+
+        $resolvableFields = [];
+        foreach ($relativeFields as $relativeField) {
+            $tmpResolvableFields = $relativeField->resolve($this, $ctx);
+            foreach ($tmpResolvableFields as $resolvableField) {
+                // Field as to be resolve to do the isEqual()
+                $resolvableField->resolve($this, $ctx);
+            }
+            $resolvableFields = array_merge($resolvableFields, $tmpResolvableFields);
+        }
+
+        return $resolvableFields;
+
+    }
+
+    /**
+     * @param FindQueryContext  $ctx
+     * @param ResolvableField[] $resolvableFields
+     *
+     * @return ResolvableField[]
+     */
+    protected function addStarFields (FindQueryContext $ctx, $resolvableFields) {
+
+        $resolvableFieldsToAdd = [];
+        foreach ($resolvableFields as $resolvableField) {
+            if ($resolvableField instanceof RealField && $resolvableField->getResolvedField() != '*') {
+                $fieldValue = $resolvableField->getValue();
+                $prefix = substr($fieldValue, 0, strrpos($fieldValue, '.'));
+                $newFieldValue = $prefix ? $prefix . '.*' : '*';
+                $resolvableFieldsToAdd[] = $resolvableFieldToAdd = new RealField($newFieldValue);
+                $resolvableFieldToAdd->resolve($this, $ctx);
+            }
+        }
+
+        $resolvableFields = array_merge($resolvableFields, $resolvableFieldsToAdd);
+
+        return $resolvableFields;
+
+        /*
+        $relativeFieldsToAdd = [];
+        foreach ($relativeFields as $relativeField) {
+            $tmpResolvableFields = $relativeField->resolve($this, $ctx);
+            if ($relativeField->getResolvedField() != '*') {
+                foreach ($tmpResolvableFields as $tmpResolvableField) {
+                    if (!($tmpResolvableField instanceof RealField)) {
+                        continue 2;
+                    }
+                }
+                $fieldValue = $relativeField->getValue();
+                $prefix = substr($fieldValue, 0, strrpos($fieldValue, '.'));
+                $newFieldValue = $prefix ? $prefix . '.*' : '*';
+                $relativeFieldsToAdd[] = new RelativeField($newFieldValue);
+            }
+        }
+        $relativeFields = array_merge($relativeFields, $relativeFieldsToAdd);
+
+        return $relativeFields;*/
+    }
+
+    /**
      * @param ResolvableField[] $resolvableFields
      *
      * @return ResolvableField[]
@@ -368,10 +423,11 @@ class Registry implements EventSubscriber {
 
     /**
      * @param ResolvableField[] $resolvableFields
+     * @param FindQueryContext  $ctx
      *
      * @return ResolvableField[]
      */
-    protected static function removedNotNecessaryFields (array $resolvableFields) {
+    protected function removedNotNecessaryFields (array $resolvableFields, FindQueryContext $ctx) {
 
         $finalResolvableFields = [];
         /**
@@ -380,20 +436,31 @@ class Registry implements EventSubscriber {
         $resolvableFields = array_values($resolvableFields);
         for ($i = 0; $i < count($resolvableFields); ++$i) {
             $resolvableField = $resolvableFields[$i];
-            $entity = $resolvableField->getResolvedEntity();
-            $field = $resolvableField->getResolvedField();
-            if (array_key_exists($entity, $finalResolvableFields)) {
+            if (!($resolvableField instanceof RealField)) {
+                $finalResolvableFields[] = $resolvableField;
+                continue;
+            }
+            $resolvedValue = $resolvableField->resolve($this, $ctx)[0];
+            $explodedResolvedValue = explode('.', $resolvedValue);
+            $entityPath = $explodedResolvedValue[0];
+            $field = count($explodedResolvedValue) == 2 ? $explodedResolvedValue[1] : '*';
+            if (array_key_exists($entityPath, $finalResolvableFields)) {
                 continue;
             }
             if ($field == '*') {
-                $finalResolvableFields[$entity] = $resolvableField;
+                $finalResolvableFields[$entityPath] = $resolvableField;
                 continue;
             }
             for ($j = $i + 1; $j < count($resolvableFields); ++$j) {
                 $_resolvableField = $resolvableFields[$j];
-                $_entity = $_resolvableField->getResolvedEntity();
-                $_field = $_resolvableField->getResolvedField();
-                if ($_entity != $entity) {
+                if (!($_resolvableField instanceof RealField)) {
+                    continue;
+                }
+                $_resolvedValue = $_resolvableField->resolve($this, $ctx)[0];
+                $_explodedResolvedValue = explode('.', $_resolvedValue);
+                $_entityPath = $_explodedResolvedValue[0];
+                $_field = count($_explodedResolvedValue) == 2 ? $_explodedResolvedValue[1] : '*';
+                if ($_entityPath != $entityPath) {
                     continue;
                 }
                 if ($_field == '*') {
