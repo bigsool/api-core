@@ -6,13 +6,23 @@ use Core\Context\ApplicationContext;
 
 class Mailer {
 
+    /**
+    * @var \Mandrill
+    */
     private $mandrill;
+
+    /**
+     * @var string
+     */
     private $from;
 
+    /**
+     * @param ApplicationContext $appCtx
+     */
     function __construct (ApplicationContext $appCtx) {
 
         $config = $appCtx->getConfigManager()->getConfig();
-        $APIKey = $config['mailer']['APITestKey'];
+        $APIKey = $config['mailer']['APIKey'];
         $email = $config['mailer']['from'];
 
         $this->mandrill = new \Mandrill($APIKey);
@@ -20,6 +30,13 @@ class Mailer {
 
     }
 
+    /**
+     * @param String $to
+     * @param String $subject
+     * @param String $message
+     *
+     * @return Array
+     */
     public function send ($to, $subject, $message) {
 
         $message = [
@@ -33,10 +50,18 @@ class Mailer {
             'text' => $message,
         ];
 
-        $this->mandrill->messages->send($message);
+        return $this->mandrill->messages->send($message);
 
     }
 
+    /**
+     * @param String $templateName
+     * @param String $to
+     * @param String $subject
+     * @param String[] $params
+     *
+     * @return Array
+     */
     public function sendFromTemplate ($templateName, $to, $subject, $params) {
 
         $message = [
@@ -54,7 +79,7 @@ class Mailer {
             $message['global_merge_vars'][] = ['name' => $key, 'content' => $value];
         }
 
-        $this->mandrill->messages->sendTemplate($templateName, [], $message);
+        return $this->mandrill->messages->sendTemplate($templateName, [], $message);
 
     }
 

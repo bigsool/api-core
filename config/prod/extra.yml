@@ -3,3 +3,5 @@ db:
   user:
   password:
   dbname:
+mailer:
+  APIKey: 'tZtwGas0NG_4zyCOpImmqw'
