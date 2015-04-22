@@ -4,6 +4,7 @@ namespace Core\Doctrine\Command;
 
 use Core\Application;
 use Core\Context\ApplicationContext;
+use Core\Doctrine\Tools\EntityGenerator;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Registry;
@@ -12,7 +13,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
-use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
