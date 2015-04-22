@@ -99,6 +99,11 @@ class TestUser
     private $ownedCompany;
 
     /**
+     * @var int
+     */
+    private $ownedCompanyRestrictedId;
+
+    /**
      * @var \Core\Model\TestStorage
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestStorage", inversedBy="user", cascade={"persist","remove"})
@@ -109,6 +114,11 @@ class TestUser
     private $storage;
 
     /**
+     * @var int
+     */
+    private $storageRestrictedId;
+
+    /**
      * @var \Core\Model\TestCompany
      *
      * @ORM\ManyToOne(targetEntity="Core\Model\TestCompany", inversedBy="users", cascade={"persist"})
@@ -117,6 +127,11 @@ class TestUser
      * })
      */
     private $company;
+
+    /**
+     * @var int
+     */
+    private $companyRestrictedId;
 
 
     /**
@@ -390,7 +405,7 @@ class TestUser
      */
     public function getOwnedCompany()
     {
-        return $this->ownedCompany;
+        return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
     }
 
     /**
@@ -414,7 +429,7 @@ class TestUser
      */
     public function getStorage()
     {
-        return $this->storage;
+        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
     /**
@@ -438,7 +453,7 @@ class TestUser
      */
     public function getCompany()
     {
-        return $this->company;
+        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 }
 

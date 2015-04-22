@@ -95,6 +95,11 @@ class TestCompany
     private $owner;
 
     /**
+     * @var int
+     */
+    private $ownerRestrictedId;
+
+    /**
      * @var \Core\Model\TestStorage
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestStorage", inversedBy="company", cascade={"persist","remove"})
@@ -105,11 +110,21 @@ class TestCompany
     private $storage;
 
     /**
+     * @var int
+     */
+    private $storageRestrictedId;
+
+    /**
      * @var \Doctrine\Common\Collections\Collection
      *
      * @ORM\OneToMany(targetEntity="Core\Model\TestUser", mappedBy="company", cascade={"persist"})
      */
     private $users;
+
+    /**
+     * @var int[]
+     */
+    private $usersRestrictedIds = [];
 
     /**
      * Constructor
@@ -366,7 +381,7 @@ class TestCompany
      */
     public function getOwner()
     {
-        return $this->owner;
+        return $this->owner && $this->owner->getId() == $this->ownerRestrictedId ? $this->owner : NULL;
     }
 
     /**
@@ -390,7 +405,7 @@ class TestCompany
      */
     public function getStorage()
     {
-        return $this->storage;
+        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
     /**
@@ -424,7 +439,12 @@ class TestCompany
      */
     public function getUsers()
     {
-        return $this->users;
+        $inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this->usersRestrictedIds);
+    
+        $criteria = \Doctrine\Common\Collections\Criteria::create();
+        $criteria->where($inExpr);
+    
+        return $this->users->matching($criteria);
     }
 }
 

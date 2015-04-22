@@ -12,8 +12,8 @@ if (!file_exists($file = __DIR__ . '/../vendor/autoload.php')
 
 require_once $file;
 
-$config =
-    Setup::createYAMLMetadataConfiguration([__DIR__ . "/yml/"], true, __DIR__ . '/proxy/', new ArrayCache());
+$config = Setup::createYAMLMetadataConfiguration([__DIR__ . "/yml/"], true, __DIR__ . '/proxy/', new ArrayCache());
+$config->addCustomHydrationMode('RestrictedObjectHydrator', 'Core\Doctrine\Hydrator\RestrictedObjectHydrator');
 $conn = array(
     'driver' => 'pdo_sqlite',
     'path'   => __DIR__ . '/test.api.core.db.sqlite',

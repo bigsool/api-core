@@ -71,11 +71,21 @@ class TestStorage
     private $company;
 
     /**
+     * @var int
+     */
+    private $companyRestrictedId;
+
+    /**
      * @var \Core\Model\TestUser
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestUser", mappedBy="storage", cascade={"persist"})
      */
     private $user;
+
+    /**
+     * @var int
+     */
+    private $userRestrictedId;
 
 
     /**
@@ -253,7 +263,7 @@ class TestStorage
      */
     public function getCompany()
     {
-        return $this->company;
+        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
     /**
@@ -277,7 +287,7 @@ class TestStorage
      */
     public function getUser()
     {
-        return $this->user;
+        return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
     }
 }
 

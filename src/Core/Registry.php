@@ -318,7 +318,7 @@ class Registry implements EventSubscriber {
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
-        $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : Query::HYDRATE_OBJECT);
+        $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : 'RestrictedObjectHydrator');
 
         $result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
 
@@ -536,6 +536,7 @@ class Registry implements EventSubscriber {
     public function prePersist (LifecycleEventArgs $args) {
 
         $this->preModification($args);
+
     }
 
     /**
@@ -562,6 +563,7 @@ class Registry implements EventSubscriber {
     public function preUpdate (LifecycleEventArgs $args) {
 
         $this->preModification($args);
+
     }
 
     /**
@@ -576,6 +578,7 @@ class Registry implements EventSubscriber {
         }
 
         return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
+
     }
 
 }

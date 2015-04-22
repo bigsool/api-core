@@ -16,6 +16,7 @@ use Core\Field\Aggregate;
 use Core\Field\RelativeField;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
+use Core\Filter\StringFilter;
 use Core\Model\TestAccount;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
@@ -529,6 +530,65 @@ class RegistryTest extends TestCase {
                 }
             }
         }
+
+    }
+
+    public function testRestrictedEntities() {
+
+        $owner = new TestUser();
+        $owner->setEmail('owner@company.com');
+        $owner->setPassword('qwe');
+        $owner->setRegisterDate(new \DateTime());
+
+        $company = new TestCompany();
+        $company->setName('owned company');
+
+        $company->setOwner($owner);
+        $owner->setOwnedCompany($company);
+        $company->addUser($owner);
+        $owner->setCompany($company);
+
+        foreach (range(1,5) as $subUserNb) {
+            $subUser = new TestUser();
+            $subUser->setEmail("subUser{$subUserNb}@company.com");
+            $subUser->setPassword('qwe');
+            $subUser->setRegisterDate(new \DateTime());
+            $company->addUser($subUser);
+            $subUser->setCompany($company);
+        }
+
+        $saveRegistry = $this->appCtx->getNewRegistry();
+        $saveRegistry->save($owner);
+
+        $reqCtx = new RequestContext();
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+        $qryCtx->addFilter(new StringFilter('TestUser','ownerOnly','ownedCompany.id = '.$company->getId()));
+
+        $qryCtx->addField(new RelativeField('*'));
+        $qryCtx->addField(new RelativeField('company.users.*'));
+
+        $findRegistry = $this->appCtx->getNewRegistry();
+        $result = $findRegistry->find($qryCtx, false);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+
+        /**
+         * @var TestUser $user
+         */
+        $user = $result[0];
+        $this->assertInstanceOf('\Core\Model\TestUser', $user);
+
+        $this->assertNull($user->getOwnedCompany());
+        $retrievedCompany = $user->getCompany();
+        /**
+         * @var TestUser[] $retrievedCompanyUsers
+         */
+        $retrievedCompanyUsers = $retrievedCompany->getUsers();
+        $this->assertCount(6, $retrievedCompanyUsers);
+        $this->assertSame($company, $retrievedCompanyUsers[0]->getCompany());
+        $retrievedCompanyUsers1Company = $retrievedCompanyUsers[1]->getCompany();
+        $this->assertNull($retrievedCompanyUsers1Company);
 
     }
 

@@ -11,6 +11,7 @@ use Core\Context\FindQueryContext;
 use Core\Context\QueryContext;
 use Core\Context\RequestContext;
 use Core\Context\SaveQueryContext;
+use Core\Doctrine\Tools\EntityGenerator;
 use Core\Error\Error;
 use Core\Error\ErrorManager;
 use Core\Error\FormattedError;
@@ -31,7 +32,6 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
-use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
@@ -82,6 +82,16 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $schemaTool->dropDatabase();
         $schemaTool->createSchema($classes);
         $em->getConnection()->query('PRAGMA foreign_keys = ON');
+
+    }
+
+    /**
+     * @return callable
+     */
+    public static function getCallable () {
+
+        return function () {
+        };
 
     }
 
@@ -408,16 +418,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @return callable
-     */
-    public static function getCallable () {
-
-        return function () {
-        };
-
-    }
-
-    /**
      * @return ActionContext
      */
     public function getActionContext () {
@@ -484,8 +484,11 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         if (!$instance) {
 
             $config =
-                Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true,
-                                                       __DIR__ . '/../proxy', new ArrayCache());
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true, __DIR__ . '/../proxy',
+                                                       new ArrayCache());
+            $config->addCustomHydrationMode('RestrictedObjectHydrator',
+                                            'Core\Doctrine\Hydrator\RestrictedObjectHydrator');
+            $config->addCustomHydrationMode('ArrayIdHydrator', 'Core\Doctrine\Hydrator\ArrayIdHydrator');
             $config->setSQLLogger(new DebugStack());
             $tmpDB = __DIR__ . '/../test.archiweb-proto.db.sqlite';
 

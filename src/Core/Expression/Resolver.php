@@ -65,7 +65,7 @@ trait Resolver {
             throw new \RuntimeException('alias for entity ' . $this->getEntity($ctx) . ' not found');
         }
         elseif (isset($this->rootEntity) && count($aliasForEntity) > 1) {
-            throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
+            //throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
         }
 
         $alias = $aliasForEntity[0];

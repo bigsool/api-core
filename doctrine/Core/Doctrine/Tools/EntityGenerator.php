@@ -63,7 +63,8 @@ public function <methodName>()
                        . ($associationMapping['type'] == 'manyToMany' ? ' = array()' : NULL) . ";\n";
 
             $lines[] = $this->spaces . '/**';
-            $lines[] = $this->spaces . ' * @var int'. ($metadata->isCollectionValuedAssociation($fieldName) ? '[]' : '');
+            $lines[] =
+                $this->spaces . ' * @var int' . ($metadata->isCollectionValuedAssociation($fieldName) ? '[]' : '');
             $lines[] = $this->spaces . ' */';
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName . 'RestrictedId'
                        . ($metadata->isCollectionValuedAssociation($fieldName) ? 's = []' : '') . ";\n";
