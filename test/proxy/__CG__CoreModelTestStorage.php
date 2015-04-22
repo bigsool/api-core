@@ -345,6 +345,17 @@ class TestStorage extends \Core\Model\TestStorage implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
+    public function getUnrestrictedCompany()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedCompany', array());
+
+        return parent::getUnrestrictedCompany();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setUser(\Core\Model\TestUser $user = NULL)
     {
 
@@ -362,6 +373,17 @@ class TestStorage extends \Core\Model\TestStorage implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUser', array());
 
         return parent::getUser();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUnrestrictedUser()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedUser', array());
+
+        return parent::getUnrestrictedUser();
     }
 
 }

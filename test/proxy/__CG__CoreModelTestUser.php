@@ -433,6 +433,17 @@ class TestUser extends \Core\Model\TestUser implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
+    public function getUnrestrictedOwnedCompany()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedOwnedCompany', array());
+
+        return parent::getUnrestrictedOwnedCompany();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setStorage(\Core\Model\TestStorage $storage = NULL)
     {
 
@@ -455,6 +466,17 @@ class TestUser extends \Core\Model\TestUser implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
+    public function getUnrestrictedStorage()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedStorage', array());
+
+        return parent::getUnrestrictedStorage();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setCompany(\Core\Model\TestCompany $company = NULL)
     {
 
@@ -472,6 +494,17 @@ class TestUser extends \Core\Model\TestUser implements \Doctrine\ORM\Proxy\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getCompany', array());
 
         return parent::getCompany();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUnrestrictedCompany()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedCompany', array());
+
+        return parent::getUnrestrictedCompany();
     }
 
 }

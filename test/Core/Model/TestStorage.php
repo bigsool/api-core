@@ -267,6 +267,16 @@ class TestStorage
     }
 
     /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getUnrestrictedCompany()
+    {
+        return $this->company;
+    }
+
+    /**
      * Set user
      *
      * @param \Core\Model\TestUser $user
@@ -288,6 +298,16 @@ class TestStorage
     public function getUser()
     {
         return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Core\Model\TestUser
+     */
+    public function getUnrestrictedUser()
+    {
+        return $this->user;
     }
 }
 

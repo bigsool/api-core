@@ -411,6 +411,17 @@ class TestCompany extends \Core\Model\TestCompany implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
+    public function getUnrestrictedOwner()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedOwner', array());
+
+        return parent::getUnrestrictedOwner();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setStorage(\Core\Model\TestStorage $storage = NULL)
     {
 
@@ -428,6 +439,17 @@ class TestCompany extends \Core\Model\TestCompany implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStorage', array());
 
         return parent::getStorage();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUnrestrictedStorage()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedStorage', array());
+
+        return parent::getUnrestrictedStorage();
     }
 
     /**
@@ -461,6 +483,17 @@ class TestCompany extends \Core\Model\TestCompany implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUsers', array());
 
         return parent::getUsers();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUnrestrictedUsers()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnrestrictedUsers', array());
+
+        return parent::getUnrestrictedUsers();
     }
 
 }

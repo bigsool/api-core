@@ -86,49 +86,60 @@ public function <methodName>()
             return parent::generateEntityStubMethod($metadata, $type, $fieldName, $typeHint, $defaultValue);
         }
 
-        $methodName = $type . Inflector::classify($fieldName);
-        $variableName = Inflector::camelize($fieldName);
-        if (in_array($type, array("add", "remove"))) {
-            $methodName = Inflector::singularize($methodName);
-            $variableName = Inflector::singularize($variableName);
+        $methods = [];
+
+        foreach ([true, false] as $restricted) {
+
+            $methodName = $type . ($restricted ? '' : 'Unrestricted') . Inflector::classify($fieldName);
+            $variableName = Inflector::camelize($fieldName);
+            if (in_array($type, array("add", "remove"))) {
+                $methodName = Inflector::singularize($methodName);
+                $variableName = Inflector::singularize($variableName);
+            }
+
+            if ($this->hasMethod($methodName, $metadata)) {
+                return '';
+            }
+            $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
+
+            $collectionOrAssociation =
+                $restricted
+                    ? ($metadata->isCollectionValuedAssociation($fieldName) ? 'Collection' : 'Association')
+                    : '';
+            $var = sprintf('%s%sMethodTemplate', $type, $collectionOrAssociation);
+            $template = static::$$var;
+
+            $methodTypeHint = NULL;
+            $types = Type::getTypesMap();
+            $variableType = $typeHint ? $this->getType($typeHint) : NULL;
+
+            if ($typeHint && !isset($types[$typeHint])) {
+                $variableType = '\\' . ltrim($variableType, '\\');
+                $methodTypeHint = '\\' . $typeHint . ' ';
+            }
+
+            $replacements = array(
+                '<description>'     => ucfirst($type) . ' ' . $variableName,
+                '<methodTypeHint>'  => $methodTypeHint,
+                '<variableType>'    => $variableType,
+                '<variableName>'    => $variableName,
+                '<methodName>'      => $methodName,
+                '<fieldName>'       => $fieldName,
+                '<variableDefault>' => ($defaultValue !== NULL) ? (' = ' . $defaultValue) : '',
+                '<entity>'          => $this->getClassName($metadata)
+            );
+
+            $method = str_replace(
+                array_keys($replacements),
+                array_values($replacements),
+                $template
+            );
+
+            $methods[] = $this->prefixCodeWithSpaces($method);
+
         }
 
-        if ($this->hasMethod($methodName, $metadata)) {
-            return '';
-        }
-        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
-
-        $collectionOrAssociation = $metadata->isCollectionValuedAssociation($fieldName) ? 'Collection' : 'Association';
-        $var = sprintf('%s%sMethodTemplate', $type, $collectionOrAssociation);
-        $template = static::$$var;
-
-        $methodTypeHint = NULL;
-        $types = Type::getTypesMap();
-        $variableType = $typeHint ? $this->getType($typeHint) : NULL;
-
-        if ($typeHint && !isset($types[$typeHint])) {
-            $variableType = '\\' . ltrim($variableType, '\\');
-            $methodTypeHint = '\\' . $typeHint . ' ';
-        }
-
-        $replacements = array(
-            '<description>'     => ucfirst($type) . ' ' . $variableName,
-            '<methodTypeHint>'  => $methodTypeHint,
-            '<variableType>'    => $variableType,
-            '<variableName>'    => $variableName,
-            '<methodName>'      => $methodName,
-            '<fieldName>'       => $fieldName,
-            '<variableDefault>' => ($defaultValue !== NULL) ? (' = ' . $defaultValue) : '',
-            '<entity>'          => $this->getClassName($metadata)
-        );
-
-        $method = str_replace(
-            array_keys($replacements),
-            array_values($replacements),
-            $template
-        );
-
-        return $this->prefixCodeWithSpaces($method);
+        return implode("\n\n", $methods);
 
     }
 

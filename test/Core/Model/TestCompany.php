@@ -385,6 +385,16 @@ class TestCompany
     }
 
     /**
+     * Get owner
+     *
+     * @return \Core\Model\TestUser
+     */
+    public function getUnrestrictedOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
      * Set storage
      *
      * @param \Core\Model\TestStorage $storage
@@ -406,6 +416,16 @@ class TestCompany
     public function getStorage()
     {
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
+    }
+
+    /**
+     * Get storage
+     *
+     * @return \Core\Model\TestStorage
+     */
+    public function getUnrestrictedStorage()
+    {
+        return $this->storage;
     }
 
     /**
@@ -445,6 +465,16 @@ class TestCompany
         $criteria->where($inExpr);
     
         return $this->users->matching($criteria);
+    }
+
+    /**
+     * Get users
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUnrestrictedUsers()
+    {
+        return $this->users;
     }
 }
 

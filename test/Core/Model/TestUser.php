@@ -409,6 +409,16 @@ class TestUser
     }
 
     /**
+     * Get ownedCompany
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getUnrestrictedOwnedCompany()
+    {
+        return $this->ownedCompany;
+    }
+
+    /**
      * Set storage
      *
      * @param \Core\Model\TestStorage $storage
@@ -433,6 +443,16 @@ class TestUser
     }
 
     /**
+     * Get storage
+     *
+     * @return \Core\Model\TestStorage
+     */
+    public function getUnrestrictedStorage()
+    {
+        return $this->storage;
+    }
+
+    /**
      * Set company
      *
      * @param \Core\Model\TestCompany $company
@@ -454,6 +474,16 @@ class TestUser
     public function getCompany()
     {
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getUnrestrictedCompany()
+    {
+        return $this->company;
     }
 }
 

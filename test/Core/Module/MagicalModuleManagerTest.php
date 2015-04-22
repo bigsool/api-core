@@ -711,7 +711,7 @@ class MagicalModuleManagerTest extends TestCase {
             ]);
 
         /**
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Create', $mgr, [$actionContext]);
 
