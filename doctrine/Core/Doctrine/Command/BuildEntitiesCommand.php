@@ -345,10 +345,11 @@ CONSTRUCTOR;
         $modelName = $modelAspect->getModel();
         $varName = lcfirst($modelName);
 
-        $getterChain = $getterChainUntilEntity = "\$this->get$mainModelName()";
+        $getterUnrestrictedChain = $getterChain = $getterChainUntilEntity = "\$this->get$mainModelName()";
         foreach (explode('.', $modelAspect->getRelativeField()->getValue()) as $fieldName) {
-            $getterChainUntilEntity = $getterChain;
+            $getterChainUntilEntity = $getterUnrestrictedChain;
             $getterChain .= '->get' . ucfirst($fieldName) . '()';
+            $getterUnrestrictedChain .= '->getUnrestricted' . ucfirst($fieldName) . '()';
         }
 
         $mapping = $this->getPreviousMapping($modelAspect, $mainModelName);
@@ -373,10 +374,12 @@ CONSTRUCTOR;
         $setterFromModelAspect = $prefix2 . ucfirst($field2);
 
         $getterMethodName = 'get';
+        $getterUnrestrictedMethodName = 'getUnrestricted';
         $setterMethodName = $prefix1;
         $prefixToConcat = '';
         foreach (explode('.', $modelAspect->getPrefix()) as $prefix) {
             $getterMethodName .= ucfirst($prefix);
+            $getterUnrestrictedMethodName .= ucfirst($prefix);
             $setterMethodName .= ucfirst($prefixToConcat);
             $prefixToConcat = $prefix;
         }
@@ -389,6 +392,15 @@ CONSTRUCTOR;
     public function $getterMethodName () {
 
         return $getterChain;
+
+    }
+
+    /**
+     * @return $modelName
+     */
+    public function $getterUnrestrictedMethodName () {
+
+        return $getterUnrestrictedChain;
 
     }
 
