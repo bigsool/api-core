@@ -7,10 +7,19 @@ use Core\Expression\Expression;
 
 abstract class Filter {
 
+    /**
+     * @var Expression
+     */
     private $expression;
 
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $entity;
 
     /**
@@ -57,6 +66,15 @@ abstract class Filter {
     }
 
     /**
+     * @param string|NULL $alias
+     */
+    public function setAliasForEntityToUse ($alias) {
+
+        $this->setAliasForEntityToUseToThisExpressions($alias, [$this->expression]);
+
+    }
+
+    /**
      * @return Expression
      */
     public function getExpression () {
@@ -71,6 +89,24 @@ abstract class Filter {
     public function getName () {
 
         return $this->name;
+
+    }
+
+    /**
+     * @param string|NULL  $alias
+     * @param Expression[] $expressions
+     */
+    protected function setAliasForEntityToUseToThisExpressions ($alias, array $expressions) {
+
+        foreach ($expressions as $expression) {
+
+            if ($expression instanceof AbstractKeyPath) {
+                $expression->setAliasForEntityToUse($alias);
+            }
+
+            $this->setAliasForEntityToUseToThisExpressions($alias, $expression->getExpressions());
+
+        }
 
     }
 

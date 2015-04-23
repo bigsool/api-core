@@ -29,6 +29,27 @@ trait Resolver {
     protected $resolvedEntity;
 
     /**
+     * @var string|NULL
+     */
+    protected $aliasForEntityToUse;
+
+    /**
+     * @return NULL|string
+     */
+    public function getAliasForEntityToUse () {
+
+        return $this->aliasForEntityToUse;
+    }
+
+    /**
+     * @param NULL|string $aliasForEntityToUse
+     */
+    public function setAliasForEntityToUse ($aliasForEntityToUse) {
+
+        $this->aliasForEntityToUse = $aliasForEntityToUse;
+    }
+
+    /**
      * @return string
      */
     public function getResolvedField () {
@@ -61,14 +82,21 @@ trait Resolver {
         //}
 
         $aliasForEntity = $registry->findAliasForEntity($this->getEntity($ctx));
-        if (count($aliasForEntity) == 0) {
-            throw new \RuntimeException('alias for entity ' . $this->getEntity($ctx) . ' not found');
+        if (!is_null($this->aliasForEntityToUse)) {
+            if (array_search($this->aliasForEntityToUse, $aliasForEntity) === false) {
+                throw new \RuntimeException('alias not found');
+            }
+            $alias = $this->aliasForEntityToUse;
         }
-        elseif (isset($this->rootEntity) && count($aliasForEntity) > 1) {
-            throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
+        else {
+            if (count($aliasForEntity) == 0) {
+                throw new \RuntimeException('alias for entity ' . $this->getEntity($ctx) . ' not found');
+            }
+            elseif (isset($this->rootEntity) && count($aliasForEntity) > 1) {
+                throw new \RuntimeException('more than one alias found for entity ' . $this->getEntity($ctx));
+            }
+            $alias = $aliasForEntity[0];
         }
-
-        $alias = $aliasForEntity[0];
         $prevAlias = NULL;
         $joinToDo = [];
         foreach ($this->joinsToDo as $joinToDo) {

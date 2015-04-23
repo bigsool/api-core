@@ -562,7 +562,9 @@ class RegistryTest extends TestCase {
 
         $reqCtx = new RequestContext();
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-        $qryCtx->addFilter(new StringFilter('TestCompany','filterById','id = '.$company->getId()));
+        $filter = new StringFilter('TestUser','companyOwnerOnly','ownedCompany.id = '.$company->getId());
+        $qryCtx->addFilter($filter);
+        $filter->setAliasForEntityToUse('testUser');
 
         $qryCtx->addField(new RelativeField('*'));
         $qryCtx->addField(new RelativeField('company.users.*'));
@@ -571,7 +573,7 @@ class RegistryTest extends TestCase {
         $result = $findRegistry->find($qryCtx, false);
 
         $this->assertInternalType('array', $result);
-        $this->assertCount(6, $result);
+        $this->assertCount(1, $result);
 
         /**
          * @var TestUser $user
@@ -582,6 +584,18 @@ class RegistryTest extends TestCase {
         $this->assertNull($user->getOwnedCompany());
         $this->assertInstanceOf('\Core\Model\TestCompany', $user->getUnrestrictedOwnedCompany());
         $this->assertInstanceOf('\Core\Model\TestCompany', $user->getCompany());
+
+        /**
+         * @var TestUser[] $users
+         */
+        $users = $user->getCompany()->getUsers();
+        $this->assertCount(6, $users);
+        $this->assertContainsOnlyInstancesOf('\Core\Model\TestUser', $users);
+
+        $this->assertSame($user, $users[0]);
+        $this->assertNull($users[1]->getCompany());
+        $this->assertNull($users[1]->getUnrestrictedOwnedCompany());
+        $this->assertInstanceOf('\Core\Model\TestCompany', $users[1]->getUnrestrictedCompany());
 
     }
 
