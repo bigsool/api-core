@@ -14,6 +14,8 @@ require_once $file;
 
 $config =
     Setup::createYAMLMetadataConfiguration([__DIR__ . "/../model/"], true, __DIR__ . '/../proxy/', new ArrayCache());
+$config->addCustomHydrationMode('RestrictedObjectHydrator', 'Core\Doctrine\Hydrator\RestrictedObjectHydrator');
+$config->addCustomHydrationMode('ArrayIdHydrator', 'Core\Doctrine\Hydrator\ArrayIdHydrator');
 $conn = array(
     'driver' => 'pdo_sqlite',
     'path'   => __DIR__ . '/archiweb-proto.db.sqlite',
