@@ -884,13 +884,12 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @param array          $params
      * @param Boolean        $hydrateArray
      * @param string[]       $disabledKeyPaths
-     * @param string[]       $rights
      *
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
     protected function magicalFind (RequestContext $requestContext, $fields, $filters, $params = [],
-                                    $hydrateArray = false, array $disabledKeyPaths = [], array $rights = []) {
+                                    $hydrateArray = false, array $disabledKeyPaths = []) {
 
 
         $appCtx = ApplicationContext::getInstance();
