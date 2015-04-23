@@ -23,6 +23,7 @@ class RestrictedObjectHydrator extends ObjectHydrator {
         $arrayResult = [];
         $hydrator->hydrateRowData($row, $arrayResult);
 
+        //TODO: handle aggregated fields
         $this->setRestrictedIds($result, $arrayResult);
 
     }
@@ -33,9 +34,10 @@ class RestrictedObjectHydrator extends ObjectHydrator {
      */
     protected function setRestrictedIds (array &$_objectResult, array &$_arrayResult) {
 
-        if (($isAssociation = ArrayExtra::isAssociative($_objectResult)) != ArrayExtra::isAssociative($_arrayResult)) {
-            throw new \RuntimeException('Structure of $objectResult and $arrayResult are not the same');
-        }
+        // https://doctrine-orm.readthedocs.org/en/latest/reference/dql-doctrine-query-language.html#pure-and-mixed-results
+        $isPureResult = is_object($_objectResult[0]);
+
+        $isAssociation = ArrayExtra::isAssociative($_arrayResult);
 
         if ($isAssociation) {
             $arrayResult = [$_arrayResult];
@@ -47,6 +49,9 @@ class RestrictedObjectHydrator extends ObjectHydrator {
         }
 
         foreach ($arrayResult as $array) {
+            if (!$isPureResult) {
+                $array = &$array[0];
+            }
             if (!is_array($array)) {
                 throw new \RuntimeException('$currentArrayResult must be an array');
             }
@@ -55,8 +60,12 @@ class RestrictedObjectHydrator extends ObjectHydrator {
             }
             $id = $array['id'];
             $object = NULL;
-            foreach ($objectResult as $object) {
-                if ($object->getId() == $id) {
+            foreach ($objectResult as $_object) {
+                if (!$isPureResult) {
+                    $_object = $_object[0];
+                }
+                if (is_callable([$_object, 'getId']) && $_object->getId() == $id) {
+                    $object = $_object;
                     break;
                 }
             }
@@ -93,14 +102,16 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                 $refProp->setAccessible(true);
                 if ($isCollection) {
                     $refProp->setValue($object, array_merge($refProp->getValue($object), $ids));
-                } else {
+                }
+                else {
                     $refProp->setValue($object, $ids[0]);
                 }
 
                 $newObjectResult = $metadata->getReflectionProperty($key)->getValue($object);
                 if (!$isCollection) {
                     $newObjectResult = [$newObjectResult];
-                } else {
+                }
+                else {
                     // TODO: $refCollection mustn't be instantiated more than once
                     $refCollection = new \ReflectionProperty($newObjectResult, 'collection');
                     $refCollection->setAccessible(true);
