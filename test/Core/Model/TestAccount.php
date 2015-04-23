@@ -30,6 +30,15 @@ class TestAccount extends MagicalEntity {
     }
 
     /**
+     * @return TestCompany
+     */
+    public function getUnrestrictedCompany () {
+
+        return $this->getUser()->getUnrestrictedCompany();
+
+    }
+
+    /**
      * @return TestUser
      */
     public function getUser () {
@@ -67,12 +76,21 @@ class TestAccount extends MagicalEntity {
     }
 
     /**
+     * @return TestStorage
+     */
+    public function getUnrestrictedCompanyStorage () {
+
+        return $this->getUser()->getUnrestrictedCompany()->getUnrestrictedStorage();
+
+    }
+
+    /**
      * @param TestStorage $storage
      */
     public function setCompanyStorage (TestStorage $storage) {
 
-        $this->getUser()->getCompany()->setStorage($storage);
-        $storage->setCompany($this->getUser()->getCompany());
+        $this->getUser()->getUnrestrictedCompany()->setStorage($storage);
+        $storage->setCompany($this->getUser()->getUnrestrictedCompany());
 
     }
 
@@ -82,6 +100,15 @@ class TestAccount extends MagicalEntity {
     public function getStorage () {
 
         return $this->getUser()->getStorage();
+
+    }
+
+    /**
+     * @return TestStorage
+     */
+    public function getUnrestrictedStorage () {
+
+        return $this->getUser()->getUnrestrictedStorage();
 
     }
 

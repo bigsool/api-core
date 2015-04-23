@@ -719,8 +719,8 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $user->getCompany()->getName());
-        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+        $this->assertSame('bigsool', $user->getUnrestrictedCompany()->getName());
+        $this->assertContainsOnly($user, $user->getUnrestrictedCompany()->getUnrestrictedUsers());
 
     }
 
@@ -827,20 +827,20 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         /**
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Create', $mgrUser, [$actionContext]);
 
-        $user->setOwnedCompany($user->getCompany());
-        $user->getCompany()->setOwner($user);
+        $user->setOwnedCompany($user->getUnrestrictedCompany());
+        $user->getUnrestrictedCompany()->setOwner($user);
         ApplicationContext::getInstance()->getNewRegistry()->save($user);
 
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('thomas@bigsool.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsool', $user->getCompany()->getName());
-        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+        $this->assertSame('bigsool', $user->getUnrestrictedCompany()->getName());
+        $this->assertContainsOnly($user, $user->getUnrestrictedCompany()->getUnrestrictedUsers());
 
     }
 
@@ -956,10 +956,10 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('julien', $user->getFirstname());
         $this->assertSame('bla', $user->getPassword());
 
-        $this->assertSame('bigsoole', $user->getCompany()->getName());
+        $this->assertSame('bigsoole', $user->getUnrestrictedCompany()->getName());
 
 
-        $this->assertSame('http://www.bigsoole.com', $user->getCompany()->getStorage()->getUrl());
+        $this->assertSame('http://www.bigsoole.com', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUrl());
 
     }
 
@@ -1124,10 +1124,10 @@ class MagicalModuleManagerTest extends TestCase {
          */
         $account = $result[0];
         $this->assertInstanceOf('\Core\Model\TestAccount', $account);
-        $this->assertInstanceOf('\Core\Model\TestCompany', $account->getCompany());
+        $this->assertInstanceOf('\Core\Model\TestCompany', $account->getUnrestrictedCompany());
         $this->assertEquals('u1@bigsool.com', $account->getUser()->getEmail());
-        $this->assertEquals('Bigsool', $account->getCompany()->getName());
-        $this->assertEquals('http://www.amazon.com/', $account->getCompanyStorage()->getUrl());
+        $this->assertEquals('Bigsool', $account->getUnrestrictedCompany()->getName());
+        $this->assertEquals('http://www.amazon.com/', $account->getUnrestrictedCompanyStorage()->getUrl());
 
     }
 
@@ -1851,17 +1851,17 @@ class MagicalModuleManagerTest extends TestCase {
             ]);
 
         /**
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Create', $mgr, [$actionContext]);
 
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
         $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
-        $this->assertSame('bigsoolee', $user->getCompany()->getName());
-        $this->assertSame('http://storage.fr', $user->getCompany()->getStorage()->getUrl());
-        $this->assertSame('123', $user->getCompany()->getStorage()->getUsedSpace());
-        $this->assertContainsOnly($user, $user->getCompany()->getUsers());
+        $this->assertSame('bigsoolee', $user->getUnrestrictedCompany()->getName());
+        $this->assertSame('http://storage.fr', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUrl());
+        $this->assertSame('123', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUsedSpace());
+        $this->assertContainsOnly($user, $user->getUnrestrictedCompany()->getUsers());
 
     }
 
