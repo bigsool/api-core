@@ -74,29 +74,41 @@ class ModelConverter {
                 $requestedFieldName = $childRequestedField;
             }
 
-            $method = 'get' . ucfirst($requestedFieldName);
-            $isAttribute = in_array($requestedFieldName, $fieldNames);
-            $isAssociation = in_array($requestedFieldName, $associationNames);
-            $isCollection = $isAssociation && $metadata->isCollectionValuedAssociation($requestedFieldName);
-
-            if ($isAttribute) {
-                $result[$requestedFieldName] = $object->$method();
-                continue;
+            if ($requestedFieldName == '*') {
+                $requestedFieldNames = $fieldNames;
+                CalculatedField::getCalculatedField($entity);
+            }
+            else {
+                $requestedFieldNames = [$requestedFieldName];
             }
 
-            if (!$isCollection) {
+            foreach ($requestedFieldNames as $requestedFieldName) {
+
+                $method = 'get' . ucfirst($requestedFieldName);
+                $isAttribute = in_array($requestedFieldName, $fieldNames);
+                $isAssociation = in_array($requestedFieldName, $associationNames);
+                $isCollection = $isAssociation && $metadata->isCollectionValuedAssociation($requestedFieldName);
+
+                if ($isAttribute) {
+                    $result[$requestedFieldName] = $object->$method();
+                    continue;
+                }
+
+                if (!$isCollection) {
+                    $result[$requestedFieldName] = [];
+                    $this->_toArray($object->$method(), $childRequestedField, $result[$requestedFieldName]);
+                    continue;
+                }
+
                 $result[$requestedFieldName] = [];
-                $this->_toArray($object->$method(), $childRequestedField, $result[$requestedFieldName]);
-                continue;
-            }
+                $collection = $object->$method();
+                foreach ($collection as $childObject) {
+                    $childResult = [];
+                    $result[$requestedFieldName][] = &$childResult;
+                    $this->_toArray($childObject, $childRequestedField, $childResult);
+                    unset($childResult); // explicit destroy otherwise $childResult is shared between each children
+                }
 
-            $result[$requestedFieldName] = [];
-            $collection = $object->$method();
-            foreach ($collection as $childObject) {
-                $childResult = [];
-                $result[$requestedFieldName][] = &$childResult;
-                $this->_toArray($childObject, $childRequestedField, $childResult);
-                unset($childResult); // explicit destroy otherwise $childResult is shared between each children
             }
 
         }
