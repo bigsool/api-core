@@ -80,7 +80,7 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                     continue;
                 }
                 $isCollection = $metadata->isCollectionValuedAssociation($key);
-                if ($isCollection == ArrayExtra::isAssociative($values)) {
+                if (count($values) && $isCollection == ArrayExtra::isAssociative($values)) {
                     throw new \RuntimeException('Unexpected structure for $values');
                 }
                 if (!$isCollection) {
@@ -118,7 +118,9 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                     $newObjectResult = $refCollection->getValue($newObjectResult)->toArray();
                 }
                 $newArrayResult = $values;
-                $this->setRestrictedIds($newObjectResult, $newArrayResult);
+                if (count($newObjectResult)) {
+                    $this->setRestrictedIds($newObjectResult, $newArrayResult);
+                }
             }
         }
     }

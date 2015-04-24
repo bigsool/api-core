@@ -17,6 +17,7 @@ use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\Processor;
+use Core\Util\ModelConverter;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -227,9 +228,9 @@ class Registry implements EventSubscriber {
         $resolvableFields = $this->resolveRelativeFields($relativeFields, $ctx);
 
         // in case of object, we don't want to specify fields but entities
-        if (!$hydrateArray) {
-            $resolvableFields = $this->addStarFields($ctx, $resolvableFields);
-        }
+        //if (!$hydrateArray) {
+        $resolvableFields = $this->addStarFields($ctx, $resolvableFields);
+        //}
 
         // cleanup duplicated fields
         $resolvableFields = self::removeDuplicatedFields($resolvableFields);
@@ -241,11 +242,11 @@ class Registry implements EventSubscriber {
             throw new \RuntimeException('fields are required');
         }
 
-        $entities = [];
+        //$entities = [];
         foreach ($resolvableFields as $resolvableField) {
             $fields = $resolvableField->resolve($this, $ctx);
             foreach ($fields as $field) {
-                $exploded = explode('.', $field);
+                //$exploded = explode('.', $field);
                 if ($resolvableField instanceof Aggregate
                     || $resolvableField->getResolvedField() == '*'
                 ) {
@@ -253,7 +254,7 @@ class Registry implements EventSubscriber {
                         $field .= ' AS ' . $resolvableField->getAlias();
                     }
                     $qb->addSelect($field);
-                }
+                }/*
                 else {
                     if (count($exploded) == 2) {
                         if (!$hydrateArray) {
@@ -261,11 +262,12 @@ class Registry implements EventSubscriber {
                         }
                         $entities[$exploded[0]][] = $exploded[1];
                     }
-                }
+                }*/
             }
 
         }
 
+        /*
         foreach ($entities as $entity => $fields) {
             $selectClause = 'partial ' . $entity . '.{';
             if (!in_array('id', $fields)) {
@@ -274,7 +276,7 @@ class Registry implements EventSubscriber {
             $selectClause .= implode(',', $fields);
             $selectClause .= '}';
             $qb->addSelect($selectClause);
-        }
+        }*/
 
         $needGroupByClause = false;
         $groupByClause = "";
@@ -318,9 +320,20 @@ class Registry implements EventSubscriber {
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
-        $result = $query->getResult($hydrateArray ? Query::HYDRATE_ARRAY : 'RestrictedObjectHydrator');
+        $result = $query->getResult(/*$hydrateArray ? Query::HYDRATE_ARRAY :*/
+            'RestrictedObjectHydrator');
 
-        $result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
+        if ($hydrateArray) {
+            $requestedFields = [];
+            foreach ($relativeFields as $relativeField) {
+                $requestedFields[] = $relativeField->getAlias() ?: $relativeField->getValue();
+            }
+            foreach ($result as &$data) {
+                $data = (new ModelConverter())->toArray($data, $requestedFields);
+            }
+        }
+
+        //$result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
 
         return $result;
 
@@ -473,34 +486,6 @@ class Registry implements EventSubscriber {
         return array_values($finalResolvableFields);
     }
 
-    /**
-     * @param bool              $hydrateArray
-     * @param ResolvableField[] $resolvableFields
-     * @param array             $result
-     *
-     * @return mixed
-     */
-    protected function insertCalculatedFields ($hydrateArray, $resolvableFields, $result) {
-
-        if ($hydrateArray) {
-
-            foreach ($resolvableFields as $resolvableField) {
-
-                if (!($resolvableField instanceof CalculatedField)) {
-                    continue;
-                }
-
-                foreach ($result as &$data) {
-                    $resolvableField->exec($data);
-                }
-
-            }
-
-        }
-
-        return $result;
-    }
-
     public function delete ($model) {
 
         $this->entityManager->remove($model);
@@ -579,6 +564,34 @@ class Registry implements EventSubscriber {
 
         return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
 
+    }
+
+    /**
+     * @param bool              $hydrateArray
+     * @param ResolvableField[] $resolvableFields
+     * @param array             $result
+     *
+     * @return mixed
+     */
+    protected function insertCalculatedFields ($hydrateArray, $resolvableFields, $result) {
+
+        if ($hydrateArray) {
+
+            foreach ($resolvableFields as $resolvableField) {
+
+                if (!($resolvableField instanceof CalculatedField)) {
+                    continue;
+                }
+
+                foreach ($result as &$data) {
+                    $resolvableField->exec($data);
+                }
+
+            }
+
+        }
+
+        return $result;
     }
 
 }

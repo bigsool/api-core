@@ -5,6 +5,7 @@ namespace Core\Util;
 
 
 use Core\Context\ApplicationContext;
+use Core\Field\CalculatedField;
 
 class ModelConverter {
 
@@ -59,11 +60,13 @@ class ModelConverter {
             return;
         }
 
-        $metadata = ApplicationContext::getInstance()->getClassMetadata(get_class($object));
 
-        $fieldNames = $metadata->getFieldNames();
+        $class = get_class($object);
+        $entity = ($pos = strrpos($class, '\\')) ? substr($class, $pos + 1) : $class;
+        $metadata = ApplicationContext::getInstance()->getClassMetadata($class);
+
+        $fieldNames = array_merge($metadata->getFieldNames(), CalculatedField::getCalculatedField($entity));
         $associationNames = $metadata->getAssociationNames();
-        // TODO: handle calculated fields
 
         foreach ($requestedFields as $requestedFieldName => $childRequestedField) {
 
