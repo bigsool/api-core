@@ -83,7 +83,7 @@ trait Resolver {
 
         $aliasForEntity = $registry->findAliasForEntity($this->getEntity($ctx));
         if (!is_null($this->aliasForEntityToUse)) {
-            if (array_search($this->aliasForEntityToUse, $aliasForEntity) === false) {
+            if (!in_array($this->aliasForEntityToUse, $aliasForEntity)) {
                 throw new \RuntimeException('alias not found');
             }
             $alias = $this->aliasForEntityToUse;
