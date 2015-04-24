@@ -89,9 +89,12 @@ class BuildEntitiesCommand extends Command {
 
         $this->setCurrentProgression(5);
 
+        $appCtx = ApplicationContext::getInstance();
+
         // get and merge all yml
         $ymls = [];
         foreach ($modulesManagers as $moduleManager) {
+            $moduleManager->loadFields($appCtx);
             $loadYml = function (\ReflectionClass $class) use (&$ymls, &$loadYml) {
 
                 if (($parentClass = $class->getParentClass()) && !$parentClass->isAbstract()) {

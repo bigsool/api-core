@@ -63,6 +63,7 @@ class ModelConverter {
 
         $fieldNames = $metadata->getFieldNames();
         $associationNames = $metadata->getAssociationNames();
+        // TODO: handle calculated fields
 
         foreach ($requestedFields as $requestedFieldName => $childRequestedField) {
 

@@ -9,6 +9,7 @@ use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
 use Core\Registry;
 use Core\Util\ArrayExtra;
+use Core\Util\ModelConverter;
 
 class CalculatedField implements ResolvableField {
 
@@ -65,6 +66,45 @@ class CalculatedField implements ResolvableField {
                                    $useLeftJoin = false) {
 
         static::$calculatedFields[$entity][$field] = [$function, $requiredFields, !!$useLeftJoin];
+
+    }
+
+    /**
+     * @param mixed $entity
+     *
+     * @return string[]
+     */
+    public static function getCalculatedField($entity) {
+
+        return isset(static::$calculatedFields[$entity]) ? array_keys(static::$calculatedFields[$entity]) : [];
+
+    }
+
+    /**
+     * @param mixed  $model
+     * @param string $field
+     *
+     * @return mixed
+     */
+    public static function execute (&$model, $field) {
+
+        $class = get_class($model);
+        $entity = ($pos = strrpos($class, '\\')) ? substr($class, $pos + 1) : $class;
+
+        if (!isset(static::$calculatedFields[$entity][$field])) {
+            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
+        }
+        list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
+
+        $data = (new ModelConverter())->toArray($model, $requiredFields);
+
+        $params = [];
+        foreach ($requiredFields as $requiredField) {
+            $params[] = ArrayExtra::magicalGet($data, $requiredField);
+        }
+        // Call $callable only with requiredFields
+        // TODO: handle alias ?
+        return call_user_func_array($callable, $params);
 
     }
 

@@ -4,6 +4,7 @@
 namespace Core\Doctrine\Tools;
 
 
+use Core\Field\CalculatedField;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -44,6 +45,20 @@ public function <methodName>()
 }';
 
     /**
+     * @var string
+     */
+    protected static $getCalculatedFieldMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @return <variableType>
+ */
+public function <methodName>()
+{
+<spaces>return \Core\Field\CalculatedField::execute($this, "<fieldName>");
+}';
+
+    /**
      * @param ClassMetadataInfo $metadata
      *
      * @return string
@@ -77,7 +92,7 @@ public function <methodName>()
      * {@inheritDoc}
      */
     protected function generateEntityStubMethod (ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = NULL,
-                                                 $defaultValue = NULL) {
+                                                 $defaultValue = NULL, $isCalculatedField) {
 
         if ($type != 'get'
             || (!$metadata->isCollectionValuedAssociation($fieldName)
@@ -143,4 +158,50 @@ public function <methodName>()
 
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function generateEntityStubMethods (ClassMetadataInfo $metadata) {
+
+        $methods = parent::generateEntityStubMethods($metadata);
+
+        $className = $this->getClassName($metadata);
+
+        $fields = CalculatedField::getCalculatedField($className);
+
+        $type = 'get';
+        foreach ($fields as $fieldName) {
+            $methodName = $type . Inflector::classify($fieldName);
+            $variableName = Inflector::camelize($fieldName);
+
+            if ($this->hasMethod($methodName, $metadata)) {
+                return '';
+            }
+            $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
+
+            $template = static::$getCalculatedFieldMethodTemplate;
+
+            $replacements = array(
+                '<description>'     => ucfirst($type) . ' ' . $variableName,
+                '<methodTypeHint>'  => NULL,
+                '<variableType>'    => 'mixed',
+                '<variableName>'    => $variableName,
+                '<methodName>'      => $methodName,
+                '<fieldName>'       => $fieldName,
+                '<variableDefault>' => '',
+                '<entity>'          => $this->getClassName($metadata)
+            );
+
+            $method = str_replace(
+                array_keys($replacements),
+                array_values($replacements),
+                $template
+            );
+
+            $methods .= "\n\n" . $this->prefixCodeWithSpaces($method);
+        }
+
+        return $methods;
+
+    }
 }
