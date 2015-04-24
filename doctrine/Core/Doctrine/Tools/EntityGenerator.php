@@ -92,7 +92,7 @@ public function <methodName>()
      * {@inheritDoc}
      */
     protected function generateEntityStubMethod (ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = NULL,
-                                                 $defaultValue = NULL, $isCalculatedField) {
+                                                 $defaultValue = NULL) {
 
         if ($type != 'get'
             || (!$metadata->isCollectionValuedAssociation($fieldName)
