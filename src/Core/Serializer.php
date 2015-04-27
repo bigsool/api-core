@@ -3,7 +3,10 @@
 namespace Core;
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
+use Core\Module\MagicalEntity;
 use Core\Util\ArrayExtra;
+use Core\Util\ModelConverter;
 
 class Serializer {
 
@@ -65,6 +68,8 @@ class Serializer {
      */
     public function serialize ($data) {
 
+        $data = $this->convertDoctrineObjects($data);
+
         if (is_array($data)) {
             $this->convertDateTime($data);
         }
@@ -83,6 +88,37 @@ class Serializer {
 
     }
 
+    /**
+     * @param mixed $data
+     *
+     * @return mixed
+     */
+    public function convertDoctrineObjects ($data) {
+
+        if (is_array($data)) {
+            array_walk_recursive($data, function (&$data) {
+
+                $data = $this->convertDoctrineObjects($data);
+
+            });
+        }
+
+        if (is_object($data)) {
+            if (ApplicationContext::getInstance()->getNewRegistry()->isEntity($data)) {
+                return (new ModelConverter())->toArray($data, $this->requiredKeyPaths);
+            }
+            elseif ($data instanceof MagicalEntity) {
+                return $this->convertDoctrineObjects($data->getMainEntity());
+            }
+        }
+
+        return $data;
+
+    }
+
+    /**
+     * @param array $data
+     */
     public function convertDateTime (array &$data) {
 
         array_walk_recursive($data, function (&$value) {
