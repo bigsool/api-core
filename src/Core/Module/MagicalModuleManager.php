@@ -888,8 +888,8 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
-    protected function magicalFind (RequestContext $requestContext, $fields, $filters, $params = [],
-                                    $hydrateArray = false, array $disabledKeyPaths = []) {
+    protected function magicalFind (RequestContext $requestContext, array $fields = [], array $filters = [],
+                                    array $params = [], $hydrateArray = false, array $disabledKeyPaths = []) {
 
 
         $appCtx = ApplicationContext::getInstance();
