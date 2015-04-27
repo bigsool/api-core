@@ -9,6 +9,14 @@ use Core\TestCase;
 
 class CalculatedFieldTest extends TestCase {
 
+    public static function tearDownAfterClass () {
+
+        $refPropCalculatedFields = new \ReflectionProperty('\Core\Field\CalculatedField', 'calculatedFields');
+        $refPropCalculatedFields->setAccessible(true);
+        $refPropCalculatedFields->setValue([]);
+
+    }
+
     public static function setUpBeforeClass () {
 
         CalculatedField::create('TestUser', 'fullName', function () {
