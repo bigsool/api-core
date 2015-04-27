@@ -211,5 +211,4 @@ class ModuleManager extends AbstractModuleManager {
 
     }
 
-
 }

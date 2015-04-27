@@ -34,13 +34,6 @@ abstract class ModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFields(ApplicationContext &$context) {
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
     public abstract function loadFilters (ApplicationContext &$context);
 
     /**
@@ -57,6 +50,13 @@ abstract class ModuleManager {
      * @param ApplicationContext $context
      */
     public abstract function loadHelpers (ApplicationContext &$context);
+
+    /**
+     * @param ApplicationContext $context
+     */
+    public function loadFields (ApplicationContext &$context) {
+
+    }
 
     public function addHelper (ApplicationContext &$context, $helperName) {
 

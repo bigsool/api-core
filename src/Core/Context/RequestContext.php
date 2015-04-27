@@ -8,7 +8,6 @@ use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
-use Core\Module\Credential\Helper;
 use Core\Parameter\UnsafeParameter;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -69,7 +68,7 @@ class RequestContext {
      *
      * @return RequestContext
      */
-    public static function createNewInternalRequestContext(RequestContext $current = NULL) {
+    public static function createNewInternalRequestContext (RequestContext $current = NULL) {
 
         $reqCtx = new static;
 
@@ -93,7 +92,7 @@ class RequestContext {
      *
      * @return RequestContext
      */
-    public static function copyWithoutRequestedFields(RequestContext $current) {
+    public static function copyWithoutRequestedFields (RequestContext $current) {
 
         $reqCtx = clone $current;
         $reqCtx->setReturnedFields([]);
@@ -314,7 +313,8 @@ class RequestContext {
             $this->setAuth($auth);
 
             $setAuthAction = $appCtx->getAction('Core\Credential', 'renewAuthCookie');
-            $appCtx->getOnSuccessActionQueue()->addAction($setAuthAction, ['authToken' => $authToken,'credentialId' => $cred->getId()]);
+            $appCtx->getOnSuccessActionQueue()
+                   ->addAction($setAuthAction, ['authToken' => $authToken, 'credentialId' => $cred->getId()]);
             unset($params['authToken']);
         }
 

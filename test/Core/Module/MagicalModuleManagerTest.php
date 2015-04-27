@@ -959,7 +959,8 @@ class MagicalModuleManagerTest extends TestCase {
         $this->assertSame('bigsoole', $user->getUnrestrictedCompany()->getName());
 
 
-        $this->assertSame('http://www.bigsoole.com', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUrl());
+        $this->assertSame('http://www.bigsoole.com',
+                          $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUrl());
 
     }
 

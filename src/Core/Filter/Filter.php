@@ -75,24 +75,6 @@ abstract class Filter {
     }
 
     /**
-     * @return Expression
-     */
-    public function getExpression () {
-
-        return $this->expression;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getName () {
-
-        return $this->name;
-
-    }
-
-    /**
      * @param string|NULL  $alias
      * @param Expression[] $expressions
      */
@@ -107,6 +89,24 @@ abstract class Filter {
             $this->setAliasForEntityToUseToThisExpressions($alias, $expression->getExpressions());
 
         }
+
+    }
+
+    /**
+     * @return Expression
+     */
+    public function getExpression () {
+
+        return $this->expression;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
 
     }
 

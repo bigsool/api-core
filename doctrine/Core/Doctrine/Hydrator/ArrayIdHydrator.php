@@ -11,7 +11,7 @@ class ArrayIdHydrator extends ArrayHydrator {
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $row, array &$result) {
+    protected function hydrateRowData (array $row, array &$result) {
 
         $rowOnlyWithId = [];
         foreach ($row as $key => &$value) {

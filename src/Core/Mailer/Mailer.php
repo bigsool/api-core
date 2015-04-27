@@ -7,8 +7,8 @@ use Core\Context\ApplicationContext;
 class Mailer {
 
     /**
-    * @var \Mandrill
-    */
+     * @var \Mandrill
+     */
     private $mandrill;
 
     /**
@@ -41,13 +41,13 @@ class Mailer {
 
         $message = [
             'from_email' => $this->from,
-            'to' => [
+            'to'         => [
                 [
                     'email' => $to,
                 ]
             ],
-            'subject' => $subject,
-            'text' => $message,
+            'subject'    => $subject,
+            'text'       => $message,
         ];
 
         return $this->mandrill->messages->send($message);
@@ -55,9 +55,9 @@ class Mailer {
     }
 
     /**
-     * @param String $templateName
-     * @param String $to
-     * @param String $subject
+     * @param String   $templateName
+     * @param String   $to
+     * @param String   $subject
      * @param String[] $params
      *
      * @return Array
@@ -65,13 +65,13 @@ class Mailer {
     public function sendFromTemplate ($templateName, $to, $subject, $params) {
 
         $message = [
-            'from_email' => $this->from,
-            'to' => [
+            'from_email'        => $this->from,
+            'to'                => [
                 [
                     'email' => $to,
                 ]
             ],
-            'subject' => $subject,
+            'subject'           => $subject,
             'global_merge_vars' => []
         ];
 

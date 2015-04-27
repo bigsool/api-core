@@ -74,7 +74,7 @@ class CalculatedField implements ResolvableField {
      *
      * @return string[]
      */
-    public static function getCalculatedField($entity) {
+    public static function getCalculatedField ($entity) {
 
         return isset(static::$calculatedFields[$entity]) ? array_keys(static::$calculatedFields[$entity]) : [];
 

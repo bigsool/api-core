@@ -30,7 +30,7 @@ class CalculatedFieldTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testInvalidKeyPath() {
+    public function testInvalidKeyPath () {
 
         new CalculatedField('qweé"\'é" -"');
 
@@ -39,7 +39,7 @@ class CalculatedFieldTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testCalculatedFieldNotFound() {
+    public function testCalculatedFieldNotFound () {
 
         $calculatedField = new CalculatedField('qwe');
         $arr = [];
@@ -47,7 +47,7 @@ class CalculatedFieldTest extends TestCase {
 
     }
 
-    public function testShouldResolveForAWhere() {
+    public function testShouldResolveForAWhere () {
 
         $this->assertFalse((new CalculatedField('qwe'))->shouldResolveForAWhere());
 
@@ -56,7 +56,7 @@ class CalculatedFieldTest extends TestCase {
     /**
      * @expectedException \Exception
      */
-    public function testCalculatedFieldNotFoundInExec() {
+    public function testCalculatedFieldNotFoundInExec () {
 
         $calculatedField = new CalculatedField('qwe');
         $ctx = new FindQueryContext('testUser');

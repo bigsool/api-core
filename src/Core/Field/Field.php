@@ -4,9 +4,6 @@
 namespace Core\Field;
 
 
-use Core\Context\FindQueryContext;
-use Core\Registry;
-
 class Field {
 
     /**

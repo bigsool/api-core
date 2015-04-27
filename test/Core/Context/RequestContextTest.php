@@ -33,7 +33,7 @@ class RequestContextTest extends TestCase {
         $ctx = $this->getRequestContext();
 
         $response = new Response();
-        
+
         $ctx->setResponse($response);
         $this->assertSame($response, $ctx->getResponse());
 

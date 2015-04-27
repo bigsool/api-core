@@ -6,7 +6,6 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
-use Core\Field\Aggregate;
 use Core\Field\RelativeField;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;

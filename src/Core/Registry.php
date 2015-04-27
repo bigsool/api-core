@@ -335,7 +335,8 @@ class Registry implements EventSubscriber {
                             $object = (new ModelConverter())->toArray($object, $requestedFields);
                         }
                     }
-                } else {
+                }
+                else {
                     $data = (new ModelConverter())->toArray($data, $requestedFields);
                 }
             }
