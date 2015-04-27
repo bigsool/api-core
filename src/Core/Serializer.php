@@ -28,6 +28,11 @@ class Serializer {
     /**
      * @var array
      */
+    private $requiredNotFormattedKeyPaths = [];
+
+    /**
+     * @var array
+     */
     private $dataSerialized;
 
     /**
@@ -40,7 +45,9 @@ class Serializer {
         $returnedKeyPaths = $actCtx->getRequestContext()->getReturnedFields();
 
         foreach ($returnedKeyPaths as $keyPath) {
-            $this->requiredKeyPaths[] = explode('.', $keyPath->getValue());
+            $value = $keyPath->getValue();
+            $this->requiredNotFormattedKeyPaths[] = $value;
+            $this->requiredKeyPaths[] = explode('.', $value);
         }
 
     }
@@ -105,7 +112,7 @@ class Serializer {
 
         if (is_object($data)) {
             if (ApplicationContext::getInstance()->getNewRegistry()->isEntity($data)) {
-                return (new ModelConverter())->toArray($data, $this->requiredKeyPaths);
+                return (new ModelConverter())->toArray($data, $this->requiredNotFormattedKeyPaths);
             }
             elseif ($data instanceof MagicalEntity) {
                 return $this->convertDoctrineObjects($data->getMainEntity());
