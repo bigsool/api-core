@@ -212,6 +212,7 @@ class BuildEntitiesCommand extends Command {
             $classNames[] = $className;
 
             $generator = new EntityGenerator();
+            $generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
             $generator->setBackupExisting(false);
             $generator->setGenerateAnnotations(true);
             $generator->setGenerateStubMethods(true);
