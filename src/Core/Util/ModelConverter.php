@@ -85,6 +85,11 @@ class ModelConverter {
             foreach ($requestedFieldNames as $requestedFieldName) {
 
                 $method = 'get' . ucfirst($requestedFieldName);
+
+                if (!is_callable([$object, $method])) {
+                    continue;
+                }
+
                 $isAttribute = in_array($requestedFieldName, $fieldNames);
                 $isAssociation = in_array($requestedFieldName, $associationNames);
                 $isCollection = $isAssociation && $metadata->isCollectionValuedAssociation($requestedFieldName);

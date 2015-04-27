@@ -299,9 +299,9 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
-        $this->assertSame(['id'   => $this->company['id'],
-                           'name' => $this->company['name'],
-                           'tva'  => $this->company['tva']
+        $this->assertSame([
+                              'name' => $this->company['name'],
+                              'tva'  => $this->company['tva']
                           ], $result[0]);
         // TODO: improve test
 
@@ -400,10 +400,10 @@ class RegistryTest extends TestCase {
         $registry->find($qryCtx, true);
 
         $dql =
-            'SELECT count(testUser) AS nbUsers, partial testUser.{id,email,name}, partial testUserCompany.{id,name} ' .
+            'SELECT count(testUser) AS nbUsers, testUser, testUserCompany ' .
             'FROM \Core\Model\TestUser testUser ' .
             'INNER JOIN testUser.company testUserCompany ' .
-            'GROUP BY testUser.email,testUser.name,testUserCompany.id,testUserCompany.name';
+            'GROUP BY testUser,testUserCompany';
         $this->assertSame($dql, $registry->getLastExecutedQuery());
 
     }
@@ -446,7 +446,7 @@ class RegistryTest extends TestCase {
         $registry = $this->appCtx->getNewRegistry();
         $registry->find($qryCtx, true);
 
-        $dql = 'SELECT partial testUser.{id,email,name} ' .
+        $dql = 'SELECT testUser ' .
                'FROM \Core\Model\TestUser testUser ' .
                'WHERE ((testUser.confirmationKey = 1))';
 
@@ -533,7 +533,7 @@ class RegistryTest extends TestCase {
 
     }
 
-    public function testRestrictedEntities() {
+    public function testRestrictedEntities () {
 
         $owner = new TestUser();
         $owner->setEmail('owner@company.com');
@@ -548,7 +548,7 @@ class RegistryTest extends TestCase {
         $company->addUser($owner);
         $owner->setCompany($company);
 
-        foreach (range(1,5) as $subUserNb) {
+        foreach (range(1, 5) as $subUserNb) {
             $subUser = new TestUser();
             $subUser->setEmail("subUser{$subUserNb}@company.com");
             $subUser->setPassword('qwe');
@@ -562,7 +562,7 @@ class RegistryTest extends TestCase {
 
         $reqCtx = new RequestContext();
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
-        $filter = new StringFilter('TestUser','companyOwnerOnly','ownedCompany.id = '.$company->getId());
+        $filter = new StringFilter('TestUser', 'companyOwnerOnly', 'ownedCompany.id = ' . $company->getId());
         $qryCtx->addFilter($filter);
         $filter->setAliasForEntityToUse('testUser');
 

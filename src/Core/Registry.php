@@ -329,7 +329,15 @@ class Registry implements EventSubscriber {
                 $requestedFields[] = $relativeField->getAlias() ?: $relativeField->getValue();
             }
             foreach ($result as &$data) {
-                $data = (new ModelConverter())->toArray($data, $requestedFields);
+                if (is_array($data)) {
+                    foreach ($data as &$object) {
+                        if (is_object($object)) {
+                            $object = (new ModelConverter())->toArray($object, $requestedFields);
+                        }
+                    }
+                } else {
+                    $data = (new ModelConverter())->toArray($data, $requestedFields);
+                }
             }
         }
 
