@@ -63,9 +63,14 @@ class BasicCreateActionTest extends TestCase {
 
         $action->process($actCtx);
 
+        /**
+         * @var TestUser $user
+         */
         $user = $actCtx['TestUser'][0];
 
-        $this->assertSame('thierry@bigsool.com', $user['email']);
+        $this->assertInstanceOf('\Core\Model\TestUser', $user);
+
+        $this->assertSame('thierry@bigsool.com', $user->getEmail());
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);

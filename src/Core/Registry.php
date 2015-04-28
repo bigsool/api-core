@@ -209,12 +209,11 @@ class Registry implements EventSubscriber {
 
     /**
      * @param FindQueryContext $ctx
-     * @param bool             $hydrateArray
      *
      * @return array
-     * @throws Error\FormattedError
+     *
      */
-    public function find (FindQueryContext $ctx, $hydrateArray = true) {
+    public function find (FindQueryContext $ctx) {
 
         $entity = $ctx->getEntity();
 
@@ -323,6 +322,7 @@ class Registry implements EventSubscriber {
         $result = $query->getResult(/*$hydrateArray ? Query::HYDRATE_ARRAY :*/
             'RestrictedObjectHydrator');
 
+        /*
         if ($hydrateArray) {
             $requestedFields = [];
             foreach ($relativeFields as $relativeField) {
@@ -341,6 +341,7 @@ class Registry implements EventSubscriber {
                 }
             }
         }
+        */
 
         //$result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
 

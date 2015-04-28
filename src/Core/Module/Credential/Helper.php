@@ -70,7 +70,7 @@ class Helper extends BasicHelper {
 
         $qryCtx->setParams(['login' => $login]);
 
-        $credentials = $registry->find($qryCtx, false);
+        $credentials = $registry->find($qryCtx);
 
         return count($credentials) != 1 ? NULL : $credentials[0];
 
@@ -182,7 +182,7 @@ class Helper extends BasicHelper {
 
         $qryCtx->setParams(['id' => $id]);
 
-        $credentials = $registry->find($qryCtx, false);
+        $credentials = $registry->find($qryCtx);
 
         return count($credentials) != 1 ? NULL : $credentials[0];
 
@@ -243,20 +243,16 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext   $actionContext
-     * @param bool            $hydrateArray
      * @param RelativeField[] $keyPaths
      * @param Filter[]        $filters
      * @param array           $params
-     * @param string[]        $rights
      */
-    public function findCredential (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
-                                    array $filters = [],
-                                    array $params = [],
-                                    array $rights = []) {
+    public function findCredential (ActionContext $actionContext, array $keyPaths = [], array $filters = [],
+                                    array $params = []) {
 
         $qryCtx = new FindQueryContext('Credential', $actionContext->getRequestContext());
 
-        $actionContext['credentials'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
+        $actionContext['credentials'] = $this->basicFind($qryCtx, $keyPaths, $filters, $params);
 
     }
 

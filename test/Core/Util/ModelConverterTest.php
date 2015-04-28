@@ -64,7 +64,7 @@ class ModelConverterTest extends TestCase {
         $qryCtx->addField(new RelativeField('company.users.*'));
 
         $findRegistry = $appCtx->getNewRegistry();
-        $findRegistry->find($qryCtx, false);
+        $findRegistry->find($qryCtx);
 
         $modelConverter = new ModelConverter();
 

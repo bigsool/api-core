@@ -152,7 +152,7 @@ class AggregateTest extends TestCase {
         $qryCtx->addField(new RelativeField(new Aggregate('min', ['company.id'])), 'minCompanyId');
         $qryCtx->addField(new RelativeField('*'));
 
-        $result = $registry->find($qryCtx, false);
+        $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(3, $result);

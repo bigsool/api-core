@@ -25,6 +25,7 @@ use Core\Operator\EqualOperator;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\CallbackRule;
 use Core\Rule\FieldRule;
+use Core\Util\ModelConverter;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 
@@ -280,7 +281,13 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
-        $this->assertSame($this->company, $result[0]);
+
+        $company = $result[0];
+        $this->assertInstanceOf('\Core\Model\TestCompany', $company);
+
+        $companyArray = (new ModelConverter())->toArray($company, ['*']);
+
+        $this->assertSame($this->company, $companyArray);
         // TODO: improve test
 
     }
@@ -299,10 +306,16 @@ class RegistryTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
-        $this->assertSame([
-                              'name' => $this->company['name'],
-                              'tva'  => $this->company['tva']
-                          ], $result[0]);
+
+        /**
+         * @var TestCompany $company
+         */
+        $company = $result[0];
+
+        $this->assertInstanceOf('\Core\Model\TestCompany', $company);
+
+        $this->assertSame($this->company['name'], $company->getName());
+        $this->assertSame($this->company['tva'], $company->getTva());
         // TODO: improve test
 
     }
@@ -316,7 +329,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('*'));
 
         $registry = $this->appCtx->getNewRegistry();
-        $result = $registry->find($qryCtx, false);
+        $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
@@ -343,7 +356,7 @@ class RegistryTest extends TestCase {
         $expression = new BinaryExpression(new EqualOperator(), new KeyPath('tva'), new Value(17));
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
-        $result = $registry->find($qryCtx, false);
+        $result = $registry->find($qryCtx);
         $dql = 'SELECT testCompany ' .
                'FROM \Core\Model\TestCompany testCompany ' .
                'WHERE ((testCompany.tva = 17))';
@@ -354,7 +367,7 @@ class RegistryTest extends TestCase {
         $qryCtx->setParams(['tva' => 126]);
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
         $registry = $this->appCtx->getNewRegistry();
-        $result = $registry->find($qryCtx, false);
+        $result = $registry->find($qryCtx);
         $dql = 'SELECT testCompany ' .
                'FROM \Core\Model\TestCompany testCompany ' .
                'WHERE ((testCompany.tva = 17) ' .
@@ -375,7 +388,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField($RelativeField);
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->find($qryCtx, false);
+        $registry->find($qryCtx);
 
         $dql = 'SELECT testUser ' .
                'FROM \Core\Model\TestUser testUser ' .
@@ -397,7 +410,7 @@ class RegistryTest extends TestCase {
 
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->find($qryCtx, true);
+        $registry->find($qryCtx);
 
         $dql =
             'SELECT count(testUser) AS nbUsers, testUser, testUserCompany ' .
@@ -444,7 +457,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('email'));
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->find($qryCtx, true);
+        $registry->find($qryCtx);
 
         $dql = 'SELECT testUser ' .
                'FROM \Core\Model\TestUser testUser ' .
@@ -466,7 +479,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('company.users.email'));
 
         $registry = $this->appCtx->getNewRegistry();
-        $registry->find($qryCtx, false);
+        $registry->find($qryCtx);
 
         $dql = 'SELECT testUser, testUserCompany, testUserCompanyUsers ' .
                'FROM \Core\Model\TestUser testUser ' .
@@ -570,7 +583,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('company.users.*'));
 
         $findRegistry = $this->appCtx->getNewRegistry();
-        $result = $findRegistry->find($qryCtx, false);
+        $result = $findRegistry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);

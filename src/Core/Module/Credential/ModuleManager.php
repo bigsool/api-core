@@ -121,7 +121,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $ctx = new ActionContext(RequestContext::createNewInternalRequestContext());
 
-                $helper->findCredential($ctx, true, [new RelativeField('*')], [$filter], ['login' => $params['login']]);
+                $helper->findCredential($ctx, [new RelativeField('*')], [$filter], ['login' => $params['login']]);
 
                 if (count($ctx['credentials']) != 0) {
 

@@ -91,7 +91,7 @@ class Helper extends BasicHelper {
             $qryCtx->addFilter($filter);
         }
 
-        $actCtx['TestUser'] = $registry->find($qryCtx, $hydrateArray);
+        $actCtx['TestUser'] = $registry->find($qryCtx);
 
     }
 

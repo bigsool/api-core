@@ -83,16 +83,13 @@ class BasicHelper {
 
     /**
      * @param FindQueryContext $context
-     * @param bool             $hydrateArray
      * @param RelativeField[]  $keyPaths
      * @param Filter[]         $filters
      * @param array            $params
      *
-     * @return mixed[]
+     * @return \mixed[]
      */
-    public function basicFind (FindQueryContext $context, $hydrateArray = true, array $keyPaths = [],
-                               array $filters = [],
-                               array $params = []) {
+    public function basicFind (FindQueryContext $context, array $keyPaths = [], array $filters = [], array $params = []) {
 
         foreach ($keyPaths as $keyPath) {
             $context->addField($keyPath);
@@ -104,7 +101,7 @@ class BasicHelper {
 
         $context->setParams($params);
 
-        return ApplicationContext::getInstance()->getNewRegistry()->find($context, $hydrateArray);
+        return ApplicationContext::getInstance()->getNewRegistry()->find($context);
 
     }
 

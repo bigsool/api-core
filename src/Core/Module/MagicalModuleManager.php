@@ -13,6 +13,7 @@ use Core\Filter\Filter;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
+use Core\Util\ModelConverter;
 use Core\Validation\Parameter\Constraint;
 use Core\Validation\RuntimeConstraintsProvider;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -209,9 +210,12 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @return ModelAspect[]
+     */
     private function getModelAspects () {
 
-        return array_filter($this->modelAspects, function ($modelAspect) {
+        return array_filter($this->modelAspects, function (ModelAspect $modelAspect) {
 
             return $modelAspect->isEnabled();
 
@@ -772,7 +776,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addFilter($filter);
         }
 
-        $result = $registry->find($qryCtx, false);
+        $result = $registry->find($qryCtx);
 
         $registry->delete($result[0]);
 
@@ -927,7 +931,23 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->setParams($params);
 
-        $result = $registry->find($qryCtx, $hydrateArray);
+        $result = $registry->find($qryCtx);
+
+
+        if ($hydrateArray) {
+            foreach ($result as &$data) {
+                if (is_array($data)) {
+                    foreach ($data as &$object) {
+                        if (is_object($object)) {
+                            $object = (new ModelConverter())->toArray($object, array_merge($fields,$returnedFields));
+                        }
+                    }
+                }
+                else {
+                    $data = (new ModelConverter())->toArray($data, array_merge($fields,$returnedFields));
+                }
+            }
+        }
 
         $result = $hydrateArray ? $this->formatFindResultArray($result) : $this->formatFindResultToObject($result);
 
@@ -1045,7 +1065,7 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param array $result
+     * @param mixed $result
      *
      * @return array
      */
@@ -1138,6 +1158,9 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+    /**
+     * @return ModelAspect[]
+     */
     private function getModelAspectsWithPrefixedField () {
 
         return array_filter($this->modelAspects, function ($modelAspect) {

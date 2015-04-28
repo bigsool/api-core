@@ -49,7 +49,7 @@ class BasicUpdateAction extends SimpleAction {
                 $qryCtx->setParams(['id' => $params['id']]);
 
                 $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
-                $entities = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx, false);
+                $entities = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
 
                 if (count($entities) != 1) {
                     throw new \RuntimeException('more or less than one entity found');

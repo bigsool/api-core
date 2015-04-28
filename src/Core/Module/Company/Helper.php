@@ -43,20 +43,16 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext   $actionContext
-     * @param bool            $hydrateArray
      * @param RelativeField[] $keyPaths
      * @param Filter[]        $filters
      * @param array           $params
-     * @param string[]        $rights
      */
-    public function findCompany (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
-                                 array $filters = [],
-                                 array $params = [],
-                                 array $rights = []) {
+    public function findCompany (ActionContext $actionContext, array $keyPaths = [], array $filters = [],
+                                 array $params = []) {
 
         $qryCtx = new FindQueryContext('Company', $actionContext->getRequestContext());
 
-        $actionContext['companies'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
+        $actionContext['companies'] = $this->basicFind($qryCtx, $keyPaths, $filters, $params);
 
     }
 

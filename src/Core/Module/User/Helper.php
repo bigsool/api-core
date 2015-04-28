@@ -49,20 +49,16 @@ class Helper extends BasicHelper {
 
     /**
      * @param ActionContext   $actionContext
-     * @param bool            $hydrateArray
      * @param RelativeField[] $keyPaths
      * @param Filter[]        $filters
      * @param array           $params
-     * @param string[]        $rights
      */
-    public function findUser (ActionContext $actionContext, $hydrateArray = true, array $keyPaths = [],
-                              array $filters = [],
-                              array $params = [],
-                              array $rights = []) {
+    public function findUser (ActionContext $actionContext, array $keyPaths = [], array $filters = [],
+                              array $params = []) {
 
         $qryCtx = new FindQueryContext('User', $actionContext->getRequestContext());
 
-        $actionContext['users'] = $this->basicFind($qryCtx, $hydrateArray, $keyPaths, $filters, $params);
+        $actionContext['users'] = $this->basicFind($qryCtx, $keyPaths, $filters, $params);
 
     }
 

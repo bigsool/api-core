@@ -10,8 +10,8 @@ use Core\Field\CalculatedField;
 class ModelConverter {
 
     /**
-     * @param mixed $object
-     * @param array $requestedFields
+     * @param mixed    $object
+     * @param string[] $requestedFields
      *
      * @return array
      */
@@ -30,8 +30,8 @@ class ModelConverter {
     }
 
     /**
-     * @param array $requestedFields
-     * @param array $formattedFields
+     * @param string[] $requestedFields
+     * @param array    $formattedFields
      */
     protected function formatFields (array $requestedFields, array &$formattedFields) {
 
@@ -60,6 +60,9 @@ class ModelConverter {
             return;
         }
 
+        if (!is_object($object)) {
+            throw new \RuntimeException('Unexpected type of $object');
+        }
 
         $class = get_class($object);
         $entity = ($pos = strrpos($class, '\\')) ? substr($class, $pos + 1) : $class;
