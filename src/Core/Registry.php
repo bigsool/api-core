@@ -17,7 +17,6 @@ use Core\Module\MagicalEntity;
 use Core\Operator\AndOperator;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\Processor;
-use Core\Util\ModelConverter;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -253,29 +252,10 @@ class Registry implements EventSubscriber {
                         $field .= ' AS ' . $resolvableField->getAlias();
                     }
                     $qb->addSelect($field);
-                }/*
-                else {
-                    if (count($exploded) == 2) {
-                        if (!$hydrateArray) {
-                            throw new \RuntimeException('cannot do partial object with Object Hydration');
-                        }
-                        $entities[$exploded[0]][] = $exploded[1];
-                    }
-                }*/
+                }
             }
 
         }
-
-        /*
-        foreach ($entities as $entity => $fields) {
-            $selectClause = 'partial ' . $entity . '.{';
-            if (!in_array('id', $fields)) {
-                $selectClause .= 'id,';
-            }
-            $selectClause .= implode(',', $fields);
-            $selectClause .= '}';
-            $qb->addSelect($selectClause);
-        }*/
 
         $needGroupByClause = false;
         $groupByClause = "";
@@ -319,31 +299,18 @@ class Registry implements EventSubscriber {
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
-        $result = $query->getResult(/*$hydrateArray ? Query::HYDRATE_ARRAY :*/
-            'RestrictedObjectHydrator');
+        // this will add related entity fields
+        $query->setHint(Query::HINT_INCLUDE_META_COLUMNS, true);
 
-        /*
-        if ($hydrateArray) {
-            $requestedFields = [];
-            foreach ($relativeFields as $relativeField) {
-                $requestedFields[] = $relativeField->getAlias() ?: $relativeField->getValue();
-            }
-            foreach ($result as &$data) {
-                if (is_array($data)) {
-                    foreach ($data as &$object) {
-                        if (is_object($object)) {
-                            $object = (new ModelConverter())->toArray($object, $requestedFields);
-                        }
-                    }
-                }
-                else {
-                    $data = (new ModelConverter())->toArray($data, $requestedFields);
-                }
-            }
-        }
-        */
+        $result = $query->getResult('RestrictedObjectHydrator');
 
-        //$result = $this->insertCalculatedFields($hydrateArray, $resolvableFields, $result);
+        array_walk_recursive($result, function($object) use($ctx) {
+            if (Registry::isEntity($object)) {
+                $refProp = new \ReflectionProperty($object, 'findQueryContext');
+                $refProp->setAccessible(true);
+                $refProp->setValue($object, $ctx);
+            }
+        });
 
         return $result;
 
@@ -393,26 +360,6 @@ class Registry implements EventSubscriber {
         $resolvableFields = array_merge($resolvableFields, $resolvableFieldsToAdd);
 
         return $resolvableFields;
-
-        /*
-        $relativeFieldsToAdd = [];
-        foreach ($relativeFields as $relativeField) {
-            $tmpResolvableFields = $relativeField->resolve($this, $ctx);
-            if ($relativeField->getResolvedField() != '*') {
-                foreach ($tmpResolvableFields as $tmpResolvableField) {
-                    if (!($tmpResolvableField instanceof RealField)) {
-                        continue 2;
-                    }
-                }
-                $fieldValue = $relativeField->getValue();
-                $prefix = substr($fieldValue, 0, strrpos($fieldValue, '.'));
-                $newFieldValue = $prefix ? $prefix . '.*' : '*';
-                $relativeFieldsToAdd[] = new RelativeField($newFieldValue);
-            }
-        }
-        $relativeFields = array_merge($relativeFields, $relativeFieldsToAdd);
-
-        return $relativeFields;*/
     }
 
     /**

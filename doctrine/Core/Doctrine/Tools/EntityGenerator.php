@@ -41,6 +41,20 @@ public function <methodName>()
  */
 public function <methodName>()
 {
+<spaces>if (!$this-><fieldName>RestrictedId && $this->findQueryContext) {
+<spaces><spaces>$faultedVar = "is".ucfirst("<fieldName>")."Faulted";
+<spaces><spaces>if (!$this->$faultedVar) {
+<spaces><spaces><spaces>return NULL;
+<spaces><spaces>}
+<spaces><spaces>$this->$faultedVar = false; // TODO : set to false in the hydrator too
+<spaces><spaces>$reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+<spaces><spaces>$reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("<fieldName>")]);
+<spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<entity>", $reqCtx);
+<spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"));
+<spaces><spaces>$qryContext->setParam("id",$this->getId());
+<spaces><spaces>\Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+<spaces>}
+
 <spaces>return $this-><fieldName> && $this-><fieldName>->getId() == $this-><fieldName>RestrictedId ? $this-><fieldName> : NULL;
 }';
 
@@ -83,6 +97,11 @@ public function <methodName>()
             $lines[] = $this->spaces . ' */';
             $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName . 'RestrictedId'
                        . ($metadata->isCollectionValuedAssociation($fieldName) ? 's = []' : '') . ";\n";
+
+            $lines[] = $this->spaces . '/**';
+            $lines[] = $this->spaces . ' * @var bool';
+            $lines[] = $this->spaces . ' */';
+            $lines[] = $this->spaces . $this->fieldVisibility . ' $is' . ucfirst($fieldName) . "Faulted = true;\n";
         }
 
         return implode("\n", $lines);

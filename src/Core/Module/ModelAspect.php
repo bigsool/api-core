@@ -101,7 +101,7 @@ class ModelAspect {
     }
 
     /**
-     * @return AbstractKeyPath|null
+     * @return RelativeField|null
      */
     public function getRelativeField () {
 

@@ -523,6 +523,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         foreach ($cmf->getAllMetadata() as $metadata) {
 
             $generator = new EntityGenerator();
+            $generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
             $generator->setBackupExisting(false);
             $generator->setGenerateAnnotations(true);
             $generator->setGenerateStubMethods(true);
