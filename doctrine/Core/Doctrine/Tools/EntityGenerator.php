@@ -73,6 +73,59 @@ public function <methodName>()
 }';
 
     /**
+     * @var string
+     */
+    protected static $setAssociationMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @param <variableType> $<variableName>
+ *
+ * @return <entity>
+ */
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
+{
+<spaces>$this-><fieldName> = $<variableName>;
+<spaces>$this-><fieldName>RestrictedId = $<variableName> ? $<variableName>->getId() : NULL;
+
+<spaces>return $this;
+}';
+
+    /**
+     * @var string
+     */
+    protected static $addCollectionMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @param <variableType> $<variableName>
+ *
+ * @return <entity>
+ */
+public function <methodName>(<methodTypeHint>$<variableName>)
+{
+<spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>$this-><fieldName>RestrictedIds[] = $<variableName>->getId();
+
+<spaces>return $this;
+}';
+
+    /**
+     * @var string
+     */
+    protected static $removeCollectionMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @param <variableType> $<variableName>
+ */
+public function <methodName>(<methodTypeHint>$<variableName>)
+{
+<spaces>$this-><fieldName>->removeElement($<variableName>);
+<spaces>$this-><fieldName>RestrictedIds = array_diff($this-><fieldName>RestrictedIds,[$<variableName>->getId()]);
+}';
+
+    /**
      * @param ClassMetadataInfo $metadata
      *
      * @return string
@@ -113,16 +166,17 @@ public function <methodName>()
     protected function generateEntityStubMethod (ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = NULL,
                                                  $defaultValue = NULL) {
 
-        if ($type != 'get'
-            || (!$metadata->isCollectionValuedAssociation($fieldName)
-                && !$metadata->isSingleValuedAssociation($fieldName))
+        if (!$metadata->isCollectionValuedAssociation($fieldName)
+            && !$metadata->isSingleValuedAssociation($fieldName)
         ) {
             return parent::generateEntityStubMethod($metadata, $type, $fieldName, $typeHint, $defaultValue);
         }
 
+        $restrictedOptions = $type == 'get' ? [true, false] : [true];
+
         $methods = [];
 
-        foreach ([true, false] as $restricted) {
+        foreach ($restrictedOptions as $restricted) {
 
             $methodName = $type . ($restricted ? '' : 'Unrestricted') . Inflector::classify($fieldName);
             $variableName = Inflector::camelize($fieldName);
@@ -172,6 +226,7 @@ public function <methodName>()
             $methods[] = $this->prefixCodeWithSpaces($method);
 
         }
+
 
         return implode("\n\n", $methods);
 
