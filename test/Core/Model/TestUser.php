@@ -414,7 +414,8 @@ class TestUser
     public function setOwnedCompany(\Core\Model\TestCompany $ownedCompany = null)
     {
         $this->ownedCompany = $ownedCompany;
-
+        $this->ownedCompanyRestrictedId = $ownedCompany ? $ownedCompany->getId() : NULL;
+    
         return $this;
     }
 
@@ -462,7 +463,8 @@ class TestUser
     public function setStorage(\Core\Model\TestStorage $storage = null)
     {
         $this->storage = $storage;
-
+        $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
+    
         return $this;
     }
 
@@ -510,7 +512,8 @@ class TestUser
     public function setCompany(\Core\Model\TestCompany $company = null)
     {
         $this->company = $company;
-
+        $this->companyRestrictedId = $company ? $company->getId() : NULL;
+    
         return $this;
     }
 

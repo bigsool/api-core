@@ -267,7 +267,8 @@ class TestStorage
     public function setCompany(\Core\Model\TestCompany $company = null)
     {
         $this->company = $company;
-
+        $this->companyRestrictedId = $company ? $company->getId() : NULL;
+    
         return $this;
     }
 
@@ -315,7 +316,8 @@ class TestStorage
     public function setUser(\Core\Model\TestUser $user = null)
     {
         $this->user = $user;
-
+        $this->userRestrictedId = $user ? $user->getId() : NULL;
+    
         return $this;
     }
 

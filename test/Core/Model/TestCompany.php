@@ -390,7 +390,8 @@ class TestCompany
     public function setOwner(\Core\Model\TestUser $owner = null)
     {
         $this->owner = $owner;
-
+        $this->ownerRestrictedId = $owner ? $owner->getId() : NULL;
+    
         return $this;
     }
 
@@ -438,7 +439,8 @@ class TestCompany
     public function setStorage(\Core\Model\TestStorage $storage = null)
     {
         $this->storage = $storage;
-
+        $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
+    
         return $this;
     }
 
@@ -486,7 +488,8 @@ class TestCompany
     public function addUser(\Core\Model\TestUser $user)
     {
         $this->users[] = $user;
-
+        $this->usersRestrictedIds[] = $user->getId();
+    
         return $this;
     }
 
@@ -498,6 +501,7 @@ class TestCompany
     public function removeUser(\Core\Model\TestUser $user)
     {
         $this->users->removeElement($user);
+        $this->usersRestrictedIds = array_diff($this->usersRestrictedIds,[$user->getId()]);
     }
 
     /**
