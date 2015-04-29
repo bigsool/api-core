@@ -13,79 +13,94 @@ use Doctrine\ORM\Mapping as ORM;
 class TestStorage
 {
     /**
+     * @var \Core\Context\FindQueryContext
+     */
+    protected $findQueryContext;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255, nullable=false)
      */
-    private $url;
+    protected $url;
 
     /**
      * @var string
      *
      * @ORM\Column(name="login", type="string", length=255, nullable=false)
      */
-    private $login;
+    protected $login;
 
     /**
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
-    private $password;
+    protected $password;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="usedSpace", type="bigint", nullable=false)
      */
-    private $usedSpace = '0';
+    protected $usedSpace = '0';
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastUsedSpaceUpdate", type="datetime", nullable=false)
      */
-    private $lastUsedSpaceUpdate;
+    protected $lastUsedSpaceUpdate;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="isOutOfQuota", type="boolean", nullable=false)
      */
-    private $isOutOfQuota = '0';
+    protected $isOutOfQuota = '0';
 
     /**
      * @var \Core\Model\TestCompany
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", mappedBy="storage", cascade={"persist"})
      */
-    private $company;
+    protected $company;
 
     /**
      * @var int
      */
-    private $companyRestrictedId;
+    protected $companyRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isCompanyFaulted = true;
 
     /**
      * @var \Core\Model\TestUser
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestUser", mappedBy="storage", cascade={"persist"})
      */
-    private $user;
+    protected $user;
 
     /**
      * @var int
      */
-    private $userRestrictedId;
+    protected $userRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isUserFaulted = true;
 
 
     /**
@@ -263,6 +278,20 @@ class TestStorage
      */
     public function getCompany()
     {
+        if (!$this->companyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("company")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
@@ -297,6 +326,20 @@ class TestStorage
      */
     public function getUser()
     {
+        if (!$this->userRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("user")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("user")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
     }
 

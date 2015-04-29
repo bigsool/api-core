@@ -13,76 +13,81 @@ use Doctrine\ORM\Mapping as ORM;
 class TestCompany
 {
     /**
+     * @var \Core\Context\FindQueryContext
+     */
+    protected $findQueryContext;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="address", type="text", nullable=true)
      */
-    private $address;
+    protected $address;
 
     /**
      * @var string
      *
      * @ORM\Column(name="zipCode", type="string", length=255, nullable=true)
      */
-    private $zipCode;
+    protected $zipCode;
 
     /**
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
      */
-    private $city;
+    protected $city;
 
     /**
      * @var string
      *
      * @ORM\Column(name="state", type="string", length=255, nullable=true)
      */
-    private $state;
+    protected $state;
 
     /**
      * @var string
      *
      * @ORM\Column(name="country", type="string", length=255, nullable=true)
      */
-    private $country;
+    protected $country;
 
     /**
      * @var string
      *
      * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
-    private $tel;
+    protected $tel;
 
     /**
      * @var string
      *
      * @ORM\Column(name="fax", type="string", length=255, nullable=true)
      */
-    private $fax;
+    protected $fax;
 
     /**
      * @var string
      *
      * @ORM\Column(name="tva", type="string", length=255, nullable=true)
      */
-    private $tva;
+    protected $tva;
 
     /**
      * @var \Core\Model\TestUser
@@ -92,12 +97,17 @@ class TestCompany
      *   @ORM\JoinColumn(name="owner_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
      * })
      */
-    private $owner;
+    protected $owner;
 
     /**
      * @var int
      */
-    private $ownerRestrictedId;
+    protected $ownerRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isOwnerFaulted = true;
 
     /**
      * @var \Core\Model\TestStorage
@@ -107,24 +117,34 @@ class TestCompany
      *   @ORM\JoinColumn(name="storage_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
      * })
      */
-    private $storage;
+    protected $storage;
 
     /**
      * @var int
      */
-    private $storageRestrictedId;
+    protected $storageRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isStorageFaulted = true;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
      * @ORM\OneToMany(targetEntity="Core\Model\TestUser", mappedBy="company", cascade={"persist"})
      */
-    private $users;
+    protected $users;
 
     /**
      * @var int[]
      */
-    private $usersRestrictedIds = [];
+    protected $usersRestrictedIds = [];
+
+    /**
+     * @var bool
+     */
+    protected $isUsersFaulted = true;
 
     /**
      * Constructor
@@ -381,6 +401,20 @@ class TestCompany
      */
     public function getOwner()
     {
+        if (!$this->ownerRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("owner")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("owner")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->owner && $this->owner->getId() == $this->ownerRestrictedId ? $this->owner : NULL;
     }
 
@@ -415,6 +449,20 @@ class TestCompany
      */
     public function getStorage()
     {
+        if (!$this->storageRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("storage")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("storage")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 

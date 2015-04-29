@@ -13,95 +13,105 @@ use Doctrine\ORM\Mapping as ORM;
 class TestUser
 {
     /**
+     * @var \Core\Context\FindQueryContext
+     */
+    protected $findQueryContext;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
      */
-    private $email;
+    protected $email;
 
     /**
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
-    private $password;
+    protected $password;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
      */
-    private $firstname;
+    protected $firstname;
 
     /**
      * @var string
      *
      * @ORM\Column(name="lang", type="string", length=255, nullable=true)
      */
-    private $lang;
+    protected $lang;
 
     /**
      * @var string
      *
      * @ORM\Column(name="SALT", type="string", length=255, nullable=true)
      */
-    private $salt;
+    protected $salt;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="register_date", type="datetime", nullable=false)
      */
-    private $registerDate;
+    protected $registerDate;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="last_login_date", type="datetime", nullable=true)
      */
-    private $lastLoginDate;
+    protected $lastLoginDate;
 
     /**
      * @var string
      *
      * @ORM\Column(name="knowsFrom", type="string", length=255, nullable=true)
      */
-    private $knowsFrom;
+    protected $knowsFrom;
 
     /**
      * @var string
      *
      * @ORM\Column(name="confirmationKey", type="string", length=255, nullable=true)
      */
-    private $confirmationKey;
+    protected $confirmationKey;
 
     /**
      * @var \Core\Model\TestCompany
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", mappedBy="owner", cascade={"persist"})
      */
-    private $ownedCompany;
+    protected $ownedCompany;
 
     /**
      * @var int
      */
-    private $ownedCompanyRestrictedId;
+    protected $ownedCompanyRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isOwnedCompanyFaulted = true;
 
     /**
      * @var \Core\Model\TestStorage
@@ -111,12 +121,17 @@ class TestUser
      *   @ORM\JoinColumn(name="storage_id", referencedColumnName="id", unique=true, nullable=true, onDelete="CASCADE")
      * })
      */
-    private $storage;
+    protected $storage;
 
     /**
      * @var int
      */
-    private $storageRestrictedId;
+    protected $storageRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isStorageFaulted = true;
 
     /**
      * @var \Core\Model\TestCompany
@@ -126,12 +141,17 @@ class TestUser
      *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      * })
      */
-    private $company;
+    protected $company;
 
     /**
      * @var int
      */
-    private $companyRestrictedId;
+    protected $companyRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isCompanyFaulted = true;
 
 
     /**
@@ -405,6 +425,20 @@ class TestUser
      */
     public function getOwnedCompany()
     {
+        if (!$this->ownedCompanyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("ownedCompany")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("ownedCompany")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
     }
 
@@ -439,6 +473,20 @@ class TestUser
      */
     public function getStorage()
     {
+        if (!$this->storageRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("storage")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("storage")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
@@ -473,6 +521,20 @@ class TestUser
      */
     public function getCompany()
     {
+        if (!$this->companyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is".ucfirst("company")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
+            $qryContext->setParam("id",$this->getId());
+            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+        }
+    
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
