@@ -5,4 +5,4 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-(new \Core\Application())->run();
+\Core\Application::getInstance()->run();

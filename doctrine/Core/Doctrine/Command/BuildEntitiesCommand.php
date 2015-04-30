@@ -79,7 +79,7 @@ class BuildEntitiesCommand extends Command {
             throw new \RuntimeException("Class {$applicationClassName} not found");
         }
 
-        $application = new $applicationClassName;
+        $application = $applicationClassName::getInstance();
         if (!($application instanceof Application)) {
             throw new \RuntimeException("{$applicationClassName} is not an instance of \\Core\\Application");
         }
@@ -256,6 +256,7 @@ class BuildEntitiesCommand extends Command {
             $magicalEntityName = $classComponents[count($classComponents) - 2];
             $class = $this->createMagicalClassHeader($magicalEntityName);
             $class .= $this->createMagicalConstructor($mainEntity->getModel());
+            $class .= $this->createMagicalModuleManagerGetter($magicalEntityName);
             $class .= $this->createMagicalMainEntityMethods($mainEntity->getModel());
 
             foreach ($modelAspects as $modelAspect) {
@@ -274,6 +275,36 @@ class BuildEntitiesCommand extends Command {
         }
     }
 
+    protected function createMagicalModuleManagerGetter($magicalEntityName) {
+
+        return <<<MAGICAL_MODULE_MANAGER_GETTER
+    /**
+     * @return MagicalModuleManager
+     */
+    public function getMagicalModuleManager() {
+
+        \$moduleManagers =  ApplicationContext::getInstance()->getModuleManagers();
+        foreach (\$moduleManagers as \$moduleManager) {
+            if (!(\$moduleManager instanceof MagicalModuleManager)) {
+                continue;
+            }
+            \$classComponents = explode('\\\\', get_class(\$moduleManager));
+            \$magicalEntityName = \$classComponents[count(\$classComponents) - 2];
+            if (\$magicalEntityName == '$magicalEntityName') {
+                return \$moduleManager;
+            }
+        }
+
+        throw new \RuntimeException('MagicalModuleManager not found');
+
+    }
+
+
+MAGICAL_MODULE_MANAGER_GETTER;
+
+
+    }
+
     protected function createMagicalClassHeader ($magicalEntityName) {
 
         $product = ApplicationContext::getInstance()->getProduct();
@@ -283,7 +314,9 @@ class BuildEntitiesCommand extends Command {
 
 namespace $product\Model;
 
+use Core\Context\ApplicationContext;
 use Core\Module\MagicalEntity;
+use Core\Module\MagicalModuleManager;
 
 class $magicalEntityName extends MagicalEntity {
 

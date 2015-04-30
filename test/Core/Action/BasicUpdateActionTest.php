@@ -34,7 +34,6 @@ class BasicUpdateActionTest extends TestCase {
     public function testConstructor () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
 
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
@@ -78,7 +77,6 @@ class BasicUpdateActionTest extends TestCase {
     public function testWrongHelper () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
 
         $companyModuleManager = new CompanyModuleManager();
         $companyModuleManager->loadHelpers($appCtx);
@@ -105,7 +103,6 @@ class BasicUpdateActionTest extends TestCase {
     public function testWrongNumberOfEntity () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
 
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);

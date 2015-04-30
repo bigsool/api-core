@@ -33,6 +33,11 @@ class Serializer {
     /**
      * @var array
      */
+    private $requiredFormattedFields = [];
+
+    /**
+     * @var array
+     */
     private $dataSerialized;
 
     /**
@@ -42,7 +47,8 @@ class Serializer {
 
         $this->actCtx = $actCtx;
 
-        $returnedKeyPaths = $actCtx->getRequestContext()->getReturnedFields();
+        $reqCtx = $actCtx->getRequestContext();
+        $returnedKeyPaths = $reqCtx->getReturnedFields();
 
         foreach ($returnedKeyPaths as $keyPath) {
             $value = $keyPath->getValue();
@@ -112,10 +118,19 @@ class Serializer {
 
         if (is_object($data)) {
             if (ApplicationContext::getInstance()->getNewRegistry()->isEntity($data)) {
-                return (new ModelConverter())->toArray($data, $this->requiredNotFormattedKeyPaths);
+                return (new ModelConverter())->toArray($data, $this->requiredFormattedFields
+                    ?: $this->requiredNotFormattedKeyPaths);
             }
             elseif ($data instanceof MagicalEntity) {
-                return $this->convertDoctrineObjects($data->getMainEntity());
+                $requestContext = $this->actCtx->getRequestContext();
+                $data->getMagicalModuleManager()->convertRequestedFields($requestContext);
+
+                foreach ($requestContext->getFormattedReturnedFields() as $formattedField) {
+                    $this->requiredFormattedFields[] = $formattedField->getValue();
+                }
+                $tmpConvertedEntity = $this->convertDoctrineObjects($data->getMainEntity());
+
+                return $data->getMagicalModuleManager()->formatFindResultArray([$tmpConvertedEntity])[0];
             }
         }
 

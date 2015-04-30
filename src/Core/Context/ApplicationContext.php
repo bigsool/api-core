@@ -6,6 +6,7 @@ namespace Core\Context;
 
 use Core\Action\Action;
 use Core\ActionQueue;
+use Core\Application;
 use Core\Config\ConfigManager;
 use Core\Controller;
 use Core\Error\ErrorManager;
@@ -16,6 +17,7 @@ use Core\Logger\Logger;
 use Core\Logger\RequestLogger;
 use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
+use Core\Module\ModuleManager;
 use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
@@ -29,6 +31,11 @@ class ApplicationContext {
      * @var ApplicationContext
      */
     protected static $instance;
+
+    /**
+     * @var Application
+     */
+    protected $application;
 
     /**
      * @var EntityManager
@@ -152,6 +159,25 @@ class ApplicationContext {
         }
 
         return self::$instance;
+
+    }
+
+    /**
+     * @param Application $application
+     */
+    public function setApplication (Application $application) {
+
+        $this->application = $application;
+        $this->product = strstr(get_class($application), '\\', true);
+
+    }
+
+    /**
+     * @return ModuleManager[]
+     */
+    public function getModuleManagers () {
+
+        return $this->application->getModuleManagers();
 
     }
 
@@ -547,14 +573,6 @@ class ApplicationContext {
     public function getProduct () {
 
         return $this->product;
-    }
-
-    /**
-     * @param string $product
-     */
-    public function setProduct ($product) {
-
-        $this->product = $product;
     }
 
     /**

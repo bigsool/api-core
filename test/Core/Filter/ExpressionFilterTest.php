@@ -33,13 +33,4 @@ class ExpressionFilterTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
-    public function testGetExpressionWithoutExpression () {
-
-        (new ExpressionFilter('project', 'myProject', NULL))->getExpression();
-
-    }
-
 }

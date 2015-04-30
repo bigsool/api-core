@@ -367,7 +367,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Archipad');
+        // TODO : //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -410,7 +410,7 @@ class MagicalModuleManagerTest extends TestCase {
     public function testSimpleDefineAction () {
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Archipad');
+        // TODO : //TODO : $appCtx->setProduct('Archipad');
 
         $called = false;
 
@@ -595,7 +595,7 @@ class MagicalModuleManagerTest extends TestCase {
     public function testSimpleMagicalCreate () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
+        ////$appCtx->setProduct('Core');
 
         $mgr = $this->getMockMagicalModuleManager(['getMagicalEntityObject']);
         $mgr->method('getMagicalEntityObject')->will($this->returnCallback(function () use (&$mgr) {
@@ -612,7 +612,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Archipad');
+        // TODO : //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -689,7 +689,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Core');
+        ////$appCtx->setProduct('Core');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -773,7 +773,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Archipad');
+        // TODO : //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -861,7 +861,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
+        //$appCtx->setProduct('Core');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -926,7 +926,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1015,7 +1015,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1103,7 +1103,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1159,7 +1159,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1215,7 +1215,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1259,7 +1259,7 @@ class MagicalModuleManagerTest extends TestCase {
         $this->magicalAction('Delete', $mgrUser, [$filters]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadActions($appCtx);
@@ -1446,7 +1446,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1732,7 +1732,7 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1831,7 +1831,7 @@ class MagicalModuleManagerTest extends TestCase {
 
 
         $appCtx = ApplicationContext::getInstance();
-        $appCtx->setProduct('Core');
+        //$appCtx->setProduct('Core');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -1904,7 +1904,7 @@ class MagicalModuleManagerTest extends TestCase {
         $mgrUser = $this->getMagicalUser(true, true);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -2012,7 +2012,7 @@ class MagicalModuleManagerTest extends TestCase {
         $mgrUser = $this->getMagicalUser(true, false);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
@@ -2052,7 +2052,7 @@ class MagicalModuleManagerTest extends TestCase {
         $mgrUser = $this->getMagicalUser(true, false);
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Archipad');
+        //TODO : $appCtx->setProduct('Archipad');
 
         $userModuleManager->loadActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);

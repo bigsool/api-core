@@ -22,8 +22,7 @@ class ApplicationContextTest extends TestCase {
 
         $ctx = $this->getApplicationContext();
 
-        $ctx->setProduct('Archipad');
-        $this->assertSame('Archipad', $ctx->getProduct());
+        $this->assertSame('Core', $ctx->getProduct());
 
     }
 

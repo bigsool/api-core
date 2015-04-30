@@ -9,6 +9,11 @@ use Core\TestCase;
 
 class ActionContextTest extends TestCase {
 
+    public function setUp() {
+        parent::setUp();
+        self::getApplicationContext();
+    }
+
     public function testRequestContext () {
 
         $auth = $this->getMockAuth();
@@ -138,9 +143,6 @@ class ActionContextTest extends TestCase {
 
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error_Notice
-     */
     public function testNoticeArrayObject () {
 
         $reqCtx = $this->getMockRequestContext();

@@ -10,8 +10,6 @@ class ExpressionFilter extends Filter {
      * @param string                 $entity
      * @param string                 $name
      * @param ExpressionWithOperator $expression
-     *
-     * @internal param string $command
      */
     function __construct ($entity, $name, ExpressionWithOperator $expression) {
 

@@ -2,7 +2,9 @@
 
 namespace Core\Model;
 
+use Core\Context\ApplicationContext;
 use Core\Module\MagicalEntity;
+use Core\Module\MagicalModuleManager;
 
 class TestAccount extends MagicalEntity {
 
@@ -17,6 +19,27 @@ class TestAccount extends MagicalEntity {
     public function __construct (TestUser $user) {
 
         $this->user = $user;
+
+    }
+
+    /**
+     * @return MagicalModuleManager
+     */
+    public function getMagicalModuleManager() {
+
+        $moduleManagers =  ApplicationContext::getInstance()->getModuleManagers();
+        foreach ($moduleManagers as $moduleManager) {
+            if (!($moduleManager instanceof MagicalModuleManager)) {
+                continue;
+            }
+            $classComponents = explode('\\', get_class($moduleManager));
+            $magicalEntityName = $classComponents[count($classComponents) - 2];
+            if ($magicalEntityName == 'TestAccount') {
+                return $moduleManager;
+            }
+        }
+
+        throw new \RuntimeException('MagicalModuleManager not found');
 
     }
 

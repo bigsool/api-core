@@ -502,12 +502,18 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             self::generateEntities($em);
             $em->getConnection()->query('PRAGMA foreign_keys = ON');
 
+            $appProperty = (new \ReflectionClass('\Core\Application'))->getProperty('instance');
+            $appProperty->setAccessible(true);
+            $appProperty->setValue(NULL);
+            $appProperty->setAccessible(false);
+            $app = Application::getInstance();
             $ctx = ApplicationContext::getInstance();
+            $ctx->setApplication($app);
             $ruleMgr = new Processor();
             $ctx->setRuleProcessor($ruleMgr);
             $ctx->setEntityManager($em);
 
-            require __DIR__ . '/../../config/errors.php';
+            //require __DIR__ . '/../../config/errors.php';
 
         }
 

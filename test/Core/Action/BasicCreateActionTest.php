@@ -21,7 +21,6 @@ class BasicCreationActionTest extends TestCase {
     public function testConstructor () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
 
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
@@ -60,7 +59,7 @@ class BasicCreationActionTest extends TestCase {
     public function testWrongHelper () {
 
         $appCtx = $this->getApplicationContext();
-        $appCtx->setProduct('Core');
+        //$appCtx->setProduct('Core');
 
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);

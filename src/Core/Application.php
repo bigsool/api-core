@@ -23,6 +23,16 @@ use Symfony\Component\Routing\RequestContext as SfRequestContext;
 class Application {
 
     /**
+     * @var Application
+     */
+    protected static $instance;
+
+    /**
+     * @var ModuleManager[]
+     */
+    protected $moduleManagers = [];
+
+    /**
      * @var EntityManager
      */
     protected $entityManager;
@@ -32,9 +42,23 @@ class Application {
      */
     protected $appCtx;
 
-    public function __construct () {
+    /**
+     * @return Application
+     */
+    public static function getInstance () {
 
-        self::defineRootDir();
+        if (!isset(static::$instance)) {
+            static::$instance = new static();
+            static::$instance->appCtx = static::$instance->createApplicationContext();
+        }
+
+        return static::$instance;
+
+    }
+
+    protected function __construct () {
+
+        static::defineRootDir();
 
         if (function_exists('opcache_get_status')) {
             $opcacheStatus = opcache_get_status(false);
@@ -53,8 +77,6 @@ class Application {
                 opcache_reset();
             }
         }
-
-        $this->appCtx = $this->createApplicationContext();
 
     }
 
@@ -76,7 +98,7 @@ class Application {
     protected function createApplicationContext () {
 
         $this->appCtx = ApplicationContext::getInstance();
-        $this->appCtx->setProduct(strstr(get_class($this), '\\', true));
+        $this->appCtx->setApplication($this);
 
         set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
         set_exception_handler($this->appCtx->getErrorLogger()->getExceptionHandler());
@@ -197,21 +219,23 @@ class Application {
      */
     public function getModuleManagers () {
 
-        $product = $this->appCtx->getProduct();
-        $modules = array_map('basename', glob(ROOT_DIR . '/src/' . $product . '/Module/*', GLOB_ONLYDIR));
-        $moduleManagers = [];
-        foreach ($modules as $moduleName) {
-            if ($product != 'Core') {
-                $className = "\\Core\\Module\\$moduleName\\ModuleManager";
-                if (class_exists($className)) {
-                    $moduleManagers[] = new $className;
+        if (!$this->moduleManagers) {
+            $product = $this->appCtx->getProduct();
+            $modules = array_map('basename', glob(ROOT_DIR . '/src/' . $product . '/Module/*', GLOB_ONLYDIR));
+            $this->moduleManagers = [];
+            foreach ($modules as $moduleName) {
+                if ($product != 'Core') {
+                    $className = "\\Core\\Module\\$moduleName\\ModuleManager";
+                    if (class_exists($className)) {
+                        $this->moduleManagers[] = new $className;
+                    }
                 }
+                $className = "\\$product\\Module\\$moduleName\\ModuleManager";
+                $this->moduleManagers[] = new $className;
             }
-            $className = "\\$product\\Module\\$moduleName\\ModuleManager";
-            $moduleManagers[] = new $className;
         }
 
-        return $moduleManagers;
+        return $this->moduleManagers;
 
     }
 

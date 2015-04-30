@@ -421,9 +421,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param array $params
-     * @param array $data
+     * @param $data
+     *
+     * @return array
      */
-    private function formatPrefixedFieldsToArray ($params, $data) {
+    private function formatPrefixedFieldsToArray (array $params, $data) {
 
         foreach ($data as $key => $value) {
 
@@ -792,6 +794,32 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
+     * @param RequestContext $requestContext
+     *
+     * @return array
+     */
+    public function convertRequestedFields (RequestContext $requestContext) {
+
+        $reqCtxReturnedFields = $requestContext->getReturnedFields();
+        $reqCtxFormattedReturnedFields = [];
+        $returnedFields = [];
+
+        foreach ($reqCtxReturnedFields as $returnedField) {
+            $returnedFields[] = $returnedField->getValue();
+        }
+
+        $returnedFields = $this->formatFindValues($returnedFields);
+
+        foreach ($returnedFields as $returnedField) {
+            $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
+        }
+
+        $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
+
+        return $returnedFields;
+    }
+
+    /**
      * @return mixed
      */
     protected function getMainEntity () {
@@ -909,21 +937,7 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addField(new RelativeField($value));
         }
 
-        $reqCtxReturnedFields = $requestContext->getReturnedFields();
-        $reqCtxFormattedReturnedFields = [];
-        $returnedFields = [];
-
-        foreach ($reqCtxReturnedFields as $returnedField) {
-            $returnedFields[] = $returnedField->getValue();
-        }
-
-        $returnedFields = $this->formatFindValues($returnedFields);
-
-        foreach ($returnedFields as $returnedField) {
-            $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
-        }
-
-        $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
+        $returnedFields = $this->convertRequestedFields($requestContext);
 
         foreach ($filters as $filter) {
             $qryCtx->addFilter($filter);
@@ -963,7 +977,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      *
      * @return Array
      */
-    private function formatFindValues ($values) {
+    protected function formatFindValues ($values) {
 
         $formattedValues = [];
 
@@ -1049,7 +1063,7 @@ abstract class MagicalModuleManager extends ModuleManager {
      *
      * @return array
      */
-    private function formatFindResultArray ($result) {
+    public function formatFindResultArray ($result) {
 
         $resultFormatted = [];
 
