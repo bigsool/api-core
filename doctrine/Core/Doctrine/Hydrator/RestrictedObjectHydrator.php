@@ -53,6 +53,10 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                 $array = &$array[0];
             }
             if (!is_array($array)) {
+                if (count($_arrayResult) == 0) {
+                    // should be a aggregatedField
+                    continue;
+                }
                 throw new \RuntimeException('$currentArrayResult must be an array');
             }
             if (!isset($array['id'])) {
