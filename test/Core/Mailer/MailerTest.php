@@ -3,6 +3,7 @@
 namespace Core\Mailer;
 
 use Core\Context\ApplicationContext;
+use Core\PHPUnit\Constraint\InArray;
 use Core\TestCase;
 
 class MailerTest extends TestCase {
@@ -16,7 +17,7 @@ class MailerTest extends TestCase {
         $this->assertInternalType('array', $result);
         $this->assertTrue(count($result) == 1);
         $this->assertSame('thierry@bigsool.com', $result[0]['email']);
-        $this->assertSame('sent', $result[0]['status']);
+        $this->assertThat($result[0]['status'], new InArray(['sent', 'queued']));
         $this->assertSame(NULL, $result[0]['reject_reason']);
 
     }
@@ -30,7 +31,7 @@ class MailerTest extends TestCase {
         $this->assertInternalType('array', $result);
         $this->assertTrue(count($result) == 1);
         $this->assertSame('thierry@bigsool.com', $result[0]['email']);
-        $this->assertSame('sent', $result[0]['status']);
+        $this->assertThat($result[0]['status'], new InArray(['sent', 'queued']));
         $this->assertSame(NULL, $result[0]['reject_reason']);
 
     }
