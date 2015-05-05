@@ -14,6 +14,26 @@ class EntityGenerator extends \Doctrine\ORM\Tools\EntityGenerator {
     /**
      * @var string
      */
+    protected static $classTemplate =
+        '<?php
+
+<namespace>
+<useStatement>
+<entityAnnotation>
+<entityClassName>
+{
+<spaces>/**
+<spaces> * @var \Core\Context\FindQueryContext
+<spaces> */
+<spaces>protected $findQueryContext;
+
+<entityBody>
+}
+';
+
+    /**
+     * @var string
+     */
     protected static $getCollectionMethodTemplate =
         '/**
  * <description>
