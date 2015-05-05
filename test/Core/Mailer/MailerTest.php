@@ -26,8 +26,8 @@ class MailerTest extends TestCase {
 
         $appCtx = ApplicationContext::getInstance();
         $result =
-            (new \Core\Mailer\Mailer($appCtx))->sendFromTemplate('welcome', 'thierry@bigsool.com', 'resetYourPassword',
-                                                                 ['Name' => 'thierry']);
+            (new \Core\Mailer\Mailer($appCtx))->sendFromTemplate('welcome', 'thierry@bigsool.com',
+                                                                 ['Name' => 'thierry'], 'resetYourPassword');
         $this->assertInternalType('array', $result);
         $this->assertTrue(count($result) == 1);
         $this->assertSame('thierry@bigsool.com', $result[0]['email']);

@@ -22,10 +22,13 @@ use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class ApplicationContext {
+
+    const UNIT_TESTS_USER_ARGENT = 'UnitTest/1.0';
 
     /**
      * @var ApplicationContext
@@ -159,6 +162,13 @@ class ApplicationContext {
         }
 
         return self::$instance;
+
+    }
+
+    public function isUnitTest () {
+
+        return (php_sapi_name() == 'cli' && strpos($_SERVER['argv'][0], 'phpunit') !== false)
+               || Request::createFromGlobals()->headers->get('user-agent') == static::UNIT_TESTS_USER_ARGENT;
 
     }
 
@@ -441,8 +451,8 @@ class ApplicationContext {
     }
 
     /**
-     * @param string   $path
-     * @param Action   $action
+     * @param string $path
+     * @param Action $action
      * @param string[] $defaultFields
      */
     public function addRoute ($path, Action $action, array $defaultFields = []) {

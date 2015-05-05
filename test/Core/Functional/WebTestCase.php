@@ -4,6 +4,7 @@
 namespace Core\Functional;
 
 
+use Core\Context\ApplicationContext;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
@@ -108,6 +109,11 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         $config = [
             'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
             'handler'  => new CurlHandler(),
+            'defaults' => [
+                'headers' => [
+                    'User-Agent' => ApplicationContext::UNIT_TESTS_USER_ARGENT
+                ]
+            ]
         ];
         self::$client = new Client($config);
         self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
