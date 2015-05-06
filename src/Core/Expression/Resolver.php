@@ -34,6 +34,19 @@ trait Resolver {
     protected $aliasForEntityToUse;
 
     /**
+     * @var string|NULL
+     */
+    protected $targetedEntityAlias;
+
+    /**
+     * @return string|NULL
+     */
+    public function getTargetedEntityAlias () {
+
+        return $this->targetedEntityAlias;
+    }
+
+    /**
      * @return NULL|string
      */
     public function getAliasForEntityToUse () {
@@ -105,6 +118,8 @@ trait Resolver {
                 $registry->addJoin($ctx, $alias, $joinToDo['field'], $this->getEntityForClass($joinToDo['entity']),
                                    $this->shouldUseLeftJoin());
         }
+
+        $this->targetedEntityAlias = $alias;
 
         if ($this->shouldResolveForAWhere() && isset($prevAlias) && $this->resolvedField == '*') {
             return $prevAlias . '.' . $joinToDo['field'];

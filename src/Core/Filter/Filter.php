@@ -23,6 +23,20 @@ abstract class Filter {
     private $entity;
 
     /**
+     * @var string|NULL
+     */
+    protected $aliasForEntityToUse;
+
+    /**
+     * @return NULL|string
+     */
+    public function getAliasForEntityToUse () {
+
+        return $this->aliasForEntityToUse;
+
+    }
+
+    /**
      * @param string     $entity
      * @param string     $name
      * @param Expression $expression
@@ -70,6 +84,7 @@ abstract class Filter {
      */
     public function setAliasForEntityToUse ($alias) {
 
+        $this->aliasForEntityToUse = $alias;
         $this->setAliasForEntityToUseToThisExpressions($alias, [$this->expression]);
 
     }

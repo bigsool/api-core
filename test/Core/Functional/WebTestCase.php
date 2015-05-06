@@ -227,13 +227,13 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     /**
      * @param mixed       $response
-     * @param string|null id
      * @param int         $errorCode
+     * @param null|string $id
      * @param array       $childErrorCodes
      * @param string      $field
      * @param bool        $hasMoreProperties
      */
-    public function assertFail ($response, $id, $errorCode, array $childErrorCodes = [], $field = NULL,
+    public function assertFail ($response, $errorCode = NULL, $id = NULL, array $childErrorCodes = [], $field = NULL,
                                 $hasMoreProperties = false) {
 
         $this->assertInternalType('array', $response);
