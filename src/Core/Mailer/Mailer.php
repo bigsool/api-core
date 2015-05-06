@@ -21,8 +21,10 @@ class Mailer {
      */
     function __construct (ApplicationContext $appCtx) {
 
+        $configKey = $appCtx->isUnitTest() ? 'sandboxAPIKey' : 'APIKey';
+
         $config = $appCtx->getConfigManager()->getConfig();
-        $APIKey = $config['mailer']['APIKey'];
+        $APIKey = $config['mailer'][$configKey];
         $email = $config['mailer']['from'];
 
         $this->mandrill = new \Mandrill($APIKey);
@@ -57,12 +59,12 @@ class Mailer {
     /**
      * @param String   $templateName
      * @param String   $to
-     * @param String   $subject
      * @param String[] $params
+     * @param String   $subject
      *
      * @return Array
      */
-    public function sendFromTemplate ($templateName, $to, $subject, $params) {
+    public function sendFromTemplate ($templateName, $to, array $params, $subject = NULL) {
 
         $message = [
             'from_email'        => $this->from,
@@ -71,9 +73,12 @@ class Mailer {
                     'email' => $to,
                 ]
             ],
-            'subject'           => $subject,
             'global_merge_vars' => []
         ];
+
+        if ($subject) {
+            $message['subject'] = $subject;
+        }
 
         foreach ($params as $key => $value) {
             $message['global_merge_vars'][] = ['name' => $key, 'content' => $value];
