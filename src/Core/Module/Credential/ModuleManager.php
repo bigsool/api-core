@@ -42,7 +42,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 return [
                     'authToken' => $authToken,
-                    'email'     => $params['login'],
+                    'login'     => $params['login'],
                     'id'        => $credential->getId(),
                 ];
 
