@@ -37,7 +37,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $context->addFilter(new StringFilter('Company', 'filterById', 'id = :id'));
+        $context->addFilter(new StringFilter('Company', 'CompanyForId', 'id = :id'));
 
     }
 

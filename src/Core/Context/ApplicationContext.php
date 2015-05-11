@@ -314,26 +314,13 @@ class ApplicationContext {
      */
     public function addFilter (Filter $filter) {
 
-        $this->filters[] = $filter;
 
-    }
-
-    /**
-     * @param string $entity
-     * @param string $name
-     *
-     * @return Filter
-     * @deprecated This method must be replace by getFilterByName
-     */
-    public function getFilterByEntityAndName ($entity, $name) {
-
-        foreach ($this->getFilters() as $filter) {
-            if ($filter->getEntity() == $entity && $filter->getName() == $name) {
-                return $filter;
-            }
+        $filterName = $filter->getName();
+        if (isset($this->filters[$filterName])) {
+            throw new \RuntimeException(sprintf('Filter %s already defined', $filterName));
         }
 
-        throw new \RuntimeException('Filter not found');
+        $this->filters[$filterName] = $filter;
 
     }
 
@@ -353,15 +340,11 @@ class ApplicationContext {
      */
     public function getFilterByName ($name) {
 
-        // todo : store filter in associative array where the key is the name of the filter
-
-        foreach ($this->getFilters() as $filter) {
-            if ($filter->getName() == $name) {
-                return $filter;
-            }
+        if (!isset($this->filters[$name])) {
+            throw new \RuntimeException(sprintf('Filter %s not found', $name));
         }
 
-        throw new \RuntimeException('Filter not found');
+        return $this->filters[$name];
 
     }
 
