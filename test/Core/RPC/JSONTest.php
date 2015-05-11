@@ -60,7 +60,7 @@ class JSONTest extends TestCase {
         $this->assertSame('service', $JSON->getService());
         $this->assertSame('method', $JSON->getMethod());
 
-        $response = $JSON->getSuccessResponse(new Serializer(new ActionContext(new RequestContext())), 'qwe');
+        $response = $JSON->getSuccessResponse(new Serializer($this->getActionContext()), 'qwe');
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
     }

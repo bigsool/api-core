@@ -21,7 +21,7 @@ class ActionContextTest extends TestCase {
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn($params);
         $reqCtx->method('getAuth')->willReturn($auth);
-        $ctx = new ActionContext($reqCtx);
+        $ctx = $this->getActionContext($reqCtx);
 
         $this->assertSame($reqCtx, $ctx->getParentContext());
         $this->assertSame($reqCtx, $ctx->getRequestContext());
@@ -38,25 +38,17 @@ class ActionContextTest extends TestCase {
 
     public function testActionContext () {
 
+        $reqCtx = new RequestContext();
         $auth = $this->getMockAuth();
         $params = ['a' => new UnsafeParameter(0, ''), 'b', new UnsafeParameter(new \stdClass(), '')];
-        $actCtx = $this->getMockActionContext();
-        $actCtx->method('getParams')->willReturn($params);
-        $actCtx->method('getAuth')->willReturn($auth);
-        $ctx = new ActionContext($actCtx);
+        $reqCtx->setAuth($auth);
+        $actCtx = $this->getActionContext($reqCtx);
+        $actCtx->setParams($params);
+        $ctx = $actCtx->newDerivedContextFor('', '');
 
         $this->assertSame($actCtx, $ctx->getParentContext());
         $this->assertSame($params, $ctx->getParams());
         $this->assertSame($auth, $ctx->getAuth());
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testInvalidContext () {
-
-        new ActionContext(new \stdClass());
 
     }
 
@@ -76,7 +68,7 @@ class ActionContextTest extends TestCase {
             ];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
+        $ctx = $this->getActionContext($reqCtx);
         $ctx->setParams($array);
 
         $this->assertSame($expected, $ctx->getParams());
@@ -107,7 +99,7 @@ class ActionContextTest extends TestCase {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
+        $ctx = $this->getActionContext($reqCtx);
         $ctx->setParam(new \stdClass(), $this->getMockParameter());
 
     }
@@ -117,7 +109,7 @@ class ActionContextTest extends TestCase {
         $array = ['a' => 0, 'b', new \stdClass()];
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
+        $ctx = $this->getActionContext($reqCtx);
         $ctx->setParams($array);
 
         $this->assertSame($array, $ctx->getVerifiedParams());
@@ -147,8 +139,8 @@ class ActionContextTest extends TestCase {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
-        $childCtx = new ActionContext($ctx);
+        $ctx = $this->getActionContext($reqCtx);
+        $childCtx = $ctx->newDerivedContextFor('', '');
 
         $this->assertNull($childCtx['qwe']);
 
@@ -158,8 +150,8 @@ class ActionContextTest extends TestCase {
 
         $reqCtx = $this->getMockRequestContext();
         $reqCtx->method('getParams')->willReturn([]);
-        $ctx = new ActionContext($reqCtx);
-        $childCtx = new ActionContext($ctx);
+        $ctx = $this->getActionContext($reqCtx);
+        $childCtx = $ctx->newDerivedContextFor('', '');
 
         $ctx['qwe'] = 'mother';
         $this->assertSame('mother', $childCtx['qwe']);

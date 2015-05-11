@@ -361,7 +361,8 @@ class Application {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
-        $actCtx = new ActionContext($reqCtx);
+        $action = $controller->getAction();
+        $actCtx = $reqCtx->getApplicationContext()->getActionContext($reqCtx, $action->getModule(), $action->getName());
         $result = $controller->apply($actCtx);
         $traceLogger->trace('controller called');
 
@@ -401,7 +402,8 @@ class Application {
              * @var Action $action
              */
             list($action, $params) = $queue->dequeue();
-            $ctx = new ActionContext($reqCtx);
+            $appCtx = $reqCtx->getApplicationContext();
+            $ctx = $appCtx->getActionContext($reqCtx, $action->getModule(), $action->getName());
             $ctx->setParams($params);
             $action->process($ctx);
         }
@@ -478,7 +480,8 @@ class Application {
              * @var Action $action
              */
             list($action, $params) = $queue->dequeue();
-            $ctx = new ActionContext($reqCtx);
+            $appCtx = $reqCtx->getApplicationContext();
+            $ctx = $appCtx->getActionContext($reqCtx, $action->getModule(), $action->getName());
             $ctx->setParams($params);
             $action->process($ctx);
         }

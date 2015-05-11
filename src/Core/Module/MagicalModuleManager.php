@@ -143,12 +143,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
 
-            $subContext = NULL;
+            $subContext = $ctx->newDerivedContextFor($ctx, $modifyAction->getModule(), $modifyAction->getName());
+            $subContext->clearParams();
 
             if (is_array($params) || $params != NULL) {
 
-                $subContext = new ActionContext($ctx);
-                $subContext->clearParams();
                 $params = UnsafeParameter::getFinalValue($params);
 
                 foreach ($params as $key => $value) {
@@ -165,9 +164,6 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
             else {
-
-                $subContext = new ActionContext($ctx);
-                $subContext->clearParams();
 
                 foreach ($formattedParams as $key => $value) {
                     if (!$this->isParamLinkedToAspectModel(NULL, $key)) {

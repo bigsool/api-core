@@ -338,6 +338,15 @@ class ApplicationContext {
     }
 
     /**
+     * @return Filter[]
+     */
+    public function getFilters () {
+
+        return $this->filters;
+
+    }
+
+    /**
      * @param string $name
      *
      * @return Filter
@@ -353,15 +362,6 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException('Filter not found');
-
-    }
-
-    /**
-     * @return Filter[]
-     */
-    public function getFilters () {
-
-        return $this->filters;
 
     }
 
@@ -471,8 +471,8 @@ class ApplicationContext {
     }
 
     /**
-     * @param string $path
-     * @param Action $action
+     * @param string   $path
+     * @param Action   $action
      * @param string[] $defaultFields
      */
     public function addRoute ($path, Action $action, array $defaultFields = []) {
@@ -509,6 +509,29 @@ class ApplicationContext {
         }
 
         return $this->errorManager;
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     * @param string         $moduleName
+     * @param string         $actionName
+     *
+     * @return ActionContext
+     */
+    public function getActionContext (RequestContext $reqCtx, $moduleName, $actionName) {
+
+        $refActionContext = new \ReflectionClass('\Core\Context\ActionContext');
+        /**
+         * @var ActionContext $actionContext
+         */
+        $actionContext = $refActionContext->newInstanceWithoutConstructor();
+        $constructor = $refActionContext->getConstructor();
+        $constructor->setAccessible(true);
+        $constructor->invokeArgs($actionContext, [$reqCtx, $moduleName, $actionName]);
+        $constructor->setAccessible(false);
+
+        return $actionContext;
 
     }
 

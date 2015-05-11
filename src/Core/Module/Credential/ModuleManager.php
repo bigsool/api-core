@@ -121,7 +121,8 @@ class ModuleManager extends AbstractModuleManager {
 
                 $filter = $appCtx->getFilterByEntityAndName('Credential', 'CredentialForLogin');
 
-                $ctx = new ActionContext(RequestContext::createNewInternalRequestContext());
+                $internalReqCtx = RequestContext::createNewInternalRequestContext();
+                $ctx = $appCtx->getActionContext($internalReqCtx, 'Core\Credential', 'create');
 
                 $helper->findCredential($ctx, [new RelativeField('*')], [$filter], ['login' => $params['login']]);
 

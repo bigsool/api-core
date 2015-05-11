@@ -9,6 +9,7 @@ use Core\Context\ApplicationContext;
 use Core\Error\FormattedError;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\RuntimeConstraintsProvider;
 
 abstract class Action {
 
@@ -47,8 +48,14 @@ abstract class Action {
 
         $_fields = [];
         foreach ($fields as $field => $param) {
-            if (!is_array($param) || count($param) < 1 || !($param[0] instanceof AbstractConstraintsProvider)) {
+            if (!is_array($param) || count($param) < 1) {
                 throw new \RuntimeException('invalid param');
+            }
+            if (!($param[0] instanceof AbstractConstraintsProvider) && !is_array($param[0])) {
+                throw new \RuntimeException('invalid constraints provider');
+            }
+            if (is_array($param[0])) {
+                $param[0] = new RuntimeConstraintsProvider([$field => $param[0]]);
             }
             $_fields[$field] = ['validator' => $param[0], 'forceOptional' => isset($param[1]) && !!$param[1]];
         }
