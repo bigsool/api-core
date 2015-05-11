@@ -16,13 +16,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class ModuleManager extends MagicalModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
+        $appCtx->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 /**
@@ -39,7 +39,7 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Account', 'update', NULL, [],
+        $appCtx->addAction(new SimpleAction('Core\Account', 'update', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 $user = $self->magicalUpdate($context);
@@ -48,7 +48,7 @@ class ModuleManager extends MagicalModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Account', 'find', NULL, [],
+        $appCtx->addAction(new SimpleAction('Core\Account', 'find', NULL, [],
             function (ActionContext $context) use ($self) {
 
                 throw new \RuntimeException('Not implemented yet');

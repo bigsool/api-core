@@ -66,7 +66,7 @@ class Helper extends BasicHelper {
 
         $qryCtx->addField(new RelativeField('*'));
 
-        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterByLogin'));
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'CredentialForLogin'));
 
         $qryCtx->setParams(['login' => $login]);
 
@@ -178,7 +178,7 @@ class Helper extends BasicHelper {
 
         $qryCtx->addField(new RelativeField('*'));
 
-        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'filterById'));
+        $qryCtx->addFilter($appCtx->getFilterByEntityAndName('Credential', 'CredentialForId'));
 
         $qryCtx->setParams(['id' => $id]);
 

@@ -7,6 +7,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\HighLevelFindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
@@ -421,7 +422,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     /**
      * @param array $params
-     * @param $data
+     * @param       $data
      *
      * @return array
      */
@@ -794,118 +795,45 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param RequestContext $requestContext
+     * @param HighLevelFindQueryContext $qryCtx
+     * @param \Exception                $e
+     * @param array                     $disabledKeyPaths
      *
-     * @return array
+     * @return MagicalEntity
+     * @throws \Exception
      */
-    public function convertRequestedFields (RequestContext $requestContext) {
+    public function findOne (HighLevelFindQueryContext $qryCtx, \Exception $e = NULL, $disabledKeyPaths = []) {
 
-        $reqCtxReturnedFields = $requestContext->getReturnedFields();
-        $reqCtxFormattedReturnedFields = [];
-        $returnedFields = [];
+        $magicalEntities = $this->findAll($qryCtx, $disabledKeyPaths);
 
-        foreach ($reqCtxReturnedFields as $returnedField) {
-            $returnedFields[] = $returnedField->getValue();
+        $count = count($magicalEntities);
+        if ($count != 1) {
+            throw $e ?: new \RuntimeException('one entity was expected, ' . $count . ' fetched');
         }
 
-        $returnedFields = $this->formatFindValues($returnedFields);
-
-        foreach ($returnedFields as $returnedField) {
-            $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
-        }
-
-        $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
-
-        return $returnedFields;
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getMainEntity () {
-
-        return $this->mainEntity;
+        return $magicalEntities[0];
 
     }
 
     /**
-     * @param array $config
+     * @param HighLevelFindQueryContext $qryCtx
+     * @param                           $disabledKeyPaths
+     *
+     * @return MagicalEntity[]
      */
-    protected function setMainEntity ($config) {
+    public function findAll (HighLevelFindQueryContext $qryCtx, $disabledKeyPaths) {
 
-        $this->addAspect($config);
-        $this->mainEntityName = $config['model'];
-
-    }
-
-    /**
-     * @param array $config
-     */
-    protected function addAspect (array $config) {
-
-        $prefix = NULL;
-        if (isset($config['prefix'])) {
-            $prefix = $config['prefix'];
-            if (!is_string($prefix)) {
-                throw new \RuntimeException('invalid model');
-            }
+        $relativeFields = $qryCtx->getFields();
+        $fields = [];
+        foreach ($relativeFields as $relativeField) {
+            $fields[] = $relativeField->getValue();
         }
 
-        $model = NULL;
-        if (isset($config['model'])) {
-            $model = $config['model'];
-            Registry::realModelClassName($model);
-            if (!is_string($model)) {
-                throw new \RuntimeException('invalid model');
-            }
-        }
+        $magicalEntities =
+            $this->magicalFind($qryCtx->getRequestContext(), $fields, $qryCtx->getFilters(), [], false,
+                               $disabledKeyPaths);
 
-        $relativeField = isset($config['keyPath']) ? new RelativeField($config['keyPath']) : NULL;
-        if (!$relativeField) {
-            foreach ($this->modelAspects as $modelAspect) {
-                if (!$modelAspect->getRelativeField()) {
-                    throw new \RuntimeException('two main entities');
-                }
-            }
-        }
-
-        $withPrefixedFields = isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
-
-        $actionNames = ['create', 'find', 'update', 'delete'];
-        $constraints = [];
-        $actions = [];
-
-        foreach ($actionNames as $actionName) {
-
-            if (!isset($config[$actionName])) {
-                continue;
-            }
-
-            $configOfTheAction = $config[$actionName];
-
-            if (isset($configOfTheAction['constraints'])) {
-                $constraints[$actionName] = $configOfTheAction['constraints'];
-                if (!is_array($configOfTheAction['constraints'])) {
-                    throw new \RuntimeException('invalid constraints');
-                }
-                foreach ($constraints[$actionName] as $constraint) {
-                    if (!($constraint instanceof Constraint)) {
-                        throw new \RuntimeException('invalid constraint');
-                    }
-                }
-            }
-
-            if (isset($configOfTheAction['action'])) {
-                $actions[$actionName] = $configOfTheAction['action'];
-                if ($configOfTheAction['action'] && !is_a($configOfTheAction['action'], 'Core\Action\Action')) {
-                    throw new \RuntimeException('invalid action');
-                }
-            }
-
-        }
-
-        $this->modelAspects[] =
-            new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
+        return $magicalEntities;
 
     }
 
@@ -953,12 +881,12 @@ abstract class MagicalModuleManager extends ModuleManager {
                 if (is_array($data)) {
                     foreach ($data as &$object) {
                         if (is_object($object)) {
-                            $object = (new ModelConverter())->toArray($object, array_merge($fields,$returnedFields));
+                            $object = (new ModelConverter())->toArray($object, array_merge($fields, $returnedFields));
                         }
                     }
                 }
                 else {
-                    $data = (new ModelConverter())->toArray($data, array_merge($fields,$returnedFields));
+                    $data = (new ModelConverter())->toArray($data, array_merge($fields, $returnedFields));
                 }
             }
         }
@@ -1056,6 +984,32 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return $newParams;
 
+    }
+
+    /**
+     * @param RequestContext $requestContext
+     *
+     * @return array
+     */
+    public function convertRequestedFields (RequestContext $requestContext) {
+
+        $reqCtxReturnedFields = $requestContext->getReturnedFields();
+        $reqCtxFormattedReturnedFields = [];
+        $returnedFields = [];
+
+        foreach ($reqCtxReturnedFields as $returnedField) {
+            $returnedFields[] = $returnedField->getValue();
+        }
+
+        $returnedFields = $this->formatFindValues($returnedFields);
+
+        foreach ($returnedFields as $returnedField) {
+            $reqCtxFormattedReturnedFields[] = new RelativeField($returnedField);
+        }
+
+        $requestContext->setFormattedReturnedFields($reqCtxFormattedReturnedFields);
+
+        return $returnedFields;
     }
 
     /**
@@ -1269,6 +1223,96 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         return $entities;
+
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getMainEntity () {
+
+        return $this->mainEntity;
+
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function setMainEntity ($config) {
+
+        $this->addAspect($config);
+        $this->mainEntityName = $config['model'];
+
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function addAspect (array $config) {
+
+        $prefix = NULL;
+        if (isset($config['prefix'])) {
+            $prefix = $config['prefix'];
+            if (!is_string($prefix)) {
+                throw new \RuntimeException('invalid model');
+            }
+        }
+
+        $model = NULL;
+        if (isset($config['model'])) {
+            $model = $config['model'];
+            Registry::realModelClassName($model);
+            if (!is_string($model)) {
+                throw new \RuntimeException('invalid model');
+            }
+        }
+
+        $relativeField = isset($config['keyPath']) ? new RelativeField($config['keyPath']) : NULL;
+        if (!$relativeField) {
+            foreach ($this->modelAspects as $modelAspect) {
+                if (!$modelAspect->getRelativeField()) {
+                    throw new \RuntimeException('two main entities');
+                }
+            }
+        }
+
+        $withPrefixedFields = isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
+
+        $actionNames = ['create', 'find', 'update', 'delete'];
+        $constraints = [];
+        $actions = [];
+
+        foreach ($actionNames as $actionName) {
+
+            if (!isset($config[$actionName])) {
+                continue;
+            }
+
+            $configOfTheAction = $config[$actionName];
+
+            if (isset($configOfTheAction['constraints'])) {
+                $constraints[$actionName] = $configOfTheAction['constraints'];
+                if (!is_array($configOfTheAction['constraints'])) {
+                    throw new \RuntimeException('invalid constraints');
+                }
+                foreach ($constraints[$actionName] as $constraint) {
+                    if (!($constraint instanceof Constraint)) {
+                        throw new \RuntimeException('invalid constraint');
+                    }
+                }
+            }
+
+            if (isset($configOfTheAction['action'])) {
+                $actions[$actionName] = $configOfTheAction['action'];
+                if ($configOfTheAction['action'] && !is_a($configOfTheAction['action'], 'Core\Action\Action')) {
+                    throw new \RuntimeException('invalid action');
+                }
+            }
+
+        }
+
+        $this->modelAspects[] =
+            new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
 
     }
 

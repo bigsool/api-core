@@ -13,11 +13,11 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
-        $context->addAction($a = new BasicCreateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
+        $appCtx->addAction($a = new BasicCreateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],
@@ -39,7 +39,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
+        $appCtx->addAction(new BasicUpdateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
             'label'    => [new Validation(), true],
             'streets'  => [new Validation(), true],
             'city'     => [new Validation(), true],

@@ -18,13 +18,13 @@ use Symfony\Component\HttpFoundation\Cookie;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
                                                                                 'password' => [new Validation()]
         ],
             function (ActionContext $context) {
@@ -48,7 +48,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'setAuthCookie', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'setAuthCookie', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $response = $ctx->getRequestContext()->getResponse();
@@ -68,7 +68,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $authToken = $ctx->getParam('authToken');
@@ -80,7 +80,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'renewAuthCookie', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'renewAuthCookie', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $response = $ctx->getRequestContext()->getResponse();
@@ -106,9 +106,9 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
         /**
-         * @param ApplicationContext $context
+         * @param ApplicationContext $appCtx
          */
-        $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
                                                                                  'type'     => [new Validation()],
                                                                                  'password' => [new Validation()]
         ],
@@ -119,7 +119,7 @@ class ModuleManager extends AbstractModuleManager {
                 $params = $context->getVerifiedParams();
                 $helper = new Helper;
 
-                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
+                $filter = $appCtx->getFilterByEntityAndName('Credential', 'CredentialForLogin');
 
                 $ctx = new ActionContext(RequestContext::createNewInternalRequestContext());
 
@@ -138,7 +138,7 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
 
-        $context->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
             'id'              => [new Validation(), true],
             'login'           => [new Validation()],
             'password'        => [new Validation()],
@@ -171,7 +171,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
             function (ActionContext $context) {
 
                 $response = $context->getRequestContext()->getResponse();
@@ -186,8 +186,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $context->addFilter(new StringFilter('Credential', 'filterByLogin', 'login = :login'));
-        $context->addFilter(new StringFilter('Credential', 'filterById', 'id = :id'));
+        $context->addFilter(new StringFilter('Credential', 'CredentialForLogin', 'login = :login'));
+        $context->addFilter(new StringFilter('Credential', 'CredentialForId', 'id = :id'));
 
     }
 

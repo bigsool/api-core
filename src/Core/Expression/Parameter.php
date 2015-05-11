@@ -17,6 +17,19 @@ class Parameter extends Value {
     protected $realName;
 
     /**
+     * @var mixed
+     */
+    protected $parameterValue;
+
+    /**
+     * @param mixed $parameterValue
+     */
+    public function setParameterValue ($parameterValue) {
+
+        $this->parameterValue = $parameterValue;
+    }
+
+    /**
      * @param string $value
      *
      * @throws \RuntimeException
@@ -59,7 +72,7 @@ class Parameter extends Value {
         }
 
         $name = substr($this->getValue(), 1);
-        $value = $context->getParam($name);
+        $value = isset($this->parameterValue) ? $this->parameterValue : $context->getParam($name);
 
         if (is_null($value)) {
             throw new \RuntimeException("parameter $name not found");

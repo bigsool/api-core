@@ -103,16 +103,17 @@ class ActionContext extends \ArrayObject {
 
     /**
      * @param mixed $key
+     * @param mixed $default
      *
      * @return mixed
      */
-    public function getParam ($key) {
+    public function getParam ($key, $default = NULL) {
 
         $exploded = explode('.', $key);
         $params = $this->params;
         foreach ($exploded as $index => $key) {
             if (!isset($params[$key])) {
-                return NULL;
+                return $default;
             }
             // it's not necessary to create an array for the last key
             if ($index + 1 == count($exploded)) {

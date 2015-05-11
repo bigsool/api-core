@@ -369,4 +369,13 @@ class RequestContext {
 
     }
 
+    /**
+     * @return HighLevelFindQueryContext
+     */
+    public function createHighLevelFindQueryContext() {
+
+        return new HighLevelFindQueryContext($this);
+
+    }
+
 }
