@@ -323,11 +323,31 @@ class ApplicationContext {
      * @param string $name
      *
      * @return Filter
+     * @deprecated This method must be replace by getFilterByName
      */
     public function getFilterByEntityAndName ($entity, $name) {
 
         foreach ($this->getFilters() as $filter) {
             if ($filter->getEntity() == $entity && $filter->getName() == $name) {
+                return $filter;
+            }
+        }
+
+        throw new \RuntimeException('Filter not found');
+
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Filter
+     */
+    public function getFilterByName ($name) {
+
+        // todo : store filter in associative array where the key is the name of the filter
+
+        foreach ($this->getFilters() as $filter) {
+            if ($filter->getName() == $name) {
                 return $filter;
             }
         }

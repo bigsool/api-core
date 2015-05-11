@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Core\Error;
-
 
 class ToResolveException extends \Exception {
 

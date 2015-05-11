@@ -9,6 +9,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
+use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
@@ -424,6 +425,15 @@ class Application {
 
         // handle queued actions before commit
         $this->executeErrorQueuedActions($reqCtx);
+
+        if ($e instanceof ToResolveException) {
+
+            $traceLogger->trace('ToResolveException thrown');
+
+            $errMgr = ApplicationContext::getInstance()->getErrorManager();
+            $e = $errMgr->getFormattedError($e->getErrorCode(), $e->getField());
+
+        }
 
         if ($e instanceof FormattedError) {
 

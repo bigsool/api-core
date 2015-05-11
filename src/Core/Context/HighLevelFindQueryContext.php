@@ -60,9 +60,24 @@ class HighLevelFindQueryContext {
 
         foreach ($filters as $filter) {
 
-            call_user_func_array([$this, 'addFilter'], $filter);
+            $this->addFilter($filter[0], isset($filter[1]) ? $filter[1] : NULL);
 
         }
+
+    }
+
+    /**
+     * @param string        $filterName
+     * @param mixed[]|mixed $params
+     */
+    public function addFilter ($filterName, $params = NULL) {
+
+        $filter = ApplicationContext::getInstance()->getFilterByName($filterName);
+        if ($params !== NULL) {
+            $filter->setParams((array)$params);
+        }
+
+        $this->filters[] = $filter;
 
     }
 
@@ -96,16 +111,6 @@ class HighLevelFindQueryContext {
     public function addField ($field) {
 
         $this->fields[] = new RelativeField($field);
-
-    }
-
-    /**
-     * @param string $filterName
-     * @param mixed  $param
-     */
-    public function addFilter ($filterName, $param = NULL) {
-
-        // TODO
 
     }
 
