@@ -47,6 +47,12 @@ abstract class MagicalModuleManager extends ModuleManager {
     private $keysToRemove = [];
 
     /**
+     * @var ModelAspect[]
+     */
+    private $modelAspectsWithoutParams = [];
+
+
+    /**
      * @param ActionContext $ctx
      * @param string[]      $disabledKeyPaths
      *
@@ -145,7 +151,10 @@ abstract class MagicalModuleManager extends ModuleManager {
             $subContext = NULL;
 
             if (is_array($params) || $params != NULL) {
-
+                if (count($params) == 0) {
+                    $this->modelAspectsWithoutParams[] = $modelAspect;
+                    continue;
+                }
                 $subContext = new ActionContext($ctx);
                 $subContext->clearParams();
                 $params = UnsafeParameter::getFinalValue($params);
@@ -175,7 +184,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
 
             }
-
+            $params = $subContext->getParams();
             $result = $modifyAction->process($subContext);
 
             $key = $modelAspect->getRelativeField() ? $modelAspect->getRelativeField()->getValue() : 'main';
@@ -217,7 +226,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         return array_filter($this->modelAspects, function (ModelAspect $modelAspect) {
 
-            return $modelAspect->isEnabled();
+            return $modelAspect->isEnabled() && !in_array($modelAspect,$this->modelAspectsWithoutParams);
 
         });
 
