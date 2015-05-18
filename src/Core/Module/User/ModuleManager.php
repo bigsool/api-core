@@ -15,11 +15,11 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
-        $context->addAction(new BasicCreateAction('Core\User', 'user', 'UserHelper', NULL, [
+        $appCtx->addAction(new BasicCreateAction('Core\User', 'user', 'UserHelper', NULL, [
             'lastName'  => [new Validation()],
             'firstName' => [new Validation()],
             'lang'      => [new Validation(), true],
@@ -31,13 +31,13 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\User', 'user', 'UserHelper', NULL, [
+        $appCtx->addAction(new BasicUpdateAction('Core\User', 'user', 'UserHelper', NULL, [
             'lastName'  => [new Validation(), true],
             'firstName' => [new Validation(), true],
             'lang'      => [new Validation(), true],
         ]));
 
-        $context->addAction(new BasicFindAction('Core\User', 'user', 'UserHelper', NULL, [
+        $appCtx->addAction(new BasicFindAction('Core\User', 'user', 'UserHelper', NULL, [
         ]));
 
     }
@@ -47,7 +47,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $context->addFilter(new StringFilter('User', 'filterById', 'id = :id'));
+        $context->addFilter(new StringFilter('User', 'UserForId', 'id = :id'));
 
     }
 

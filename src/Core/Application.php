@@ -9,6 +9,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
+use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
@@ -360,7 +361,8 @@ class Application {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
-        $actCtx = new ActionContext($reqCtx);
+        $action = $controller->getAction();
+        $actCtx = $reqCtx->getApplicationContext()->getActionContext($reqCtx, $action->getModule(), $action->getName());
         $result = $controller->apply($actCtx);
         $traceLogger->trace('controller called');
 
@@ -400,7 +402,8 @@ class Application {
              * @var Action $action
              */
             list($action, $params) = $queue->dequeue();
-            $ctx = new ActionContext($reqCtx);
+            $appCtx = $reqCtx->getApplicationContext();
+            $ctx = $appCtx->getActionContext($reqCtx, $action->getModule(), $action->getName());
             $ctx->setParams($params);
             $action->process($ctx);
         }
@@ -424,6 +427,15 @@ class Application {
 
         // handle queued actions before commit
         $this->executeErrorQueuedActions($reqCtx);
+
+        if ($e instanceof ToResolveException) {
+
+            $traceLogger->trace('ToResolveException thrown');
+
+            $errMgr = ApplicationContext::getInstance()->getErrorManager();
+            $e = $errMgr->getFormattedError($e->getErrorCode(), $e->getField());
+
+        }
 
         if ($e instanceof FormattedError) {
 
@@ -468,7 +480,8 @@ class Application {
              * @var Action $action
              */
             list($action, $params) = $queue->dequeue();
-            $ctx = new ActionContext($reqCtx);
+            $appCtx = $reqCtx->getApplicationContext();
+            $ctx = $appCtx->getActionContext($reqCtx, $action->getModule(), $action->getName());
             $ctx->setParams($params);
             $action->process($ctx);
         }

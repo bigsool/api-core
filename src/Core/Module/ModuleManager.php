@@ -42,9 +42,9 @@ abstract class ModuleManager {
     public abstract function loadRules (ApplicationContext &$context);
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public abstract function loadActions (ApplicationContext &$context);
+    public abstract function loadActions (ApplicationContext &$appCtx);
 
     /**
      * @param ApplicationContext $context

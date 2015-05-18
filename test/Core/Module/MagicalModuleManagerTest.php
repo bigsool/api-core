@@ -326,7 +326,7 @@ class MagicalModuleManagerTest extends TestCase {
                     }, $this->getCallable(), $this->getCallable())
             ]
         ]);
-        $context = new ActionContext(new RequestContext());
+        $context = $this->getActionContext();
         $context->setParams(['firstName' => 'first name', 'company.name' => 'company']);
         $mgr->magicalCreate($context);
 
@@ -400,7 +400,7 @@ class MagicalModuleManagerTest extends TestCase {
      */
     protected function getActionContextWithParams (array $params) {
 
-        $actionContext = new ActionContext(new RequestContext());
+        $actionContext = $this->getActionContext();
         $actionContext->setParams($params);
 
         return $actionContext;
@@ -582,8 +582,8 @@ class MagicalModuleManagerTest extends TestCase {
         $userModuleManager->load($appCtx);
         $companyModuleManager->load($appCtx);
 
-        $actionContext = $this->getMockActionContext();
-        $actionContext->method('getParams')->willReturn(['company' => new UnsafeParameter('qwe', '')]);
+        $actionContext = $this->getActionContext();
+        $actionContext->setParams(['company' => new UnsafeParameter('qwe', '')]);
 
         // TODO: improve test to check that the excepted exception which is thrown
         // in this case this is not the good one. should improve the test to add some values in ActCtx

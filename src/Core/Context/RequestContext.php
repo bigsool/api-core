@@ -271,24 +271,6 @@ class RequestContext {
     }
 
     /**
-     * @return ActionContext
-     */
-    public function getNewActionContext () {
-
-        $actonContext = new ActionContext($this);
-
-        $params = [];
-        foreach ($this->getParams() as $key => $param) {
-            $params[$key] = new UnsafeParameter($param, $key);
-        }
-
-        $actonContext->setParams($params);
-
-        return $actonContext;
-
-    }
-
-    /**
      * @return array
      */
     public function getParams () {
@@ -304,7 +286,8 @@ class RequestContext {
 
         if (isset($params['authToken'])) {
             $authToken = json_decode($params['authToken'], true);
-            $checkAuthCtx = new ActionContext(new RequestContext());
+            $appCtx = $this->getApplicationContext();
+            $checkAuthCtx = $appCtx->getActionContext(new RequestContext(), 'Core\Credential', 'checkAuth');
             $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
             $appCtx = ApplicationContext::getInstance();
             $cred = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
@@ -366,6 +349,24 @@ class RequestContext {
     public function setIpAddress ($ipAddress) {
 
         $this->ipAddress = (string)$ipAddress;
+
+    }
+
+    /**
+     * @return HighLevelFindQueryContext
+     */
+    public function createHighLevelFindQueryContext() {
+
+        return new HighLevelFindQueryContext($this);
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public function getApplicationContext() {
+
+        return ApplicationContext::getInstance();
 
     }
 

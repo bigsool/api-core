@@ -4,6 +4,8 @@
 namespace Core\Context;
 
 
+use Core\Filter\Filter;
+use Core\Filter\FilterReference;
 use Core\TestCase;
 
 class ApplicationContextTest extends TestCase {
@@ -39,15 +41,22 @@ class ApplicationContextTest extends TestCase {
     public function testFilters () {
 
         $ctx = $this->getApplicationContext();
-        $filters = [$this->getMockFilter(), $this->getMockFilter(), $this->getMockFilter()];
+        /**
+         * @var Filter[] $filters
+         */
+        $filters =
+            ['name1' => new FilterReference($ctx, 'entity', 'name1'),
+             'name2' => new FilterReference($ctx, 'entity', 'name2'),
+             'name3' => new FilterReference($ctx, 'entity', 'name3')
+            ];
 
         $this->assertSame([], $ctx->getFilters());
 
-        $ctx->addFilter($filters[0]);
-        $this->assertSame([$filters[0]], $ctx->getFilters());
+        $ctx->addFilter($filters['name1']);
+        $this->assertSame([$filters['name1']->getName() => $filters['name1']], $ctx->getFilters());
 
-        $ctx->addFilter($filters[1]);
-        $ctx->addFilter($filters[2]);
+        $ctx->addFilter($filters['name2']);
+        $ctx->addFilter($filters['name3']);
         $this->assertSame($filters, $ctx->getFilters());
 
     }
@@ -85,7 +94,7 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetFilterByEntityAndName () {
+    public function testGetFilterByName () {
 
         $ctx = $this->getApplicationContext();
 
@@ -93,16 +102,16 @@ class ApplicationContextTest extends TestCase {
         $filter->method('getEntity')->willReturn('TestCompany');
         $filter->method('getName')->willReturn('name');
         $ctx->addFilter($filter);
-        $this->assertSame($filter, $ctx->getFilterByEntityAndName('TestCompany', 'name'));
+        $this->assertSame($filter, $ctx->getFilterByName('name'));
 
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testGetFilterByEntityAndNameNotFound () {
+    public function testGetFilterByNameNotFound () {
 
-        $this->getApplicationContext()->getFilterByEntityAndName('TestCompany', 'name');
+        $this->getApplicationContext()->getFilterByName('namesdkfjhsdfjksh');
 
     }
 

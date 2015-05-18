@@ -58,7 +58,10 @@ class Controller {
 
     }
 
-    protected function getAction () {
+    /**
+     * @return Action
+     */
+    public function getAction () {
 
         return isset($this->action)
             ? $this->action

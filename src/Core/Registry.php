@@ -218,6 +218,8 @@ class Registry implements EventSubscriber {
 
         $qb = $this->getQueryBuilder($entity);
 
+        $entityAliases = [];
+
         /**
          * @var RelativeField[] $relativeFields
          */
@@ -243,6 +245,16 @@ class Registry implements EventSubscriber {
         //$entities = [];
         foreach ($resolvableFields as $resolvableField) {
             $fields = $resolvableField->resolve($this, $ctx);
+            if (in_array('Core\Expression\Resolver', class_uses($resolvableField))) {
+                $resolvedEntity = $resolvableField->getResolvedEntity();
+                if (!isset($entityAliases[$resolvedEntity])) {
+                    $entityAliases[$resolvedEntity] = [];
+                }
+                $targetedEntityAlias = $resolvableField->getTargetedEntityAlias();
+                if ($targetedEntityAlias) {
+                    $entityAliases[$resolvedEntity][] = $targetedEntityAlias;
+                }
+            }
             foreach ($fields as $field) {
                 //$exploded = explode('.', $field);
                 if ($resolvableField instanceof Aggregate
@@ -288,7 +300,20 @@ class Registry implements EventSubscriber {
 
         $expressions = [];
         foreach ($ctx->getFilters() as $filter) {
-            $expressions[] = $filter->getExpression();
+            $filterEntity = $filter->getEntity();
+            if ($filter->getAliasForEntityToUse()) {
+                $expressions[] = $filter->getExpression();
+            }
+            else {
+                if (!isset($entityAliases[$filterEntity]) || count($entityAliases[$filterEntity]) == 0) {
+                    $expressions[] = $filter->getExpression();
+                }
+                foreach ($entityAliases[$filterEntity] as $entityAlias) {
+                    $filter = clone $filter;
+                    $filter->setAliasForEntityToUse($entityAlias);
+                    $expressions[] = $filter->getExpression();
+                }
+            }
         }
         if ($expressions) {
             $expression = new NAryExpression(new AndOperator(), $expressions);
@@ -304,7 +329,8 @@ class Registry implements EventSubscriber {
 
         $result = $query->getResult('RestrictedObjectHydrator');
 
-        array_walk_recursive($result, function($object) use($ctx) {
+        array_walk_recursive($result, function ($object) use ($ctx) {
+
             if (Registry::isEntity($object)) {
                 $refProp = new \ReflectionProperty($object, 'findQueryContext');
                 $refProp->setAccessible(true);
@@ -443,6 +469,21 @@ class Registry implements EventSubscriber {
         return array_values($finalResolvableFields);
     }
 
+    /**
+     * @param string|object $classOrObject
+     *
+     * @return boolean
+     */
+    public function isEntity ($classOrObject) {
+
+        if (is_object($classOrObject)) {
+            $classOrObject = ClassUtils::getClass($classOrObject);
+        }
+
+        return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
+
+    }
+
     public function delete ($model) {
 
         $this->entityManager->remove($model);
@@ -505,21 +546,6 @@ class Registry implements EventSubscriber {
     public function preUpdate (LifecycleEventArgs $args) {
 
         $this->preModification($args);
-
-    }
-
-    /**
-     * @param string|object $classOrObject
-     *
-     * @return boolean
-     */
-    public function isEntity ($classOrObject) {
-
-        if (is_object($classOrObject)) {
-            $classOrObject = ClassUtils::getClass($classOrObject);
-        }
-
-        return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
 
     }
 

@@ -7,6 +7,7 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Context\HighLevelFindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
@@ -148,15 +149,14 @@ abstract class MagicalModuleManager extends ModuleManager {
 
             }
 
-            $subContext = NULL;
+            $subContext = $ctx->newDerivedContextFor($ctx, $modifyAction->getModule(), $modifyAction->getName());
+            $subContext->clearParams();
 
             if (is_array($params) || $params != NULL) {
                 if (count($params) == 0) {
                     $this->modelAspectsWithoutParams[] = $modelAspect;
                     continue;
                 }
-                $subContext = new ActionContext($ctx);
-                $subContext->clearParams();
                 $params = UnsafeParameter::getFinalValue($params);
 
                 foreach ($params as $key => $value) {
@@ -174,9 +174,6 @@ abstract class MagicalModuleManager extends ModuleManager {
             }
             else {
 
-                $subContext = new ActionContext($ctx);
-                $subContext->clearParams();
-
                 foreach ($formattedParams as $key => $value) {
                     if (!$this->isParamLinkedToAspectModel(NULL, $key)) {
                         $subContext->setParam($key, $value);
@@ -184,7 +181,7 @@ abstract class MagicalModuleManager extends ModuleManager {
                 }
 
             }
-            $params = $subContext->getParams();
+            
             $result = $modifyAction->process($subContext);
 
             $key = $modelAspect->getRelativeField() ? $modelAspect->getRelativeField()->getValue() : 'main';
@@ -837,6 +834,50 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     }
 
+       /**
+     * @param HighLevelFindQueryContext $qryCtx
+     * @param \Exception                $e
+     * @param array                     $disabledKeyPaths
+     *
+     * @return MagicalEntity
+     * @throws \Exception
+     */
+    public function findOne (HighLevelFindQueryContext $qryCtx, \Exception $e = NULL, $disabledKeyPaths = []) {
+
+        $magicalEntities = $this->findAll($qryCtx, $disabledKeyPaths);
+
+        $count = count($magicalEntities);
+        if ($count != 1) {
+            throw $e ?: new \RuntimeException('one entity was expected, ' . $count . ' fetched');
+        }
+
+        return $magicalEntities[0];
+
+    }
+
+    /**
+     * @param HighLevelFindQueryContext $qryCtx
+     * @param                           $disabledKeyPaths
+     *
+     * @return MagicalEntity[]
+     */
+    public function findAll (HighLevelFindQueryContext $qryCtx, $disabledKeyPaths) {
+
+        $relativeFields = $qryCtx->getFields();
+        $fields = [];
+        foreach ($relativeFields as $relativeField) {
+            $fields[] = $relativeField->getValue();
+        }
+
+        $magicalEntities =
+            $this->magicalFind($qryCtx->getRequestContext(), $fields, $qryCtx->getFilters(), [], false,
+                               $disabledKeyPaths);
+
+        return $magicalEntities;
+
+    }
+
+    
     /**
      * @param array $config
      */

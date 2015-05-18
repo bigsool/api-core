@@ -18,13 +18,13 @@ use Symfony\Component\HttpFoundation\Cookie;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
         $self = $this;
 
-        $context->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
                                                                                 'password' => [new Validation()]
         ],
             function (ActionContext $context) {
@@ -42,13 +42,13 @@ class ModuleManager extends AbstractModuleManager {
 
                 return [
                     'authToken' => $authToken,
-                    'email'     => $params['login'],
+                    'login'     => $params['login'],
                     'id'        => $credential->getId(),
                 ];
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'setAuthCookie', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'setAuthCookie', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $response = $ctx->getRequestContext()->getResponse();
@@ -68,7 +68,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'checkAuth', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $authToken = $ctx->getParam('authToken');
@@ -80,7 +80,7 @@ class ModuleManager extends AbstractModuleManager {
 
             }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'renewAuthCookie', [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'renewAuthCookie', [],
                                              ['authToken' => [new Validation()]], function (ActionContext $ctx) {
 
                 $response = $ctx->getRequestContext()->getResponse();
@@ -106,9 +106,9 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
         /**
-         * @param ApplicationContext $context
+         * @param ApplicationContext $appCtx
          */
-        $context->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
                                                                                  'type'     => [new Validation()],
                                                                                  'password' => [new Validation()]
         ],
@@ -119,9 +119,10 @@ class ModuleManager extends AbstractModuleManager {
                 $params = $context->getVerifiedParams();
                 $helper = new Helper;
 
-                $filter = $appCtx->getFilterByEntityAndName('Credential', 'filterByLogin');
+                $filter = $appCtx->getFilterByName('CredentialForLogin');
 
-                $ctx = new ActionContext(RequestContext::createNewInternalRequestContext());
+                $internalReqCtx = RequestContext::createNewInternalRequestContext();
+                $ctx = $appCtx->getActionContext($internalReqCtx, 'Core\Credential', 'create');
 
                 $helper->findCredential($ctx, [new RelativeField('*')], [$filter], ['login' => $params['login']]);
 
@@ -138,7 +139,7 @@ class ModuleManager extends AbstractModuleManager {
             }));
 
 
-        $context->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
             'id'              => [new Validation(), true],
             'login'           => [new Validation()],
             'password'        => [new Validation()],
@@ -171,7 +172,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
+        $appCtx->addAction(new SimpleAction('Core\Credential', 'logout', NULL, [],
             function (ActionContext $context) {
 
                 $response = $context->getRequestContext()->getResponse();
@@ -186,8 +187,8 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadFilters (ApplicationContext &$context) {
 
-        $context->addFilter(new StringFilter('Credential', 'filterByLogin', 'login = :login'));
-        $context->addFilter(new StringFilter('Credential', 'filterById', 'id = :id'));
+        $context->addFilter(new StringFilter('Credential', 'CredentialForLogin', 'login = :login'));
+        $context->addFilter(new StringFilter('Credential', 'CredentialForId', 'id = :id'));
 
     }
 
@@ -204,9 +205,6 @@ class ModuleManager extends AbstractModuleManager {
      * @param ApplicationContext $context
      */
     public function loadRules (ApplicationContext &$context) {
-
-        $context->addRule(new FieldRule(new Field('Credential', 'salt'),
-                                        new StringFilter('Credential', 'saltIsForbidden', '1 = 0')));
 
         $context->addRule(new FieldRule(new Field('Credential', 'password'),
                                         new StringFilter('Credential', 'passwordIsForbidden', '1 = 0')));

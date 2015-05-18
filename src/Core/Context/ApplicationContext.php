@@ -314,25 +314,13 @@ class ApplicationContext {
      */
     public function addFilter (Filter $filter) {
 
-        $this->filters[] = $filter;
 
-    }
-
-    /**
-     * @param string $entity
-     * @param string $name
-     *
-     * @return Filter
-     */
-    public function getFilterByEntityAndName ($entity, $name) {
-
-        foreach ($this->getFilters() as $filter) {
-            if ($filter->getEntity() == $entity && $filter->getName() == $name) {
-                return $filter;
-            }
+        $filterName = $filter->getName();
+        if (isset($this->filters[$filterName])) {
+            throw new \RuntimeException(sprintf('Filter %s already defined', $filterName));
         }
 
-        throw new \RuntimeException('Filter not found');
+        $this->filters[$filterName] = $filter;
 
     }
 
@@ -342,6 +330,21 @@ class ApplicationContext {
     public function getFilters () {
 
         return $this->filters;
+
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Filter
+     */
+    public function getFilterByName ($name) {
+
+        if (!isset($this->filters[$name])) {
+            throw new \RuntimeException(sprintf('Filter %s not found', $name));
+        }
+
+        return $this->filters[$name];
 
     }
 
@@ -451,8 +454,8 @@ class ApplicationContext {
     }
 
     /**
-     * @param string $path
-     * @param Action $action
+     * @param string   $path
+     * @param Action   $action
      * @param string[] $defaultFields
      */
     public function addRoute ($path, Action $action, array $defaultFields = []) {
@@ -489,6 +492,29 @@ class ApplicationContext {
         }
 
         return $this->errorManager;
+
+    }
+
+    /**
+     * @param RequestContext $reqCtx
+     * @param string         $moduleName
+     * @param string         $actionName
+     *
+     * @return ActionContext
+     */
+    public function getActionContext (RequestContext $reqCtx, $moduleName, $actionName) {
+
+        $refActionContext = new \ReflectionClass('\Core\Context\ActionContext');
+        /**
+         * @var ActionContext $actionContext
+         */
+        $actionContext = $refActionContext->newInstanceWithoutConstructor();
+        $constructor = $refActionContext->getConstructor();
+        $constructor->setAccessible(true);
+        $constructor->invokeArgs($actionContext, [$reqCtx, $moduleName, $actionName]);
+        $constructor->setAccessible(false);
+
+        return $actionContext;
 
     }
 

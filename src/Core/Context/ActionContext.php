@@ -5,8 +5,9 @@ namespace Core\Context;
 
 use Core\Auth;
 use Core\Parameter\UnsafeParameter;
+use Traversable;
 
-class ActionContext extends \ArrayObject {
+class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     /**
      * @var array
@@ -24,11 +25,31 @@ class ActionContext extends \ArrayObject {
     protected $auth;
 
     /**
-     * @param RequestContext|ActionContext $context
+     * @var string
      */
-    public function __construct ($context) {
+    protected $module;
 
-        parent::__construct();
+    /**
+     * @var string
+     */
+    protected $actionName;
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $applicationContext;
+
+    /**
+     * @var array
+     */
+    protected $result = [];
+
+    /**
+     * @param RequestContext|ActionContext $context
+     * @param string                       $module
+     * @param string                       $actionName
+     */
+    protected function __construct ($context, $module, $actionName) {
 
         if ($context instanceof RequestContext) {
             $params = $this->convertToUnsafeParameter($context->getParams(), '');
@@ -40,7 +61,10 @@ class ActionContext extends \ArrayObject {
             throw new \RuntimeException('invalid context');
         }
 
+        $this->module = $module;
+        $this->actionName = $actionName;
         $this->parentContext = $context;
+        $this->applicationContext = $context->getApplicationContext();
         $this->auth = $context->getAuth();
         $this->setParams($params);
 
@@ -103,16 +127,17 @@ class ActionContext extends \ArrayObject {
 
     /**
      * @param mixed $key
+     * @param mixed $default
      *
      * @return mixed
      */
-    public function getParam ($key) {
+    public function getParam ($key, $default = NULL) {
 
         $exploded = explode('.', $key);
         $params = $this->params;
         foreach ($exploded as $index => $key) {
             if (!isset($params[$key])) {
-                return NULL;
+                return $default;
             }
             // it's not necessary to create an array for the last key
             if ($index + 1 == count($exploded)) {
@@ -122,6 +147,41 @@ class ActionContext extends \ArrayObject {
         }
 
         return $params[$key];
+
+    }
+
+    /**
+     * @param string $moduleName
+     * @param string $actionName
+     *
+     * @return ActionContext
+     */
+    public function newDerivedContextFor ($moduleName, $actionName) {
+
+        return new ActionContext($this, $moduleName, $actionName);
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return mixed
+     */
+    public function process (array $params = []) {
+
+        $action = $this->getApplicationContext()->getAction($this->module, $this->actionName);
+        $this->setParams($params);
+
+        return $action->process($this);
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public function getApplicationContext () {
+
+        return $this->applicationContext;
 
     }
 
@@ -250,15 +310,93 @@ class ActionContext extends \ArrayObject {
     }
 
     /**
-     * @inheritdoc
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     *
+     * @param mixed $offset <p>
+     *                      An offset to check for.
+     *                      </p>
+     *
+     * @return boolean true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetGet ($index) {
+    public function offsetExists ($offset) {
 
-        if (!isset($this[$index]) && $this->getParentContext() instanceof ActionContext) {
-            return $this->getParentContext()->offsetGet($index);
+        return array_key_exists($offset, $this->result);
+
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     *
+     * @param mixed $offset <p>
+     *                      The offset to retrieve.
+     *                      </p>
+     *
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet ($offset) {
+
+        if (!isset($this->result[$offset]) && $this->getParentContext() instanceof ActionContext) {
+            return $this->getParentContext()->offsetGet($offset);
         }
 
-        return parent::offsetGet($index);
+        return $this->result[$offset];
+
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     *
+     * @param mixed $offset <p>
+     *                      The offset to assign the value to.
+     *                      </p>
+     * @param mixed $value  <p>
+     *                      The value to set.
+     *                      </p>
+     *
+     * @return void
+     */
+    public function offsetSet ($offset, $value) {
+
+        $this->result[$offset] = $value;
+
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     *
+     * @param mixed $offset <p>
+     *                      The offset to unset.
+     *                      </p>
+     *
+     * @return void
+     */
+    public function offsetUnset ($offset) {
+
+        unset($this->result[$offset]);
+
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Retrieve an external iterator
+     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     * <b>Traversable</b>
+     */
+    public function getIterator () {
+
+        return new \ArrayIterator($this->result);
 
     }
 

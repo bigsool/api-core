@@ -11,16 +11,16 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
-        $context->addAction(new BasicCreateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
+        $appCtx->addAction(new BasicCreateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
             'schoolName' => [new Validation()],
             'number'     => [new Validation()],
         ]));
 
-        $context->addAction(new BasicUpdateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
+        $appCtx->addAction(new BasicUpdateAction('Core\Student', 'StudentInfo', 'StudentHelper', [], [
             'schoolName' => [new Validation(), true],
             'number'     => [new Validation(), true],
         ]));

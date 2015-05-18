@@ -11,15 +11,15 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
-        $context->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
+        $appCtx->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
             'knowsFrom' => [new Validation()]
         ]));
 
-        $context->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
+        $appCtx->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
             'knowsFrom' => [new Validation(), true]
         ]));
 

@@ -45,7 +45,7 @@ class HTTPTest extends TestCase {
         $this->assertSame('method', $HTTP->getMethod());
         $this->assertSame('10.0.1.104', $HTTP->getIpAddress());
 
-        $response = $HTTP->getSuccessResponse(new Serializer(new ActionContext(new RequestContext())), 'qwe');
+        $response = $HTTP->getSuccessResponse(new Serializer($this->getActionContext()), 'qwe');
 
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 

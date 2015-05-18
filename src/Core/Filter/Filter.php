@@ -4,8 +4,20 @@ namespace Core\Filter;
 
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Expression;
+use Core\Expression\Parameter;
+use Core\Util\ArrayExtra;
 
 abstract class Filter {
+
+    /**
+     * @var string|NULL
+     */
+    protected $aliasForEntityToUse;
+
+    /**
+     * @var mixed[]
+     */
+    protected $params = [];
 
     /**
      * @var Expression
@@ -66,10 +78,38 @@ abstract class Filter {
     }
 
     /**
+     * @return mixed[]
+     */
+    public function getParams () {
+
+        return $this->params;
+
+    }
+
+    /**
+     * @param mixed[] $params
+     */
+    public function setParams (array $params) {
+
+        $this->params = $params;
+
+    }
+
+    /**
+     * @return NULL|string
+     */
+    public function getAliasForEntityToUse () {
+
+        return $this->aliasForEntityToUse;
+
+    }
+
+    /**
      * @param string|NULL $alias
      */
     public function setAliasForEntityToUse ($alias) {
 
+        $this->aliasForEntityToUse = $alias;
         $this->setAliasForEntityToUseToThisExpressions($alias, [$this->expression]);
 
     }
@@ -97,7 +137,42 @@ abstract class Filter {
      */
     public function getExpression () {
 
+        if ($this->params) {
+            $expressions = [$this->expression];
+            $isAssociative = ArrayExtra::isAssociative($this->params);
+            $i = 0;
+            $this->setParamToExpression($expressions, $isAssociative, $i);
+        }
+
         return $this->expression;
+
+    }
+
+    /**
+     * @param Expression[] $expressions
+     * @param bool         $isAssociative
+     * @param int          $i
+     */
+    protected function setParamToExpression (array $expressions, &$isAssociative, &$i) {
+
+        foreach ($expressions as $expression) {
+            if ($expression instanceof Parameter) {
+                if ($isAssociative) {
+                    $paramName = substr($expression->getValue(), 1);
+                }
+                else {
+                    $paramName = $i++;
+                }
+                if (!array_key_exists($paramName, $this->params)) {
+                    throw new \RuntimeException('Parameter not found');
+                }
+                $value = $this->params[$paramName];
+                $expression->setParameterValue($value);
+            }
+            else {
+                $this->setParamToExpression($expression->getExpressions(), $isAssociative, $i);
+            }
+        }
 
     }
 

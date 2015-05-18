@@ -242,9 +242,12 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getMockRequestContext () {
 
-        return $this->getMockBuilder('\Core\Context\RequestContext')
+        $requestContext = $this->getMockBuilder('\Core\Context\RequestContext')
                     ->disableOriginalConstructor()
                     ->getMock();
+
+        $requestContext->method('getApplicationContext')->willReturn($this->getApplicationContext());
+        return $requestContext;
 
     }
 
@@ -418,11 +421,19 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param RequestContext $requestContext
+     * @param string         $moduleName
+     * @param string         $actionName
+     *
      * @return ActionContext
      */
-    public function getActionContext () {
+    public function getActionContext (RequestContext $requestContext = NULL, $moduleName = '', $actionName = '') {
 
-        return (new RequestContext())->getNewActionContext();
+        if (!$requestContext) {
+            $requestContext = new RequestContext();
+        }
+
+        return $requestContext->getApplicationContext()->getActionContext($requestContext, $moduleName, $actionName);
 
     }
 

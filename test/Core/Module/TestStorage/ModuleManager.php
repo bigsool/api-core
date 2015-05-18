@@ -14,11 +14,11 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $context
+     * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$context) {
+    public function loadActions (ApplicationContext &$appCtx) {
 
-        $context->addAction(new BasicCreateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
+        $appCtx->addAction(new BasicCreateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
             'url' => [new StorageValidation()],
         ], function (ActionContext $context) {
 
@@ -27,11 +27,11 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $context->addAction(new BasicUpdateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
+        $appCtx->addAction(new BasicUpdateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
             'url' => [new StorageValidation()],
         ]));
 
-        $context->addAction(new BasicFindAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
+        $appCtx->addAction(new BasicFindAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
         ]));
 
     }

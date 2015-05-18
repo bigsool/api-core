@@ -169,7 +169,7 @@ class SerializerTest extends TestCase {
 
         $users = $this->findUsers($reqCtx);
 
-        $serializer = new Serializer(new ActionContext($reqCtx));
+        $serializer = new Serializer($this->getActionContext($reqCtx));
 
         $serializer->serialize($users);
         $this->assertSame(self::$expected, $serializer->get());
@@ -223,7 +223,7 @@ class SerializerTest extends TestCase {
 
         $reqCtx = new RequestContext();
 
-        $serializer = new Serializer(new ActionContext($reqCtx));
+        $serializer = new Serializer($this->getActionContext($reqCtx));
 
         $users = $this->findUsers($reqCtx);
         $serializer->serialize($users);
@@ -235,7 +235,7 @@ class SerializerTest extends TestCase {
     public function testSerializeScalar () {
 
         $reqCtx = new RequestContext();
-        $serializer = new Serializer(new ActionContext($reqCtx));
+        $serializer = new Serializer($this->getActionContext($reqCtx));
 
         $string = 'qwe';
         $int = 123;
@@ -297,7 +297,7 @@ class SerializerTest extends TestCase {
 ', true);
 
         $reqCtx = new RequestContext();
-        $serializer = new Serializer(new ActionContext($reqCtx));
+        $serializer = new Serializer($this->getActionContext($reqCtx));
         $serializer->setInProxyMode(true);
 
         $this->assertSame(['success' => true, 'data' => $result], $serializer->serialize($result)->get());
@@ -307,7 +307,7 @@ class SerializerTest extends TestCase {
     public function testDateTime () {
 
         $data = [$datetime = new \DateTime()];
-        $serializer = new Serializer(new ActionContext(new RequestContext()));
+        $serializer = new Serializer($this->getActionContext());
 
         $this->assertSame(['success' => true, 'data' => [$datetime->format($datetime::ISO8601)]],
                           $serializer->serialize($data)->get());
@@ -316,7 +316,7 @@ class SerializerTest extends TestCase {
 
     public function testProxyMode () {
 
-        $serializer = new Serializer(new ActionContext(new RequestContext()));
+        $serializer = new Serializer($this->getActionContext());
         $serializer->setInProxyMode(true);
         $this->assertTrue($serializer->isInProxyMode());
         $serializer->setInProxyMode(false);
