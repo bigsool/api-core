@@ -6,6 +6,7 @@ namespace Core\Context;
 
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Module\ModuleEntity;
 use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class FindQueryContext implements QueryContext {
@@ -41,6 +42,11 @@ class FindQueryContext implements QueryContext {
     protected $reqCtx;
 
     /**
+     * @var ModuleEntity
+     */
+    protected $moduleEntity;
+
+    /**
      * @param string         $entity
      * @param RequestContext $reqCtx
      */
@@ -59,28 +65,11 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @return RequestContext
-     */
-    public function getReqCtx () {
-
-        return $this->reqCtx;
-    }
-
-    /**
      * @return string
      */
     public function getEntity () {
 
         return $this->entity;
-
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getJoinedEntities () {
-
-        return $this->joinedEntities;
 
     }
 
@@ -94,6 +83,41 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
+     * @param string[] $fields
+     */
+    public function setFields (array $fields) {
+
+        $this->fields = [];
+
+        foreach ($fields as $field) {
+
+            $this->addField($field);
+
+        }
+
+    }
+
+    /**
+     * @param RelativeField|string $field
+     * @param string               $alias
+     */
+    public function addField ($field, $alias = NULL) {
+
+        if (is_string($field)) {
+            $field = new RelativeField($field);
+        }
+        elseif (!($field instanceof RelativeField)) {
+            throw new \RuntimeException(sprintf('$field must be a string or an instance of RelativeField, %s given',
+                                                gettype($field)));
+        }
+
+        $field->setAlias($alias);
+
+        $this->fields[] = $field;
+
+    }
+
+    /**
      * @return Filter[]
      */
     public function getFilters () {
@@ -103,23 +127,54 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param RelativeField $field
-     * @param string        $alias
+     * @param mixed[][]|mixed[] $filters
      */
-    public function addField (RelativeField $field, $alias = NULL) {
+    public function setFilters (array $filters) {
 
-        $field->setAlias($alias);
+        $this->filters = [];
 
-        $this->fields[] = $field;
+        foreach ($filters as $filter) {
+
+            if (!is_array($filter)) {
+                $filter = [$filter];
+            }
+
+            $this->addFilter($filter[0], isset($filter[1]) ? $filter[1] : NULL);
+
+        }
 
     }
 
     /**
-     * @param Filter $filter
+     * @param Filter|string $filter
+     * @param mixed[]|mixed $params
      */
-    public function addFilter (Filter $filter) {
+    public function addFilter ($filter, $params = NULL) {
+
+        if (is_string($filter)) {
+
+            $filter = $this->getRequestContext()->getApplicationContext()->getFilterByName($filter);
+
+        }
+        elseif (!($filter instanceof Filter)) {
+            throw new \RuntimeException(sprintf('$filter must be a string or an instance of Filter, %s given',
+                                                gettype($filter)));
+        }
+
+        if ($params !== NULL) {
+            $filter->setParams((array)$params);
+        }
 
         $this->filters[] = $filter;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getRequestContext () {
+
+        return $this->reqCtx;
 
     }
 
@@ -163,12 +218,81 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param string $entity
+     * @param int|\Exception $exception
+     *
+     * @return mixed
      */
+    public function findOne ($exception = NULL) {
+
+        $entities = $this->findAll();
+
+        $count = count($entities);
+
+        if ($count != 1) {
+
+            if (is_int($exception)) {
+                $appCtx = $this->getRequestContext()->getApplicationContext();
+                $exception = $appCtx->getErrorManager()->getFormattedError($exception);
+            }
+            elseif (!($exception instanceof \Exception)) {
+                $exception = new \RuntimeException('one entity was expected, ' . $count . ' fetched');
+            }
+
+            throw $exception;
+
+        }
+
+        return $entities[0];
+
+    }
+
+    /**
+     * @return array
+     */
+    public function findAll () {
+
+        $this->getRequestContext()->getApplicationContext()->finalizeFindQueryContext($this);
+
+        return $this->moduleEntity->find($this);
+
+    }
+
+    public function setRegistry() {
+
+    }
+
+
+    public function setModuleEntity (ModuleEntity $moduleEntity) {
+
+        $this->moduleEntity = $moduleEntity;
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public function getApplicationContext() {
+
+        return $this->getRequestContext()->getApplicationContext();
+
+    }
+
+    /**
+     * @param string $entity
+     *//*
     public function addJoinedEntity ($entity) {
 
         $this->joinedEntities[] = $entity;
 
-    }
+    }*/
+
+    /**
+     * @return string[]
+     *//*
+    protected function getJoinedEntities () {
+
+        return $this->joinedEntities;
+
+    }*/
 
 }

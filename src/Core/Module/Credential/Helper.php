@@ -4,13 +4,12 @@
 namespace Core\Module\Credential;
 
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Helper\BasicHelper;
 use Core\Model\Credential;
-use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -27,22 +26,20 @@ class Helper extends BasicHelper {
      */
     public function login (ActionContext $actionContext, array $params) {
 
-        $appCtx = ApplicationContext::getInstance();
-
         /**
          * @var Credential $credentials
          */
         $credential = $this->getCredentialFromLogin($params['login']);
 
         if (is_null($credential)) {
-            throw $appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERROR_USER_NOT_FOUND);
         }
 
         if (!password_verify($params['password'], $credential->getPassword())) {
-            throw $appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
+            throw $this->appCtx->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
         }
 
-        $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+        $expiration = time() + $this->appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
         $this->createLoginHistory($actionContext, $credential, $params['loginHistory']);
 
@@ -58,15 +55,13 @@ class Helper extends BasicHelper {
      */
     public function getCredentialFromLogin ($login) {
 
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
 
         $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
 
         $qryCtx->addField(new RelativeField('*'));
 
-        $qryCtx->addFilter($appCtx->getFilterByName('CredentialForLogin'));
+        $qryCtx->addFilter($this->appCtx->getFilterByName('CredentialForLogin'));
 
         $qryCtx->setParams(['login' => $login]);
 
@@ -95,7 +90,7 @@ class Helper extends BasicHelper {
         $params['clientVersion'] = $reqCtx->getClientVersion();
         $params['IP'] = $reqCtx->getIpAddress();
 
-        $this->basicSave($loginHistory, $params);
+        $this->basicSetValues($loginHistory, $params);
 
         $actionContext['loginHistory'] = $loginHistory;
 
@@ -128,8 +123,7 @@ class Helper extends BasicHelper {
      */
     public function renewAuthToken ($authToken, $credentialId) {
 
-        $appCtx = ApplicationContext::getInstance();
-        $errorManager = $appCtx->getErrorManager();
+        $errorManager = $this->appCtx->getErrorManager();
 
         $this->checkAuthTokenStructure($authToken);
 
@@ -139,7 +133,7 @@ class Helper extends BasicHelper {
             throw $errorManager->getFormattedError(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+        $expiration = time() + $this->appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
         return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
                                        $authToken['type']);
@@ -153,7 +147,7 @@ class Helper extends BasicHelper {
      */
     private function checkAuthTokenStructure ($authToken) {
 
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+        $errorManager = $this->appCtx->getErrorManager();
 
         if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
             || !isset($authToken['type'])
@@ -170,15 +164,13 @@ class Helper extends BasicHelper {
      */
     public function getCredentialFromId ($id) {
 
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
+        $registry = $this->appCtx->getNewRegistry();
 
         $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
 
         $qryCtx->addField(new RelativeField('*'));
 
-        $qryCtx->addFilter($appCtx->getFilterByName('CredentialForId'));
+        $qryCtx->addFilter($this->appCtx->getFilterByName('CredentialForId'));
 
         $qryCtx->setParams(['id' => $id]);
 
@@ -196,10 +188,8 @@ class Helper extends BasicHelper {
      */
     public function getNewAuthToken ($credential, $authTokenType, $expiration) {
 
-        $appCtx = ApplicationContext::getInstance();
-
         if (!$expiration) {
-            $expiration = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+            $expiration = time() + $this->appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
         }
 
         return self::generateAuthToken($credential->getLogin(), $expiration, $credential->getPassword(),
@@ -218,7 +208,7 @@ class Helper extends BasicHelper {
 
         $params['password'] = password_hash($params['password'], PASSWORD_BCRYPT);
 
-        $this->basicSave($credential, $params);
+        $this->basicSetValues($credential, $params);
 
         $actionContext['credential'] = $credential;
 
@@ -235,7 +225,7 @@ class Helper extends BasicHelper {
 
         $params['password'] = password_hash($params['password'], PASSWORD_BCRYPT);
 
-        $this->basicSave($credential, $params);
+        $this->basicSetValues($credential, $params);
 
         $actCtx['credential'] = $credential;
 
@@ -264,7 +254,7 @@ class Helper extends BasicHelper {
      */
     public function checkAuthToken ($authToken) {
 
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+        $errorManager = $this->appCtx->getErrorManager();
 
         $this->checkAuthTokenStructure($authToken);
 

@@ -213,6 +213,18 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     /**
      * @param string $key
+     * @param mixed  $defaultValue
+     */
+    public function setDefaultParam ($key, $defaultValue) {
+
+        if (!array_key_exists($key, $this->params)) {
+            $this->setParam($key, $defaultValue);
+        }
+
+    }
+
+    /**
+     * @param string $key
      * @param mixed  $value
      */
     public function setParam ($key, $value) {
@@ -239,6 +251,18 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         }
 
         $params[$key] = $value;
+
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getFinalParam ($key, $default = NULL) {
+
+        return UnsafeParameter::getFinalValue($this->getParam($key, $default));
 
     }
 

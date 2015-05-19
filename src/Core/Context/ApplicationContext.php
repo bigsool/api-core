@@ -10,17 +10,19 @@ use Core\Application;
 use Core\Config\ConfigManager;
 use Core\Controller;
 use Core\Error\ErrorManager;
-use Core\Field\Field;
+use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
 use Core\Logger\RequestLogger;
 use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
+use Core\Module\ModuleEntity;
 use Core\Module\ModuleManager;
 use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
@@ -51,9 +53,9 @@ class ApplicationContext {
     protected $ruleProcessor;
 
     /**
-     * @var Field[]
+     * @var CalculatedField[][]
      */
-    protected $fields = [];
+    protected $calculatedFields;
 
     /**
      * @var Filter[]
@@ -136,6 +138,16 @@ class ApplicationContext {
     protected $product;
 
     /**
+     * @var ModuleEntity[]
+     */
+    protected $modulesEntities;
+
+    /**
+     * @var ModuleManager[]
+     */
+    protected $moduleManagers = [];
+
+    /**
      *
      */
     protected function __construct () {
@@ -149,6 +161,12 @@ class ApplicationContext {
     protected function loadConstants () {
 
         require __DIR__ . '/../../../config/constants.php';
+
+    }
+
+    public function addModuleManager(ModuleManager $moduleManager) {
+
+        $this->moduleManagers[get_class($moduleManager)] = $moduleManager;
 
     }
 
@@ -187,7 +205,7 @@ class ApplicationContext {
      */
     public function getModuleManagers () {
 
-        return $this->application->getModuleManagers();
+        return $this->moduleManagers;
 
     }
 
@@ -293,19 +311,6 @@ class ApplicationContext {
     public function getClassMetadata ($class) {
 
         return $this->entityManager->getClassMetadata($class);
-
-    }
-
-    /**
-     * @return Registry
-     */
-    public function getNewRegistry () {
-
-        $registry = new Registry($this->entityManager, $this);
-
-        $this->entityManager->getEventManager()->addEventSubscriber($registry);
-
-        return $registry;
 
     }
 
@@ -648,6 +653,131 @@ class ApplicationContext {
         }
 
         return $this->onErrorActionQueue;
+
+    }
+
+    /**
+     * @param ModuleEntity $moduleEntity
+     */
+    public function addModuleEntity (ModuleEntity $moduleEntity) {
+
+        $this->modulesEntities[$moduleEntity->getEntityName()] = $moduleEntity;
+
+        $moduleEntity->setRegistry($this->getNewRegistry());
+
+    }
+
+    /**
+     * @return Registry
+     */
+    protected function getNewRegistry () {
+
+        $registry = new Registry($this->entityManager, $this);
+
+        $this->entityManager->getEventManager()->addEventSubscriber($registry);
+
+        return $registry;
+
+    }
+
+    /**
+     * @param FindQueryContext $findQueryContext
+     */
+    public function finalizeFindQueryContext (FindQueryContext $findQueryContext) {
+
+        $moduleEntity = $this->getModuleEntity($findQueryContext->getEntity());
+        $findQueryContext->setModuleEntity($moduleEntity);
+
+    }
+
+    /**
+     * TODO: should we keep this api ?
+     *
+     * @param string $entityName
+     *
+     * @return ModuleEntity
+     */
+    protected function getModuleEntity ($entityName) {
+
+        if (!isset($this->modulesEntities[$entityName])) {
+            throw new \RuntimeException(sprintf('ModuleEntity %s not found', $entityName));
+        }
+
+        return $this->modulesEntities[$entityName];
+
+    }
+
+    /**
+     * @param string          $entityName
+     * @param string          $fieldName
+     * @param CalculatedField $calculatedField
+     */
+    public function addCalculatedField ($entityName, $fieldName, CalculatedField $calculatedField) {
+
+        $this->calculatedFields[$entityName][$fieldName] = $calculatedField;
+
+    }
+
+    /**
+     * @param $entityName
+     * @param $fieldName
+     *
+     * @return CalculatedField
+     */
+    public function getCalculatedField ($entityName, $fieldName) {
+
+        if (!isset($this->calculatedFields[$entityName][$fieldName])) {
+            throw new \RuntimeException(sprintf("Calculated field %s.%s not found", $entityName, $fieldName));
+        }
+
+        return $this->calculatedFields[$entityName][$fieldName];
+
+    }
+
+    /**
+     * @param string $entityName
+     *
+     * @return CalculatedField[]
+     */
+    public function getCalculatedFields($entityName) {
+
+        return isset($this->calculatedFields[$entityName]) ? $this->calculatedFields[$entityName] : [];
+
+    }
+
+    /**
+     * @param string $entityName
+     *
+     * @return string
+     */
+    public function getRealModelClassName ($entityName) {
+
+        $product = $this->getProduct();
+
+        $class = '\\' . $product . '\Model\\' . $entityName;
+        if (!class_exists($class)) {
+            $class = '\Core\Model\\' . $entityName;
+            if (!class_exists($class)) {
+                throw new \RuntimeException(sprintf('entity %s not found', $entityName));
+            }
+        }
+
+        return $class;
+
+    }
+
+    /**
+     * @param string|object $classOrObject
+     *
+     * @return boolean
+     */
+    public function isEntity ($classOrObject) {
+
+        if (is_object($classOrObject)) {
+            $classOrObject = ClassUtils::getClass($classOrObject);
+        }
+
+        return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
 
     }
 

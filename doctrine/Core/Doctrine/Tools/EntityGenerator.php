@@ -4,6 +4,7 @@
 namespace Core\Doctrine\Tools;
 
 
+use Core\Context\ApplicationContext;
 use Core\Field\CalculatedField;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
@@ -67,12 +68,12 @@ public function <methodName>()
 <spaces><spaces><spaces>return NULL;
 <spaces><spaces>}
 <spaces><spaces>$this->$faultedVar = false; // TODO : set to false in the hydrator too
-<spaces><spaces>$reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+<spaces><spaces>$reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
 <spaces><spaces>$reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("<fieldName>")]);
 <spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<entity>", $reqCtx);
 <spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"));
 <spaces><spaces>$qryContext->setParam("id",$this->getId());
-<spaces><spaces>\Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+<spaces><spaces>$qryContext->findAll();
 <spaces>}
 
 <spaces>return $this-><fieldName> && $this-><fieldName>->getId() == $this-><fieldName>RestrictedId ? $this-><fieldName> : NULL;
@@ -89,7 +90,11 @@ public function <methodName>()
  */
 public function <methodName>()
 {
-<spaces>return \Core\Field\CalculatedField::execute($this, "<fieldName>");
+<spaces>$class = get_class($this);
+<spaces>$entity = ($pos = strrpos($class, "\\\\\\\\")) ? substr($class, $pos + 1) : $class;
+<spaces>$appCtx = $this->findQueryContext->getApplicationContext();
+
+<spaces>return $appCtx->getCalculatedField($entity, "<fieldName>")->execute($this);
 }';
 
     /**
@@ -261,10 +266,10 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
         $className = $this->getClassName($metadata);
 
-        $fields = CalculatedField::getCalculatedField($className);
+        $fields = ApplicationContext::getInstance()->getCalculatedFields($className);
 
         $type = 'get';
-        foreach ($fields as $fieldName) {
+        foreach ($fields as $fieldName => $field) {
             $methodName = $type . Inflector::classify($fieldName);
             $variableName = Inflector::camelize($fieldName);
 

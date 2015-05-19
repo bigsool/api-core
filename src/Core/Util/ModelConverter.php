@@ -5,9 +5,19 @@ namespace Core\Util;
 
 
 use Core\Context\ApplicationContext;
-use Core\Field\CalculatedField;
 
 class ModelConverter {
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $applicationContext;
+
+    public function __construct (ApplicationContext $appCtx) {
+
+        $this->applicationContext = $appCtx;
+
+    }
 
     /**
      * @param mixed    $object
@@ -66,9 +76,11 @@ class ModelConverter {
 
         $class = get_class($object);
         $entity = ($pos = strrpos($class, '\\')) ? substr($class, $pos + 1) : $class;
-        $metadata = ApplicationContext::getInstance()->getClassMetadata($class);
+        $metadata = $this->applicationContext->getClassMetadata($class);
 
-        $fieldNames = array_merge($metadata->getFieldNames(), CalculatedField::getCalculatedField($entity));
+        $fieldNames =
+            array_merge($metadata->getFieldNames(),
+                        array_keys($this->applicationContext->getCalculatedFields($entity)));
         $associationNames = $metadata->getAssociationNames();
 
         foreach ($requestedFields as $requestedFieldName => $childRequestedField) {
@@ -79,7 +91,6 @@ class ModelConverter {
 
             if ($requestedFieldName == '*') {
                 $requestedFieldNames = $fieldNames;
-                CalculatedField::getCalculatedField($entity);
             }
             else {
                 $requestedFieldNames = [$requestedFieldName];

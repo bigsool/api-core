@@ -5,11 +5,15 @@ namespace Core\Module;
 
 
 use Core\Action\Action;
-use Core\Expression\AbstractKeyPath;
 use Core\Field\RelativeField;
 use Core\Validation\AbstractConstraintsProvider;
 
 class ModelAspect {
+
+    /**
+     * @var string
+     */
+    protected $module;
 
     /**
      * @var string
@@ -48,13 +52,14 @@ class ModelAspect {
 
     /**
      * @param string                          $model
+     * @param                                 $module
      * @param string                          $prefix
      * @param AbstractConstraintsProvider[][] $constraints
      * @param Action[]                        $actions
      * @param RelativeField|null              $relativeField
      * @param Boolean                         $withPrefixedFields
      */
-    public function __construct ($model, $prefix, array $constraints, array $actions,
+    public function __construct ($model, $module, $prefix, array $constraints, array $actions,
                                  RelativeField $relativeField = NULL, $withPrefixedFields = false) {
 
         $this->model = $model;
@@ -64,6 +69,17 @@ class ModelAspect {
         $this->actions = $actions;
         $this->enabled = true;
         $this->withPrefixedFields = $withPrefixedFields;
+
+        $this->module = $module;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getModule () {
+
+        return $this->module;
 
     }
 
@@ -106,6 +122,7 @@ class ModelAspect {
     public function getRelativeField () {
 
         return $this->relativeField;
+
     }
 
     /**
@@ -114,6 +131,7 @@ class ModelAspect {
     public function getActions () {
 
         return $this->actions;
+        
     }
 
     /**

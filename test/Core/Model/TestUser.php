@@ -432,12 +432,12 @@ class TestUser
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
             $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("ownedCompany")]);
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
             $qryContext->setParam("id",$this->getId());
-            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+            $qryContext->findAll();
         }
     
         return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
@@ -481,12 +481,12 @@ class TestUser
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
             $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("storage")]);
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
             $qryContext->setParam("id",$this->getId());
-            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+            $qryContext->findAll();
         }
     
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
@@ -530,12 +530,12 @@ class TestUser
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
             $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
             $qryContext->setParam("id",$this->getId());
-            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+            $qryContext->findAll();
         }
     
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;

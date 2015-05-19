@@ -25,7 +25,7 @@ class SaveQueryContext implements QueryContext {
             throw new \RuntimeException('invalid model type');
         }
 
-        if (!ApplicationContext::getInstance()->getNewRegistry()->isEntity($model)) {
+        if (!ApplicationContext::getInstance()->isEntity($model)) {
             throw new \RuntimeException('invalid model class');
         }
 

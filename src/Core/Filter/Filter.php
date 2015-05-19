@@ -110,7 +110,7 @@ abstract class Filter {
     public function setAliasForEntityToUse ($alias) {
 
         $this->aliasForEntityToUse = $alias;
-        $this->setAliasForEntityToUseToThisExpressions($alias, [$this->expression]);
+        $this->setAliasForEntityToUseToThisExpressions($alias, [$this->getExpression()]);
 
     }
 
@@ -124,6 +124,10 @@ abstract class Filter {
 
             if ($expression instanceof AbstractKeyPath) {
                 $expression->setAliasForEntityToUse($alias);
+            }
+
+            if (!($expression instanceof Expression)) {
+                $qwe = 'qwde';
             }
 
             $this->setAliasForEntityToUseToThisExpressions($alias, $expression->getExpressions());

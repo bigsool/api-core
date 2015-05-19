@@ -15,9 +15,9 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction($a = new BasicCreateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
+        $appCtx->addAction($a = new BasicCreateAction('Core\Contact', 'Contact', [], [
             'label'    => [new Validation()],
             'streets'  => [new Validation()],
             'city'     => [new Validation()],
@@ -39,7 +39,7 @@ class ModuleManager extends AbstractModuleManager {
 
         }));
 
-        $appCtx->addAction(new BasicUpdateAction('Core\Contact', 'Contact', 'ContactHelper', [], [
+        $appCtx->addAction(new BasicUpdateAction('Core\Contact', 'Contact', [], [
             'label'    => [new Validation(), true],
             'streets'  => [new Validation(), true],
             'city'     => [new Validation(), true],
@@ -56,7 +56,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleFilters (ApplicationContext &$context) {
 
     }
 
@@ -72,7 +72,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadRules (ApplicationContext &$context) {
+    public function createRules (ApplicationContext &$context) {
 
     }
 

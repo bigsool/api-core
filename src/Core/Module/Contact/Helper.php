@@ -4,10 +4,10 @@
 namespace Core\Module\Contact;
 
 use Core\Context\ActionContext;
+use Core\Helper\BasicHelper;
 use Core\Model\Address;
 use Core\Model\Email;
 use Core\Model\Phone;
-use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -19,7 +19,7 @@ class Helper extends BasicHelper {
 
         $contact = $this->createRealModel('Contact');
 
-        $this->basicSave($contact, $params);
+        $this->basicSetValues($contact, $params);
 
         $actCtx['contact'] = $contact;
 
@@ -34,7 +34,7 @@ class Helper extends BasicHelper {
 
         $this->checkRealModelType($contact, 'Contact');
 
-        $this->basicSave($contact, $params);
+        $this->basicSetValues($contact, $params);
 
         $actCtx['contact'] = $contact;
 

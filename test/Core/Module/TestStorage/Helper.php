@@ -3,18 +3,27 @@
 namespace Core\Module\TestStorage;
 
 use Core\Context\ActionContext;
-use Core\Model\TestStorage;
-use Core\Module\BasicHelper;
+use Core\Context\ApplicationContext;
+use Core\Helper\GenericHelper;
 
-class Helper extends BasicHelper {
+class Helper extends GenericHelper {
+
+    /**
+     * @param ApplicationContext $applicationContext
+     */
+    public function __construct (ApplicationContext $applicationContext) {
+
+        parent::__construct($applicationContext, 'TestStorage');
+
+    }
 
     /**
      * @param ActionContext $actCtx
      * @param array         $params
+     *
+     * @return mixed
      */
-    public function createTestStorage (ActionContext $actCtx, array $params) {
-
-        $storage = new TestStorage();
+    public function create (ActionContext $actCtx, array $params) {
 
         if (!isset($params['usedSpace'])) {
             $params['usedSpace'] = '0';
@@ -26,22 +35,7 @@ class Helper extends BasicHelper {
             $params['isOutOfQuota'] = false;
         }
 
-        $this->basicSave($storage, $params);
-
-        $actCtx['testStorage'] = $storage;
-
-    }
-
-    /**
-     * @param ActionContext $actCtx
-     * @param TestStorage   $storage
-     * @param array         $params
-     */
-    public function updateTestStorage (ActionContext $actCtx, TestStorage $storage, array $params) {
-
-        $this->basicSave($storage, $params);
-
-        $actCtx['testStorage'] = $storage;
+        return parent::create($actCtx, $params);
 
     }
 }

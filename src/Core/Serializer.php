@@ -117,8 +117,9 @@ class Serializer {
         }
 
         if (is_object($data)) {
-            if (ApplicationContext::getInstance()->getNewRegistry()->isEntity($data)) {
-                return (new ModelConverter())->toArray($data, $this->requiredFormattedFields
+            $applicationContext = ApplicationContext::getInstance();
+            if ($applicationContext->isEntity($data)) {
+                return (new ModelConverter($applicationContext))->toArray($data, $this->requiredFormattedFields
                     ?: $this->requiredNotFormattedKeyPaths);
             }
             elseif ($data instanceof MagicalEntity) {

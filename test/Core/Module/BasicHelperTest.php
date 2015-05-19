@@ -4,6 +4,7 @@
 namespace Core\Module;
 
 
+use Core\Helper\BasicHelper;
 use Core\Model\TestUser;
 use Core\Registry;
 use Core\TestCase;
@@ -20,11 +21,11 @@ class BasicHelperTest extends TestCase {
 
     }
 
-    public function testCreate () {
+    public function testBasicSetValues () {
 
-        $basicHelper = new BasicHelper();
+        $basicHelper = new BasicHelper($this->getApplicationContext());
 
-        $user = $basicHelper->basicSave(new TestUser(), [
+        $user = $basicHelper->basicSetValues(new TestUser(), [
             'email'        => 'qweqwe@qweqwe.com',
             'password'     => 'OhMyQweqwe',
             'name'         => 'AzeEn',
@@ -32,23 +33,10 @@ class BasicHelperTest extends TestCase {
             'lang'         => 'fr',
             'salt'         => uniqid('', true),
             'registerDate' => new \DateTime(),
-        ], false);
-
-        $this->assertInstanceOf(Registry::realModelClassName('testUser'), $user);
-        $this->assertNull($user->getId());
-
-        $user = $basicHelper->basicSave(new TestUser, [
-            'email'        => 'qweqwe2@qweqwe.com',
-            'password'     => 'OhMy2ndQwe',
-            'name'         => 'QsdEn',
-            'firstname'    => 'WxcFr',
-            'lang'         => 'en',
-            'salt'         => uniqid('', true),
-            'registerDate' => new \DateTime(),
         ]);
 
         $this->assertInstanceOf(Registry::realModelClassName('testUser'), $user);
-        $this->assertSame(1, $user->getId());
+        $this->assertNull($user->getId());
 
     }
 
@@ -57,7 +45,7 @@ class BasicHelperTest extends TestCase {
      */
     public function testBasicSaveOnNotObject () {
 
-        (new BasicHelper())->basicSave('qwe', []);
+        (new BasicHelper($this->getApplicationContext()))->basicSetValues('qwe', []);
 
     }
 
@@ -66,20 +54,23 @@ class BasicHelperTest extends TestCase {
      */
     public function testBasicSaveWithWrongParameter () {
 
-        (new BasicHelper())->basicSave(new TestUser(), ['qwe' => 'qwe']);
+        (new BasicHelper($this->getApplicationContext()))->basicSetValues(new TestUser(), ['qwe' => 'qwe']);
 
     }
 
     public function testRealModelClassName () {
 
-        $this->assertSame('\Core\Model\TestUser', (new BasicHelper())->getRealModelClassName('TestUser'));
-        $this->assertInstanceOf('\Core\Model\TestUser', (new BasicHelper())->createRealModel('TestUser'));
+        $this->assertSame('\Core\Model\TestUser',
+                          (new BasicHelper($this->getApplicationContext()))->getRealModelClassName('TestUser'));
+        $this->assertInstanceOf('\Core\Model\TestUser',
+                                (new BasicHelper($this->getApplicationContext()))->createRealModel('TestUser'));
 
     }
 
     public function testCheckRealModelType () {
 
-        $this->assertNull((new BasicHelper())->checkRealModelType(new TestUser(), 'TestUser'));
+        $this->assertNull((new BasicHelper($this->getApplicationContext()))->checkRealModelType(new TestUser(),
+                                                                                                'TestUser'));
 
     }
 
@@ -88,7 +79,7 @@ class BasicHelperTest extends TestCase {
      */
     public function testInvalidRealModelType () {
 
-        (new BasicHelper())->checkRealModelType(new \stdClass(), 'TestUser');
+        (new BasicHelper($this->getApplicationContext()))->checkRealModelType(new \stdClass(), 'TestUser');
 
     }
 

@@ -10,6 +10,7 @@ use Core\Field\RelativeField;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
+use Core\Module\TestUser\ModuleManager;
 
 class SerializerTest extends TestCase {
 
@@ -86,7 +87,7 @@ class SerializerTest extends TestCase {
         self::$company1->addUser(self::$user2);
         self::$company1->addUser(self::$user3);
 
-        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry = self::getRegistry();
         $registry->save(self::$user1);
         $registry->save(self::$user2);
         $registry->save(self::$user3);
@@ -94,11 +95,11 @@ class SerializerTest extends TestCase {
         $registry->save(self::$storage);
 
 
-        self::$user1->setRegisterDate((new \DateTime())->getTimestamp());
-        self::$user2->setRegisterDate((new \DateTime())->getTimestamp());
-        self::$user3->setRegisterDate((new \DateTime())->getTimestamp());
+        self::$user1->setRegisterDate(new \DateTime());
+        self::$user2->setRegisterDate(new \DateTime());
+        self::$user3->setRegisterDate(new \DateTime());
 
-        self::$storage->setLastUsedSpaceUpdate((new \DateTime())->getTimestamp());
+        self::$storage->setLastUsedSpaceUpdate(new \DateTime());
 
         self::$expected = [
             'success' => true,
@@ -158,6 +159,9 @@ class SerializerTest extends TestCase {
 
     public function testSerialize () {
 
+        $userModuleManager = new ModuleManager();
+        $userModuleManager->load($this->getApplicationContext());
+
         $reqCtx = new RequestContext();
 
         $emailKP = new RelativeField('email');
@@ -212,7 +216,7 @@ class SerializerTest extends TestCase {
             $qryCtx->addField($keyPath, $keyPath->getAlias());
         }
 
-        return ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
+        return $qryCtx->findAll();
 
     }
 

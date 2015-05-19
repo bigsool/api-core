@@ -127,7 +127,7 @@ class Registry implements EventSubscriber {
         if (!isset($this->joins[$join])) {
 
             $newAlias = $alias . ucfirst($field);
-            $ctx->addJoinedEntity($entity);
+            //$ctx->addJoinedEntity($entity);
             $joinMethod = $useLeftJoin ? 'leftJoin' : 'innerJoin';
             $this->getQueryBuilder($ctx->getEntity())->$joinMethod($join, $newAlias);
 
@@ -223,7 +223,7 @@ class Registry implements EventSubscriber {
         /**
          * @var RelativeField[] $relativeFields
          */
-        $relativeFields = array_merge($ctx->getFields(), $ctx->getReqCtx()->getFormattedReturnedFields());
+        $relativeFields = array_merge($ctx->getFields(), $ctx->getRequestContext()->getFormattedReturnedFields());
 
         $resolvableFields = $this->resolveRelativeFields($relativeFields, $ctx);
 
@@ -291,7 +291,7 @@ class Registry implements EventSubscriber {
         $ruleProcessor = new Processor();
         $ruleProcessor->apply($ctx);
 
-        $auth = $ctx->getReqCtx()->getAuth();
+        $auth = $ctx->getRequestContext()->getAuth();
         $login = NULL;
         if (isset($auth) && $credential = $auth->getCredential()) {
             $login = $credential->getLogin();
@@ -332,6 +332,7 @@ class Registry implements EventSubscriber {
         array_walk_recursive($result, function ($object) use ($ctx) {
 
             if (Registry::isEntity($object)) {
+                // TODO faire un setter sur les entity
                 $refProp = new \ReflectionProperty($object, 'findQueryContext');
                 $refProp->setAccessible(true);
                 $refProp->setValue($object, $ctx);
@@ -567,7 +568,7 @@ class Registry implements EventSubscriber {
                 }
 
                 foreach ($result as &$data) {
-                    $resolvableField->exec($data);
+                    $resolvableField->execute($data);
                 }
 
             }

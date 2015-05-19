@@ -13,6 +13,7 @@ use Core\Expression\Parameter;
 use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
 use Core\Filter\FilterReference;
+use Core\Module\GenericDbEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Operator\MemberOf;
 use Core\Rule\FieldRule;
@@ -21,30 +22,58 @@ use Core\Rule\FieldRule;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $appCtx
+     * {@inheritDoc}
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction(new BasicCreateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
-            'name' => [new CompanyValidation()],
-        ]));
+        $testCompanyModuleEntity = $this->getModuleEntity('TestCompany');
 
-        $appCtx->addAction(new BasicUpdateAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
-            'name' => [new CompanyValidation()],
-        ]));
+        return [
+            new BasicCreateAction('Core\TestCompany', $testCompanyModuleEntity, NULL, [
+                'name' => [new CompanyValidation()],
+            ]),
+            new BasicUpdateAction('Core\TestCompany', $testCompanyModuleEntity, NULL, [
+                'name' => [new CompanyValidation()],
+            ]),
+            new BasicFindAction('Core\TestCompany', $testCompanyModuleEntity, NULL, [
+            ]),
 
-        $appCtx->addAction(new BasicFindAction('Core\TestCompany', 'testCompany', 'CompanyFeatureHelper', NULL, [
-        ]));
+        ];
 
     }
 
     /**
-     * @param ApplicationContext $context
+     * {@inheritDoc}
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleEntities (ApplicationContext &$context) {
+
+        return [
+            new GenericDbEntity($context, 'TestCompany')
+        ];
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createModuleFilters (ApplicationContext &$context) {
 
         $expression = new BinaryExpression(new MemberOf(), new Parameter(':authUser'), new KeyPath('users'));
-        $context->addFilter(new ExpressionFilter('TestCompany', 'mee', $expression));
+
+        return [
+            new ExpressionFilter('TestCompany', 'mee', $expression)
+        ];
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createRules (ApplicationContext &$context) {
+
+        return [
+            //new FieldRule(new StarField('TestCompany'), new FilterReference($context, 'TestCompany', 'mee'))
+        ];
 
     }
 
@@ -53,21 +82,11 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context, 'CompanyFeatureHelper');
+        //$this->addHelper($context, 'CompanyFeatureHelper');
 
     }
 
     public function loadRoutes (ApplicationContext &$context) {
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
-
-        $context->addRule(new FieldRule(new StarField('TestCompany'),
-                                        new FilterReference($context, 'TestCompany', 'mee')));
 
     }
 

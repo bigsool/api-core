@@ -95,7 +95,7 @@ class RelativeField {
         }
         else {
 
-            $field = new CalculatedField($this->getValue());
+            $field = CalculatedFields::getField($this->getValue);// new CalculatedField($this->getValue());
             $fields = $field->getFinalFields($registry, $ctx);
             $fields[] = $field;
 

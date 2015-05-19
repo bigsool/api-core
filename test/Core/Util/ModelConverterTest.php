@@ -10,6 +10,7 @@ use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Model\TestCompany;
 use Core\Model\TestUser;
+use Core\Module\TestUser\ModuleManager;
 use Core\TestCase;
 
 class ModelConverterTest extends TestCase {
@@ -25,6 +26,9 @@ class ModelConverterTest extends TestCase {
     }
 
     public function testToArray () {
+
+        $userModuleManager = new ModuleManager();
+        $userModuleManager->load($this->getApplicationContext());
 
         // AppCtx must be initialized
         $appCtx = $this->getApplicationContext();
@@ -51,7 +55,7 @@ class ModelConverterTest extends TestCase {
             $subUser->setCompany($company);
         }
 
-        $saveRegistry = $appCtx->getNewRegistry();
+        $saveRegistry = self::getRegistry();
         $saveRegistry->save($owner);
 
         $reqCtx = new RequestContext();
@@ -63,10 +67,9 @@ class ModelConverterTest extends TestCase {
         $qryCtx->addField(new RelativeField('*'));
         $qryCtx->addField(new RelativeField('company.users.*'));
 
-        $findRegistry = $appCtx->getNewRegistry();
-        $findRegistry->find($qryCtx);
+        $qryCtx->findAll();
 
-        $modelConverter = new ModelConverter();
+        $modelConverter = new ModelConverter($appCtx);
 
         $result = $modelConverter->toArray($owner,
                                            ['email',

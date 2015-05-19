@@ -7,6 +7,7 @@ use Core\Context\FindQueryContext;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
+use Core\Module\TestUser\ModuleManager;
 use Core\TestCase;
 
 class AggregateTest extends TestCase {
@@ -100,7 +101,7 @@ class AggregateTest extends TestCase {
         self::$company2->addUser(self::$user3);
         self::$company2->setStorage(self::$storage2);
 
-        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry = self::getRegistry();
         $registry->save(self::$user1);
         $registry->save(self::$user2);
         $registry->save(self::$user3);
@@ -117,6 +118,8 @@ class AggregateTest extends TestCase {
 
         self::$storage2->setLastUsedSpaceUpdate(new \DateTime());
 
+        (new ModuleManager())->load(self::getApplicationContext());
+
     }
 
     /**
@@ -124,35 +127,29 @@ class AggregateTest extends TestCase {
      */
     public function testResolve () {
 
-        $registry = self::getApplicationContext()->getNewRegistry();
-
         $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addField(new RelativeField(new Aggregate('count', ['*'])), 'nbUsers');
 
-        $result = $registry->find($qryCtx);
+        $result = $qryCtx->findAll();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $this->assertSame("3", $result[0]['nbUsers']);
 
-        $registry = self::getApplicationContext()->getNewRegistry();
-
         $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addField(new RelativeField(new Aggregate('max', ['company.id'])), 'maxCompanyId');
 
-        $result = $registry->find($qryCtx);
+        $result = $qryCtx->findAll();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
         $this->assertSame("2", $result[0]['maxCompanyId']);
 
-        $registry = self::getApplicationContext()->getNewRegistry();
-
         $qryCtx = new FindQueryContext('TestUser');
         $qryCtx->addField(new RelativeField(new Aggregate('min', ['company.id'])), 'minCompanyId');
         $qryCtx->addField(new RelativeField('*'));
 
-        $result = $registry->find($qryCtx);
+        $result = $qryCtx->findAll();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(3, $result);

@@ -4,12 +4,14 @@
 namespace Core\Action;
 
 
+use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Model\TestUser;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
+use Core\Module\TestUser\ModuleManager;
 use Core\TestCase;
 
-class BasicCreateActionTest extends TestCase {
+class BasicFindActionTest extends TestCase {
 
     /**
      * @var \Core\Model\TestUser
@@ -20,15 +22,18 @@ class BasicCreateActionTest extends TestCase {
 
         parent::setUpBeforeClass();
 
-        self::resetDatabase(self::getApplicationContext());
+        $appCtx = self::getApplicationContext();
+        self::resetDatabase($appCtx);
 
-        self::$user = new TestUser();
-        self::$user->setEmail('thierry@bigsool.com');
-        self::$user->setPassword('qwe');
-        self::$user->setRegisterDate(new \DateTime());
+        $userModuleManager = new ModuleManager();
 
-        $registry = self::getApplicationContext()->getNewRegistry();
-        $registry->save(self::$user);
+        $moduleEntities = $userModuleManager->createModuleEntities($appCtx);
+        $moduleEntity = $moduleEntities[0];
+        $appCtx->addModuleEntity($moduleEntity);
+
+        $actCtx = $appCtx->getActionContext(new RequestContext(), '', '');
+        $user = $moduleEntity->create($actCtx, ['email' => 'thierry@bigsool.com', 'password' => 'qwe']);
+        $moduleEntity->save($user);
 
     }
 
@@ -39,20 +44,23 @@ class BasicCreateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
+        $moduleEntities = $userModuleManager->createModuleEntities($appCtx);
+        $moduleEntity = $moduleEntities[0];
+        $appCtx->addModuleEntity($moduleEntity);
+
         $preCalled = false;
         $postCalled = false;
 
         $action =
-            new BasicFindAction('Core\TestUser', 'TestUser', 'UserFeatureHelper', [], [],
-                function () use (&$preCalled) {
+            new BasicFindAction('Core\TestUser', $moduleEntity, [], [], function () use (&$preCalled) {
 
-                    $preCalled = true;
+                $preCalled = true;
 
-                }, function () use (&$postCalled) {
+            }, function () use (&$postCalled) {
 
-                    $postCalled = true;
+                $postCalled = true;
 
-                });
+            });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'thierry@bigsool.com']);
@@ -73,28 +81,6 @@ class BasicCreateActionTest extends TestCase {
 
         $this->assertTrue($preCalled);
         $this->assertTrue($postCalled);
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testWrongHelper () {
-
-        $appCtx = $this->getApplicationContext();
-
-        $userModuleManager = new UserModuleManager();
-        $userModuleManager->loadHelpers($appCtx);
-
-        (new BasicFindAction('Core\TestUser', 'TestUsere', 'UserFeatureHelper', [], [], function () use (&$preCalled) {
-
-            $preCalled = true;
-
-        }, function () use (&$postCalled) {
-
-            $postCalled = true;
-
-        }))->process($this->getActionContext());
 
     }
 

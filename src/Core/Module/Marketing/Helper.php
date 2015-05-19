@@ -5,7 +5,7 @@ namespace Core\Module\Marketing;
 
 
 use Core\Context\ActionContext;
-use Core\Module\BasicHelper;
+use Core\Helper\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -17,7 +17,7 @@ class Helper extends BasicHelper {
 
         $marketingInfo = $this->createRealModel('MarketingInfo');
 
-        $this->basicSave($marketingInfo, $params);
+        $this->basicSetValues($marketingInfo, $params);
 
         $actCtx['marketingInfo'] = $marketingInfo;
 
@@ -32,7 +32,7 @@ class Helper extends BasicHelper {
 
         $this->checkRealModelType($marketingInfo, 'MarketingInfo');
 
-        $this->basicSave($marketingInfo, $params);
+        $this->basicSetValues($marketingInfo, $params);
 
         $actCtx['marketingInfo'] = $marketingInfo;
 

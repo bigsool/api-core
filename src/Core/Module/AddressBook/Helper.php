@@ -5,7 +5,7 @@ namespace Core\Module\AddressBook;
 
 
 use Core\Context\ActionContext;
-use Core\Module\BasicHelper;
+use Core\Helper\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -17,7 +17,7 @@ class Helper extends BasicHelper {
 
         $entity = $this->createRealModel('ABCompany');
 
-        $this->basicSave($entity, $params);
+        $this->basicSetValues($entity, $params);
 
         $actCtx['abcompany'] = $entity;
 
@@ -31,7 +31,7 @@ class Helper extends BasicHelper {
 
         $entity = $this->createRealModel('ABPerson');
 
-        $this->basicSave($entity, $params);
+        $this->basicSetValues($entity, $params);
 
         $actCtx['abperson'] = $entity;
 
@@ -45,7 +45,7 @@ class Helper extends BasicHelper {
 
         $entity = $this->createRealModel('ABCompanyContact');
 
-        $this->basicSave($entity, $params);
+        $this->basicSetValues($entity, $params);
 
         $actCtx['abcompanyContact'] = $entity;
 
@@ -59,7 +59,7 @@ class Helper extends BasicHelper {
 
         $entity = $this->createRealModel('ABPersonContact');
 
-        $this->basicSave($entity, $params);
+        $this->basicSetValues($entity, $params);
 
         $actCtx['abpersonContact'] = $entity;
 

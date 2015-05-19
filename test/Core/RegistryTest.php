@@ -21,6 +21,7 @@ use Core\Model\TestAccount;
 use Core\Model\TestCompany;
 use Core\Model\TestStorage;
 use Core\Model\TestUser;
+use Core\Module\TestUser\ModuleManager;
 use Core\Operator\EqualOperator;
 use Core\Parameter\UnsafeParameter;
 use Core\Rule\CallbackRule;
@@ -110,7 +111,7 @@ class RegistryTest extends TestCase {
         $company = new TestCompany();
         $company->setAddress('company address 1');
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->save($company);
 
     }
@@ -128,7 +129,7 @@ class RegistryTest extends TestCase {
         $company->setZipCode($this->company['zipCode']);
         $company->setState($this->company['state']);
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->save($company);
 
         $this->assertEquals(1, $company->getId());
@@ -144,7 +145,7 @@ class RegistryTest extends TestCase {
         $company->setName($this->company['name']);
         $company->setAddress(new UnsafeParameter($this->company['address'], ''));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->save($company);
 
         $this->assertEquals(1, $company->getId());
@@ -175,7 +176,7 @@ class RegistryTest extends TestCase {
         $company->setStorage($storage);
         $user->setCompany($company);
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
 
         $registry->save($company);
 
@@ -226,7 +227,7 @@ class RegistryTest extends TestCase {
      */
     public function testSaveWrongClass () {
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->save(new \stdClass());
 
     }
@@ -250,7 +251,7 @@ class RegistryTest extends TestCase {
         $company = new TestCompany();
         $company->setName('the new company');
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $exceptionThrow = false;
         try {
             $registry->save($company);
@@ -276,7 +277,7 @@ class RegistryTest extends TestCase {
         $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addField(new RelativeField('*'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
@@ -285,7 +286,7 @@ class RegistryTest extends TestCase {
         $company = $result[0];
         $this->assertInstanceOf('\Core\Model\TestCompany', $company);
 
-        $companyArray = (new ModelConverter())->toArray($company, ['*']);
+        $companyArray = (new ModelConverter(self::getApplicationContext()))->toArray($company, ['*']);
 
         $this->assertSame($this->company, $companyArray);
         // TODO: improve test
@@ -301,7 +302,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('name'));
         $qryCtx->addField(new RelativeField('tva'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
@@ -328,7 +329,7 @@ class RegistryTest extends TestCase {
         $qryCtx = new FindQueryContext('TestCompany');
         $qryCtx->addField(new RelativeField('*'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $result = $registry->find($qryCtx);
 
         $this->assertInternalType('array', $result);
@@ -355,7 +356,7 @@ class RegistryTest extends TestCase {
 
         $expression = new BinaryExpression(new EqualOperator(), new KeyPath('tva'), new Value(17));
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $result = $registry->find($qryCtx);
         $dql = 'SELECT testCompany ' .
                'FROM \Core\Model\TestCompany testCompany ' .
@@ -366,7 +367,7 @@ class RegistryTest extends TestCase {
         $expression = new BinaryExpression(new EqualOperator(), $parameter, new KeyPath('tva'));
         $qryCtx->setParams(['tva' => 126]);
         $qryCtx->addFilter(new ExpressionFilter('TestCompany', 'myStringFilter', $expression));
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $result = $registry->find($qryCtx);
         $dql = 'SELECT testCompany ' .
                'FROM \Core\Model\TestCompany testCompany ' .
@@ -387,7 +388,7 @@ class RegistryTest extends TestCase {
         $qryCtx = new FindQueryContext('TestUser', $reqCtx);
         $qryCtx->addField($RelativeField);
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
         $dql = 'SELECT testUser ' .
@@ -409,7 +410,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('company.name'), 'companyName');
 
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
         $dql =
@@ -427,7 +428,7 @@ class RegistryTest extends TestCase {
     public function testFindWithoutFields () {
 
         $qryCtx = new FindQueryContext('TestCompany');
-        $this->appCtx->getNewRegistry()->find($qryCtx);
+        $this->getRegistry()->find($qryCtx);
 
     }
 
@@ -441,7 +442,7 @@ class RegistryTest extends TestCase {
         $reqCtx->method('getReturnedRootEntity')->willReturn('Qweee');
         $qryCtx->method('getReqCtx')->willReturn($reqCtx);
         $qryCtx->method('getEntity')->willReturn('Qwe');
-        $this->appCtx->getNewRegistry()->find($qryCtx);
+        $this->getRegistry()->find($qryCtx);
 
     }
 
@@ -456,7 +457,7 @@ class RegistryTest extends TestCase {
 
         $qryCtx->addField(new RelativeField('email'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
         $dql = 'SELECT testUser ' .
@@ -478,7 +479,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('company.users.name'));
         $qryCtx->addField(new RelativeField('company.users.email'));
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
         $registry->find($qryCtx);
 
         $dql = 'SELECT testUser, testUserCompany, testUserCompanyUsers ' .
@@ -513,7 +514,7 @@ class RegistryTest extends TestCase {
         $account->setCompany($company);
         $account->setCompanyStorage($storage);
 
-        $registry = $this->appCtx->getNewRegistry();
+        $registry = $this->getRegistry();
 
         $registry->save($account);
 
@@ -548,6 +549,9 @@ class RegistryTest extends TestCase {
 
     public function testRestrictedEntities () {
 
+        $userModuleManager = new ModuleManager();
+        $userModuleManager->load($this->getApplicationContext());
+
         $owner = new TestUser();
         $owner->setEmail('owner@company.com');
         $owner->setPassword('qwe');
@@ -570,7 +574,7 @@ class RegistryTest extends TestCase {
             $subUser->setCompany($company);
         }
 
-        $saveRegistry = $this->appCtx->getNewRegistry();
+        $saveRegistry = $this->getRegistry();
         $saveRegistry->save($owner);
 
         $reqCtx = new RequestContext();
@@ -582,8 +586,7 @@ class RegistryTest extends TestCase {
         $qryCtx->addField(new RelativeField('*'));
         $qryCtx->addField(new RelativeField('company.users.*'));
 
-        $findRegistry = $this->appCtx->getNewRegistry();
-        $result = $findRegistry->find($qryCtx);
+        $result = $qryCtx->findAll();
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);

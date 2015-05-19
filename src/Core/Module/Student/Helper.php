@@ -5,7 +5,7 @@ namespace Core\Module\Student;
 
 
 use Core\Context\ActionContext;
-use Core\Module\BasicHelper;
+use Core\Helper\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -17,7 +17,7 @@ class Helper extends BasicHelper {
 
         $studentInfo = $this->createRealModel('StudentInfo');
 
-        $this->basicSave($studentInfo, $params);
+        $this->basicSetValues($studentInfo, $params);
 
         $actCtx['studentInfo'] = $studentInfo;
 
@@ -32,7 +32,7 @@ class Helper extends BasicHelper {
 
         $this->checkRealModelType($studentInfo, 'StudentInfo');
 
-        $this->basicSave($studentInfo, $params);
+        $this->basicSetValues($studentInfo, $params);
 
         $actCtx['studentInfo'] = $studentInfo;
 

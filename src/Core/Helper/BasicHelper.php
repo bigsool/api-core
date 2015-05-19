@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module;
+namespace Core\Helper;
 
 
 use Core\Context\ApplicationContext;
@@ -10,6 +10,20 @@ use Core\Field\RelativeField;
 use Core\Filter\Filter;
 
 class BasicHelper {
+
+    /**
+     * @var ApplicationContext
+     */
+    protected $appCtx;
+
+    /**
+     * @param ApplicationContext $appCtx
+     */
+    public function __construct(ApplicationContext $appCtx) {
+
+        $this->appCtx = $appCtx;
+
+    }
 
     /**
      * @param string $modelName
@@ -25,13 +39,13 @@ class BasicHelper {
     }
 
     /**
-     * @param $modelName
+     * @param string $modelName
      *
      * @return string
      */
     public function getRealModelClassName ($modelName) {
 
-        return ApplicationContext::getInstance()->getNewRegistry()->realModelClassName($modelName);
+        return $this->appCtx->getRealModelClassName($modelName);
 
     }
 
@@ -51,19 +65,14 @@ class BasicHelper {
     /**
      * @param object $model
      * @param array  $params
-     * @param bool   $shouldSave
      *
      * @return object
      */
-    public function basicSave ($model, array $params, $shouldSave = true) {
+    public function basicSetValues ($model, array $params) {
 
         if (!is_object($model)) {
             throw new \RuntimeException('$model must be an object');
         }
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
 
         foreach ($params as $field => $param) {
             $method = 'set' . ucfirst($field);
@@ -71,10 +80,6 @@ class BasicHelper {
                 throw new \RuntimeException($callableName . ' is not callable');
             }
             $model->$method($param);
-        }
-
-        if ($shouldSave) {
-            $registry->save($model);
         }
 
         return $model;
@@ -101,7 +106,7 @@ class BasicHelper {
 
         $context->setParams($params);
 
-        return ApplicationContext::getInstance()->getNewRegistry()->find($context);
+        return $context->findAll();
 
     }
 

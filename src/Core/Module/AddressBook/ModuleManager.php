@@ -12,14 +12,14 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
         // TODO: Implement loadActions() method.
     }
 
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleFilters (ApplicationContext &$context) {
         // TODO: Implement loadFilters() method.
     }
 
@@ -35,7 +35,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadRules (ApplicationContext &$context) {
+    public function createRules (ApplicationContext &$context) {
         // TODO: Implement loadRules() method.
     }
 }

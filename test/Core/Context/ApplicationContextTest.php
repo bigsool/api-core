@@ -77,14 +77,6 @@ class ApplicationContextTest extends TestCase {
 
     }
 
-    public function testGetNewRegistry () {
-
-        $registry = $this->getApplicationContext()->getNewRegistry();
-
-        $this->assertInstanceOf('\Core\Registry', $registry);
-
-    }
-
     public function testGetClassMetadata () {
 
         $classMetadata = $this->getApplicationContext()->getClassMetadata('\Core\Model\TestCompany');

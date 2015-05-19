@@ -13,13 +13,13 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
+        $appCtx->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', [], [
             'knowsFrom' => [new Validation()]
         ]));
 
-        $appCtx->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', 'MarketingHelper', [], [
+        $appCtx->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', [], [
             'knowsFrom' => [new Validation(), true]
         ]));
 
@@ -28,7 +28,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleFilters (ApplicationContext &$context) {
         // TODO: Implement loadFilters() method.
     }
 
@@ -44,7 +44,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadRules (ApplicationContext &$context) {
+    public function createRules (ApplicationContext &$context) {
         // TODO: Implement loadRules() method.
     }
 

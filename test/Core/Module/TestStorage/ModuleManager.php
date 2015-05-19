@@ -9,41 +9,53 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Field\Field;
 use Core\Field\StarField;
+use Core\Filter\StringFilter;
+use Core\Module\GenericDbEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $appCtx
+     * {@inheritDoc}
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction(new BasicCreateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
-            'url' => [new StorageValidation()],
-        ], function (ActionContext $context) {
+        $testStorageModuleEntity = $this->getModuleEntity('TestStorage');
 
-            $context->setParam('login', uniqid('login'));
-            $context->setParam('password', uniqid('password'));
+        return [
+            new BasicCreateAction('Core\TestStorage', $testStorageModuleEntity, [], [
+                'url' => [new StorageValidation()],
+            ], function (ActionContext $context) {
 
-        }));
+                $context->setParam('login', uniqid('login'));
+                $context->setParam('password', uniqid('password'));
 
-        $appCtx->addAction(new BasicUpdateAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
-            'url' => [new StorageValidation()],
-        ]));
+            }),
+            new BasicUpdateAction('Core\TestStorage', $testStorageModuleEntity, [], [
+                'url' => [new StorageValidation()],
+            ]),
+            new BasicFindAction('Core\TestStorage', $testStorageModuleEntity, [], [
+            ])
 
-        $appCtx->addAction(new BasicFindAction('Core\TestStorage', 'testStorage', 'StorageFeatureHelper', NULL, [
-        ]));
+        ];
 
     }
 
     /**
-     * @param ApplicationContext $context
+     * {@inheritDoc}
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleEntities(ApplicationContext &$context) {
 
-        $context->addField(new StarField('TestStorage'));
-        $context->addField(new Field('TestStorage', 'id'));
-        $context->addField(new Field('TestStorage', 'url'));
+        $storageEntity = new GenericDbEntity($context, 'TestStorage', [
+                                                         new StringFilter('TestStorage', 'TestStorageForId', 'id = :id')
+                                                     ]
+        );
+
+        $storageEntity->setHelper(new Helper($context));
+
+        return [
+            $storageEntity
+        ];
 
     }
 
@@ -52,21 +64,7 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context, 'StorageFeatureHelper');
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRoutes (ApplicationContext &$context) {
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
+        //$this->addHelper($context, 'StorageFeatureHelper');
 
     }
 

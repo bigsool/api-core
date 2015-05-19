@@ -285,12 +285,12 @@ class TestStorage
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
             $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
             $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
             $qryContext->setParam("id",$this->getId());
-            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+            $qryContext->findAll();
         }
     
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
@@ -334,12 +334,12 @@ class TestStorage
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = \Core\Context\RequestContext::copyWithoutRequestedFields($this->findQueryContext->getReqCtx());
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
             $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("user")]);
             $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
             $qryContext->setParam("id",$this->getId());
-            \Core\Context\ApplicationContext::getInstance()->getNewRegistry()->find($qryContext);
+            $qryContext->findAll();
         }
     
         return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;

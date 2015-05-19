@@ -64,6 +64,14 @@ class RequestContext {
     protected $response;
 
     /**
+     */
+    public function __construct () {
+
+        $this->auth = new Auth();
+
+    }
+
+    /**
      * @param RequestContext $current
      *
      * @return RequestContext
@@ -88,25 +96,88 @@ class RequestContext {
     }
 
     /**
-     * @param RequestContext $current
-     *
-     * @return RequestContext
+     * @return string
      */
-    public static function copyWithoutRequestedFields (RequestContext $current) {
+    public function getLocale () {
 
-        $reqCtx = clone $current;
-        $reqCtx->setReturnedFields([]);
-        $reqCtx->setFormattedReturnedFields([]);
-
-        return $reqCtx;
+        return $this->locale;
 
     }
 
     /**
+     * @param string $locale
      */
-    public function __construct () {
+    public function setLocale ($locale) {
 
-        $this->auth = new Auth();
+        FormattedError::setLang($locale);
+        $this->locale = $locale;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientVersion () {
+
+        return $this->clientVersion;
+
+    }
+
+    /**
+     * @param string $clientVersion
+     */
+    public function setClientVersion ($clientVersion) {
+
+        $this->clientVersion = $clientVersion;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientName () {
+
+        return $this->clientName;
+
+    }
+
+    /**
+     * @param string $clientName
+     */
+    public function setClientName ($clientName) {
+
+        $this->clientName = $clientName;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getIpAddress () {
+
+        return $this->ipAddress;
+
+    }
+
+    /**
+     * @param string $ipAddress
+     */
+    public function setIpAddress ($ipAddress) {
+
+        $this->ipAddress = (string)$ipAddress;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function copyWithoutRequestedFields () {
+
+        $reqCtx = clone $this;
+        $reqCtx->setReturnedFields([]);
+        $reqCtx->setFormattedReturnedFields([]);
+
+        return $reqCtx;
 
     }
 
@@ -195,6 +266,19 @@ class RequestContext {
     }
 
     /**
+     * @param RelativeField $formattedReturnedField
+     *
+     * @throws FormattedError
+     */
+    public function addFormattedReturnedField (RelativeField $formattedReturnedField) {
+
+        $this->verifyFields([$formattedReturnedField]);
+
+        $this->formattedReturnedFields[] = $formattedReturnedField;
+
+    }
+
+    /**
      * @param array $returnedFields
      *
      * @throws FormattedError
@@ -216,57 +300,15 @@ class RequestContext {
     }
 
     /**
-     * @return string
+     * @param RelativeField $returnedField
+     *
+     * @throws FormattedError
      */
-    public function getClientName () {
+    public function addReturnedField (RelativeField $returnedField) {
 
-        return $this->clientName;
+        $this->verifyFields([$returnedField]);
 
-    }
-
-    /**
-     * @param string $clientName
-     */
-    public function setClientName ($clientName) {
-
-        $this->clientName = $clientName;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getClientVersion () {
-
-        return $this->clientVersion;
-
-    }
-
-    /**
-     * @param string $clientVersion
-     */
-    public function setClientVersion ($clientVersion) {
-
-        $this->clientVersion = $clientVersion;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocale () {
-
-        return $this->locale;
-
-    }
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale ($locale) {
-
-        FormattedError::setLang($locale);
-        $this->locale = $locale;
+        $this->returnedFields[] = $returnedField;
 
     }
 
@@ -306,6 +348,15 @@ class RequestContext {
     }
 
     /**
+     * @return ApplicationContext
+     */
+    public function getApplicationContext () {
+
+        return ApplicationContext::getInstance();
+
+    }
+
+    /**
      * @return Auth
      */
     public function getAuth () {
@@ -331,42 +382,6 @@ class RequestContext {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getIpAddress () {
-
-        return $this->ipAddress;
-
-    }
-
-    /**
-     * @param string $ipAddress
-     */
-    public function setIpAddress ($ipAddress) {
-
-        $this->ipAddress = (string)$ipAddress;
-
-    }
-
-    /**
-     * @return HighLevelFindQueryContext
-     */
-    public function createHighLevelFindQueryContext() {
-
-        return new HighLevelFindQueryContext($this);
-
-    }
-
-    /**
-     * @return ApplicationContext
-     */
-    public function getApplicationContext() {
-
-        return ApplicationContext::getInstance();
 
     }
 

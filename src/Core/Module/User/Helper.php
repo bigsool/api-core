@@ -8,8 +8,8 @@ use Core\Context\ActionContext;
 use Core\Context\FindQueryContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Helper\BasicHelper;
 use Core\Model\User;
-use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -26,7 +26,7 @@ class Helper extends BasicHelper {
          */
         $user->setCreationDate(new \DateTime());
 
-        $this->basicSave($user, $params);
+        $this->basicSetValues($user, $params);
 
         $actCtx['user'] = $user;
 
@@ -41,7 +41,7 @@ class Helper extends BasicHelper {
 
         $this->checkRealModelType($user, 'User');
 
-        $this->basicSave($user, $params);
+        $this->basicSetValues($user, $params);
 
         $actCtx['user'] = $user;
 

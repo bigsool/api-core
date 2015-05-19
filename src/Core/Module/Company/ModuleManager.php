@@ -8,36 +8,38 @@ use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ApplicationContext;
 use Core\Filter\StringFilter;
+use Core\Module\GenericDbEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $appCtx
+     * {@inheritDoc}
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction(new BasicCreateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
-            'name' => [new Validation()],
-            'vat'  => [new Validation()],
-        ]));
-
-        $appCtx->addAction(new BasicUpdateAction('Core\Company', 'company', 'CompanyHelper', NULL, [
-            'name' => [new Validation(), true],
-            'vat'  => [new Validation(), true],
-        ]));
-
-        $appCtx->addAction(new BasicFindAction('Core\Company', 'company', 'CompanyHelper', NULL, [
-        ]));
+        return [
+            new BasicCreateAction('Core\Company', $this->getModuleEntity('Company'), NULL, [
+                'name' => [new Validation()],
+                'vat'  => [new Validation()],
+            ]),
+            new BasicUpdateAction('Core\Company', $this->getModuleEntity('Company'), NULL, [
+                'name' => [new Validation(), true],
+                'vat'  => [new Validation(), true],
+            ]),
+            new BasicFindAction('Core\Company', $this->getModuleEntity('Company'), NULL, []),
+        ];
 
     }
 
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleEntities (ApplicationContext &$context) {
 
-        $context->addFilter(new StringFilter('Company', 'CompanyForId', 'id = :id'));
+        return [
+            new GenericDbEntity($context, 'Company', [
+                                            new StringFilter('Company', 'filterById', 'id = :id')
+                                        ]
+            )
+        ];
 
     }
 
@@ -46,15 +48,9 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function loadHelpers (ApplicationContext &$context) {
 
-        $this->addHelper($context, 'CompanyHelper');
+        // TODO
+        // $this->addHelper($context, 'CompanyHelper');
 
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
-        // TODO: Implement loadRules() method.
     }
 
 }

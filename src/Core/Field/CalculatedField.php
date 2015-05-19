@@ -4,6 +4,7 @@
 namespace Core\Field;
 
 
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
@@ -16,11 +17,6 @@ class CalculatedField implements ResolvableField {
     use Resolver {
         Resolver::resolve as protected _resolve;
     }
-
-    /**
-     * @var array[][]
-     */
-    protected static $calculatedFields = [];
 
     /**
      * @var bool
@@ -43,68 +39,46 @@ class CalculatedField implements ResolvableField {
     protected $useLeftJoin;
 
     /**
-     * @param string $value
+     * @var callable
      */
-    public function __construct ($value) {
-
-        if (!AbstractKeyPath::isValidKeyPath($value)) {
-            throw new \RuntimeException('invalid KeyPath');
-        }
-
-        $this->value = $value;
-
-    }
+    protected $function;
 
     /**
-     * @param string   $entity
-     * @param string   $field
+     * @var array
+     */
+    protected $requiredFields;
+
+    /**
      * @param callable $function
      * @param array    $requiredFields
-     * @param boolean  $useLeftJoin
+     * @param bool     $useLeftJoin
      */
-    public static function create ($entity, $field, callable $function, array $requiredFields = [],
-                                   $useLeftJoin = false) {
+    public function __construct (callable $function, array $requiredFields = [],
+                                 $useLeftJoin = false) {
 
-        static::$calculatedFields[$entity][$field] = [$function, $requiredFields, !!$useLeftJoin];
-
-    }
-
-    /**
-     * @param mixed $entity
-     *
-     * @return string[]
-     */
-    public static function getCalculatedField ($entity) {
-
-        return isset(static::$calculatedFields[$entity]) ? array_keys(static::$calculatedFields[$entity]) : [];
+        $this->function = $function;
+        $this->requiredFields = $requiredFields;
+        $this->useLeftJoin = $useLeftJoin;
 
     }
 
     /**
      * @param mixed  $model
-     * @param string $field
      *
      * @return mixed
      */
-    public static function execute (&$model, $field) {
+    public function execute (&$model) {
 
-        $class = get_class($model);
-        $entity = ($pos = strrpos($class, '\\')) ? substr($class, $pos + 1) : $class;
-
-        if (!isset(static::$calculatedFields[$entity][$field])) {
-            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
-        }
-        list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
-
-        $data = (new ModelConverter())->toArray($model, $requiredFields);
+        $data = (new ModelConverter(ApplicationContext::getInstance()))->toArray($model, $this->requiredFields);
 
         $params = [];
-        foreach ($requiredFields as $requiredField) {
+        foreach ($this->requiredFields as $requiredField) {
             $params[] = ArrayExtra::magicalGet($data, $requiredField);
         }
+
         // Call $callable only with requiredFields
         // TODO: handle alias ?
-        return call_user_func_array($callable, $params);
+        return call_user_func_array($this->function, $params);
 
     }
 
@@ -162,6 +136,18 @@ class CalculatedField implements ResolvableField {
     }
 
     /**
+     * @param string $value
+     */
+    public function setValue ($value) {
+
+        if (!AbstractKeyPath::isValidKeyPath($value)) {
+            throw new \RuntimeException('invalid KeyPath');
+        }
+
+        $this->value = $value;
+    }
+
+    /**
      * @param ResolvableField $field
      *
      * @return bool
@@ -199,51 +185,16 @@ class CalculatedField implements ResolvableField {
         $this->process($ctx);
         $this->shouldThrowExceptionIfFieldNotFound = true;
 
-        $entity = $this->getResolvedEntity();
-        $field = $this->getValue();
-
-        if (!isset(static::$calculatedFields[$entity][$field])) {
-            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
-        }
-
-        list(, $requiredFields, $useLeftJoin) = static::$calculatedFields[$entity][$field];
-
         $fields = [];
 
-        foreach ($requiredFields as $requiredField) {
+        foreach ( $this->requiredFields as $requiredField) {
 
             $fields[] = $field = new RealField($requiredField);
-            $field->setUseLeftJoin($useLeftJoin);
+            $field->setUseLeftJoin($this->useLeftJoin);
 
         }
 
         return $fields;
-
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return mixed
-     */
-    public function exec (array &$data) {
-
-        $entity = $this->getResolvedEntity();
-        $field = $this->getValue();
-
-        if (!isset(static::$calculatedFields[$entity][$field])) {
-            throw new \RuntimeException("Calculated field {$entity}.{$field} not found");
-        }
-
-        list($callable, $requiredFields) = static::$calculatedFields[$entity][$field];
-
-        $params = [];
-        foreach ($requiredFields as $requiredField) {
-            $params[] = ArrayExtra::magicalGet($data, $requiredField);
-        }
-        // Call $callable only with requiredFields
-        // TODO: handle alias ?
-        return $data[$field] = call_user_func_array($callable, $params);
 
     }
 

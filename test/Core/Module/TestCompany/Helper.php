@@ -9,8 +9,8 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Helper\BasicHelper;
 use Core\Model\TestCompany;
-use Core\Module\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -22,7 +22,7 @@ class Helper extends BasicHelper {
 
         $company = new TestCompany();
 
-        $this->basicSave($company, $params);
+        $this->basicSetValues($company, $params);
 
         $actCtx['testCompany'] = $company;
 
@@ -35,7 +35,7 @@ class Helper extends BasicHelper {
      */
     public function updateTestCompany (ActionContext $actCtx, TestCompany $company, array $params) {
 
-        $this->basicSave($company, $params);
+        $this->basicSetValues($company, $params);
 
         $actCtx['testCompany'] = $company;
 

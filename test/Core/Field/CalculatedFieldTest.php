@@ -5,25 +5,20 @@ namespace Core\Field;
 
 
 use Core\Context\FindQueryContext;
+use Core\Model\TestUser;
 use Core\TestCase;
 
 class CalculatedFieldTest extends TestCase {
 
-    public static function tearDownAfterClass () {
-
-        $refPropCalculatedFields = new \ReflectionProperty('\Core\Field\CalculatedField', 'calculatedFields');
-        $refPropCalculatedFields->setAccessible(true);
-        $refPropCalculatedFields->setValue([]);
-
-    }
-
     public static function setUpBeforeClass () {
 
-        CalculatedField::create('TestUser', 'fullName', function () {
+        $appCtx = self::getApplicationContext();
+
+        $appCtx->addCalculatedField('TestUser', 'fullName', new CalculatedField(function () {
 
             return json_encode(func_get_args());
 
-        }, ['name', 'lastName']);
+        }, ['name', 'firstname']));
 
     }
 
@@ -32,7 +27,7 @@ class CalculatedFieldTest extends TestCase {
      */
     public function testInvalidKeyPath () {
 
-        new CalculatedField('qweé"\'é" -"');
+        (new CalculatedField($this->getCallable()))->setValue('qweé"\'é" -"');
 
     }
 
@@ -41,34 +36,22 @@ class CalculatedFieldTest extends TestCase {
      */
     public function testCalculatedFieldNotFound () {
 
-        $calculatedField = new CalculatedField('qwe');
+        $calculatedField = new CalculatedField($this->getCallable());
         $arr = [];
-        $calculatedField->exec($arr);
+        $calculatedField->execute($arr);
 
     }
 
     public function testShouldResolveForAWhere () {
 
-        $this->assertFalse((new CalculatedField('qwe'))->shouldResolveForAWhere());
-
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testCalculatedFieldNotFoundInExec () {
-
-        $calculatedField = new CalculatedField('qwe');
-        $ctx = new FindQueryContext('testUser');
-        $registry = $this->getRegistry();
-        $calculatedField->getFinalFields($registry, $ctx);
+        $this->assertFalse((new CalculatedField($this->getCallable()))->shouldResolveForAWhere());
 
     }
 
     public function testAlias () {
 
         $alias = 'alias';
-        $field = new CalculatedField('qwe');
+        $field = new CalculatedField($this->getCallable());
         $field->setAlias($alias);
         $this->assertSame($alias, $field->getAlias());
 
@@ -77,20 +60,21 @@ class CalculatedFieldTest extends TestCase {
     public function testValue () {
 
         $value = 'value';
-        $field = new CalculatedField($value);
+        $field = new CalculatedField($this->getCallable());
+        $field->setValue($value);
         $this->assertSame($value, $field->getValue());
 
     }
 
     public function testGetFinalFields () {
 
-        CalculatedField::create('TestUser', 'fullName2', function () {
+        $calculatedField = new CalculatedField(function () {
 
             return json_encode(func_get_args());
 
         }, ['name', 'lastName']);
+        $this->getApplicationContext()->addCalculatedField('TestUser', 'fullName2', $calculatedField);
 
-        $calculatedField = new CalculatedField('fullName2');
         $ctx = new FindQueryContext('testUser');
         $registry = $this->getRegistry();
         $fields = $calculatedField->getFinalFields($registry, $ctx);
@@ -118,22 +102,25 @@ class CalculatedFieldTest extends TestCase {
 
     public function testResolve () {
 
-        $calculatedField = new CalculatedField('fullName');
-        $ctx = new FindQueryContext('testUser');
+        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser','fullName');
+        $ctx = new FindQueryContext('TestUser');
         $registry = $this->getRegistry();
         $fields = $calculatedField->resolve($registry, $ctx);
         $this->assertCount(0, $fields);
 
     }
 
-    public function testExec () {
+    public function testExecute () {
 
-        $calculatedField = new CalculatedField('fullName');
-        $ctx = new FindQueryContext('testUser');
+        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser','fullName');
+        $ctx = new FindQueryContext('TestUser');
         $registry = $this->getRegistry();
         $calculatedField->resolve($registry, $ctx);
-        $data = ['name' => 'my name', 'lastName' => 'my lastName'];
-        $this->assertSame(json_encode(array_values($data)), $calculatedField->exec($data));
+        $data = ['name' => 'my name', 'firstname' => 'my firstname'];
+        $user = new TestUser();
+        $user->setName('my name');
+        $user->setFirstname('my firstname');
+        $this->assertSame(json_encode(array_values($data)), $calculatedField->execute($user));
 
     }
 

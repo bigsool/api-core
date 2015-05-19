@@ -4,20 +4,55 @@
 namespace Core\Module;
 
 
+use Core\Action\Action;
 use Core\Context\ApplicationContext;
+use Core\Filter\Filter;
+use Core\Rule\Rule;
 
 abstract class ModuleManager {
+
+    /**
+     * @var ModuleEntity[]
+     */
+    protected $moduleEntities = [];
 
     /**
      * @param ApplicationContext $context
      */
     public function load (ApplicationContext &$context) {
 
-        $this->loadFilters($context);
-        $this->loadRules($context);
-        $this->loadActions($context);
-        $this->loadHelpers($context);
-        $this->loadFields($context);
+        $context->addModuleManager($this);
+
+        foreach ($this->createModuleEntities($context) as $moduleEntity) {
+            $this->moduleEntities[$moduleEntity->getEntityName()] = $moduleEntity;
+            $context->addModuleEntity($moduleEntity);
+        }
+
+        foreach ($this->moduleEntities as $moduleEntity) {
+
+            foreach ($moduleEntity->getFilters() as $filter) {
+                $context->addFilter($filter);
+            }
+
+            $entityName = $moduleEntity->getEntityName();
+
+            foreach ($moduleEntity->getCalculatedFieldCallbacks() as $fieldName => $callback) {
+                $context->addCalculatedField($entityName, $fieldName, $callback);
+            }
+
+        }
+
+        foreach ($this->createModuleFilters($context) as $filter) {
+            $context->addFilter($filter);
+        }
+
+        foreach ($this->createRules($context) as $rule) {
+            $context->addRule($rule);
+        }
+
+        foreach ($this->createActions($context) as $action) {
+            $context->addAction($action);
+        }
 
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
@@ -33,38 +68,60 @@ abstract class ModuleManager {
 
     /**
      * @param ApplicationContext $context
+     *
+     * @return ModuleEntity[]
      */
-    public abstract function loadFilters (ApplicationContext &$context);
+    public function createModuleEntities (ApplicationContext &$context) {
 
-    /**
-     * @param ApplicationContext $context
-     */
-    public abstract function loadRules (ApplicationContext &$context);
-
-    /**
-     * @param ApplicationContext $appCtx
-     */
-    public abstract function loadActions (ApplicationContext &$appCtx);
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public abstract function loadHelpers (ApplicationContext &$context);
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadFields (ApplicationContext &$context) {
+        return [];
 
     }
 
-    public function addHelper (ApplicationContext &$context, $helperName) {
+    /**
+     * @param ApplicationContext $context
+     *
+     * @return Filter[]
+     */
+    public function createModuleFilters (ApplicationContext &$context) {
 
-        $namespace = (new \ReflectionClass($this))->getNamespaceName();
+        return [];
 
-        $helper = $namespace . '\\Helper';
+    }
 
-        $context->addHelper($this->getActionModuleName(), $helperName, new $helper());
+    /**
+     * @param ApplicationContext $context
+     *
+     * @return Rule[]
+     */
+    public function createRules (ApplicationContext &$context) {
+
+        return [];
+
+    }
+
+    /**
+     * @param ApplicationContext $context
+     *
+     * @return Action[]
+     */
+    public function createActions (ApplicationContext &$context) {
+
+        return [];
+
+    }
+
+    /**
+     * @param $entityName
+     *
+     * @return ModuleEntity
+     */
+    public function getModuleEntity ($entityName) {
+
+        if (!isset($this->moduleEntities[$entityName])) {
+            throw new \RuntimeException(sprintf('ModuleEntity %s not found', $entityName));
+        }
+
+        return $this->moduleEntities[$entityName];
 
     }
 

@@ -24,6 +24,7 @@ use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
+use Core\Module\ModuleManager;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
 use Core\Rule\Processor;
@@ -96,12 +97,47 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @param string $entity
+     *
+     * @return Registry
+     */
+    public static function getRegistry ($entity = NULL) {
+
+        $refMeth = new \ReflectionMethod(self::getApplicationContext(), 'getNewRegistry');
+        $refMeth->setAccessible(true);
+        $registry = $refMeth->invoke(self::getApplicationContext());
+        $refMeth->setAccessible(false);
+
+        if (isset($entity)) {
+            $meth = new \ReflectionMethod($registry, 'addAliasForEntity');
+            $meth->setAccessible(true);
+            $meth->invokeArgs($registry, [$entity, lcfirst($entity)]);
+        }
+
+        return $registry;
+
+    }
+
+    /**
      * @return ErrorManager
      */
     public function getMockErrorManager () {
 
         return $this->getMockBuilder('\Core\Error\ErrorManager')
                     ->disableOriginalConstructor()
+                    ->getMockForAbstractClass();
+
+    }
+
+    /**
+     * @param array $methods
+     *
+     * @return ModuleManager
+     */
+    public function getMockModuleManager (array $methods = []) {
+
+        return $this->getMockBuilder('\Core\Module\ModuleManager')
+                    ->setMethods($methods)
                     ->getMockForAbstractClass();
 
     }
@@ -243,11 +279,85 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockRequestContext () {
 
         $requestContext = $this->getMockBuilder('\Core\Context\RequestContext')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+                               ->disableOriginalConstructor()
+                               ->getMock();
 
         $requestContext->method('getApplicationContext')->willReturn($this->getApplicationContext());
+
         return $requestContext;
+
+    }
+
+    /**
+     * @param mixed $conn
+     *
+     * @return ApplicationContext
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public static function getApplicationContext ($conn = NULL) {
+
+        $instanceProperty = (new \ReflectionClass('\Core\Context\ApplicationContext'))->getProperty('instance');
+        $instanceProperty->setAccessible(true);
+        $instance = $instanceProperty->getValue(NULL);
+        $instanceProperty->setAccessible(false);
+
+        if (!$instance) {
+
+            $config =
+                Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true, __DIR__ . '/../proxy',
+                                                       new ArrayCache());
+            $config->addCustomHydrationMode('RestrictedObjectHydrator',
+                                            'Core\Doctrine\Hydrator\RestrictedObjectHydrator');
+            $config->addCustomHydrationMode('ArrayIdHydrator', 'Core\Doctrine\Hydrator\ArrayIdHydrator');
+            $config->setSQLLogger(new DebugStack());
+            $tmpDB = __DIR__ . '/../test.archiweb-proto.db.sqlite';
+
+            if ($conn == NULL) {
+                $conn = array(
+                    'driver' => 'pdo_sqlite',
+                    'path'   => $tmpDB,
+                );
+            }
+            $em = EntityManager::create($conn, $config);
+            self::generateEntities($em);
+            $em->getConnection()->query('PRAGMA foreign_keys = ON');
+
+            $appProperty = (new \ReflectionClass('\Core\Application'))->getProperty('instance');
+            $appProperty->setAccessible(true);
+            $appProperty->setValue(NULL);
+            $appProperty->setAccessible(false);
+            $app = Application::getInstance();
+            $ctx = ApplicationContext::getInstance();
+            $ctx->setApplication($app);
+            $ruleMgr = new Processor();
+            $ctx->setRuleProcessor($ruleMgr);
+            $ctx->setEntityManager($em);
+
+            //require __DIR__ . '/../../config/errors.php';
+
+        }
+
+        return ApplicationContext::getInstance();
+
+    }
+
+    public static function generateEntities (EntityManager $em) {
+
+        $cmf = new DisconnectedClassMetadataFactory();
+        $cmf->setEntityManager($em);
+
+        foreach ($cmf->getAllMetadata() as $metadata) {
+
+            $generator = new EntityGenerator();
+            $generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
+            $generator->setBackupExisting(false);
+            $generator->setGenerateAnnotations(true);
+            $generator->setGenerateStubMethods(true);
+            $generator->setRegenerateEntityIfExists(true);
+            $generator->setUpdateEntityIfExists(true);
+            $generator->generate(array($metadata), __DIR__ . '/..');
+
+        }
 
     }
 
@@ -457,98 +567,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getSaveQueryContext ($model) {
 
         return new SaveQueryContext($model);
-
-    }
-
-    /**
-     * @param string $entity
-     *
-     * @return Registry
-     */
-    public function getRegistry ($entity = NULL) {
-
-        $registry = $this->getApplicationContext()->getNewRegistry();
-
-        if (isset($entity)) {
-            $meth = new \ReflectionMethod($registry, 'addAliasForEntity');
-            $meth->setAccessible(true);
-            $meth->invokeArgs($registry, [$entity, lcfirst($entity)]);
-        }
-
-        return $registry;
-
-    }
-
-    /**
-     * @param mixed $conn
-     *
-     * @return ApplicationContext
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public static function getApplicationContext ($conn = NULL) {
-
-        $instanceProperty = (new \ReflectionClass('\Core\Context\ApplicationContext'))->getProperty('instance');
-        $instanceProperty->setAccessible(true);
-        $instance = $instanceProperty->getValue(NULL);
-        $instanceProperty->setAccessible(false);
-
-        if (!$instance) {
-
-            $config =
-                Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true, __DIR__ . '/../proxy',
-                                                       new ArrayCache());
-            $config->addCustomHydrationMode('RestrictedObjectHydrator',
-                                            'Core\Doctrine\Hydrator\RestrictedObjectHydrator');
-            $config->addCustomHydrationMode('ArrayIdHydrator', 'Core\Doctrine\Hydrator\ArrayIdHydrator');
-            $config->setSQLLogger(new DebugStack());
-            $tmpDB = __DIR__ . '/../test.archiweb-proto.db.sqlite';
-
-            if ($conn == NULL) {
-                $conn = array(
-                    'driver' => 'pdo_sqlite',
-                    'path'   => $tmpDB,
-                );
-            }
-            $em = EntityManager::create($conn, $config);
-            self::generateEntities($em);
-            $em->getConnection()->query('PRAGMA foreign_keys = ON');
-
-            $appProperty = (new \ReflectionClass('\Core\Application'))->getProperty('instance');
-            $appProperty->setAccessible(true);
-            $appProperty->setValue(NULL);
-            $appProperty->setAccessible(false);
-            $app = Application::getInstance();
-            $ctx = ApplicationContext::getInstance();
-            $ctx->setApplication($app);
-            $ruleMgr = new Processor();
-            $ctx->setRuleProcessor($ruleMgr);
-            $ctx->setEntityManager($em);
-
-            //require __DIR__ . '/../../config/errors.php';
-
-        }
-
-        return ApplicationContext::getInstance();
-
-    }
-
-    public static function generateEntities (EntityManager $em) {
-
-        $cmf = new DisconnectedClassMetadataFactory();
-        $cmf->setEntityManager($em);
-
-        foreach ($cmf->getAllMetadata() as $metadata) {
-
-            $generator = new EntityGenerator();
-            $generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
-            $generator->setBackupExisting(false);
-            $generator->setGenerateAnnotations(true);
-            $generator->setGenerateStubMethods(true);
-            $generator->setRegenerateEntityIfExists(true);
-            $generator->setUpdateEntityIfExists(true);
-            $generator->generate(array($metadata), __DIR__ . '/..');
-
-        }
 
     }
 

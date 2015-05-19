@@ -4,19 +4,28 @@ namespace Core\Action;
 
 
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
+use Core\Helper\BasicHelper;
+use Core\Module\ModuleEntity;
 use Core\Validation\Parameter\Int;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\RuntimeConstraintsProvider;
 
 class BasicUpdateAction extends SimpleAction {
 
-    public function __construct ($module, $model, $helperName, $minRights, array $params,
-                                 callable $preUpdateCallable = NULL, callable $postUpdateCallable = NULL) {
+    /**
+     * @param string           $module
+     * @param ModuleEntity     $moduleEntity
+     * @param string|\string[] $minRights
+     * @param array            $params
+     * @param callable         $preUpdateCallable
+     * @param callable         $postUpdateCallable
+     */
+    public function __construct ($module, ModuleEntity $moduleEntity, $minRights, array $params,
+                                 callable $preUpdateCallable = NULL,
+                                 callable $postUpdateCallable = NULL) {
 
         if (!$preUpdateCallable) {
             $preUpdateCallable = function () {
@@ -32,41 +41,35 @@ class BasicUpdateAction extends SimpleAction {
             array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [new NotBlank(), new Int()]])]]);
 
         parent::__construct($module, 'update', $minRights, $params,
-            function (ActionContext $context) use (&$model, &$helperName, &$preUpdateCallable, &$postUpdateCallable) {
+            function (ActionContext $context, BasicUpdateAction $action) use (
+                &$moduleEntity, &$helperName, &$preUpdateCallable, &$postUpdateCallable
+            ) {
 
-                $preUpdateCallable($context);
+                $preUpdateCallable($context, $action);
 
                 $params = $context->getVerifiedParams();
 
-                $reqCtx = new RequestContext();
-                $reqCtx->setAuth($context->getRequestContext()->getAuth());
+                $reqCtx = $context->getRequestContext()->copyWithoutRequestedFields();
 
-                $model = ucfirst($model);
+                $entityName = $moduleEntity->getEntityName();
 
-                $qryCtx = new FindQueryContext($model, $reqCtx);
+                $moduleEntity = ucfirst($moduleEntity);
+
+                $qryCtx = new FindQueryContext($entityName, $reqCtx);
                 $qryCtx->addField(new RelativeField('*'));
-                $qryCtx->addFilter(new StringFilter($model, '', 'id = :id'));
+                $qryCtx->addFilter(new StringFilter($moduleEntity, '', 'id = :id'));
                 $qryCtx->setParams(['id' => $params['id']]);
 
-                $helper = ApplicationContext::getInstance()->getHelper($this, $helperName);
-                $entities = ApplicationContext::getInstance()->getNewRegistry()->find($qryCtx);
-
-                if (count($entities) != 1) {
-                    throw new \RuntimeException('more or less than one entity found');
-                }
-
-                $method = 'update' . $model;
-                if (!is_callable([$helper, $method], false, $callableName)) {
-                    throw new \RuntimeException($callableName . ' is not callable');
-                }
+                $context[lcfirst($entityName)] = $entity = $qryCtx->findOne();
 
                 unset($params['id']);
 
-                $helper->$method($context, $entities[0], $params);
+                $helper = new BasicHelper($context->getApplicationContext());
+                $helper->basicSetValues($entity, $params);
 
-                $postUpdateCallable($context);
+                $postUpdateCallable($context, $action, $entity);
 
-                return $context[lcfirst($model)];
+                return $entity;
 
             });
 

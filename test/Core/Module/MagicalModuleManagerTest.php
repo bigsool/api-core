@@ -369,9 +369,9 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = ApplicationContext::getInstance();
         // TODO : //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
+        $userModuleManager->createActions($appCtx);
         $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
+        $companyModuleManager->createActions($appCtx);
         $companyModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
@@ -614,8 +614,9 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = ApplicationContext::getInstance();
         // TODO : //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => 'qwe@qwe1.com',
@@ -623,12 +624,12 @@ class MagicalModuleManagerTest extends TestCase {
             ]);
 
         /**
-         * @var User $user
+         * @var TestUser $user
          */
         $user = $this->magicalAction('Create', $mgr, [$actionContext]);
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe1.com', $user->getEmail());
-        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertTrue(UserHelper::verifyPassword('qwe', $user->getPassword()));
 
     }
 
@@ -691,12 +692,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = ApplicationContext::getInstance();
         ////$appCtx->setProduct('Core');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
@@ -719,7 +723,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
-        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertTrue(UserHelper::verifyPassword('qwe', $user->getPassword()));
         $this->assertSame('bigsool', $user->getUnrestrictedCompany()->getName());
         $this->assertContainsOnly($user, $user->getUnrestrictedCompany()->getUnrestrictedUsers());
 
@@ -775,12 +779,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = ApplicationContext::getInstance();
         // TODO : //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             ['email'    => 'thomas@bigsool.com',
@@ -834,12 +841,12 @@ class MagicalModuleManagerTest extends TestCase {
 
         $user->setOwnedCompany($user->getUnrestrictedCompany());
         $user->getUnrestrictedCompany()->setOwner($user);
-        ApplicationContext::getInstance()->getNewRegistry()->save($user);
+        $this->getRegistry()->save($user);
 
         $this->assertTrue($called);
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('thomas@bigsool.com', $user->getEmail());
-        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertTrue(UserHelper::verifyPassword('qwe', $user->getPassword()));
         $this->assertSame('bigsool', $user->getUnrestrictedCompany()->getName());
         $this->assertContainsOnly($user, $user->getUnrestrictedCompany()->getUnrestrictedUsers());
 
@@ -863,8 +870,9 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //$appCtx->setProduct('Core');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             ['id'        => 1,
@@ -928,12 +936,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
 
         $actionContext = $this->getActionContextWithParams(
@@ -1017,12 +1028,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $self = $this;
         $called = false;
@@ -1105,12 +1119,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
 
         $filters =
@@ -1161,12 +1178,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
 
         $filters =
@@ -1194,6 +1214,11 @@ class MagicalModuleManagerTest extends TestCase {
      */
     public function testMagicalDeleteOneToOne () {
 
+        $appCtx = $this->getApplicationContext();
+
+        $userModuleManager = new UserModuleManager();
+        $userModuleManager->load($appCtx);
+
         $filters = [new StringFilter('TestUser', 'bla', 'id = 2')];
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
@@ -1205,20 +1230,15 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->magicalAction('Delete', $mgrUser, [$filters]);
 
-        $userModuleManager = new UserModuleManager();
-
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
         $mgrUser->method('getModuleName')->willReturn('TestAccount');
 
         $this->setMainEntity($mgrUser, [
             'model' => 'TestUser',
         ]);
-
-        $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
-
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], $filters, [], true]);
 
@@ -1233,8 +1253,9 @@ class MagicalModuleManagerTest extends TestCase {
             'model' => 'TestCompany',
         ]);
 
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
 
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
@@ -1247,6 +1268,13 @@ class MagicalModuleManagerTest extends TestCase {
 
     public function testMagicalDeleteOneToMany () {
 
+        $appCtx = $this->getApplicationContext();
+        //TODO : $appCtx->setProduct('Archipad');
+
+        $userModuleManager = new UserModuleManager();
+
+        $userModuleManager->load($appCtx);
+
         $filters = [new StringFilter('TestUser', 'bla', 'id = 3')];
 
         $mgrUser = $this->getMockMagicalModuleManager(['getModuleName']);
@@ -1257,13 +1285,8 @@ class MagicalModuleManagerTest extends TestCase {
         ]);
 
         $this->magicalAction('Delete', $mgrUser, [$filters]);
-
-        $appCtx = $this->getApplicationContext();
-        //TODO : $appCtx->setProduct('Archipad');
-
-        $userModuleManager = new UserModuleManager();
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
 
         $result = $this->magicalAction('Find', $mgrUser, [new RequestContext(), ['user.*'], $filters, [], true]);
 
@@ -1278,8 +1301,9 @@ class MagicalModuleManagerTest extends TestCase {
             'model' => 'TestCompany',
         ]);
 
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
 
         $filters = [new StringFilter('TestCompany', 'bla', 'id = 1')];
 
@@ -1355,7 +1379,7 @@ class MagicalModuleManagerTest extends TestCase {
         self::$company1->addUser(self::$user2);
         self::$company1->addUser(self::$user3);
 
-        $registry = self::getApplicationContext()->getNewRegistry();
+        $registry = self::getRegistry();
         $registry->save(self::$user1);
         $registry->save(self::$user2);
         $registry->save(self::$user3);
@@ -1448,12 +1472,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
@@ -1734,12 +1761,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
@@ -1833,12 +1863,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = ApplicationContext::getInstance();
         //$appCtx->setProduct('Core');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $actionContext = $this->getActionContextWithParams(
             [
@@ -1859,7 +1892,7 @@ class MagicalModuleManagerTest extends TestCase {
 
         $this->assertInstanceOf(Registry::realModelClassName('TestUser'), $user);
         $this->assertSame('qwe@qwe2.com', $user->getEmail());
-        $this->assertSame(UserHelper::encryptPassword($user->getSalt(), 'qwe'), $user->getPassword());
+        $this->assertTrue(UserHelper::verifyPassword('qwe', $user->getPassword()));
         $this->assertSame('bigsoolee', $user->getUnrestrictedCompany()->getName());
         $this->assertSame('http://storage.fr', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUrl());
         $this->assertSame('123', $user->getUnrestrictedCompany()->getUnrestrictedStorage()->getUsedSpace());
@@ -1906,12 +1939,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
 
         $filters =
@@ -2014,12 +2050,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
 
         $filters =
@@ -2054,12 +2093,15 @@ class MagicalModuleManagerTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         //TODO : $appCtx->setProduct('Archipad');
 
-        $userModuleManager->loadActions($appCtx);
-        $userModuleManager->loadHelpers($appCtx);
-        $companyModuleManager->loadActions($appCtx);
-        $companyModuleManager->loadHelpers($appCtx);
-        $storageModuleManager->loadActions($appCtx);
-        $storageModuleManager->loadHelpers($appCtx);
+        $userModuleManager->load($appCtx);
+        //$userModuleManager->createActions($appCtx);
+        //$userModuleManager->loadHelpers($appCtx);
+        $companyModuleManager->load($appCtx);
+        //$companyModuleManager->createActions($appCtx);
+        //$companyModuleManager->loadHelpers($appCtx);
+        $storageModuleManager->load($appCtx);
+        //$storageModuleManager->createActions($appCtx);
+        //$storageModuleManager->loadHelpers($appCtx);
 
         $values = ['email'];
 

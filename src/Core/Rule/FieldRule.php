@@ -75,15 +75,15 @@ class FieldRule implements Rule {
             return false;
         }
 
-        if (is_null($ctx->getReqCtx()->getAuth())) {
+        if (is_null($ctx->getRequestContext()->getAuth())) {
             throw new \Exception;
         }
         // Do not apply rule if the Query is defined as INTERNAL
-        if ($ctx->getReqCtx()->getAuth()->hasRights(Auth::INTERNAL)) {
+        if ($ctx->getRequestContext()->getAuth()->hasRights(Auth::INTERNAL)) {
             return false;
         }
 
-        $keyPaths = $ctx->getReqCtx()->getFormattedReturnedFields();
+        $keyPaths = $ctx->getRequestContext()->getFormattedReturnedFields();
 
         foreach ($keyPaths as $keyPath) {
             $field = $keyPath->getField($ctx);

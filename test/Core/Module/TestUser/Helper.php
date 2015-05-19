@@ -5,30 +5,39 @@ namespace Core\Module\TestUser;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
+use Core\Helper\GenericHelper;
 use Core\Model\TestUser;
-use Core\Module\BasicHelper;
-use Core\Parameter\UnsafeParameter;
 
-class Helper extends BasicHelper {
+class Helper extends GenericHelper {
 
     /**
-     * @param ActionContext $actCtx
-     * @param array         $params
+     * @param ApplicationContext $applicationContext
      */
-    public function createTestUser (ActionContext $actCtx, array $params) {
+    public function __construct (ApplicationContext $applicationContext) {
 
-        $user = new TestUser();
+        parent::__construct($applicationContext, 'TestUser');
 
-        $salt = self::createSalt();
-        $params['password'] = self::encryptPassword($salt, UnsafeParameter::getFinalValue($params['password']));
+    }
+
+    /**
+     * @param ActionContext $actionContext
+     * @param array         $params
+     *
+     * @return mixed
+     */
+    public function create (ActionContext $actionContext, array $params) {
+
+        /**
+         * @var TestUser $user
+         */
+        $user = parent::create($actionContext, $params);
+
+        $user->setSalt(self::createSalt());
+        $user->setPassword(self::encryptPassword($params['password']));
         $user->setRegisterDate(new \DateTime());
         $user->setConfirmationKey(uniqid());
-        $user->setSalt($salt);
 
-        $this->basicSave($user, $params);
-
-        $actCtx['testUser'] = $user;
+        return $user;
 
     }
 
@@ -42,56 +51,25 @@ class Helper extends BasicHelper {
     }
 
     /**
-     * @param string $salt
      * @param string $password
      *
      * @return string
      */
-    public static function encryptPassword ($salt, $password) {
+    public static function encryptPassword ($password) {
 
-        $hash = $salt . $password;
-        for ($i = 0; $i < 3004; ++$i) {
-            $hash = hash('sha512', $salt . $hash);
-        }
-
-        return $hash;
+        return password_hash($password, PASSWORD_BCRYPT);
 
     }
 
     /**
-     * @param ActionContext $actCtx
-     * @param TestUser      $user
-     * @param array         $params
+     * @param string $password
+     * @param string $hash
+     *
+     * @return bool
      */
-    public function updateTestUser (ActionContext $actCtx, TestUser $user, array $params) {
+    public static function verifyPassword($password, $hash) {
 
-        $this->basicSave($user, $params);
-
-        $actCtx['testUser'] = $user;
-
-    }
-
-    /**
-     * @param ActionContext $actCtx
-     * @param KeyPath[]     $keyPaths
-     * @param Filter[]      $filters
-     * @param bool          $hydrateArray
-     */
-    public function findTestUser (ActionContext $actCtx, array $keyPaths = [], array $filters = [],
-                                  $hydrateArray = true) {
-
-        $registry = ApplicationContext::getInstance()->getNewRegistry();
-
-        $qryCtx = new FindQueryContext('TestUser');
-
-        foreach ($keyPaths as $keyPath) {
-            $qryCtx->addField($keyPath);
-        }
-        foreach ($filters as $filter) {
-            $qryCtx->addFilter($filter);
-        }
-
-        $actCtx['TestUser'] = $registry->find($qryCtx);
+        return password_verify($password, $hash);
 
     }
 

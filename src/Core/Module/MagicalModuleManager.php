@@ -7,7 +7,6 @@ use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Context\HighLevelFindQueryContext;
 use Core\Context\RequestContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
@@ -678,12 +677,11 @@ abstract class MagicalModuleManager extends ModuleManager {
 
     private function saveEntities () {
 
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
-
         foreach ($this->models as $model) {
-            $registry->save($model);
+
+            $modelName = end(explode('\\', get_class($model)));
+
+            $this->getModelModuleEntity($modelName)->save($model);
         }
 
     }
@@ -741,31 +739,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param ApplicationContext $context
-     */
-    public function load (ApplicationContext &$context) {
-
-        $this->loadAspects();
-
-        parent::load($context);
-
-    }
-
-    /**
-     * @return mixed
-     */
-    public abstract function loadAspects ();
-
-    /**
      * @param Filter[] $filters
      *
      * @return mixed
      */
     public function magicalDelete ($filters) {
-
-        $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
 
         $qryCtx = new FindQueryContext($this->getMainEntityName(), new RequestContext());
 
@@ -775,9 +753,14 @@ abstract class MagicalModuleManager extends ModuleManager {
             $qryCtx->addFilter($filter);
         }
 
-        $result = $registry->find($qryCtx);
+        $results = $qryCtx->findAll();
 
-        $registry->delete($result[0]);
+        foreach ($results as $model) {
+
+            $modelName = end(explode('\\', get_class($model)));
+
+            $this->getModelModuleEntity($modelName)->delete($model);
+        }
 
     }
 
@@ -791,20 +774,30 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param HighLevelFindQueryContext $qryCtx
-     * @param \Exception                $e
-     * @param array                     $disabledKeyPaths
+     * @param FindQueryContext $qryCtx
+     * @param int|\Exception   $exception
      *
      * @return MagicalEntity
      * @throws \Exception
      */
-    public function findOne (HighLevelFindQueryContext $qryCtx, \Exception $e = NULL, $disabledKeyPaths = []) {
+    public function findOne (FindQueryContext $qryCtx, $exception = NULL) {
 
-        $magicalEntities = $this->findAll($qryCtx, $disabledKeyPaths);
+        $magicalEntities = $this->findAll($qryCtx);
 
         $count = count($magicalEntities);
+
         if ($count != 1) {
-            throw $e ?: new \RuntimeException('one entity was expected, ' . $count . ' fetched');
+
+            if (is_int($exception)) {
+                $appCtx = $qryCtx->getRequestContext()->getApplicationContext();
+                $exception = $appCtx->getErrorManager()->getFormattedError($exception);
+            }
+            elseif (!($exception instanceof \Exception)) {
+                $exception = new \RuntimeException('one entity was expected, ' . $count . ' fetched');
+            }
+
+            throw $exception;
+
         }
 
         return $magicalEntities[0];
@@ -812,12 +805,11 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
-     * @param HighLevelFindQueryContext $qryCtx
-     * @param                           $disabledKeyPaths
+     * @param FindQueryContext $qryCtx
      *
      * @return MagicalEntity[]
      */
-    public function findAll (HighLevelFindQueryContext $qryCtx, $disabledKeyPaths) {
+    public function findAll (FindQueryContext $qryCtx) {
 
         $relativeFields = $qryCtx->getFields();
         $fields = [];
@@ -826,8 +818,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $magicalEntities =
-            $this->magicalFind($qryCtx->getRequestContext(), $fields, $qryCtx->getFilters(), [], false,
-                               $disabledKeyPaths);
+            $this->magicalFind($qryCtx->getRequestContext(), $fields, $qryCtx->getFilters());
 
         return $magicalEntities;
 
@@ -845,12 +836,11 @@ abstract class MagicalModuleManager extends ModuleManager {
      * @throws \Core\Error\FormattedError
      */
     protected function magicalFind (RequestContext $requestContext, array $fields = [], array $filters = [],
-                                    array $params = [], $hydrateArray = false, array $disabledKeyPaths = []) {
+                                    array $params = [], /*deprecated*/
+                                    $hydrateArray = false, array $disabledKeyPaths = []) {
 
 
         $appCtx = ApplicationContext::getInstance();
-
-        $registry = $appCtx->getNewRegistry();
 
         $qryCtx = new FindQueryContext($this->mainEntityName, $requestContext);
 
@@ -869,7 +859,7 @@ abstract class MagicalModuleManager extends ModuleManager {
 
         $qryCtx->setParams($params);
 
-        $result = $registry->find($qryCtx);
+        $result = $qryCtx->findAll();
 
 
         if ($hydrateArray) {
@@ -877,12 +867,13 @@ abstract class MagicalModuleManager extends ModuleManager {
                 if (is_array($data)) {
                     foreach ($data as &$object) {
                         if (is_object($object)) {
-                            $object = (new ModelConverter())->toArray($object, array_merge($fields, $returnedFields));
+                            $object =
+                                (new ModelConverter($appCtx))->toArray($object, array_merge($fields, $returnedFields));
                         }
                     }
                 }
                 else {
-                    $data = (new ModelConverter())->toArray($data, array_merge($fields, $returnedFields));
+                    $data = (new ModelConverter($appCtx))->toArray($data, array_merge($fields, $returnedFields));
                 }
             }
         }
@@ -1223,6 +1214,22 @@ abstract class MagicalModuleManager extends ModuleManager {
     }
 
     /**
+     * @param ApplicationContext $context
+     */
+    public function load (ApplicationContext &$context) {
+
+        $this->loadAspects();
+
+        parent::load($context);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public abstract function loadAspects ();
+
+    /**
      * @return mixed
      */
     protected function getMainEntity () {
@@ -1260,6 +1267,14 @@ abstract class MagicalModuleManager extends ModuleManager {
             Registry::realModelClassName($model);
             if (!is_string($model)) {
                 throw new \RuntimeException('invalid model');
+            }
+        }
+
+        $module = $model;
+        if (isset($config['module'])) {
+            $module = $config['module'];
+            if (!is_string($module)) {
+                throw new \RuntimeException('invalid module');
             }
         }
 
@@ -1308,7 +1323,7 @@ abstract class MagicalModuleManager extends ModuleManager {
         }
 
         $this->modelAspects[] =
-            new ModelAspect($model, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
+            new ModelAspect($model, $module, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
 
     }
 
@@ -1322,6 +1337,35 @@ abstract class MagicalModuleManager extends ModuleManager {
         $module = $this->getModuleName();
         $appCtx = ApplicationContext::getInstance();
         $appCtx->addAction(new SimpleAction($module, $name, [], $params, $processFn));
+
+    }
+
+    /**
+     * @param string $model
+     *
+     * @return ModuleEntity
+     */
+    protected function getModelModuleEntity ($model) {
+
+        foreach ($this->getModelAspects() as $modelAspect) {
+
+            if ($modelAspect->getModel() == $model) {
+
+                foreach (ApplicationContext::getInstance()->getModuleManagers() as $moduleManager) {
+
+                    if ($moduleManager->getControllerName() == $modelAspect->getModule()) {
+
+                        return $moduleManager->getModuleEntity($model);
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        throw new \RuntimeException(sprintf('ModuleEntity for %s not found', $model));
 
     }
 

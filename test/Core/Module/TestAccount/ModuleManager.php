@@ -18,7 +18,7 @@ class ModuleManager extends MagicalModuleManager {
     /**
      * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
         $self = $this;
 
@@ -88,34 +88,6 @@ class ModuleManager extends MagicalModuleManager {
                              ]
 
                          ]);
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadFilters (ApplicationContext &$context) {
-        // TODO: Implement loadFilters() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadHelpers (ApplicationContext &$context) {
-        // TODO: Implement loadHelpers() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRoutes (ApplicationContext &$context) {
-        // TODO: Implement loadRoutes() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadRules (ApplicationContext &$context) {
-        // TODO: Implement loadRules() method.
     }
 
     protected function getCreateStorageAction () {

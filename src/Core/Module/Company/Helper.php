@@ -8,7 +8,7 @@ use Core\Context\ActionContext;
 use Core\Context\FindQueryContext;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
-use Core\Module\BasicHelper;
+use Core\Helper\BasicHelper;
 
 class Helper extends BasicHelper {
 
@@ -20,7 +20,7 @@ class Helper extends BasicHelper {
 
         $company = $this->createRealModel('Company');
 
-        $this->basicSave($company, $params);
+        $this->basicSetValues($company, $params);
 
         $actionContext['company'] = $company;
 
@@ -35,7 +35,7 @@ class Helper extends BasicHelper {
 
         $this->checkRealModelType($company, 'Company');
 
-        $this->basicSave($company, $params);
+        $this->basicSetValues($company, $params);
 
         $actionContext['company'] = $company;
 

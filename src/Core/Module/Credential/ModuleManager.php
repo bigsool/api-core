@@ -20,7 +20,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $appCtx
      */
-    public function loadActions (ApplicationContext &$appCtx) {
+    public function createActions (ApplicationContext &$appCtx) {
 
         $self = $this;
 
@@ -32,7 +32,7 @@ class ModuleManager extends AbstractModuleManager {
                 $appCtx = ApplicationContext::getInstance();
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper;
+                $helper = new Helper($appCtx);
                 $authToken = $helper->login($context, $params);
 
                 $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential', 'setAuthCookie'),
@@ -73,7 +73,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $authToken = $ctx->getParam('authToken');
 
-                $helper = new Helper();
+                $helper = new Helper($ctx->getApplicationContext());
                 $credential = $helper->checkAuthToken($authToken);
 
                 return $credential;
@@ -94,7 +94,7 @@ class ModuleManager extends AbstractModuleManager {
                 $authToken = $ctx->getParam('authToken');
                 $credentialId = $ctx->getParam('credentialId');
 
-                $helper = new Helper();
+                $helper = new Helper($ctx->getApplicationContext());
                 $newAuthToken = $helper->renewAuthToken($authToken, $credentialId);
 
                 $appCtx = ApplicationContext::getInstance();
@@ -117,7 +117,7 @@ class ModuleManager extends AbstractModuleManager {
                 $appCtx = ApplicationContext::getInstance();
 
                 $params = $context->getVerifiedParams();
-                $helper = new Helper;
+                $helper = new Helper($appCtx);
 
                 $filter = $appCtx->getFilterByName('CredentialForLogin');
 
@@ -152,7 +152,7 @@ class ModuleManager extends AbstractModuleManager {
 
             $password = $context->getAuth()->getCredential()->getPassword();
 
-            $helper = new Helper;
+            $helper = new Helper($appCtx);
 
             $credential = $helper->getCredentialFromId($params['id']);
 
@@ -185,7 +185,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadFilters (ApplicationContext &$context) {
+    public function createModuleFilters (ApplicationContext &$context) {
 
         $context->addFilter(new StringFilter('Credential', 'CredentialForLogin', 'login = :login'));
         $context->addFilter(new StringFilter('Credential', 'CredentialForId', 'id = :id'));
@@ -204,7 +204,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @param ApplicationContext $context
      */
-    public function loadRules (ApplicationContext &$context) {
+    public function createRules (ApplicationContext &$context) {
 
         $context->addRule(new FieldRule(new Field('Credential', 'password'),
                                         new StringFilter('Credential', 'passwordIsForbidden', '1 = 0')));
