@@ -109,7 +109,7 @@ class Helper extends BasicHelper {
      *
      * @return array
      */
-    private function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
+    protected function generateAuthToken ($login, $expiration, $hashedPassword, $type) {
 
         return ['hash'       => sha1($login . $expiration . $hashedPassword . $type),
                 'login'      => $login,
