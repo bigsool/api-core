@@ -3,49 +3,43 @@
 
 namespace Core\Module\Marketing;
 
+use Core\Action\Action;
 use Core\Action\BasicCreateAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ApplicationContext;
+use Core\Module\DbModuleEntity;
+use Core\Module\ModuleEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 class ModuleManager extends AbstractModuleManager {
 
     /**
      * @param ApplicationContext $appCtx
+     *
+     * @return Action[]
      */
     public function createActions (ApplicationContext &$appCtx) {
 
-        $appCtx->addAction(new BasicCreateAction('Core\Marketing', 'MarketingInfo', [], [
-            'knowsFrom' => [new Validation()]
-        ]));
+        $marketingInfoModuleEntity = $this->getModuleEntity('MarketingInfo');
 
-        $appCtx->addAction(new BasicUpdateAction('Core\Marketing', 'MarketingInfo', [], [
-            'knowsFrom' => [new Validation(), true]
-        ]));
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function createModuleFilters (ApplicationContext &$context) {
-        // TODO: Implement loadFilters() method.
-    }
-
-    /**
-     * @param ApplicationContext $context
-     */
-    public function loadHelpers (ApplicationContext &$context) {
-
-        $this->addHelper($context, 'MarketingHelper');
+        return [
+            new BasicCreateAction('Core\Marketing', $marketingInfoModuleEntity, [], []),
+            new BasicUpdateAction('Core\Marketing', $marketingInfoModuleEntity, [], [])
+        ];
 
     }
 
     /**
      * @param ApplicationContext $context
+     *
+     * @return ModuleEntity[]
      */
-    public function createRules (ApplicationContext &$context) {
-        // TODO: Implement loadRules() method.
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+
+        return [
+            new MarketingInfoDefinition()
+        ];
+
     }
 
 }

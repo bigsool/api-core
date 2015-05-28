@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user")
  * @ORM\Entity
  */
-class User
-{
+class User {
+
     /**
      * @var integer
      *
@@ -49,49 +49,36 @@ class User
      */
     private $creationDate;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string
+     */
+    public function getLastName () {
+
+        return $this->lastName;
     }
 
     /**
      * Set lastName
      *
      * @param string $lastName
+     *
      * @return User
      */
-    public function setLastName($lastName)
-    {
+    public function setLastName ($lastName) {
+
         $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * Get lastName
-     *
-     * @return string 
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * Set firstName
-     *
-     * @param string $firstName
-     * @return User
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
 
         return $this;
     }
@@ -99,22 +86,23 @@ class User
     /**
      * Get firstName
      *
-     * @return string 
+     * @return string
      */
-    public function getFirstName()
-    {
+    public function getFirstName () {
+
         return $this->firstName;
     }
 
     /**
-     * Set lang
+     * Set firstName
      *
-     * @param string $lang
+     * @param string $firstName
+     *
      * @return User
      */
-    public function setLang($lang)
-    {
-        $this->lang = $lang;
+    public function setFirstName ($firstName) {
+
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -122,22 +110,23 @@ class User
     /**
      * Get lang
      *
-     * @return string 
+     * @return string
      */
-    public function getLang()
-    {
+    public function getLang () {
+
         return $this->lang;
     }
 
     /**
-     * Set creationDate
+     * Set lang
      *
-     * @param \DateTime $creationDate
+     * @param string $lang
+     *
      * @return User
      */
-    public function setCreationDate($creationDate)
-    {
-        $this->creationDate = $creationDate;
+    public function setLang ($lang) {
+
+        $this->lang = $lang;
 
         return $this;
     }
@@ -145,10 +134,24 @@ class User
     /**
      * Get creationDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreationDate()
-    {
+    public function getCreationDate () {
+
         return $this->creationDate;
+    }
+
+    /**
+     * Set creationDate
+     *
+     * @param \DateTime $creationDate
+     *
+     * @return User
+     */
+    public function setCreationDate ($creationDate) {
+
+        $this->creationDate = $creationDate;
+
+        return $this;
     }
 }

@@ -7,8 +7,8 @@ use Core\Context\RequestContext;
 use Core\Model\TestUser;
 use Core\Model\User;
 use Core\Module\TestCompany\ModuleManager as CompanyModuleManager;
-use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Module\TestUser\ModuleManager;
+use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
 
@@ -28,12 +28,12 @@ class BasicUpdateActionTest extends TestCase {
 
         $userModuleManager = new ModuleManager();
 
-        $moduleEntities = $userModuleManager->createModuleEntities($appCtx);
+        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
         $actCtx = $appCtx->getActionContext(new RequestContext(), '', '');
-        self::$user = $user = $moduleEntity->create($actCtx, ['email'=>'qwe@qwe.com','password'=>'qwe']);
+        self::$user = $user = $moduleEntity->create($actCtx, ['email' => 'qwe@qwe.com', 'password' => 'qwe']);
         $moduleEntity->save($user);
 
     }
@@ -45,7 +45,7 @@ class BasicUpdateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $userModuleManager->createModuleEntities($appCtx);
+        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
@@ -91,7 +91,7 @@ class BasicUpdateActionTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $companyModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $companyModuleManager->createModuleEntities($appCtx);
+        $moduleEntities = $companyModuleManager->createModuleEntityDefinitions($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
@@ -120,7 +120,7 @@ class BasicUpdateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $userModuleManager->createModuleEntities($appCtx);
+        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 

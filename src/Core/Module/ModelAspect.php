@@ -6,7 +6,7 @@ namespace Core\Module;
 
 use Core\Action\Action;
 use Core\Field\RelativeField;
-use Core\Validation\AbstractConstraintsProvider;
+use Core\Validation\Parameter\Constraint;
 
 class ModelAspect {
 
@@ -26,12 +26,12 @@ class ModelAspect {
     private $prefix;
 
     /**
-     * @var AbstractConstraintsProvider[][]
+     * @var Constraint[][]
      */
     private $constraints;
 
     /**
-     * @var RelativeField|null
+     * @var string|null
      */
     private $relativeField;
 
@@ -43,31 +43,32 @@ class ModelAspect {
     /**
      * @var boolean
      */
-    private $enabled;
+    private $withPrefixedFields;
 
     /**
-     * @var boolean
+     * @var ModuleEntity
+     *
      */
-    private $withPrefixedFields;
+    private $moduleEntity;
+
 
     /**
      * @param string                          $model
      * @param                                 $module
      * @param string                          $prefix
-     * @param AbstractConstraintsProvider[][] $constraints
+     * @param Constraint[][]                  $constraints
      * @param Action[]                        $actions
      * @param RelativeField|null              $relativeField
      * @param Boolean                         $withPrefixedFields
      */
     public function __construct ($model, $module, $prefix, array $constraints, array $actions,
-                                 RelativeField $relativeField = NULL, $withPrefixedFields = false) {
+                                 $relativeField = NULL, $withPrefixedFields = false) {
 
         $this->model = $model;
         $this->prefix = $prefix;
         $this->constraints = $constraints;
         $this->relativeField = $relativeField;
         $this->actions = $actions;
-        $this->enabled = true;
         $this->withPrefixedFields = $withPrefixedFields;
 
         $this->module = $module;
@@ -104,7 +105,7 @@ class ModelAspect {
     /**
      * @param null $actionName
      *
-     * @return AbstractConstraintsProvider[]|AbstractConstraintsProvider[][]
+     * @return Constraint[]|Constraint[][]
      */
     public function getConstraints ($actionName = NULL) {
 
@@ -117,7 +118,7 @@ class ModelAspect {
     }
 
     /**
-     * @return RelativeField|null
+     * @return string|null
      */
     public function getRelativeField () {
 
@@ -126,45 +127,16 @@ class ModelAspect {
     }
 
     /**
-     * @return Action[]|null
-     */
-    public function getActions () {
-
-        return $this->actions;
-        
-    }
-
-    /**
-     * @param $actionName
+     * @param $action
      *
-     * @return Action|null
+     * @return bool
      */
-    public function getAction ($actionName) {
 
-        return isset($this->actions[$actionName]) ? $this->actions[$actionName] : NULL;
-
+    public function isDisabledForAction($action) {
+        return false;
     }
 
-    public function enable () {
 
-        $this->enabled = true;
-
-    }
-
-    public function disable () {
-
-        $this->enabled = false;
-
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isEnabled () {
-
-        return $this->enabled;
-
-    }
 
     /**
      * @return boolean
@@ -173,6 +145,29 @@ class ModelAspect {
 
         return $this->withPrefixedFields;
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMainAspect() {
+        return $this->getRelativeField() == null;
+    }
+
+    /**
+     * @return ModuleEntity
+     */
+    public function getModuleEntity () {
+
+        return $this->moduleEntity;
+    }
+
+    /**
+     * @param ModuleEntity $moduleEntity
+     */
+    public function setModuleEntity ($moduleEntity) {
+
+        $this->moduleEntity = $moduleEntity;
     }
 
 }

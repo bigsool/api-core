@@ -17,7 +17,8 @@ class BasicCreateAction extends SimpleAction {
      * @param callable     $postCreateCallable
      *
      */
-    public function __construct ($module, ModuleEntity $moduleEntity, $minRights, array $params, callable $preCreateCallable = NULL,
+    public function __construct ($module, ModuleEntity $moduleEntity, $minRights, array $params,
+                                 callable $preCreateCallable = NULL,
                                  callable $postCreateCallable = NULL) {
 
         if (!$preCreateCallable) {
@@ -42,7 +43,7 @@ class BasicCreateAction extends SimpleAction {
                 $entityObj = $moduleEntity->create($context, $params);
                 $moduleEntity->save($entityObj);
 
-                $entityName = $moduleEntity->getEntityName();
+                $entityName = $moduleEntity->getDefinition()->getEntityName();
 
                 $context[lcfirst($entityName)] = $entityObj;
 

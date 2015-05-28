@@ -1,23 +1,20 @@
 <?php
 namespace Core\Validation;
 
-use Symfony\Component\Validator\Constraint;
+use Core\Validation\Parameter\Constraint;
 
 interface ConstraintsProvider {
 
     /**
-     * @param string $name
-     * @param mixed  $value
-     * @param bool   $forceOptional
-     *
-     * @return bool
-     */
-    public function validate ($name, $value, $forceOptional = false);
-
-    /**
-     * @param string $name
+     * @param string $field
      *
      * @return Constraint[]|null
      */
-    public function getConstraintsFor ($name);
+    public function getConstraintsFor ($field);
+
+    /**
+     * @return Constraint[][]
+     */
+    public function getConstraints ();
+
 }

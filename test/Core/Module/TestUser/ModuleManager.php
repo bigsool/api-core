@@ -8,10 +8,9 @@ use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Filter\StringFilter;
-use Core\Module\GenericDbEntity;
+use Core\Module\DbModuleEntity;
 use Core\Module\ModuleEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
-use Core\Parameter\UnsafeParameter;
 
 
 class ModuleManager extends AbstractModuleManager {
@@ -51,13 +50,13 @@ class ModuleManager extends AbstractModuleManager {
      *
      * @return ModuleEntity[]
      */
-    public function createModuleEntities (ApplicationContext &$context) {
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
 
-        $testUserModuleEntity = new GenericDbEntity($context, 'TestUser', [
-                                                                new StringFilter('TestUser', 'TestUserForId', 'id = :id')
-                                                            ]
+        $testUserModuleEntity = new DbModuleEntity($context, 'TestUser', [
+                                                               new StringFilter('TestUser', 'TestUserForId', 'id = :id')
+                                                           ]
         );
-        $testUserModuleEntity->setHelper(new Helper($context));
+        $testUserModuleEntity->setHelper(new ModuleEntityHelper($context));
 
         return [
             $testUserModuleEntity

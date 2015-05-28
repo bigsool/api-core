@@ -17,11 +17,15 @@ use Core\Logger\Logger;
 use Core\Logger\RequestLogger;
 use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
+use Core\Module\AggregatedModuleEntity;
+use Core\Module\MagicalEntity;
+use Core\Module\ModelAspect;
 use Core\Module\ModuleEntity;
 use Core\Module\ModuleManager;
 use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
+use Core\Serializer;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -140,7 +144,7 @@ class ApplicationContext {
     /**
      * @var ModuleEntity[]
      */
-    protected $modulesEntities;
+    protected $moduleEntities;
 
     /**
      * @var ModuleManager[]
@@ -164,12 +168,6 @@ class ApplicationContext {
 
     }
 
-    public function addModuleManager(ModuleManager $moduleManager) {
-
-        $this->moduleManagers[get_class($moduleManager)] = $moduleManager;
-
-    }
-
     /**
      * @return ApplicationContext
      */
@@ -180,6 +178,12 @@ class ApplicationContext {
         }
 
         return self::$instance;
+
+    }
+
+    public function addModuleManager (ModuleManager $moduleManager) {
+
+        $this->moduleManagers[get_class($moduleManager)] = $moduleManager;
 
     }
 
@@ -661,7 +665,7 @@ class ApplicationContext {
      */
     public function addModuleEntity (ModuleEntity $moduleEntity) {
 
-        $this->modulesEntities[$moduleEntity->getEntityName()] = $moduleEntity;
+        $this->moduleEntities[$moduleEntity->getDefinition()] = $moduleEntity;
 
         $moduleEntity->setRegistry($this->getNewRegistry());
 
@@ -691,6 +695,16 @@ class ApplicationContext {
     }
 
     /**
+     * @param ModelAspect $modelAspect
+     */
+    public function finalizeModelAspect (ModelAspect $modelAspect) {
+
+        $moduleEntity = $this->getModuleEntity($modelAspect->getModel());
+        $modelAspect->setModuleEntity($moduleEntity);
+
+    }
+
+    /**
      * TODO: should we keep this api ?
      *
      * @param string $entityName
@@ -699,11 +713,11 @@ class ApplicationContext {
      */
     protected function getModuleEntity ($entityName) {
 
-        if (!isset($this->modulesEntities[$entityName])) {
+        if (!isset($this->moduleEntities[$entityName])) {
             throw new \RuntimeException(sprintf('ModuleEntity %s not found', $entityName));
         }
 
-        return $this->modulesEntities[$entityName];
+        return $this->moduleEntities[$entityName];
 
     }
 
@@ -739,9 +753,26 @@ class ApplicationContext {
      *
      * @return CalculatedField[]
      */
-    public function getCalculatedFields($entityName) {
+    public function getCalculatedFields ($entityName) {
 
         return isset($this->calculatedFields[$entityName]) ? $this->calculatedFields[$entityName] : [];
+
+    }
+
+    /**
+     * @param Serializer    $serializer
+     * @param MagicalEntity $model
+     */
+    public function populateSerializerWithAggregatedModuleEntity (Serializer $serializer, MagicalEntity $model) {
+
+        $exploded = explode('\\', get_class($model));
+        $moduleEntity = $this->getModuleEntity(end($exploded));
+
+        if (!($moduleEntity instanceof AggregatedModuleEntity)) {
+            throw new \RuntimeException('AggregatedModuleEntity expected');
+        }
+
+        $serializer->setCurrentAggregatedModuleEntity($moduleEntity);
 
     }
 

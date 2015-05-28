@@ -9,7 +9,8 @@ use Core\TestCase;
 
 class ActionContextTest extends TestCase {
 
-    public function setUp() {
+    public function setUp () {
+
         parent::setUp();
         self::getApplicationContext();
     }

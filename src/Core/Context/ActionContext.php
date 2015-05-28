@@ -3,9 +3,13 @@
 
 namespace Core\Context;
 
+use Archipad\RightsManager;
 use Core\Auth;
+use Core\Module\ModuleEntityDefinition;
 use Core\Parameter\UnsafeParameter;
-use Traversable;
+use Core\Validation\ConstraintsProvider;
+use Core\Validation\Parameter\Constraint;
+use Core\Validation\Validator;
 
 class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
@@ -128,10 +132,11 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     /**
      * @param mixed $key
      * @param mixed $default
+     * @param Constraint[] $constraints
      *
      * @return mixed
      */
-    public function getParam ($key, $default = NULL) {
+    public function getParam ($key, $default = NULL, array $constraints = []) {
 
         $exploded = explode('.', $key);
         $params = $this->params;
@@ -145,6 +150,8 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
             }
             $params = UnsafeParameter::getFinalValue($params[$key]);
         }
+
+        Validator::validate()
 
         return $params[$key];
 
@@ -192,14 +199,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
         unset($this->params[$key]);
 
-    }
-
-    /**
-     * @return Auth
-     */
-    public function getAuth () {
-
-        return $this->auth;
     }
 
     /**
@@ -263,6 +262,23 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     public function getFinalParam ($key, $default = NULL) {
 
         return UnsafeParameter::getFinalValue($this->getParam($key, $default));
+
+    }
+
+    /**
+     * @param array $keys
+     *
+     * @return mixed
+     */
+    public function getFinalParams (array $keys = NULL) {
+
+        $params = $this->getParams($keys);
+
+        foreach ($params as &$param) {
+            $param = UnsafeParameter::getFinalValue($param);
+        }
+
+        return $params;
 
     }
 
@@ -414,14 +430,30 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Retrieve an external iterator
-     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
+     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php     *
+     * @return \ArrayIterator
      */
     public function getIterator () {
 
         return new \ArrayIterator($this->result);
 
+    }
+
+    /**
+     * @return RightsManager
+     */
+    public function getRightsManager () {
+
+        return new RightsManager($this->getAuth());
+
+    }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth () {
+
+        return $this->auth;
     }
 
 }

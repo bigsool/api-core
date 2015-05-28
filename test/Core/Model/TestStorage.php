@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="storage")
  * @ORM\Entity
  */
-class TestStorage
-{
+class TestStorage {
+
     /**
      * @var \Core\Context\FindQueryContext
      */
@@ -102,15 +102,14 @@ class TestStorage
      */
     protected $isUserFaulted = true;
 
-
     /**
-     * Get id
+     * Get url
      *
-     * @return integer
+     * @return string
      */
-    public function getId()
-    {
-        return $this->id;
+    public function getUrl () {
+
+        return $this->url;
     }
 
     /**
@@ -120,33 +119,9 @@ class TestStorage
      *
      * @return TestStorage
      */
-    public function setUrl($url)
-    {
+    public function setUrl ($url) {
+
         $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set login
-     *
-     * @param string $login
-     *
-     * @return TestStorage
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
 
         return $this;
     }
@@ -156,21 +131,21 @@ class TestStorage
      *
      * @return string
      */
-    public function getLogin()
-    {
+    public function getLogin () {
+
         return $this->login;
     }
 
     /**
-     * Set password
+     * Set login
      *
-     * @param string $password
+     * @param string $login
      *
      * @return TestStorage
      */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+    public function setLogin ($login) {
+
+        $this->login = $login;
 
         return $this;
     }
@@ -180,21 +155,21 @@ class TestStorage
      *
      * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set usedSpace
+     * Set password
      *
-     * @param integer $usedSpace
+     * @param string $password
      *
      * @return TestStorage
      */
-    public function setUsedSpace($usedSpace)
-    {
-        $this->usedSpace = $usedSpace;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -204,21 +179,21 @@ class TestStorage
      *
      * @return integer
      */
-    public function getUsedSpace()
-    {
+    public function getUsedSpace () {
+
         return $this->usedSpace;
     }
 
     /**
-     * Set lastUsedSpaceUpdate
+     * Set usedSpace
      *
-     * @param \DateTime $lastUsedSpaceUpdate
+     * @param integer $usedSpace
      *
      * @return TestStorage
      */
-    public function setLastUsedSpaceUpdate($lastUsedSpaceUpdate)
-    {
-        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
+    public function setUsedSpace ($usedSpace) {
+
+        $this->usedSpace = $usedSpace;
 
         return $this;
     }
@@ -228,21 +203,21 @@ class TestStorage
      *
      * @return \DateTime
      */
-    public function getLastUsedSpaceUpdate()
-    {
+    public function getLastUsedSpaceUpdate () {
+
         return $this->lastUsedSpaceUpdate;
     }
 
     /**
-     * Set isOutOfQuota
+     * Set lastUsedSpaceUpdate
      *
-     * @param boolean $isOutOfQuota
+     * @param \DateTime $lastUsedSpaceUpdate
      *
      * @return TestStorage
      */
-    public function setIsOutOfQuota($isOutOfQuota)
-    {
-        $this->isOutOfQuota = $isOutOfQuota;
+    public function setLastUsedSpaceUpdate ($lastUsedSpaceUpdate) {
+
+        $this->lastUsedSpaceUpdate = $lastUsedSpaceUpdate;
 
         return $this;
     }
@@ -252,9 +227,47 @@ class TestStorage
      *
      * @return boolean
      */
-    public function getIsOutOfQuota()
-    {
+    public function getIsOutOfQuota () {
+
         return $this->isOutOfQuota;
+    }
+
+    /**
+     * Set isOutOfQuota
+     *
+     * @param boolean $isOutOfQuota
+     *
+     * @return TestStorage
+     */
+    public function setIsOutOfQuota ($isOutOfQuota) {
+
+        $this->isOutOfQuota = $isOutOfQuota;
+
+        return $this;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getCompany () {
+
+        if (!$this->companyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("company") . "Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("company")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
+            $qryContext->findAll();
+        }
+
+        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
     /**
@@ -264,12 +277,22 @@ class TestStorage
      *
      * @return TestStorage
      */
-    public function setCompany(\Core\Model\TestCompany $company = null)
-    {
+    public function setCompany (\Core\Model\TestCompany $company = NULL) {
+
         $this->company = $company;
         $this->companyRestrictedId = $company ? $company->getId() : NULL;
-    
+
         return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId () {
+
+        return $this->id;
     }
 
     /**
@@ -277,33 +300,33 @@ class TestStorage
      *
      * @return \Core\Model\TestCompany
      */
-    public function getCompany()
-    {
-        if (!$this->companyRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("company")."Faulted";
+    public function getUnrestrictedCompany () {
+
+        return $this->company;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Core\Model\TestUser
+     */
+    public function getUser () {
+
+        if (!$this->userRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("user") . "Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
             $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("user")]);
             $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
             $qryContext->findAll();
         }
-    
-        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
-    }
 
-    /**
-     * Get company
-     *
-     * @return \Core\Model\TestCompany
-     */
-    public function getUnrestrictedCompany()
-    {
-        return $this->company;
+        return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
     }
 
     /**
@@ -313,11 +336,11 @@ class TestStorage
      *
      * @return TestStorage
      */
-    public function setUser(\Core\Model\TestUser $user = null)
-    {
+    public function setUser (\Core\Model\TestUser $user = NULL) {
+
         $this->user = $user;
         $this->userRestrictedId = $user ? $user->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -326,32 +349,8 @@ class TestStorage
      *
      * @return \Core\Model\TestUser
      */
-    public function getUser()
-    {
-        if (!$this->userRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("user")."Faulted";
-            if (!$this->$faultedVar) {
-                return NULL;
-            }
-            $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("user")]);
-            $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
-            $qryContext->findAll();
-        }
-    
-        return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
-    }
+    public function getUnrestrictedUser () {
 
-    /**
-     * Get user
-     *
-     * @return \Core\Model\TestUser
-     */
-    public function getUnrestrictedUser()
-    {
         return $this->user;
     }
 }

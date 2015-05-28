@@ -4,19 +4,18 @@ namespace Core\Action;
 
 
 use Core\Context\ActionContext;
-use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Module\ModuleEntity;
 
 class BasicFindAction extends SimpleAction {
 
     /**
-     * @param string $module
+     * @param string       $module
      * @param ModuleEntity $moduleEntity
-     * @param array $minRights
-     * @param array $params
-     * @param callable $preFindCallable
-     * @param callable $postFindCallable
+     * @param array        $minRights
+     * @param array        $params
+     * @param callable     $preFindCallable
+     * @param callable     $postFindCallable
      *
      */
     public function __construct ($module, ModuleEntity $moduleEntity, $minRights, array $params,
@@ -42,7 +41,7 @@ class BasicFindAction extends SimpleAction {
 
                 $reqCtx = $context->getRequestContext()->copyWithoutRequestedFields();
 
-                $entityName = $moduleEntity->getEntityName();
+                $entityName = $moduleEntity->getDefinition();
 
                 $moduleEntity = ucfirst($moduleEntity);
 

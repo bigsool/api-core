@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="contact")
  * @ORM\Entity
  */
-class Contact
-{
+class Contact {
+
     /**
      * @var integer
      *
@@ -98,49 +98,36 @@ class Contact
      */
     private $abpersonContact;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get label
+     *
+     * @return string
+     */
+    public function getLabel () {
+
+        return $this->label;
     }
 
     /**
      * Set label
      *
      * @param string $label
+     *
      * @return Contact
      */
-    public function setLabel($label)
-    {
+    public function setLabel ($label) {
+
         $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * Get label
-     *
-     * @return string 
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * Set streets
-     *
-     * @param string $streets
-     * @return Contact
-     */
-    public function setStreets($streets)
-    {
-        $this->streets = $streets;
 
         return $this;
     }
@@ -148,22 +135,23 @@ class Contact
     /**
      * Get streets
      *
-     * @return string 
+     * @return string
      */
-    public function getStreets()
-    {
+    public function getStreets () {
+
         return $this->streets;
     }
 
     /**
-     * Set city
+     * Set streets
      *
-     * @param string $city
+     * @param string $streets
+     *
      * @return Contact
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setStreets ($streets) {
+
+        $this->streets = $streets;
 
         return $this;
     }
@@ -171,22 +159,23 @@ class Contact
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
+     *
      * @return Contact
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -194,22 +183,23 @@ class Contact
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set zip
+     * Set state
      *
-     * @param string $zip
+     * @param string $state
+     *
      * @return Contact
      */
-    public function setZip($zip)
-    {
-        $this->zip = $zip;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -217,22 +207,23 @@ class Contact
     /**
      * Get zip
      *
-     * @return string 
+     * @return string
      */
-    public function getZip()
-    {
+    public function getZip () {
+
         return $this->zip;
     }
 
     /**
-     * Set country
+     * Set zip
      *
-     * @param string $country
+     * @param string $zip
+     *
      * @return Contact
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setZip ($zip) {
+
+        $this->zip = $zip;
 
         return $this;
     }
@@ -240,22 +231,23 @@ class Contact
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set email
+     * Set country
      *
-     * @param string $email
+     * @param string $country
+     *
      * @return Contact
      */
-    public function setEmail($email)
-    {
-        $this->email = $email;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -263,22 +255,23 @@ class Contact
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail () {
+
         return $this->email;
     }
 
     /**
-     * Set mobile
+     * Set email
      *
-     * @param string $mobile
+     * @param string $email
+     *
      * @return Contact
      */
-    public function setMobile($mobile)
-    {
-        $this->mobile = $mobile;
+    public function setEmail ($email) {
+
+        $this->email = $email;
 
         return $this;
     }
@@ -286,22 +279,23 @@ class Contact
     /**
      * Get mobile
      *
-     * @return string 
+     * @return string
      */
-    public function getMobile()
-    {
+    public function getMobile () {
+
         return $this->mobile;
     }
 
     /**
-     * Set landLine
+     * Set mobile
      *
-     * @param string $landLine
+     * @param string $mobile
+     *
      * @return Contact
      */
-    public function setLandLine($landLine)
-    {
-        $this->landLine = $landLine;
+    public function setMobile ($mobile) {
+
+        $this->mobile = $mobile;
 
         return $this;
     }
@@ -309,22 +303,23 @@ class Contact
     /**
      * Get landLine
      *
-     * @return string 
+     * @return string
      */
-    public function getLandLine()
-    {
+    public function getLandLine () {
+
         return $this->landLine;
     }
 
     /**
-     * Set abcompanyContact
+     * Set landLine
      *
-     * @param \Core\Model\ABCompanyContact $abcompanyContact
+     * @param string $landLine
+     *
      * @return Contact
      */
-    public function setAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact = null)
-    {
-        $this->abcompanyContact = $abcompanyContact;
+    public function setLandLine ($landLine) {
+
+        $this->landLine = $landLine;
 
         return $this;
     }
@@ -332,22 +327,23 @@ class Contact
     /**
      * Get abcompanyContact
      *
-     * @return \Core\Model\ABCompanyContact 
+     * @return \Core\Model\ABCompanyContact
      */
-    public function getAbcompanyContact()
-    {
+    public function getAbcompanyContact () {
+
         return $this->abcompanyContact;
     }
 
     /**
-     * Set abpersonContact
+     * Set abcompanyContact
      *
-     * @param \Core\Model\ABPersonContact $abpersonContact
+     * @param \Core\Model\ABCompanyContact $abcompanyContact
+     *
      * @return Contact
      */
-    public function setAbpersonContact(\Core\Model\ABPersonContact $abpersonContact = null)
-    {
-        $this->abpersonContact = $abpersonContact;
+    public function setAbcompanyContact (\Core\Model\ABCompanyContact $abcompanyContact = NULL) {
+
+        $this->abcompanyContact = $abcompanyContact;
 
         return $this;
     }
@@ -355,10 +351,24 @@ class Contact
     /**
      * Get abpersonContact
      *
-     * @return \Core\Model\ABPersonContact 
+     * @return \Core\Model\ABPersonContact
      */
-    public function getAbpersonContact()
-    {
+    public function getAbpersonContact () {
+
         return $this->abpersonContact;
+    }
+
+    /**
+     * Set abpersonContact
+     *
+     * @param \Core\Model\ABPersonContact $abpersonContact
+     *
+     * @return Contact
+     */
+    public function setAbpersonContact (\Core\Model\ABPersonContact $abpersonContact = NULL) {
+
+        $this->abpersonContact = $abpersonContact;
+
+        return $this;
     }
 }

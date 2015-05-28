@@ -169,19 +169,6 @@ class RequestContext {
     }
 
     /**
-     * @return RequestContext
-     */
-    public function copyWithoutRequestedFields () {
-
-        $reqCtx = clone $this;
-        $reqCtx->setReturnedFields([]);
-        $reqCtx->setFormattedReturnedFields([]);
-
-        return $reqCtx;
-
-    }
-
-    /**
      * @return Response
      */
     public function getResponse () {
@@ -266,19 +253,6 @@ class RequestContext {
     }
 
     /**
-     * @param RelativeField $formattedReturnedField
-     *
-     * @throws FormattedError
-     */
-    public function addFormattedReturnedField (RelativeField $formattedReturnedField) {
-
-        $this->verifyFields([$formattedReturnedField]);
-
-        $this->formattedReturnedFields[] = $formattedReturnedField;
-
-    }
-
-    /**
      * @param array $returnedFields
      *
      * @throws FormattedError
@@ -297,6 +271,28 @@ class RequestContext {
             }
 
         }
+    }
+
+    /**
+     * @param RelativeField[] $returnedFields
+     */
+    public function addReturnedFields (array $returnedFields) {
+
+        $this->setReturnedFields(array_merge($this->getReturnedFields(), $returnedFields));
+
+    }
+
+    /**
+     * @param RelativeField $formattedReturnedField
+     *
+     * @throws FormattedError
+     */
+    public function addFormattedReturnedField (RelativeField $formattedReturnedField) {
+
+        $this->verifyFields([$formattedReturnedField]);
+
+        $this->formattedReturnedFields[] = $formattedReturnedField;
+
     }
 
     /**
@@ -382,6 +378,27 @@ class RequestContext {
     public function getParam ($key) {
 
         return isset($this->params[$key]) ? $this->params[$key] : NULL;
+
+    }
+
+    public function newFindQueryContext ($entityName, $keepRequestedFields = true) {
+
+        $reqCtx = $keepRequestedFields ? $this : $this->copyWithoutRequestedFields();
+
+        return new FindQueryContext($entityName, $reqCtx);
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function copyWithoutRequestedFields () {
+
+        $reqCtx = clone $this;
+        $reqCtx->setReturnedFields([]);
+        $reqCtx->setFormattedReturnedFields([]);
+
+        return $reqCtx;
 
     }
 

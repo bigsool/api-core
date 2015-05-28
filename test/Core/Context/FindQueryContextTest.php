@@ -116,20 +116,20 @@ class FindQueryContextTest extends TestCase {
         $this->assertSame(NULL, $ctx->getParam('qwe'));
 
     }
-/*
-    public function testAddJoinedEntities () {
+    /*
+        public function testAddJoinedEntities () {
 
-        $ctx = $this->getFindQueryContext('TestCompany');
-        $joinedEntity = 'qwe';
-        $ctx->addJoinedEntity($joinedEntity);
+            $ctx = $this->getFindQueryContext('TestCompany');
+            $joinedEntity = 'qwe';
+            $ctx->addJoinedEntity($joinedEntity);
 
-        $refJoinedEntities = new \ReflectionProperty($ctx, 'joinedProperties');
-        $refJoinedEntities->setAccessible(true);
+            $refJoinedEntities = new \ReflectionProperty($ctx, 'joinedProperties');
+            $refJoinedEntities->setAccessible(true);
 
-        $this->assertInternalType('array', $refJoinedEntities->getValue($ctx));
-        $this->assertCount(1, $refJoinedEntities->getValue($ctx));
-        $this->assertSame($joinedEntity, $refJoinedEntities->getValue($ctx)[0]);
+            $this->assertInternalType('array', $refJoinedEntities->getValue($ctx));
+            $this->assertCount(1, $refJoinedEntities->getValue($ctx));
+            $this->assertSame($joinedEntity, $refJoinedEntities->getValue($ctx)[0]);
 
-    }*/
+        }*/
 
 } 

@@ -5,6 +5,7 @@ namespace Core\Doctrine\Command;
 use Core\Application;
 use Core\Context\ApplicationContext;
 use Core\Doctrine\Tools\EntityGenerator;
+use Core\Module\AggregatedModuleEntity;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Registry;
@@ -94,7 +95,7 @@ class BuildEntitiesCommand extends Command {
         // get and merge all yml
         $ymls = [];
         foreach ($modulesManagers as $moduleManager) {
-            $moduleManager->loadFields($appCtx);
+            $moduleManager->load($appCtx);
             $loadYml = function (\ReflectionClass $class) use (&$ymls, &$loadYml) {
 
                 if (($parentClass = $class->getParentClass()) && !$parentClass->isAbstract()) {
@@ -131,6 +132,16 @@ class BuildEntitiesCommand extends Command {
             mkdir($this->modelDIr);
         }
 
+        $refPropModuleEntities = new \ReflectionProperty($appCtx, 'moduleEntities');
+        $refPropModuleEntities->setAccessible(true);
+        $modulesEntities = $refPropModuleEntities->getValue($appCtx);
+        $aggregatedModuleEntities = [];
+        foreach ($modulesEntities as $modulesEntity) {
+            if ($modulesEntity instanceof AggregatedModuleEntity) {
+                $aggregatedModuleEntities[] = $modulesEntity;
+            }
+        }
+
         $driver = new YamlDriver($this->modelDIr);
         $config = Setup::createXMLMetadataConfiguration(array($this->modelDIr));
         $config->setMetadataDriverImpl(
@@ -151,7 +162,7 @@ class BuildEntitiesCommand extends Command {
 
         $this->setCurrentProgression(90);
 
-        $this->generateMagicalEntities($magicalModuleManagers, $rootDir);
+        $this->generateMagicalEntities($aggregatedModuleEntities, $rootDir);
 
         $this->finishProgress();
 
@@ -241,29 +252,24 @@ class BuildEntitiesCommand extends Command {
     }
 
     /**
-     * @param MagicalModuleManager[] $magicalModuleManagers
-     * @param string                 $rootDir
+     * @param AggregatedModuleEntity[] $aggregatedModuleEntities
+     * @param string                   $rootDir
      */
-    protected function generateMagicalEntities ($magicalModuleManagers, $rootDir) {
+    protected function generateMagicalEntities ($aggregatedModuleEntities, $rootDir) {
 
-        foreach ($magicalModuleManagers as $magicalModuleManager) {
+        foreach ($aggregatedModuleEntities as $aggregatedModuleEntity) {
 
-            $magicalModuleManager->loadAspects();
-            $modelAspects = $magicalModuleManager->getAspects();
-            $mainEntity = $modelAspects[0]; // TODO: mainEntity is not necessarily the first entity
+            $modelAspects = $aggregatedModuleEntity->getDefinition()->getModelAspects();
+            $mainEntity = $aggregatedModuleEntity->getDefinition()->getMainAspect();
 
-            $classComponents = explode('\\', get_class($magicalModuleManager));
+            $classComponents = explode('\\', get_class($aggregatedModuleEntity));
             $magicalEntityName = $classComponents[count($classComponents) - 2];
             $class = $this->createMagicalClassHeader($magicalEntityName);
             $class .= $this->createMagicalConstructor($mainEntity->getModel());
-            $class .= $this->createMagicalModuleManagerGetter($magicalEntityName);
+            //$class .= $this->createMagicalModuleManagerGetter($magicalEntityName);
             $class .= $this->createMagicalMainEntityMethods($mainEntity->getModel());
 
             foreach ($modelAspects as $modelAspect) {
-                if (!$modelAspect->getRelativeField()) {
-                    // if mainEntity don't write getter and setter
-                    continue;
-                }
                 $class .= $this->generateMagicalSetterAndGetter($mainEntity->getModel(), $modelAspect);
             }
 
@@ -275,7 +281,7 @@ class BuildEntitiesCommand extends Command {
         }
     }
 
-    protected function createMagicalModuleManagerGetter($magicalEntityName) {
+    protected function createMagicalModuleManagerGetter ($magicalEntityName) {
 
         return <<<MAGICAL_MODULE_MANAGER_GETTER
     /**
@@ -301,7 +307,6 @@ class BuildEntitiesCommand extends Command {
 
 
 MAGICAL_MODULE_MANAGER_GETTER;
-
 
     }
 
@@ -383,7 +388,7 @@ CONSTRUCTOR;
         $varName = lcfirst($modelName);
 
         $getterUnrestrictedChain = $getterChain = $getterChainUntilEntity = "\$this->get$mainModelName()";
-        foreach (explode('.', $modelAspect->getRelativeField()->getValue()) as $fieldName) {
+        foreach (explode('.', $modelAspect->getRelativeField()) as $fieldName) {
             $getterChainUntilEntity = $getterUnrestrictedChain;
             $getterChain .= '->get' . ucfirst($fieldName) . '()';
             $getterUnrestrictedChain .= '->getUnrestricted' . ucfirst($fieldName) . '()';
@@ -471,7 +476,7 @@ GETTER_AND_SETTER;
         $metadata = $appCtx->getClassMetadata($entityClassName);
         $mapping = NULL;
 
-        foreach (explode('.', $modelAspect->getRelativeField()->getValue()) as $fieldName) {
+        foreach (explode('.', $modelAspect->getRelativeField()) as $fieldName) {
             $mapping = $metadata->getAssociationMapping($fieldName);
             $metadata = $appCtx->getClassMetadata($mapping['targetEntity']);
         }

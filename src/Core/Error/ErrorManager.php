@@ -125,6 +125,23 @@ class ErrorManager {
     }
 
     /**
+     * @param int         $errorCode
+     * @param string|null $field
+     *
+     * @return Error
+     */
+    public function getError ($errorCode, $field = NULL) {
+
+        $error = clone $this->getErrorForErrorCode($errorCode);
+        if (isset($field)) {
+            $error->setField($field);
+        }
+
+        return $error;
+
+    }
+
+    /**
      * @param Error $error
      *
      * @return FormattedError
@@ -148,6 +165,17 @@ class ErrorManager {
             $error->setField($field);
         }
         if (!in_array($error, $this->errors, true)) {
+            $this->errors[] = $error;
+        }
+
+    }
+
+    /**
+     * @param Error[] $errors
+     */
+    public function addErrors(array $errors) {
+
+        foreach ($errors as $error) {
             $this->errors[] = $error;
         }
 

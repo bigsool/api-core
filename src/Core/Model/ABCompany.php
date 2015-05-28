@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="abcompany")
  * @ORM\Entity
  */
-class ABCompany
-{
+class ABCompany {
+
     /**
      * @var integer
      *
@@ -45,8 +45,8 @@ class ABCompany
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->persons = new \Doctrine\Common\Collections\ArrayCollection();
         $this->abcompanyContact = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -54,44 +54,46 @@ class ABCompany
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ABCompany
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Add persons
      *
      * @param \Core\Model\ABPerson $persons
+     *
      * @return ABCompany
      */
-    public function addPerson(\Core\Model\ABPerson $persons)
-    {
+    public function addPerson (\Core\Model\ABPerson $persons) {
+
         $this->persons[] = $persons;
 
         return $this;
@@ -102,18 +104,18 @@ class ABCompany
      *
      * @param \Core\Model\ABPerson $persons
      */
-    public function removePerson(\Core\Model\ABPerson $persons)
-    {
+    public function removePerson (\Core\Model\ABPerson $persons) {
+
         $this->persons->removeElement($persons);
     }
 
     /**
      * Get persons
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getPersons()
-    {
+    public function getPersons () {
+
         return $this->persons;
     }
 
@@ -121,10 +123,11 @@ class ABCompany
      * Add abcompanyContact
      *
      * @param \Core\Model\ABCompanyContact $abcompanyContact
+     *
      * @return ABCompany
      */
-    public function addAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact)
-    {
+    public function addAbcompanyContact (\Core\Model\ABCompanyContact $abcompanyContact) {
+
         $this->abcompanyContact[] = $abcompanyContact;
 
         return $this;
@@ -135,18 +138,18 @@ class ABCompany
      *
      * @param \Core\Model\ABCompanyContact $abcompanyContact
      */
-    public function removeAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact)
-    {
+    public function removeAbcompanyContact (\Core\Model\ABCompanyContact $abcompanyContact) {
+
         $this->abcompanyContact->removeElement($abcompanyContact);
     }
 
     /**
      * Get abcompanyContact
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAbcompanyContact()
-    {
+    public function getAbcompanyContact () {
+
         return $this->abcompanyContact;
     }
 }

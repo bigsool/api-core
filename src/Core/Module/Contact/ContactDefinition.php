@@ -3,17 +3,29 @@
 
 namespace Core\Module\Contact;
 
-use Core\Validation\AbstractConstraintsProvider;
+
+use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Email;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\String;
 
-class Validation extends AbstractConstraintsProvider {
+class ContactDefinition extends ModuleEntityDefinition {
 
     /**
-     * @return Constraint[][]
+     * @return string
      */
-    protected function listConstraints () {
+    public function getEntityName () {
+
+        return 'Contact';
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return \Core\Validation\Parameter\Constraint[][]
+     */
+    public function getConstraints (array &$params) {
 
         return [
             'label'    => [

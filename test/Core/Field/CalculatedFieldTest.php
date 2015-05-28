@@ -102,7 +102,7 @@ class CalculatedFieldTest extends TestCase {
 
     public function testResolve () {
 
-        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser','fullName');
+        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser', 'fullName');
         $ctx = new FindQueryContext('TestUser');
         $registry = $this->getRegistry();
         $fields = $calculatedField->resolve($registry, $ctx);
@@ -112,7 +112,7 @@ class CalculatedFieldTest extends TestCase {
 
     public function testExecute () {
 
-        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser','fullName');
+        $calculatedField = $this->getApplicationContext()->getCalculatedField('TestUser', 'fullName');
         $ctx = new FindQueryContext('TestUser');
         $registry = $this->getRegistry();
         $calculatedField->resolve($registry, $ctx);

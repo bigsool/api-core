@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="abperson")
  * @ORM\Entity
  */
-class ABPerson
-{
+class ABPerson {
+
     /**
      * @var integer
      *
@@ -69,8 +69,8 @@ class ABPerson
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->abcompanyContact = new \Doctrine\Common\Collections\ArrayCollection();
         $this->abpersonContact = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -78,45 +78,33 @@ class ABPerson
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string
+     */
+    public function getLastName () {
+
+        return $this->lastName;
     }
 
     /**
      * Set lastName
      *
      * @param string $lastName
+     *
      * @return ABPerson
      */
-    public function setLastName($lastName)
-    {
+    public function setLastName ($lastName) {
+
         $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * Get lastName
-     *
-     * @return string 
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * Set firstName
-     *
-     * @param string $firstName
-     * @return ABPerson
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
 
         return $this;
     }
@@ -124,22 +112,23 @@ class ABPerson
     /**
      * Get firstName
      *
-     * @return string 
+     * @return string
      */
-    public function getFirstName()
-    {
+    public function getFirstName () {
+
         return $this->firstName;
     }
 
     /**
-     * Set title
+     * Set firstName
      *
-     * @param string $title
+     * @param string $firstName
+     *
      * @return ABPerson
      */
-    public function setTitle($title)
-    {
-        $this->title = $title;
+    public function setFirstName ($firstName) {
+
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -147,21 +136,36 @@ class ABPerson
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
-    public function getTitle()
-    {
+    public function getTitle () {
+
         return $this->title;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     *
+     * @return ABPerson
+     */
+    public function setTitle ($title) {
+
+        $this->title = $title;
+
+        return $this;
     }
 
     /**
      * Add abcompanyContact
      *
      * @param \Core\Model\ABCompanyContact $abcompanyContact
+     *
      * @return ABPerson
      */
-    public function addAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact)
-    {
+    public function addAbcompanyContact (\Core\Model\ABCompanyContact $abcompanyContact) {
+
         $this->abcompanyContact[] = $abcompanyContact;
 
         return $this;
@@ -172,18 +176,18 @@ class ABPerson
      *
      * @param \Core\Model\ABCompanyContact $abcompanyContact
      */
-    public function removeAbcompanyContact(\Core\Model\ABCompanyContact $abcompanyContact)
-    {
+    public function removeAbcompanyContact (\Core\Model\ABCompanyContact $abcompanyContact) {
+
         $this->abcompanyContact->removeElement($abcompanyContact);
     }
 
     /**
      * Get abcompanyContact
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAbcompanyContact()
-    {
+    public function getAbcompanyContact () {
+
         return $this->abcompanyContact;
     }
 
@@ -191,10 +195,11 @@ class ABPerson
      * Add abpersonContact
      *
      * @param \Core\Model\ABPersonContact $abpersonContact
+     *
      * @return ABPerson
      */
-    public function addAbpersonContact(\Core\Model\ABPersonContact $abpersonContact)
-    {
+    public function addAbpersonContact (\Core\Model\ABPersonContact $abpersonContact) {
+
         $this->abpersonContact[] = $abpersonContact;
 
         return $this;
@@ -205,41 +210,42 @@ class ABPerson
      *
      * @param \Core\Model\ABPersonContact $abpersonContact
      */
-    public function removeAbpersonContact(\Core\Model\ABPersonContact $abpersonContact)
-    {
+    public function removeAbpersonContact (\Core\Model\ABPersonContact $abpersonContact) {
+
         $this->abpersonContact->removeElement($abpersonContact);
     }
 
     /**
      * Get abpersonContact
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAbpersonContact()
-    {
+    public function getAbpersonContact () {
+
         return $this->abpersonContact;
+    }
+
+    /**
+     * Get abcompany
+     *
+     * @return \Core\Model\ABCompany
+     */
+    public function getAbcompany () {
+
+        return $this->abcompany;
     }
 
     /**
      * Set abcompany
      *
      * @param \Core\Model\ABCompany $abcompany
+     *
      * @return ABPerson
      */
-    public function setAbcompany(\Core\Model\ABCompany $abcompany = null)
-    {
+    public function setAbcompany (\Core\Model\ABCompany $abcompany = NULL) {
+
         $this->abcompany = $abcompany;
 
         return $this;
-    }
-
-    /**
-     * Get abcompany
-     *
-     * @return \Core\Model\ABCompany 
-     */
-    public function getAbcompany()
-    {
-        return $this->abcompany;
     }
 }

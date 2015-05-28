@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="company")
  * @ORM\Entity
  */
-class TestCompany
-{
+class TestCompany {
+
     /**
      * @var \Core\Context\FindQueryContext
      */
@@ -149,19 +149,19 @@ class TestCompany
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct () {
+
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Get id
+     * Get name
      *
-     * @return integer
+     * @return string
      */
-    public function getId()
-    {
-        return $this->id;
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
@@ -171,33 +171,9 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     *
-     * @return TestCompany
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -207,21 +183,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress () {
+
         return $this->address;
     }
 
     /**
-     * Set zipCode
+     * Set address
      *
-     * @param string $zipCode
+     * @param string $address
      *
      * @return TestCompany
      */
-    public function setZipCode($zipCode)
-    {
-        $this->zipCode = $zipCode;
+    public function setAddress ($address) {
+
+        $this->address = $address;
 
         return $this;
     }
@@ -231,21 +207,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getZipCode()
-    {
+    public function getZipCode () {
+
         return $this->zipCode;
     }
 
     /**
-     * Set city
+     * Set zipCode
      *
-     * @param string $city
+     * @param string $zipCode
      *
      * @return TestCompany
      */
-    public function setCity($city)
-    {
-        $this->city = $city;
+    public function setZipCode ($zipCode) {
+
+        $this->zipCode = $zipCode;
 
         return $this;
     }
@@ -255,21 +231,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getCity()
-    {
+    public function getCity () {
+
         return $this->city;
     }
 
     /**
-     * Set state
+     * Set city
      *
-     * @param string $state
+     * @param string $city
      *
      * @return TestCompany
      */
-    public function setState($state)
-    {
-        $this->state = $state;
+    public function setCity ($city) {
+
+        $this->city = $city;
 
         return $this;
     }
@@ -279,21 +255,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getState()
-    {
+    public function getState () {
+
         return $this->state;
     }
 
     /**
-     * Set country
+     * Set state
      *
-     * @param string $country
+     * @param string $state
      *
      * @return TestCompany
      */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+    public function setState ($state) {
+
+        $this->state = $state;
 
         return $this;
     }
@@ -303,21 +279,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry () {
+
         return $this->country;
     }
 
     /**
-     * Set tel
+     * Set country
      *
-     * @param string $tel
+     * @param string $country
      *
      * @return TestCompany
      */
-    public function setTel($tel)
-    {
-        $this->tel = $tel;
+    public function setCountry ($country) {
+
+        $this->country = $country;
 
         return $this;
     }
@@ -327,21 +303,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getTel()
-    {
+    public function getTel () {
+
         return $this->tel;
     }
 
     /**
-     * Set fax
+     * Set tel
      *
-     * @param string $fax
+     * @param string $tel
      *
      * @return TestCompany
      */
-    public function setFax($fax)
-    {
-        $this->fax = $fax;
+    public function setTel ($tel) {
+
+        $this->tel = $tel;
 
         return $this;
     }
@@ -351,21 +327,21 @@ class TestCompany
      *
      * @return string
      */
-    public function getFax()
-    {
+    public function getFax () {
+
         return $this->fax;
     }
 
     /**
-     * Set tva
+     * Set fax
      *
-     * @param string $tva
+     * @param string $fax
      *
      * @return TestCompany
      */
-    public function setTva($tva)
-    {
-        $this->tva = $tva;
+    public function setFax ($fax) {
+
+        $this->fax = $fax;
 
         return $this;
     }
@@ -375,9 +351,47 @@ class TestCompany
      *
      * @return string
      */
-    public function getTva()
-    {
+    public function getTva () {
+
         return $this->tva;
+    }
+
+    /**
+     * Set tva
+     *
+     * @param string $tva
+     *
+     * @return TestCompany
+     */
+    public function setTva ($tva) {
+
+        $this->tva = $tva;
+
+        return $this;
+    }
+
+    /**
+     * Get owner
+     *
+     * @return \Core\Model\TestUser
+     */
+    public function getOwner () {
+
+        if (!$this->ownerRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("owner") . "Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("owner")]);
+            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
+            $qryContext->findAll();
+        }
+
+        return $this->owner && $this->owner->getId() == $this->ownerRestrictedId ? $this->owner : NULL;
     }
 
     /**
@@ -387,12 +401,22 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function setOwner(\Core\Model\TestUser $owner = null)
-    {
+    public function setOwner (\Core\Model\TestUser $owner = NULL) {
+
         $this->owner = $owner;
         $this->ownerRestrictedId = $owner ? $owner->getId() : NULL;
-    
+
         return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId () {
+
+        return $this->id;
     }
 
     /**
@@ -400,33 +424,33 @@ class TestCompany
      *
      * @return \Core\Model\TestUser
      */
-    public function getOwner()
-    {
-        if (!$this->ownerRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("owner")."Faulted";
+    public function getUnrestrictedOwner () {
+
+        return $this->owner;
+    }
+
+    /**
+     * Get storage
+     *
+     * @return \Core\Model\TestStorage
+     */
+    public function getStorage () {
+
+        if (!$this->storageRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("storage") . "Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
             $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("owner")]);
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("storage")]);
             $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
             $qryContext->findAll();
         }
-    
-        return $this->owner && $this->owner->getId() == $this->ownerRestrictedId ? $this->owner : NULL;
-    }
 
-    /**
-     * Get owner
-     *
-     * @return \Core\Model\TestUser
-     */
-    public function getUnrestrictedOwner()
-    {
-        return $this->owner;
+        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
     /**
@@ -436,11 +460,11 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function setStorage(\Core\Model\TestStorage $storage = null)
-    {
+    public function setStorage (\Core\Model\TestStorage $storage = NULL) {
+
         $this->storage = $storage;
         $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -449,32 +473,8 @@ class TestCompany
      *
      * @return \Core\Model\TestStorage
      */
-    public function getStorage()
-    {
-        if (!$this->storageRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("storage")."Faulted";
-            if (!$this->$faultedVar) {
-                return NULL;
-            }
-            $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("storage")]);
-            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
-            $qryContext->findAll();
-        }
-    
-        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
-    }
+    public function getUnrestrictedStorage () {
 
-    /**
-     * Get storage
-     *
-     * @return \Core\Model\TestStorage
-     */
-    public function getUnrestrictedStorage()
-    {
         return $this->storage;
     }
 
@@ -485,11 +485,11 @@ class TestCompany
      *
      * @return TestCompany
      */
-    public function addUser(\Core\Model\TestUser $user)
-    {
+    public function addUser (\Core\Model\TestUser $user) {
+
         $this->users[] = $user;
         $this->usersRestrictedIds[] = $user->getId();
-    
+
         return $this;
     }
 
@@ -498,10 +498,10 @@ class TestCompany
      *
      * @param \Core\Model\TestUser $user
      */
-    public function removeUser(\Core\Model\TestUser $user)
-    {
+    public function removeUser (\Core\Model\TestUser $user) {
+
         $this->users->removeElement($user);
-        $this->usersRestrictedIds = array_diff($this->usersRestrictedIds,[$user->getId()]);
+        $this->usersRestrictedIds = array_diff($this->usersRestrictedIds, [$user->getId()]);
     }
 
     /**
@@ -509,13 +509,13 @@ class TestCompany
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUsers()
-    {
+    public function getUsers () {
+
         $inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this->usersRestrictedIds);
-    
+
         $criteria = \Doctrine\Common\Collections\Criteria::create();
         $criteria->where($inExpr);
-    
+
         return $this->users->matching($criteria);
     }
 
@@ -524,8 +524,8 @@ class TestCompany
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUnrestrictedUsers()
-    {
+    public function getUnrestrictedUsers () {
+
         return $this->users;
     }
 }

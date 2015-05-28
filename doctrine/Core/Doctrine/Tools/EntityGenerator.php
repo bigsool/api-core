@@ -5,7 +5,6 @@ namespace Core\Doctrine\Tools;
 
 
 use Core\Context\ApplicationContext;
-use Core\Field\CalculatedField;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -91,7 +90,7 @@ public function <methodName>()
 public function <methodName>()
 {
 <spaces>$class = get_class($this);
-<spaces>$entity = ($pos = strrpos($class, "\\\\\\\\")) ? substr($class, $pos + 1) : $class;
+<spaces>$entity = ($pos = strrpos($class, "\\\\")) ? substr($class, $pos + 1) : $class;
 <spaces>$appCtx = $this->findQueryContext->getApplicationContext();
 
 <spaces>return $appCtx->getCalculatedField($entity, "<fieldName>")->execute($this);

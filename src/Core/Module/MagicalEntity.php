@@ -5,11 +5,14 @@ namespace Core\Module;
 
 abstract class MagicalEntity {
 
+    /**
+     * @return mixed
+     */
     public abstract function getMainEntity ();
 
     /**
-     * @return MagicalModuleManager
+     * @return mixed
      */
-    public abstract function getMagicalModuleManager ();
+    public abstract function getId ();
 
 }

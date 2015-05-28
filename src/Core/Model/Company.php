@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="company")
  * @ORM\Entity
  */
-class Company
-{
+class Company {
+
     /**
      * @var integer
      *
@@ -35,49 +35,36 @@ class Company
      */
     private $vat;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName () {
+
+        return $this->name;
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Company
      */
-    public function setName($name)
-    {
+    public function setName ($name) {
+
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set vat
-     *
-     * @param string $vat
-     * @return Company
-     */
-    public function setVat($vat)
-    {
-        $this->vat = $vat;
 
         return $this;
     }
@@ -85,10 +72,24 @@ class Company
     /**
      * Get vat
      *
-     * @return string 
+     * @return string
      */
-    public function getVat()
-    {
+    public function getVat () {
+
         return $this->vat;
+    }
+
+    /**
+     * Set vat
+     *
+     * @param string $vat
+     *
+     * @return Company
+     */
+    public function setVat ($vat) {
+
+        $this->vat = $vat;
+
+        return $this;
     }
 }

@@ -3,110 +3,90 @@
 namespace Core\Module\TestAccount;
 
 
+use Core\Action\Action;
 use Core\Action\SimpleAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Model\TestAccount;
 use Core\Model\TestCompany;
 use Core\Module\MagicalModuleManager;
-use Core\Validation\Constraints\Dictionary;
-use Symfony\Component\Validator\Constraints\Blank;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Core\Module\ModuleEntity;
 
 class ModuleManager extends MagicalModuleManager {
 
     /**
      * @param ApplicationContext $appCtx
+     *
+     * @return Action[]
      */
     public function createActions (ApplicationContext &$appCtx) {
 
-        $self = $this;
+        /**
+         * @var AccountModuleEntity $testAccountModuleEntity
+         */
+        $testAccountModuleEntity = $this->getModuleEntity('TestUser');
 
-        $appCtx->addAction(new SimpleAction('Core\Account', 'create', NULL, [],
-            function (ActionContext $context) use ($self) {
+        return [
+            new SimpleAction('Core\Account', 'create', [], [],
+                function (ActionContext $context) use ($testAccountModuleEntity) {
 
-                /**
-                 * @var TestAccount $account
-                 */
-                $account = $self->magicalCreate($context);
+                    /**
+                     * @var TestAccount $account
+                     */
+                    $account = $testAccountModuleEntity->create($context, $context->getVerifiedParams());
 
-                // The creator of the TestAccount is the owner of the company
-                $account->getUser()->setOwnedCompany($account->getCompany());
-                $account->getCompany()->setOwner($account->getUser());
-                ApplicationContext::getInstance()->getNewRegistry()->save($account);
+                    // The creator of the TestAccount is the owner of the company
+                    $account->getUser()->setOwnedCompany($account->getCompany());
+                    $account->getCompany()->setOwner($account->getUser());
 
-                return $account;
+                    $testAccountModuleEntity->save($account);
 
-            }));
+                    return $account;
 
-        $appCtx->addAction(new SimpleAction('Core\Account', 'update', NULL, [],
-            function (ActionContext $context) use ($self) {
+                }),
+            new SimpleAction('Core\Account', 'update', [], [],
+                function (ActionContext $context) use ($testAccountModuleEntity) {
 
-                $user = $self->magicalUpdate($context);
+                    $account = $testAccountModuleEntity->update($context, $context->getVerifiedParams());
 
-                return $user;
+                    return $account;
 
-            }));
+                }),
+            new SimpleAction('Core\Account', 'find', [], [],
+                function (ActionContext $context) {
 
-        $appCtx->addAction(new SimpleAction('Core\Account', 'find', NULL, [],
-            function (ActionContext $context) use ($self) {
+                    throw new \RuntimeException('Not implemented yet');
 
-                throw new \RuntimeException('Not implemented yet');
+                }),
+            new SimpleAction('TestAccount', 'createStorage', [], [],
+                function (ActionContext $context) use ($testAccountModuleEntity) {
 
-            }));
+                    $company = $context['company'];
+                    if (!($company instanceof TestCompany)) {
+                        throw new \RuntimeException('company must be defined in the context');
+                    }
+
+                    $context->setParams(['url' => $company->getId() . '-' . $company->getName()]);
+
+                    $storageAspect = $testAccountModuleEntity->getModelAspect('TestStorage');
+
+                    return $testAccountModuleEntity->getMagicalAction('create', $storageAspect)->process($context);
+
+                })
+        ];
 
     }
 
-    public function loadAspects () {
+    /**
+     * @param ApplicationContext $context
+     *
+     * @return ModuleEntity[]
+     */
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
 
-        $this->setMainEntity([
-                                 'model' => 'TestUser',
-                             ]);
-
-        $this->addAspect([
-                             'model'   => 'TestCompany',
-                             'prefix'  => 'company',
-                             'keyPath' => 'company',
-                             'create'  => [
-                                 'constraints' => [new Dictionary(), new NotBlank()],
-                             ],
-                             'update'  => [
-                                 'constraints' => [new Dictionary(), new NotBlank()],
-                             ]
-                         ]);
-
-        $this->addAspect([
-                             'model'   => 'TestStorage',
-                             'prefix'  => 'storage',
-                             'keyPath' => 'company.storage',
-                             'create'  => [
-                                 'constraints' => [new Blank()],
-                                 'action'      => $this->getCreateStorageAction()
-                             ],
-                             'update'  => [
-                                 'constraints' => [new Blank()],
-                             ]
-
-                         ]);
-    }
-
-    protected function getCreateStorageAction () {
-
-        $self = $this;
-
-        return new SimpleAction('TestAccount', 'createStorage', [], [], function (ActionContext $context) use (&$self) {
-
-            $company = $context['company'];
-            if (!($company instanceof TestCompany)) {
-                throw new \RuntimeException('company must be defined in the context');
-            }
-
-            $context->setParams(['url' => $company->getId() . '-' . $company->getName()]);
-
-            return $self->getMagicalAction('create', $self->getModelAspectForModelName('TestStorage'))
-                        ->process($context);
-
-        });
+        return [
+            new AccountModuleEntity($context)
+        ];
 
     }
 

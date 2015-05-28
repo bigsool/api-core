@@ -4,30 +4,22 @@
 namespace Core\Module;
 
 
+use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Field\CalculatedField;
-use Core\Filter\Filter;
+use Core\Context\FindQueryContext;
+use Core\Context\ModuleEntityUpsertContext;
+use Core\Error\ValidationException;
 use Core\Registry;
 
 abstract class AbstractModuleEntity implements ModuleEntity {
 
     /**
-     * @var string
+     * @var ModuleEntityDefinition
      */
-    protected $entityName;
+    protected $definition;
 
     /**
-     * @var CalculatedField[]
-     */
-    protected $fields;
-
-    /**
-     * @var Filter[]
-     */
-    protected $filters;
-
-    /**
-     * @var string
+     * @var ApplicationContext
      */
     protected $applicationContext;
 
@@ -37,61 +29,143 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     protected $registry;
 
     /**
-     * @param ApplicationContext $applicationContext
-     * @param string             $entityName
-     * @param Filter[]           $filters
-     * @param CalculatedField[]  $fields
+     * @param ApplicationContext     $applicationContext
+     * @param ModuleEntityDefinition $definition
      */
-    public function __construct (ApplicationContext $applicationContext, $entityName, array $filters = [],
-                                 array $fields = []) {
+    public function __construct (ApplicationContext $applicationContext, ModuleEntityDefinition $definition) {
 
-        $this->entityName = $entityName;
-        $this->fields = $fields;
-        $this->filters = $filters;
+        $this->definition = $definition;
         $this->applicationContext = $applicationContext;
 
     }
 
     /**
-     * @return string
+     * @param ActionContext $actionContext
+     *
+     * @return mixed
      */
-    public function getEntityName () {
+    public function create (ActionContext $actionContext) {
 
-        return $this->entityName;
-    }
-
-    /**
-     * @return CalculatedField[]
-     */
-    public function getCalculatedFieldCallbacks () {
-
-        return $this->fields;
+        return $this->modifyEntity($actionContext->getParams(), NULL, $actionContext);
 
     }
 
     /**
-     * @param mixed $fields
+     * @param ActionContext $actionContext
+     *
+     * @return mixed
      */
-    public function setFields ($fields) {
-
-        $this->fields = $fields;
-    }
-
-    /**
-     * @return Filter[]
-     */
-    public function getFilters () {
-
-        return $this->filters;
+    public function update (ActionContext $actionContext) {
+        // TODO : check me : how to get validated id ?
+        $entityId = $actionContext->getVerifiedParam('id');
+        return $this->modifyEntity($actionContext->getParams(), $entityId, $actionContext);
 
     }
 
     /**
-     * @param mixed $filters
+     * @param ActionContext $actionContext
+     * @param int|null      $entityId
+     *
+     * @return mixed
      */
-    public function setFilters ($filters) {
+    protected function modifyEntity (array $unsafeParams, $entityId, ActionContext $actionContext) {
+        $errors = [];
 
-        $this->filters = $filters;
+        try {
+            $upsertContext = $this->createUpsertContextProxy($unsafeParams, $entityId, $actionContext);
+            if ( $upsertContext->getErrors() ) {
+                $errors = $upsertContext->getErrors();
+            }
+        } catch(ValidationException $exception) {
+            $errors = $exception->getErrors();
+        }
+
+
+        if ($errors) {
+
+            $errMgr = $actionContext->getApplicationContext()->getErrorManager();
+            $errMgr->addErrors($errors);
+
+            throw $errMgr->getFormattedError();
+
+        }
+
+
+        $entity = $this->upsert($upsertContext);
+
+        $this->postModifyProxy($entity, $upsertContext);
+
+
+        return $entity;
+
+    }
+
+    protected function createUpsertContextProxy(array $unsafeParams, $entityId, ActionContext $actionContext) {
+        return $this->getDefinition()->createUpsertContext($unsafeParams, $entityId, $actionContext);
+    }
+
+    protected function postModifyProxy($entity, ModuleEntityUpsertContext $upsertContext) {
+        $this->getDefinition()->postModify($entity, $upsertContext);
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    public function delete ($entity) {
+
+        $realModelClassName = $this->registry->realModelClassName($this->definition);
+        $className = '\\' . get_class($entity);
+        if (!($entity instanceof $realModelClassName)) {
+            throw new \RuntimeException(sprintf('$entity must be a %s, %s %s given', $realModelClassName,
+                                                gettype($entity), $className));
+        }
+
+        $this->registry->delete($entity);
+
+    }
+
+    /**
+     * @param FindQueryContext $findQueryContext
+     *
+     * @return array
+     */
+    public function find (FindQueryContext $findQueryContext) {
+
+        return $this->registry->find($findQueryContext);
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
+    public function getApplicationContext () {
+
+        return $this->applicationContext;
+
+    }
+
+    /**
+     * @return ModuleEntityDefinition
+     */
+    public function getDefinition () {
+
+        return $this->definition;
+
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    public function save ($entity) {
+
+        $realModelClassName = $this->registry->realModelClassName($this->definition);
+        $className = '\\' . get_class($entity);
+        if (!($entity instanceof $realModelClassName)) {
+            throw new \RuntimeException(sprintf('$entity must be a %s, %s %s given', $realModelClassName,
+                                                gettype($entity), $className));
+        }
+
+        $this->registry->save($entity);
 
     }
 
@@ -101,6 +175,24 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     public function setRegistry (Registry $registry) {
 
         $this->registry = $registry;
+
+    }
+
+    /**
+     * @param ModuleEntityUpsertContext $upsertContext
+     *
+     * @return mixed
+     */
+    abstract protected function upsert (ModuleEntityUpsertContext $upsertContext);
+
+    /**
+     * @return mixed
+     */
+    protected function createEntity () {
+
+        $className = $this->registry->realModelClassName($this->getDefinition()->getEntityName());
+
+        return new $className;
 
     }
 

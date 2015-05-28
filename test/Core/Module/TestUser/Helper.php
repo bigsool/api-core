@@ -5,10 +5,10 @@ namespace Core\Module\TestUser;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Helper\GenericHelper;
+use Core\Helper\GenericModuleEntityHelper;
 use Core\Model\TestUser;
 
-class Helper extends GenericHelper {
+class ModuleEntityHelper extends GenericModuleEntityHelper {
 
     /**
      * @param ApplicationContext $applicationContext
@@ -67,7 +67,7 @@ class Helper extends GenericHelper {
      *
      * @return bool
      */
-    public static function verifyPassword($password, $hash) {
+    public static function verifyPassword ($password, $hash) {
 
         return password_verify($password, $hash);
 

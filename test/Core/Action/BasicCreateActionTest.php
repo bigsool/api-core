@@ -4,7 +4,6 @@
 namespace Core\Action;
 
 
-use Core\Context\ApplicationContext;
 use Core\Module\TestUser\ModuleManager as UserModuleManager;
 use Core\Registry;
 use Core\TestCase;
@@ -30,15 +29,16 @@ class BasicCreationActionTest extends TestCase {
         $postCalled = false;
 
         $action =
-            new BasicCreateAction('Core\TestUser', $userModuleManager->getModuleEntity('TestUser'), [], [], function () use (&$preCalled) {
+            new BasicCreateAction('Core\TestUser', $userModuleManager->getModuleEntity('TestUser'), [], [],
+                function () use (&$preCalled) {
 
-                $preCalled = true;
+                    $preCalled = true;
 
-            }, function () use (&$postCalled) {
+                }, function () use (&$postCalled) {
 
-                $postCalled = true;
+                    $postCalled = true;
 
-            });
+                });
 
         $actCtx = $this->getActionContext();
         $actCtx->setParams(['email' => 'qwe@qwe.com', 'password' => 'qwe']);

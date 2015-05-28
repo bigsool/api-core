@@ -4,6 +4,7 @@ namespace Core;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
+use Core\Module\AggregatedModuleEntity;
 use Core\Module\MagicalEntity;
 use Core\Util\ArrayExtra;
 use Core\Util\ModelConverter;
@@ -14,6 +15,11 @@ class Serializer {
      * @var ActionContext
      */
     protected $actCtx;
+
+    /**
+     * @var AggregatedModuleEntity|NULL
+     */
+    protected $currentAggregatedModuleEntity;
 
     /**
      * @var bool
@@ -43,7 +49,7 @@ class Serializer {
     /**
      * @param ActionContext $actCtx
      */
-    function __construct (ActionContext $actCtx) {
+    public function __construct (ActionContext $actCtx) {
 
         $this->actCtx = $actCtx;
 
@@ -55,6 +61,15 @@ class Serializer {
             $this->requiredNotFormattedKeyPaths[] = $value;
             $this->requiredKeyPaths[] = explode('.', $value);
         }
+
+    }
+
+    /**
+     * @param AggregatedModuleEntity|NULL $currentAggregatedModuleEntity
+     */
+    public function setCurrentAggregatedModuleEntity ($currentAggregatedModuleEntity) {
+
+        $this->currentAggregatedModuleEntity = $currentAggregatedModuleEntity;
 
     }
 
@@ -124,18 +139,34 @@ class Serializer {
             }
             elseif ($data instanceof MagicalEntity) {
                 $requestContext = $this->actCtx->getRequestContext();
-                $data->getMagicalModuleManager()->convertRequestedFields($requestContext);
+
+                $serializerContext = $this->getAggregatedModuleEntity($data)->getAggregatedSerializerContext();
+                $returnedFields = $serializerContext->convertRequestedFields($requestContext->getReturnedFields());
+                $requestContext->setFormattedReturnedFields($returnedFields);
 
                 foreach ($requestContext->getFormattedReturnedFields() as $formattedField) {
                     $this->requiredFormattedFields[] = $formattedField->getValue();
                 }
                 $tmpConvertedEntity = $this->convertDoctrineObjects($data->getMainEntity());
 
-                return $data->getMagicalModuleManager()->formatFindResultArray([$tmpConvertedEntity])[0];
+                return $serializerContext->formatResultArray([$tmpConvertedEntity])[0];
             }
         }
 
         return $data;
+
+    }
+
+    /**
+     * @param MagicalEntity $model
+     *
+     * @return AggregatedModuleEntity
+     */
+    protected function getAggregatedModuleEntity (MagicalEntity $model) {
+
+        $this->actCtx->getApplicationContext()->populateSerializerWithAggregatedModuleEntity($this, $model);
+
+        return $this->currentAggregatedModuleEntity;
 
     }
 

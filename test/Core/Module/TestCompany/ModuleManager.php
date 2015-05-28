@@ -10,13 +10,10 @@ use Core\Context\ApplicationContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath;
 use Core\Expression\Parameter;
-use Core\Field\StarField;
 use Core\Filter\ExpressionFilter;
-use Core\Filter\FilterReference;
-use Core\Module\GenericDbEntity;
+use Core\Module\DbModuleEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Operator\MemberOf;
-use Core\Rule\FieldRule;
 
 
 class ModuleManager extends AbstractModuleManager {
@@ -45,10 +42,10 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * {@inheritDoc}
      */
-    public function createModuleEntities (ApplicationContext &$context) {
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
 
         return [
-            new GenericDbEntity($context, 'TestCompany')
+            new DbModuleEntity($context, 'TestCompany')
         ];
 
     }

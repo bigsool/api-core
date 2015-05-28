@@ -8,7 +8,7 @@ use Core\TestCase;
 
 class MailerTest extends TestCase {
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass () {
 
         parent::setUpBeforeClass();
 

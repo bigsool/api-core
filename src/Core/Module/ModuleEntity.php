@@ -7,30 +7,14 @@ namespace Core\Module;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Field\CalculatedField;
-use Core\Filter\Filter;
 use Core\Registry;
 
 interface ModuleEntity {
 
     /**
-     * @param ApplicationContext $applicationContext
-     * @param string             $entityName
-     * @param CalculatedField[]  $fields
-     * @param Filter[]           $filters
+     * @return ApplicationContext
      */
-    public function __construct (ApplicationContext $applicationContext, $entityName, array $fields = [],
-                                 array $filters = []);
-
-    /**
-     * @return callable[]
-     */
-    public function getCalculatedFieldCallbacks ();
-
-    /**
-     * @return Filter[]
-     */
-    public function getFilters ();
+    public function getApplicationContext ();
 
     /**
      * @param FindQueryContext $findQueryContext
@@ -41,16 +25,22 @@ interface ModuleEntity {
 
     /**
      * @param ActionContext $context
-     * @param array         $params
      *
      * @return mixed
      */
-    public function create (ActionContext $context, array $params);
+    public function create (ActionContext $context);
 
     /**
-     * @return string
+     * @param ActionContext $context
+     *
+     * @return mixed
      */
-    public function getEntityName ();
+    public function update (ActionContext $context);
+
+    /**
+     * @return ModuleEntityDefinition
+     */
+    public function getDefinition ();
 
     /**
      * @param mixed $entity
@@ -65,6 +55,6 @@ interface ModuleEntity {
     /**
      * @param Registry $registry
      */
-    public function setRegistry(Registry $registry);
+    public function setRegistry (Registry $registry);
 
 }

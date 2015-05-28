@@ -8,6 +8,7 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
+use Core\Validation\Validator;
 
 class SimpleAction extends Action {
 
@@ -135,7 +136,7 @@ class SimpleAction extends Action {
      */
     public function validate (ActionContext $context) {
 
-        $this->validateParams($context, $this->params);
+        Validator::validate($context, $this->params);
 
     }
 }

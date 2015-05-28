@@ -23,8 +23,11 @@ abstract class ModuleManager {
 
         $context->addModuleManager($this);
 
-        foreach ($this->createModuleEntities($context) as $moduleEntity) {
-            $this->moduleEntities[$moduleEntity->getEntityName()] = $moduleEntity;
+        foreach ($this->createModuleEntityDefinitions($context) as $moduleEntityDefinition) {
+            $moduleEntity = $moduleEntityDefinition instanceof AggregatedModuleEntityDefinition ?
+                new AggregatedModuleEntity($context, $moduleEntityDefinition)
+                : new DbModuleEntity($context, $moduleEntityDefinition);
+            $this->moduleEntities[$moduleEntity->getDefinition()->getEntityName()] = $moduleEntity;
             $context->addModuleEntity($moduleEntity);
         }
 
@@ -34,10 +37,10 @@ abstract class ModuleManager {
                 $context->addFilter($filter);
             }
 
-            $entityName = $moduleEntity->getEntityName();
+            $entityName = $moduleEntity->getDefinition()->getDBEntityName();
 
-            foreach ($moduleEntity->getCalculatedFieldCallbacks() as $fieldName => $callback) {
-                $context->addCalculatedField($entityName, $fieldName, $callback);
+            foreach ($moduleEntity->getCalculatedFields() as $fieldName => $calculatedField) {
+                $context->addCalculatedField($entityName, $fieldName, $calculatedField);
             }
 
         }
@@ -69,9 +72,9 @@ abstract class ModuleManager {
     /**
      * @param ApplicationContext $context
      *
-     * @return ModuleEntity[]
+     * @return ModuleEntityDefinition[]
      */
-    public function createModuleEntities (ApplicationContext &$context) {
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
 
         return [];
 

@@ -171,10 +171,7 @@ class Registry implements EventSubscriber {
 
         $class = '\\' . $product . '\Model\\' . $entity;
         if (!class_exists($class)) {
-            $class = '\Core\Model\\' . $entity;
-            if (!class_exists($class)) {
-                throw new \RuntimeException('entity not found');
-            }
+            throw new \RuntimeException('entity not found');
         }
 
         return $class;

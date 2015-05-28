@@ -22,6 +22,7 @@ use Core\Expression\Value;
 use Core\Field\Field;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Module\AggregatedModuleEntity;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Module\ModuleManager;
@@ -171,6 +172,20 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockMagicalModuleManager ($fnToOverride = []) {
 
         return $this->getMockBuilder('\Core\Module\MagicalModuleManager')
+                    ->disableOriginalConstructor()
+                    ->setMethods($fnToOverride)
+                    ->getMockForAbstractClass();
+
+    }
+
+    /**
+     * @param array $fnToOverride
+     *
+     * @return AggregatedModuleEntity
+     */
+    public function getMockAggregatedModuleEntity ($fnToOverride = []) {
+
+        return $this->getMockBuilder('\Core\Module\AggregatedModuleEntity')
                     ->disableOriginalConstructor()
                     ->setMethods($fnToOverride)
                     ->getMockForAbstractClass();

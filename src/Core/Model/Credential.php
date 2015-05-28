@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Credential")
  * @ORM\Entity
  */
-class Credential
-{
+class Credential {
+
     /**
      * @var integer
      *
@@ -42,49 +42,36 @@ class Credential
      */
     private $salt;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get login
+     *
+     * @return string
+     */
+    public function getLogin () {
+
+        return $this->login;
     }
 
     /**
      * Set login
      *
      * @param string $login
+     *
      * @return Credential
      */
-    public function setLogin($login)
-    {
+    public function setLogin ($login) {
+
         $this->login = $login;
-
-        return $this;
-    }
-
-    /**
-     * Get login
-     *
-     * @return string 
-     */
-    public function getLogin()
-    {
-        return $this->login;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return Credential
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -92,22 +79,23 @@ class Credential
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set salt
+     * Set password
      *
-     * @param string $salt
+     * @param string $password
+     *
      * @return Credential
      */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -115,10 +103,24 @@ class Credential
     /**
      * Get salt
      *
-     * @return string 
+     * @return string
      */
-    public function getSalt()
-    {
+    public function getSalt () {
+
         return $this->salt;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     *
+     * @return Credential
+     */
+    public function setSalt ($salt) {
+
+        $this->salt = $salt;
+
+        return $this;
     }
 }

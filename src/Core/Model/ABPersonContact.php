@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="abperson_contact", uniqueConstraints={@ORM\UniqueConstraint(name="abperson_contact_order", columns={"abperson_id", "contact_id", "order"})})
  * @ORM\Entity
  */
-class ABPersonContact
-{
+class ABPersonContact {
+
     /**
      * @var integer
      *
@@ -55,49 +55,36 @@ class ABPersonContact
      */
     private $abperson;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType () {
+
+        return $this->type;
     }
 
     /**
      * Set type
      *
      * @param string $type
+     *
      * @return ABPersonContact
      */
-    public function setType($type)
-    {
+    public function setType ($type) {
+
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set order
-     *
-     * @param integer $order
-     * @return ABPersonContact
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
 
         return $this;
     }
@@ -105,22 +92,23 @@ class ABPersonContact
     /**
      * Get order
      *
-     * @return integer 
+     * @return integer
      */
-    public function getOrder()
-    {
+    public function getOrder () {
+
         return $this->order;
     }
 
     /**
-     * Set contact
+     * Set order
      *
-     * @param \Core\Model\Contact $contact
+     * @param integer $order
+     *
      * @return ABPersonContact
      */
-    public function setContact(\Core\Model\Contact $contact = null)
-    {
-        $this->contact = $contact;
+    public function setOrder ($order) {
+
+        $this->order = $order;
 
         return $this;
     }
@@ -128,22 +116,23 @@ class ABPersonContact
     /**
      * Get contact
      *
-     * @return \Core\Model\Contact 
+     * @return \Core\Model\Contact
      */
-    public function getContact()
-    {
+    public function getContact () {
+
         return $this->contact;
     }
 
     /**
-     * Set abperson
+     * Set contact
      *
-     * @param \Core\Model\ABPerson $abperson
+     * @param \Core\Model\Contact $contact
+     *
      * @return ABPersonContact
      */
-    public function setAbperson(\Core\Model\ABPerson $abperson = null)
-    {
-        $this->abperson = $abperson;
+    public function setContact (\Core\Model\Contact $contact = NULL) {
+
+        $this->contact = $contact;
 
         return $this;
     }
@@ -151,10 +140,24 @@ class ABPersonContact
     /**
      * Get abperson
      *
-     * @return \Core\Model\ABPerson 
+     * @return \Core\Model\ABPerson
      */
-    public function getAbperson()
-    {
+    public function getAbperson () {
+
         return $this->abperson;
+    }
+
+    /**
+     * Set abperson
+     *
+     * @param \Core\Model\ABPerson $abperson
+     *
+     * @return ABPersonContact
+     */
+    public function setAbperson (\Core\Model\ABPerson $abperson = NULL) {
+
+        $this->abperson = $abperson;
+
+        return $this;
     }
 }

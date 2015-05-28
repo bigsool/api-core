@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="abcompany_contact", uniqueConstraints={@ORM\UniqueConstraint(name="abcompany_contact_order", columns={"abcompany_id", "contact_id", "order"})})
  * @ORM\Entity
  */
-class ABCompanyContact
-{
+class ABCompanyContact {
+
     /**
      * @var integer
      *
@@ -65,49 +65,36 @@ class ABCompanyContact
      */
     private $abperson;
 
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId () {
+
         return $this->id;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType () {
+
+        return $this->type;
     }
 
     /**
      * Set type
      *
      * @param string $type
+     *
      * @return ABCompanyContact
      */
-    public function setType($type)
-    {
+    public function setType ($type) {
+
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set order
-     *
-     * @param integer $order
-     * @return ABCompanyContact
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
 
         return $this;
     }
@@ -115,22 +102,23 @@ class ABCompanyContact
     /**
      * Get order
      *
-     * @return integer 
+     * @return integer
      */
-    public function getOrder()
-    {
+    public function getOrder () {
+
         return $this->order;
     }
 
     /**
-     * Set contact
+     * Set order
      *
-     * @param \Core\Model\Contact $contact
+     * @param integer $order
+     *
      * @return ABCompanyContact
      */
-    public function setContact(\Core\Model\Contact $contact = null)
-    {
-        $this->contact = $contact;
+    public function setOrder ($order) {
+
+        $this->order = $order;
 
         return $this;
     }
@@ -138,22 +126,23 @@ class ABCompanyContact
     /**
      * Get contact
      *
-     * @return \Core\Model\Contact 
+     * @return \Core\Model\Contact
      */
-    public function getContact()
-    {
+    public function getContact () {
+
         return $this->contact;
     }
 
     /**
-     * Set abcompany
+     * Set contact
      *
-     * @param \Core\Model\ABCompany $abcompany
+     * @param \Core\Model\Contact $contact
+     *
      * @return ABCompanyContact
      */
-    public function setAbcompany(\Core\Model\ABCompany $abcompany = null)
-    {
-        $this->abcompany = $abcompany;
+    public function setContact (\Core\Model\Contact $contact = NULL) {
+
+        $this->contact = $contact;
 
         return $this;
     }
@@ -161,22 +150,23 @@ class ABCompanyContact
     /**
      * Get abcompany
      *
-     * @return \Core\Model\ABCompany 
+     * @return \Core\Model\ABCompany
      */
-    public function getAbcompany()
-    {
+    public function getAbcompany () {
+
         return $this->abcompany;
     }
 
     /**
-     * Set abperson
+     * Set abcompany
      *
-     * @param \Core\Model\ABPerson $abperson
+     * @param \Core\Model\ABCompany $abcompany
+     *
      * @return ABCompanyContact
      */
-    public function setAbperson(\Core\Model\ABPerson $abperson = null)
-    {
-        $this->abperson = $abperson;
+    public function setAbcompany (\Core\Model\ABCompany $abcompany = NULL) {
+
+        $this->abcompany = $abcompany;
 
         return $this;
     }
@@ -184,10 +174,24 @@ class ABCompanyContact
     /**
      * Get abperson
      *
-     * @return \Core\Model\ABPerson 
+     * @return \Core\Model\ABPerson
      */
-    public function getAbperson()
-    {
+    public function getAbperson () {
+
         return $this->abperson;
+    }
+
+    /**
+     * Set abperson
+     *
+     * @param \Core\Model\ABPerson $abperson
+     *
+     * @return ABCompanyContact
+     */
+    public function setAbperson (\Core\Model\ABPerson $abperson = NULL) {
+
+        $this->abperson = $abperson;
+
+        return $this;
     }
 }

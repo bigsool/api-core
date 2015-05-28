@@ -51,7 +51,7 @@ class BasicUpdateAction extends SimpleAction {
 
                 $reqCtx = $context->getRequestContext()->copyWithoutRequestedFields();
 
-                $entityName = $moduleEntity->getEntityName();
+                $entityName = $moduleEntity->getDefinition();
 
                 $moduleEntity = ucfirst($moduleEntity);
 

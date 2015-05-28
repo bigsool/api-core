@@ -4,9 +4,9 @@ namespace Core\Module\TestStorage;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Helper\GenericHelper;
+use Core\Helper\GenericModuleEntityHelper;
 
-class Helper extends GenericHelper {
+class ModuleEntityHelper extends GenericModuleEntityHelper {
 
     /**
      * @param ApplicationContext $applicationContext

@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="userEmail", columns={"email"})})
  * @ORM\Entity
  */
-class TestUser
-{
+class TestUser {
+
     /**
      * @var \Core\Context\FindQueryContext
      */
@@ -153,15 +153,14 @@ class TestUser
      */
     protected $isCompanyFaulted = true;
 
-
     /**
-     * Get id
+     * Get email
      *
-     * @return integer
+     * @return string
      */
-    public function getId()
-    {
-        return $this->id;
+    public function getEmail () {
+
+        return $this->email;
     }
 
     /**
@@ -171,33 +170,9 @@ class TestUser
      *
      * @return TestUser
      */
-    public function setEmail($email)
-    {
+    public function setEmail ($email) {
+
         $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return TestUser
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -207,21 +182,21 @@ class TestUser
      *
      * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword () {
+
         return $this->password;
     }
 
     /**
-     * Set name
+     * Set password
      *
-     * @param string $name
+     * @param string $password
      *
      * @return TestUser
      */
-    public function setName($name)
-    {
-        $this->name = $name;
+    public function setPassword ($password) {
+
+        $this->password = $password;
 
         return $this;
     }
@@ -231,21 +206,21 @@ class TestUser
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName () {
+
         return $this->name;
     }
 
     /**
-     * Set firstname
+     * Set name
      *
-     * @param string $firstname
+     * @param string $name
      *
      * @return TestUser
      */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = $firstname;
+    public function setName ($name) {
+
+        $this->name = $name;
 
         return $this;
     }
@@ -255,21 +230,21 @@ class TestUser
      *
      * @return string
      */
-    public function getFirstname()
-    {
+    public function getFirstname () {
+
         return $this->firstname;
     }
 
     /**
-     * Set lang
+     * Set firstname
      *
-     * @param string $lang
+     * @param string $firstname
      *
      * @return TestUser
      */
-    public function setLang($lang)
-    {
-        $this->lang = $lang;
+    public function setFirstname ($firstname) {
+
+        $this->firstname = $firstname;
 
         return $this;
     }
@@ -279,21 +254,21 @@ class TestUser
      *
      * @return string
      */
-    public function getLang()
-    {
+    public function getLang () {
+
         return $this->lang;
     }
 
     /**
-     * Set salt
+     * Set lang
      *
-     * @param string $salt
+     * @param string $lang
      *
      * @return TestUser
      */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
+    public function setLang ($lang) {
+
+        $this->lang = $lang;
 
         return $this;
     }
@@ -303,21 +278,21 @@ class TestUser
      *
      * @return string
      */
-    public function getSalt()
-    {
+    public function getSalt () {
+
         return $this->salt;
     }
 
     /**
-     * Set registerDate
+     * Set salt
      *
-     * @param \DateTime $registerDate
+     * @param string $salt
      *
      * @return TestUser
      */
-    public function setRegisterDate($registerDate)
-    {
-        $this->registerDate = $registerDate;
+    public function setSalt ($salt) {
+
+        $this->salt = $salt;
 
         return $this;
     }
@@ -327,21 +302,21 @@ class TestUser
      *
      * @return \DateTime
      */
-    public function getRegisterDate()
-    {
+    public function getRegisterDate () {
+
         return $this->registerDate;
     }
 
     /**
-     * Set lastLoginDate
+     * Set registerDate
      *
-     * @param \DateTime $lastLoginDate
+     * @param \DateTime $registerDate
      *
      * @return TestUser
      */
-    public function setLastLoginDate($lastLoginDate)
-    {
-        $this->lastLoginDate = $lastLoginDate;
+    public function setRegisterDate ($registerDate) {
+
+        $this->registerDate = $registerDate;
 
         return $this;
     }
@@ -351,21 +326,21 @@ class TestUser
      *
      * @return \DateTime
      */
-    public function getLastLoginDate()
-    {
+    public function getLastLoginDate () {
+
         return $this->lastLoginDate;
     }
 
     /**
-     * Set knowsFrom
+     * Set lastLoginDate
      *
-     * @param string $knowsFrom
+     * @param \DateTime $lastLoginDate
      *
      * @return TestUser
      */
-    public function setKnowsFrom($knowsFrom)
-    {
-        $this->knowsFrom = $knowsFrom;
+    public function setLastLoginDate ($lastLoginDate) {
+
+        $this->lastLoginDate = $lastLoginDate;
 
         return $this;
     }
@@ -375,21 +350,21 @@ class TestUser
      *
      * @return string
      */
-    public function getKnowsFrom()
-    {
+    public function getKnowsFrom () {
+
         return $this->knowsFrom;
     }
 
     /**
-     * Set confirmationKey
+     * Set knowsFrom
      *
-     * @param string $confirmationKey
+     * @param string $knowsFrom
      *
      * @return TestUser
      */
-    public function setConfirmationKey($confirmationKey)
-    {
-        $this->confirmationKey = $confirmationKey;
+    public function setKnowsFrom ($knowsFrom) {
+
+        $this->knowsFrom = $knowsFrom;
 
         return $this;
     }
@@ -399,9 +374,50 @@ class TestUser
      *
      * @return string
      */
-    public function getConfirmationKey()
-    {
+    public function getConfirmationKey () {
+
         return $this->confirmationKey;
+    }
+
+    /**
+     * Set confirmationKey
+     *
+     * @param string $confirmationKey
+     *
+     * @return TestUser
+     */
+    public function setConfirmationKey ($confirmationKey) {
+
+        $this->confirmationKey = $confirmationKey;
+
+        return $this;
+    }
+
+    /**
+     * Get ownedCompany
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getOwnedCompany () {
+
+        if (!$this->ownedCompanyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("ownedCompany") . "Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),
+                                        new \Core\Field\RelativeField("ownedCompany")
+                                       ]);
+            $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
+            $qryContext->findAll();
+        }
+
+        return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId
+            ? $this->ownedCompany : NULL;
     }
 
     /**
@@ -411,12 +427,22 @@ class TestUser
      *
      * @return TestUser
      */
-    public function setOwnedCompany(\Core\Model\TestCompany $ownedCompany = null)
-    {
+    public function setOwnedCompany (\Core\Model\TestCompany $ownedCompany = NULL) {
+
         $this->ownedCompany = $ownedCompany;
         $this->ownedCompanyRestrictedId = $ownedCompany ? $ownedCompany->getId() : NULL;
-    
+
         return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId () {
+
+        return $this->id;
     }
 
     /**
@@ -424,33 +450,33 @@ class TestUser
      *
      * @return \Core\Model\TestCompany
      */
-    public function getOwnedCompany()
-    {
-        if (!$this->ownedCompanyRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("ownedCompany")."Faulted";
+    public function getUnrestrictedOwnedCompany () {
+
+        return $this->ownedCompany;
+    }
+
+    /**
+     * Get storage
+     *
+     * @return \Core\Model\TestStorage
+     */
+    public function getStorage () {
+
+        if (!$this->storageRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("storage") . "Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
             $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("ownedCompany")]);
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("storage")]);
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
             $qryContext->findAll();
         }
-    
-        return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
-    }
 
-    /**
-     * Get ownedCompany
-     *
-     * @return \Core\Model\TestCompany
-     */
-    public function getUnrestrictedOwnedCompany()
-    {
-        return $this->ownedCompany;
+        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
     /**
@@ -460,11 +486,11 @@ class TestUser
      *
      * @return TestUser
      */
-    public function setStorage(\Core\Model\TestStorage $storage = null)
-    {
+    public function setStorage (\Core\Model\TestStorage $storage = NULL) {
+
         $this->storage = $storage;
         $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -473,33 +499,33 @@ class TestUser
      *
      * @return \Core\Model\TestStorage
      */
-    public function getStorage()
-    {
-        if (!$this->storageRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("storage")."Faulted";
+    public function getUnrestrictedStorage () {
+
+        return $this->storage;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getCompany () {
+
+        if (!$this->companyRestrictedId && $this->findQueryContext) {
+            $faultedVar = "is" . ucfirst("company") . "Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
             $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("storage")]);
+            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"), new \Core\Field\RelativeField("company")]);
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser", "", "id = :id"));
+            $qryContext->setParam("id", $this->getId());
             $qryContext->findAll();
         }
-    
-        return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
-    }
 
-    /**
-     * Get storage
-     *
-     * @return \Core\Model\TestStorage
-     */
-    public function getUnrestrictedStorage()
-    {
-        return $this->storage;
+        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
     /**
@@ -509,11 +535,11 @@ class TestUser
      *
      * @return TestUser
      */
-    public function setCompany(\Core\Model\TestCompany $company = null)
-    {
+    public function setCompany (\Core\Model\TestCompany $company = NULL) {
+
         $this->company = $company;
         $this->companyRestrictedId = $company ? $company->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -522,32 +548,8 @@ class TestUser
      *
      * @return \Core\Model\TestCompany
      */
-    public function getCompany()
-    {
-        if (!$this->companyRestrictedId && $this->findQueryContext) {
-            $faultedVar = "is".ucfirst("company")."Faulted";
-            if (!$this->$faultedVar) {
-                return NULL;
-            }
-            $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-            $reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("company")]);
-            $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
-            $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","id = :id"));
-            $qryContext->setParam("id",$this->getId());
-            $qryContext->findAll();
-        }
-    
-        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
-    }
+    public function getUnrestrictedCompany () {
 
-    /**
-     * Get company
-     *
-     * @return \Core\Model\TestCompany
-     */
-    public function getUnrestrictedCompany()
-    {
         return $this->company;
     }
 }

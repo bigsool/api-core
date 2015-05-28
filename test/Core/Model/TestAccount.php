@@ -25,9 +25,9 @@ class TestAccount extends MagicalEntity {
     /**
      * @return MagicalModuleManager
      */
-    public function getMagicalModuleManager() {
+    public function getMagicalModuleManager () {
 
-        $moduleManagers =  ApplicationContext::getInstance()->getModuleManagers();
+        $moduleManagers = ApplicationContext::getInstance()->getModuleManagers();
         foreach ($moduleManagers as $moduleManager) {
             if (!($moduleManager instanceof MagicalModuleManager)) {
                 continue;

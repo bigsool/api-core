@@ -74,6 +74,15 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
+     * @param string $entity
+     */
+    public function setEntity ($entity) {
+
+        $this->entity = $entity;
+
+    }
+
+    /**
      * @return RelativeField[]
      */
     public function getFields () {
@@ -257,10 +266,9 @@ class FindQueryContext implements QueryContext {
 
     }
 
-    public function setRegistry() {
+    public function setRegistry () {
 
     }
-
 
     public function setModuleEntity (ModuleEntity $moduleEntity) {
 
@@ -271,7 +279,7 @@ class FindQueryContext implements QueryContext {
     /**
      * @return ApplicationContext
      */
-    public function getApplicationContext() {
+    public function getApplicationContext () {
 
         return $this->getRequestContext()->getApplicationContext();
 

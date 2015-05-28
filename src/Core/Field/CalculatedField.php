@@ -63,7 +63,7 @@ class CalculatedField implements ResolvableField {
     }
 
     /**
-     * @param mixed  $model
+     * @param mixed $model
      *
      * @return mixed
      */
@@ -187,7 +187,7 @@ class CalculatedField implements ResolvableField {
 
         $fields = [];
 
-        foreach ( $this->requiredFields as $requiredField) {
+        foreach ($this->requiredFields as $requiredField) {
 
             $fields[] = $field = new RealField($requiredField);
             $field->setUseLeftJoin($this->useLeftJoin);

@@ -7,10 +7,8 @@ use Core\Action\BasicFindAction;
 use Core\Action\BasicUpdateAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Field\Field;
-use Core\Field\StarField;
 use Core\Filter\StringFilter;
-use Core\Module\GenericDbEntity;
+use Core\Module\DbModuleEntity;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 class ModuleManager extends AbstractModuleManager {
@@ -44,14 +42,14 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * {@inheritDoc}
      */
-    public function createModuleEntities(ApplicationContext &$context) {
+    public function createModuleEntityDefinitions (ApplicationContext &$context) {
 
-        $storageEntity = new GenericDbEntity($context, 'TestStorage', [
-                                                         new StringFilter('TestStorage', 'TestStorageForId', 'id = :id')
-                                                     ]
+        $storageEntity = new DbModuleEntity($context, 'TestStorage', [
+                                                        new StringFilter('TestStorage', 'TestStorageForId', 'id = :id')
+                                                    ]
         );
 
-        $storageEntity->setHelper(new Helper($context));
+        $storageEntity->setHelper(new ModuleEntityHelper($context));
 
         return [
             $storageEntity

@@ -6,7 +6,7 @@ namespace Core\Validation;
 
 use Core\Validation\Parameter\Constraint;
 
-class RuntimeConstraintsProvider extends AbstractConstraintsProvider {
+class RuntimeConstraintsProvider implements ConstraintsProvider {
 
     /**
      * @var Constraint[][]
@@ -34,9 +34,25 @@ class RuntimeConstraintsProvider extends AbstractConstraintsProvider {
     }
 
     /**
+     * @param string $field
+     * @param array  $params
+     *
+     * @return Constraint[]|null
+     */
+    public function getConstraintsFor ($field, array &$params) {
+
+        $constraints = $this->getConstraints($params);
+
+        return isset($constraints[$field]) ? $constraints[$field] : NULL;
+
+    }
+
+    /**
+     * @param array $params
+     *
      * @return Constraint[][]
      */
-    protected function listConstraints () {
+    public function getConstraints (array &$params) {
 
         return $this->constraints;
 
