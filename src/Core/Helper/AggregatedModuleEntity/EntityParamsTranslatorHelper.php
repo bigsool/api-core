@@ -1,18 +1,18 @@
 <?php
 
 
-namespace Core\Helper;
+namespace Core\Helper\AggregatedModuleEntity;
 
 
 use Core\Module\ModelAspect;
 use Core\Util\ArrayExtra;
 
-class AggregatedEntityParamsTranslatorHelper {
+class EntityParamsTranslatorHelper {
 
     /**
      * converts ['firm' => []] to ['company' => []] and ['student_name' => 'qwe'] to ['student']['name'] = 'qwe'
      *
-     * @param array $params
+     * @param array         $params
      * @param ModelAspect[] $modelAspects
      *
      * @return array
@@ -43,15 +43,13 @@ class AggregatedEntityParamsTranslatorHelper {
 
             if ($modelAspect->getRelativeField()) {
                 $explodedKeyPath = explode('.', $modelAspect->getRelativeField());
-                $data = AggregatedModuleEntityHelper::buildArrayWithKeys($explodedKeyPath, $data);
+                $data = Helper::buildArrayWithKeys($explodedKeyPath, $data);
             }
 
             $formattedParams = ArrayExtra::array_merge_recursive_distinct($formattedParams, $data);
 
-            if ($modelAspect->getPrefix()
-                && $modelAspect->getPrefix() != $modelAspect->getRelativeField()
-            ) {
-                $formattedParams = AggregatedModuleEntityHelper::removeKeysFromArray($explodedPrefix, $formattedParams);
+            if ($modelAspect->getPrefix() && $modelAspect->getPrefix() != $modelAspect->getRelativeField()) {
+                $formattedParams = Helper::removeKeysFromArray($explodedPrefix, $formattedParams);
             }
 
         }
@@ -63,8 +61,9 @@ class AggregatedEntityParamsTranslatorHelper {
     }
 
     /**
-     * @param array $params
+     * @param array         $params
      * @param ModelAspect[] $modelAspects
+     *
      * @return array
      */
     protected static function handlePrefixedFields ($params, $modelAspects) {
@@ -96,16 +95,18 @@ class AggregatedEntityParamsTranslatorHelper {
 
     }
 
-
     /**
-     * @param array $params
-     * @param       $data
+     * WARNING : this code is almost the same as AggregatedModuleEntitySerializerContext::transformPrefixedFields
+     * TODO : thierry fix your shit
+     *
+     * @param array         $params
+     * @param               $data
+     * @param ModelAspect[] $modelAspects
      *
      * @return array
      */
-    // WARNING : this code is almost the same as AggregatedSerializerContext::transformPrefixedFields
-    // TODO : thierry fix your shit
     protected static function formatPrefixedFieldsToArray (array $params, $data, $modelAspects) {
+
         $keysToRemove = [];
 
         foreach ($data as $key => $value) {
@@ -123,11 +124,11 @@ class AggregatedEntityParamsTranslatorHelper {
                 $prefix = str_replace('_', '.', $prefix);
 
                 if ($i + 1 == count($explodedKey) - 1) {
-                    $relativeField = AggregatedModuleEntityHelper::getRelativeFieldForPrefix($prefix, $modelAspects);
+                    $relativeField = Helper::getRelativeFieldForPrefix($prefix, $modelAspects);
                     if ($relativeField) {
                         $explodedRelativeField = explode('.', $relativeField);
                         $explodedRelativeField[] = $explodedKey[count($explodedKey) - 1];
-                        $data = AggregatedModuleEntityHelper::buildArrayWithKeys($explodedRelativeField, $value);
+                        $data = Helper::buildArrayWithKeys($explodedRelativeField, $value);
                         $params = ArrayExtra::array_merge_recursive_distinct($params, $data);
                     }
 
@@ -141,7 +142,7 @@ class AggregatedEntityParamsTranslatorHelper {
 
         }
 
-        $params = static::removePrefixedFields($params,  $keysToRemove);
+        $params = static::removePrefixedFields($params, $keysToRemove);
 
         return $params;
 
@@ -150,9 +151,10 @@ class AggregatedEntityParamsTranslatorHelper {
     /**
      * @param mixed $params
      * @param array $keysToRemove
+     *
      * @return mixed
      */
-    protected function removePrefixedFields ($params,  $keysToRemove) {
+    protected function removePrefixedFields ($params, $keysToRemove) {
 
         if (is_array($params)) {
             foreach ($params as $key => $value) {
@@ -168,6 +170,5 @@ class AggregatedEntityParamsTranslatorHelper {
         return $params;
 
     }
-
 
 }

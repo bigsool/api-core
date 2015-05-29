@@ -5,6 +5,8 @@ namespace Core\Validation;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
+use Core\Error\Error;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
 use Symfony\Component\Validator\Constraints;
@@ -13,11 +15,17 @@ use Symfony\Component\Validator\Validation;
 class Validator {
 
     /**
-     * @param array $constraintsList
-     * @param array $params
-     * @param bool  $forceOptional
+     * TODO : who change params in ActionContext now ?
+     * @param Constraint[][] $constraintsList
+     * @param array          $params
+     * @param bool           $forceOptional
+     *
+     * @return Error[]
      */
-    public static function validateFields (array $constraintsList, $params, $forceOptional) {
+    public static function validateParams (array $constraintsList, array $params, $forceOptional = false) {
+
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+        $errors = [];
 
         foreach ($constraintsList as $field => $constraints) {
 
@@ -29,14 +37,17 @@ class Validator {
             $value = isset($params[$field]) ? $params[$field] : NULL;
 
             $validator = Validation::createValidator();
-            $violations = $validator->validate($value, [$constraint->getConstraint()]);
-            if ($violations->count()) {
-                $context->getApplicationContext()->getErrorManager()
-                        ->addError($constraint->getErrorCode(), $path);
-                $isValid = false;
+            foreach ($constraints as $constraint) {
+                // TODO : check if we can validate several constraint at the same time
+                $violations = $validator->validate($value, [$constraint]);
+                if ($violations->count()) {
+                    $errors[] = $errorManager->getError($constraint->getErrorCode(), $field);
+                }
             }
 
         }
+
+        return $errors;
 
     }
 

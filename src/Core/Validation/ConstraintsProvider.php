@@ -15,6 +15,6 @@ interface ConstraintsProvider {
     /**
      * @return Constraint[][]
      */
-    public function getConstraints ();
+    public function getConstraintsList ();
 
 }

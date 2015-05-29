@@ -41,7 +41,7 @@ class RuntimeConstraintsProvider implements ConstraintsProvider {
      */
     public function getConstraintsFor ($field, array &$params) {
 
-        $constraints = $this->getConstraints($params);
+        $constraints = $this->getConstraintsList($params);
 
         return isset($constraints[$field]) ? $constraints[$field] : NULL;
 
@@ -52,7 +52,7 @@ class RuntimeConstraintsProvider implements ConstraintsProvider {
      *
      * @return Constraint[][]
      */
-    public function getConstraints (array &$params) {
+    public function getConstraintsList (array &$params) {
 
         return $this->constraints;
 

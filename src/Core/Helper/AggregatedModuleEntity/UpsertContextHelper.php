@@ -1,18 +1,17 @@
 <?php
 
 
-namespace Core\Helper;
+namespace Core\Helper\AggregatedModuleEntity;
 
 
 use Core\Context\ActionContext;
 use Core\Context\AggregatedModuleEntityUpsertContext;
 use Core\Error\ValidationException;
-use Core\Module\AggregatedModuleEntity;
 use Core\Module\AggregatedModuleEntityDefinition;
 use Core\Module\ModelAspect;
 use Core\Parameter\UnsafeParameter;
 
-class AggregatedUpsertContextHelper {
+class UpsertContextHelper {
 
     /**
      * @param ModelAspect                         $modelAspect
@@ -32,7 +31,7 @@ class AggregatedUpsertContextHelper {
 
         $moduleEntity = $modelAspect->getModuleEntity();
 
-        // for modification, we need to find the correct $entityId for subentity
+        // for modification, we need to find the correct $entityId for sub entity
         $entityId = NULL;
         if (!$aggregatedUpsertContext->isCreation()) {
             if ($modelAspect->isMainAspect()) {
@@ -50,12 +49,13 @@ class AggregatedUpsertContextHelper {
         try {
             $childUpsertContext =
                 $moduleEntity->getDefinition()->createUpsertContext($aspectParams, $entityId, $actionContext);
-        } catch(ValidationException $exception) {
-            $aggregatedUpsertContext->addErrors($exception->getErrors(), $modelAspect->getPrefix());
+        }
+        catch (ValidationException $exception) {
+            $aggregatedUpsertContext->addErrors($exception->getErrors(), $modelAspect);
             throw new ValidationException($aggregatedUpsertContext->getErrors());
         }
 
-        $aggregatedUpsertContext->addErrors($childUpsertContext->getErrors(), $modelAspect->getPrefix());
+        $aggregatedUpsertContext->addErrors($childUpsertContext->getErrors(), $modelAspect);
 
         $aggregatedUpsertContext->addChildUpsertContext($childUpsertContext, $moduleEntity, $modelAspect);
     }
@@ -90,7 +90,7 @@ class AggregatedUpsertContextHelper {
 
         // TODO : check why
         $translatedParams = UnsafeParameter::getFinalValue($translatedParams);
-        // prepares subcontext by filtering out non company related fields
+        // prepares sub context by filtering out non company related fields
         foreach ($translatedParams as $key => $value) {
             if (!static::isParamLinkedToAspectModel($definition, $relativeField, $key)) {
                 $entityParams[$key] = $value;

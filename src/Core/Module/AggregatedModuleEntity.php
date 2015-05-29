@@ -6,19 +6,19 @@ namespace Core\Module;
 
 use Core\Context\ActionContext;
 use Core\Context\AggregatedModuleEntityUpsertContext;
-use Core\Context\AggregatedSerializerContext;
+use Core\Context\AggregatedModuleEntitySerializerContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\ModuleEntityUpsertContext;
 use Core\Error\ValidationException;
-use Core\Helper\AggregatedEntityParamsTranslatorHelper;
-use Core\Helper\AggregatedModuleEntityHelper;
-use Core\Helper\AggregatedUpsertContextHelper;
-use Core\Helper\AggregatedUpsertHelper;
+use Core\Helper\AggregatedModuleEntity\EntityParamsTranslatorHelper;
+use Core\Helper\AggregatedModuleEntity\Helper;
+use Core\Helper\AggregatedModuleEntity\UpsertContextHelper;
+use Core\Helper\AggregatedModuleEntity\UpsertHelper;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
 use Core\Validation\RuntimeConstraintsProvider;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Core\Validation\Validator;
 
 class AggregatedModuleEntity extends AbstractModuleEntity {
 
@@ -38,11 +38,11 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
     }
 
     /**
-     * @return AggregatedSerializerContext
+     * @return AggregatedModuleEntitySerializerContext
      */
     public function getAggregatedSerializerContext() {
 
-        return new AggregatedSerializerContext($this->getDefinition());
+        return new AggregatedModuleEntitySerializerContext($this->getDefinition());
 
     }
 
@@ -156,7 +156,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
         // translates input params to match real entities names
         $translatedParams =
-            AggregatedEntityParamsTranslatorHelper::translatePrefixesToKeyPaths($validatedParams, $this->getDefinition()
+            EntityParamsTranslatorHelper::translatePrefixesToKeyPaths($validatedParams, $this->getDefinition()
                                                                                                        ->getAllModelAspects());
 
         // creates AggregatedUpsertContext
@@ -170,7 +170,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
 
         // handle main entity errors (ie user)
-        AggregatedUpsertContextHelper::addChildUpsertContextForModelAspect($this->getDefinition()->getMainAspect(),
+        UpsertContextHelper::addChildUpsertContextForModelAspect($this->getDefinition()->getMainAspect(),
                                                                            $aggregatedUpsertContext,
                                                                            $translatedParams, $actionContext);
 
@@ -182,7 +182,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
             }
 
             // handle sub entities errors, ie company
-            AggregatedUpsertContextHelper::addChildUpsertContextForModelAspect($modelAspect, $aggregatedUpsertContext,
+            UpsertContextHelper::addChildUpsertContextForModelAspect($modelAspect, $aggregatedUpsertContext,
                                                                                $translatedParams, $actionContext);
 
         }
@@ -221,7 +221,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
         }
 
-        AggregatedUpsertHelper::setRelationshipsFromMetadata($aggregatedModuleEntityUpsertContext);
+        UpsertHelper::setRelationshipsFromMetadata($aggregatedModuleEntityUpsertContext);
 
         $entity = $this->getMagicalEntityObject($aggregatedModuleEntityUpsertContext->getMainEntity());
         $aggregatedModuleEntityUpsertContext->setEntity($entity);
@@ -231,10 +231,11 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
     }
 
     /**
-     * @param array $params
+     * @param array  $params
      * @param string $action
      *
      * @return array
+     * @throws ValidationException
      */
     protected function validateAggregatedStructure ($params, $action) {
 
@@ -249,23 +250,17 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
                 $data = $data[$elem];
             }
             $name = $explodedPrefix[count($explodedPrefix) - 1];
-            $constraints = $modelAspect->getConstraints();
-            if (count($constraints) == 1) {
-                $constraints = $constraints[$action];
+            $constraints = $modelAspect->getConstraints($action);
 
-
-                $validator = new RuntimeConstraintsProvider([$name => $constraints]);
-                // TODO: fix me
-                if ( ! $validator->validate(UnsafeParameter::getFinalValue($data), $modelAspect->getPrefix()) ) {
-                    throw;
-                }
-
+            $errors = Validator::validateParams([$name => $constraints], $data);
+            if ($errors) {
+                throw new ValidationException($errors);
             }
 
             $finalValue = UnsafeParameter::getFinalValue($data);
             if ($data != $finalValue) {
                 // TODO: check if ArrayExtra::magicalSet shouldn't be used
-                AggregatedModuleEntityHelper::setFinalValue($params, $explodedPrefix, $finalValue);
+                Helper::setFinalValue($params, $explodedPrefix, $finalValue);
             }
 
         }

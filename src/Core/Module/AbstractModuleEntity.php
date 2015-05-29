@@ -51,64 +51,6 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     }
 
     /**
-     * @param ActionContext $actionContext
-     *
-     * @return mixed
-     */
-    public function update (ActionContext $actionContext) {
-        // TODO : check me : how to get validated id ?
-        $entityId = $actionContext->getVerifiedParam('id');
-        return $this->modifyEntity($actionContext->getParams(), $entityId, $actionContext);
-
-    }
-
-    /**
-     * @param ActionContext $actionContext
-     * @param int|null      $entityId
-     *
-     * @return mixed
-     */
-    protected function modifyEntity (array $unsafeParams, $entityId, ActionContext $actionContext) {
-        $errors = [];
-
-        try {
-            $upsertContext = $this->createUpsertContextProxy($unsafeParams, $entityId, $actionContext);
-            if ( $upsertContext->getErrors() ) {
-                $errors = $upsertContext->getErrors();
-            }
-        } catch(ValidationException $exception) {
-            $errors = $exception->getErrors();
-        }
-
-
-        if ($errors) {
-
-            $errMgr = $actionContext->getApplicationContext()->getErrorManager();
-            $errMgr->addErrors($errors);
-
-            throw $errMgr->getFormattedError();
-
-        }
-
-
-        $entity = $this->upsert($upsertContext);
-
-        $this->postModifyProxy($entity, $upsertContext);
-
-
-        return $entity;
-
-    }
-
-    protected function createUpsertContextProxy(array $unsafeParams, $entityId, ActionContext $actionContext) {
-        return $this->getDefinition()->createUpsertContext($unsafeParams, $entityId, $actionContext);
-    }
-
-    protected function postModifyProxy($entity, ModuleEntityUpsertContext $upsertContext) {
-        $this->getDefinition()->postModify($entity, $upsertContext);
-    }
-
-    /**
      * @param mixed $entity
      */
     public function delete ($entity) {
@@ -179,11 +121,80 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     }
 
     /**
+     * @param ActionContext $actionContext
+     *
+     * @return mixed
+     */
+    public function update (ActionContext $actionContext) {
+
+        // TODO : check me : how to get validated id ?
+        $entityId = $actionContext->getVerifiedParam('id');
+
+        return $this->modifyEntity($actionContext->getParams(), $entityId, $actionContext);
+
+    }
+
+    /**
+     * @param array         $unsafeParams
+     * @param int|null      $entityId
+     *
+     * @param ActionContext $actionContext
+     *
+     * @return mixed
+     * @throws \Core\Error\FormattedError
+     */
+    protected function modifyEntity (array $unsafeParams, $entityId, ActionContext $actionContext) {
+
+        try {
+            $upsertContext = $this->createUpsertContextProxy($unsafeParams, $entityId, $actionContext);
+            if ($upsertContext->getErrors()) {
+                throw new ValidationException($upsertContext->getErrors());
+            }
+
+            $entity = $this->upsert($upsertContext);
+
+            $this->postModifyProxy($entity, $upsertContext);
+
+            return $entity;
+        }
+        catch (ValidationException $exception) {
+            $errMgr = $actionContext->getApplicationContext()->getErrorManager();
+            $errMgr->addErrors($exception->getErrors());
+
+            throw $errMgr->getFormattedError();
+        }
+
+    }
+
+    /**
+     * @param array         $unsafeParams
+     * @param int|null      $entityId
+     * @param ActionContext $actionContext
+     *
+     * @return ModuleEntityUpsertContext
+     */
+    protected function createUpsertContextProxy (array $unsafeParams, $entityId, ActionContext $actionContext) {
+
+        return $this->getDefinition()->createUpsertContext($unsafeParams, $entityId, $actionContext);
+
+    }
+
+    /**
      * @param ModuleEntityUpsertContext $upsertContext
      *
      * @return mixed
      */
     abstract protected function upsert (ModuleEntityUpsertContext $upsertContext);
+
+    /**
+     * @param mixed                     $entity
+     * @param ModuleEntityUpsertContext $upsertContext
+     */
+    protected function postModifyProxy ($entity, ModuleEntityUpsertContext $upsertContext) {
+
+        $this->getDefinition()->postModify($entity, $upsertContext);
+
+    }
 
     /**
      * @return mixed

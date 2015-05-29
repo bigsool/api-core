@@ -23,21 +23,13 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
 
     /**
      * @param AggregatedModuleEntityDefinition $definition
-     * @param int|null               $entityId
-     * @param ActionContext          $actionContext
+     * @param int|null                         $entityId
+     * @param ActionContext                    $actionContext
      */
-    public function __construct (AggregatedModuleEntityDefinition $definition, $entityId = NULL, ActionContext $actionContext) {
+    public function __construct (AggregatedModuleEntityDefinition $definition, $entityId = NULL,
+                                 ActionContext $actionContext) {
 
         parent::__construct($definition, $entityId, $actionContext);
-
-    }
-
-    /**
-     * @return AggregatedModuleEntityDefinition
-     */
-    public function getDefinition(){
-
-        parent::getDefinition();
 
     }
 
@@ -45,6 +37,7 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      * @return ModuleEntityUpsertContext[]
      */
     public function getChildrenUpsertContexts () {
+
         $childrenContexts = [];
         foreach ($this->childrenUpsertContexts as $childContext) {
             $childrenContexts[] = $childContext['upsertContext'];
@@ -57,10 +50,11 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
     /**
      * @return array
      */
-    public function getChildrenUpsertContextsWithModuleEntities() {
+    public function getChildrenUpsertContextsWithModuleEntities () {
+
         $childrenContexts = [];
         foreach ($this->childrenUpsertContexts as $childContext) {
-            $childrenContexts[] = [$childContext['upsertContext'], $childContext['moduleEntity']] ;
+            $childrenContexts[] = [$childContext['upsertContext'], $childContext['moduleEntity']];
         }
 
         return $childrenContexts;
@@ -69,10 +63,11 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
     /**
      * @return array
      */
-    public function getChildrenUpsertContextsWithModelAspect() {
+    public function getChildrenUpsertContextsWithModelAspect () {
+
         $childrenContexts = [];
         foreach ($this->childrenUpsertContexts as $childContext) {
-            $childrenContexts[] = [$childContext['upsertContext'], $childContext['modelAspect']] ;
+            $childrenContexts[] = [$childContext['upsertContext'], $childContext['modelAspect']];
         }
 
         return $childrenContexts;
@@ -85,9 +80,28 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      */
     public function addChildUpsertContext (ModuleEntityUpsertContext $ctx, ModuleEntity $moduleEntity,
                                            ModelAspect $modelAspect) {
+
         // TODO : this is a bit ugly, consider refactoring
         $this->childrenUpsertContexts[] =
             ['upsertContext' => $ctx, 'moduleEntity' => $moduleEntity, 'modelAspect' => $modelAspect];
+    }
+
+    /**
+     * @return \Core\Module\ModelAspect[]
+     */
+    public function getAllEnabledModelAspects () {
+
+        return array_merge([$this->getDefinition()->getMainAspect()], $this->getEnabledAspects());
+
+    }
+
+    /**
+     * @return \Core\Module\ModelAspect[]
+     */
+    public function getEnabledAspects () {
+
+        return array_diff($this->getDefinition()->getModelAspects(), $this->getDisabledAspects());
+
     }
 
     /**
@@ -98,25 +112,6 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
         return $this->disabledModelAspects;
 
     }
-
-    /**
-     * @return \Core\Module\ModelAspect[]
-     */
-    public function getEnabledAspects() {
-
-        return array_diff($this->getDefinition()->getModelAspects(), $this->getDisabledAspects());
-
-    }
-
-    /**
-     * @return \Core\Module\ModelAspect[]
-     */
-    public function getAllEnabledModelAspects() {
-
-        return array_merge([$this->getDefinition()->getMainAspect()], $this->getEnabledAspects());
-
-    }
-
 
     /**
      * @return mixed|null
@@ -133,6 +128,7 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
                  * @var ModuleEntityUpsertContext $upsertContext
                  */
                 $upsertContext = $childContext['upsertContext'];
+
                 return $upsertContext->getEntity();
             }
         }
@@ -142,15 +138,15 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
     }
 
     /**
-     * @param Error[] $errors
-     * @param string  $prefix
+     * @param Error[]     $errors
+     * @param ModelAspect $aspect
      */
-    public function addErrors (array $errors, $prefix) {
+    public function addErrors (array $errors, ModelAspect $aspect = NULL) {
 
-        if ($prefix) {
+        if ($aspect && !$aspect->isMainAspect()) {
             foreach ($errors as $error) {
-                // TODO : it could be a . or a _
-                $error->setField($prefix . '.' . $error->getField());
+                $separator = $aspect->isWithPrefixedFields() ? '_' : '.';
+                $error->setField($aspect->getPrefix() . $separator . $error->getField());
             }
         }
 
@@ -158,5 +154,13 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
 
     }
 
+    /**
+     * @return AggregatedModuleEntityDefinition
+     */
+    public function getDefinition () {
+
+        parent::getDefinition();
+
+    }
 
 }

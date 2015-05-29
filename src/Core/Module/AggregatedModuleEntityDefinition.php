@@ -35,18 +35,17 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @param array $params
-     *
      * @return Constraint[][]
      */
-    public function getConstraints (array &$params) {
+    public function getConstraintsList () {
 
-        $constraints = parent::getConstraints($isCreation, $params);
+        $constraints = parent::getConstraintsList();
 
         foreach ($this->getModelAspects() as $modelAspect) {
 
             $modelAspectConstraints = [];
 
+            // TODO : could it be different from Object ?
             foreach ($modelAspect->getConstraints() as $actionConstraints) {
                 $modelAspectConstraints = array_merge($modelAspectConstraints, $actionConstraints);
             }

@@ -13,9 +13,30 @@ class ValidationException extends \Exception {
     protected $errors = [];
 
     /**
+     * @param Error[] $errors
+     */
+    public function __construct (array $errors) {
+
+        $this->addErrors($errors);
+
+        parent::__construct();
+
+    }
+
+    /**
+     * @param Error[] $errors
+     */
+    public function addErrors (array $errors) {
+
+        foreach ($errors as $error) {
+            $this->addError($error);
+        }
+    }
+
+    /**
      * @param Error $error
      */
-    public function addError(Error $error) {
+    public function addError (Error $error) {
 
         $this->errors[] = $error;
 
@@ -24,7 +45,7 @@ class ValidationException extends \Exception {
     /**
      * @return Error[]
      */
-    public function getErrors() {
+    public function getErrors () {
 
         return $this->errors;
 

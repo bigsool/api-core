@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Helper;
+namespace Core\Helper\AggregatedModuleEntity;
 
 
 use Core\Context\AggregatedModuleEntityUpsertContext;
@@ -11,7 +11,7 @@ use Core\Module\ModelAspect;
 use Core\Registry;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-class AggregatedUpsertHelper {
+class UpsertHelper {
 
     /**
      * @param AggregatedModuleEntityUpsertContext $context

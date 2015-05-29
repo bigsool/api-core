@@ -1,21 +1,22 @@
 <?php
 
 
-namespace Core\Helper;
+namespace Core\Helper\AggregatedModuleEntity;
 
 
 use Core\Field\RelativeField;
 use Core\Module\ModelAspect;
 
-class AggregatedModuleEntityHelper {
+class Helper {
 
     /**
-     * @param string $prefix
+     * @param string        $prefix
      * @param ModelAspect[] $modelAspects
      *
      * @return RelativeField|null
      */
-    public static function getRelativeFieldForPrefix($prefix, $modelAspects) {
+    public static function getRelativeFieldForPrefix ($prefix, $modelAspects) {
+
         foreach ($modelAspects as $modelAspect) {
             if ($modelAspect->getPrefix() && $modelAspect->getPrefix() == $prefix) {
                 return $modelAspect->getRelativeField();
@@ -47,9 +48,6 @@ class AggregatedModuleEntityHelper {
         return $tab;
 
     }
-
-
-
 
     /**
      * @param array $keysToRemove
@@ -85,14 +83,9 @@ class AggregatedModuleEntityHelper {
 
     }
 
-
-
-
-
-
-
     /**
      * Replaces the value at $explodedPrefix with $finalValue in $params
+     *
      * @param array $params
      * @param array $explodedPrefix
      * @param mixed $finalValue

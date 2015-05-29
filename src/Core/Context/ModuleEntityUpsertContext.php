@@ -7,6 +7,8 @@ namespace Core\Context;
 use Core\Error\Error;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
+use Core\Util\ArrayExtra;
+use Core\Validation\Validator;
 
 class ModuleEntityUpsertContext {
 
@@ -78,13 +80,17 @@ class ModuleEntityUpsertContext {
 
     }
 
-    /**
-     * @param array $validatedParams
-     */
-    public function setValidatedParams (array $validatedParams) {
 
-        $this->validatedParams = $validatedParams;
 
+    public function setParams($params, array $additionalConstraints = []) {
+        $this->inputParams = $params;
+
+        // TODO : handle more complicated
+        $constraints = array_merge($this->definition->getConstraintsList(), $additionalConstraints);
+
+        $validationResult = Validator::validateParams($constraints, $params, !$this->isCreation());
+        $this->validatedParams = $validationResult->getValidatedParams();
+        $this->addErrors($validationResult->getErrors());
     }
 
     /**

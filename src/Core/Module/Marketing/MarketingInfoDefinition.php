@@ -24,7 +24,7 @@ class MarketingInfoDefinition extends ModuleEntityDefinition {
      *
      * @return \Core\Validation\Parameter\Constraint[][]
      */
-    public function getConstraints (array &$params) {
+    public function getConstraintsList (array &$params) {
 
         return [
             'knowsFrom' => [

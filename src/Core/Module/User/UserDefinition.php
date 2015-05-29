@@ -16,11 +16,9 @@ use Core\Validation\Parameter\String;
 class UserDefinition extends ModuleEntityDefinition {
 
     /**
-     * @param array $params
-     *
      * @return \Core\Validation\Parameter\Constraint[][]
      */
-    public function getConstraints (array &$params) {
+    public function getConstraintsList () {
 
         return [
             'firstName' =>
