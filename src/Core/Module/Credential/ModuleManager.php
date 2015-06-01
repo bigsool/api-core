@@ -140,10 +140,10 @@ class ModuleManager extends AbstractModuleManager {
 
 
         $appCtx->addAction(new SimpleAction('Core\Credential', 'update', NULL, [
-            'id'              => [new Validation(), true],
-            'login'           => [new Validation()],
-            'password'        => [new Validation()],
-            'currentPassword' => [new Validation(), true]
+            'id'              => [new Validation()],
+            'login'           => [new Validation(),true],
+            'password'        => [new Validation(),true],
+            'currentPassword' => [new Validation(),true]
         ], function (ActionContext $context) {
 
             $appCtx = ApplicationContext::getInstance();
