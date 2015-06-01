@@ -320,14 +320,14 @@ class MagicalModuleManagerTest extends TestCase {
                 'action' => new GenericAction('module', 'name',
                     function (ActionContext $context) use (&$storageCalled) {
 
-                        $this->assertSame([], $context->getParams());
+                        $this->assertSame(['url' => 'url'], $context->getParams());
                         $storageCalled = true;
 
                     }, $this->getCallable(), $this->getCallable())
             ]
         ]);
         $context = $this->getActionContext();
-        $context->setParams(['firstName' => 'first name', 'company.name' => 'company']);
+        $context->setParams(['firstName' => 'first name', 'company.name' => 'company','company.storage.url' => 'url']);
         $mgr->magicalCreate($context);
 
         $this->assertTrue($userCalled);
