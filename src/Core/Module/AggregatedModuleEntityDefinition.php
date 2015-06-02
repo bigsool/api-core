@@ -158,6 +158,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
         $modelAspect = new ModelAspect($model, $module, $prefix, $actions, $shouldBeIgnored, $relativeField,
                                        $withPrefixedFields);
+
         ApplicationContext::getInstance()->finalizeModelAspect($modelAspect);
 
         return $modelAspect;

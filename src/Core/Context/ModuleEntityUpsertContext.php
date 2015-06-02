@@ -172,7 +172,7 @@ class ModuleEntityUpsertContext {
 
         // TODO : what should I return if forceOptional = true and $field not defined in $params ?
         // Depending on this answer i should use Validator::validateParam
-        $validationResult = Validator::validateParams([$field => $constraints], $this->params, !$this->isCreation());
+        $validationResult = Validator::validateParams([$field => $constraints], $this->params, $this->isUpdate());
 
         return $validationResult->getValidatedValue($field);
 
@@ -184,6 +184,15 @@ class ModuleEntityUpsertContext {
     public function isCreation () {
 
         return $this->getEntityId() == NULL;
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUpdate () {
+
+        return !$this->isCreation();
 
     }
 
@@ -207,7 +216,7 @@ class ModuleEntityUpsertContext {
     protected function validateParams () {
 
         // TODO : to implement
-        $validationResult = Validator::validateParams($this->constraints, $this->getParams(), !$this->isCreation());
+        $validationResult = Validator::validateParams($this->constraints, $this->getParams(), $this->isUpdate());
         $this->params =
             ArrayExtra::array_merge_recursive_distinct($this->params, $validationResult->getValidatedParams());
         $this->addErrors($validationResult->getErrors());

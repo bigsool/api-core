@@ -6,7 +6,9 @@ namespace Core\Helper\AggregatedModuleEntity;
 
 use Core\Context\ActionContext;
 use Core\Context\AggregatedModuleEntityUpsertContext;
+use Core\Context\FindQueryContext;
 use Core\Error\ValidationException;
+use Core\Filter\StringFilter;
 use Core\Module\AggregatedModuleEntityDefinition;
 use Core\Module\ModelAspect;
 use Core\Parameter\UnsafeParameter;
@@ -33,7 +35,7 @@ class UpsertContextHelper {
 
         // for modification, we need to find the correct $entityId for sub entity
         $entityId = NULL;
-        if (!$aggregatedUpsertContext->isCreation()) {
+        if ($aggregatedUpsertContext->isUpdate()) {
             if ($modelAspect->isMainAspect()) {
                 $entityId = $aggregatedUpsertContext->getEntityId();
             }
