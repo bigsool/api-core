@@ -28,6 +28,18 @@ class UnsafeParameter {
     }
 
     /**
+     * @param array  $params
+     * @param string $field
+     *
+     * @return mixed
+     */
+    public static function findFinalValue (array &$params, $field) {
+
+        return isset($params[$field]) ? UnsafeParameter::getFinalValue($params[$field]) : NULL;
+
+    }
+
+    /**
      * @param $param
      *
      * @return mixed

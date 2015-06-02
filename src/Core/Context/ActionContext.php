@@ -151,8 +151,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
             $params = UnsafeParameter::getFinalValue($params[$key]);
         }
 
-        Validator::validate()
-
         return $params[$key];
 
     }

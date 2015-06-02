@@ -17,6 +17,7 @@ use Core\Helper\AggregatedModuleEntity\UpsertContextHelper;
 use Core\Helper\AggregatedModuleEntity\UpsertHelper;
 use Core\Parameter\UnsafeParameter;
 use Core\Registry;
+use Core\Validation\Parameter\Object;
 use Core\Validation\RuntimeConstraintsProvider;
 use Core\Validation\Validator;
 
@@ -134,39 +135,35 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
     }
 
     /**
-     * @param array         $unsafeParams
+     * @param array         $params
      * @param int           $entityId
      * @param ActionContext $actionContext
      *
      * @return AggregatedModuleEntityUpsertContext
      */
-    protected function createUpsertContextProxy (array $unsafeParams, $entityId, ActionContext $actionContext) {
+    protected function createUpsertContextProxy (array $params, $entityId, ActionContext $actionContext) {
 
 
-        $action = ($entityId == NULL) ? 'create' : 'update';
 
         if (!$this->getDefinition()->getDBEntityName()) {
             throw new \RuntimeException('main entity undefined !');
         }
 
-        // validates structure of input params
-        // WARNING : disabled aspects are not yet handled
+        // creates AggregatedUpsertContext
+        // might perform some top level defaulting or validation
+        $aggregatedUpsertContext =
+            $this->getDefinition()->createUpsertContext($params, $entityId, $actionContext);
 
-        $validatedParams = $this->validateAggregatedStructure($unsafeParams, $action);
+
+        // validate params of aggregated : constraints from aggregatedDefinition + structure validation
+        $validatedAggregatedParams = $aggregatedUpsertContext->getValidatedParams();
+
 
         // translates input params to match real entities names
         $translatedParams =
-            EntityParamsTranslatorHelper::translatePrefixesToKeyPaths($validatedParams, $this->getDefinition()
-                                                                                                       ->getAllModelAspects());
+            EntityParamsTranslatorHelper::translatePrefixesToKeyPaths($validatedAggregatedParams,
+                                                                      $this->getDefinition()->getAllModelAspects());
 
-        // creates AggregatedUpsertContext
-        // might perform some top level defaulting or validation
-        /**
-         * @var AggregatedModuleEntityUpsertContext $aggregatedUpsertContext
-         */
-
-        $aggregatedUpsertContext =
-            $this->getDefinition()->createUpsertContext($translatedParams, $entityId, $actionContext);
 
 
         // handle main entity errors (ie user)
@@ -177,7 +174,8 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
         // we don't want the main aspect here
         foreach ($aggregatedUpsertContext->getEnabledAspects() as $modelAspect) {
 
-            if ($modelAspect->isDisabledForAction($action)) {
+            // we need this line for Credential (enabled in case of create, disabled in case of update)
+            if ($modelAspect->isDisabledForAction($aggregatedUpsertContext->isCreation() ? 'create' : 'update')) {
                 continue;
             }
 
@@ -230,44 +228,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
     }
 
-    /**
-     * @param array  $params
-     * @param string $action
-     *
-     * @return array
-     * @throws ValidationException
-     */
-    protected function validateAggregatedStructure ($params, $action) {
 
-        foreach ($this->getDefinition()->getModelAspects() as $modelAspect) {
-
-            $explodedPrefix = explode('.', $modelAspect->getPrefix());
-            $data = $params;
-            foreach ($explodedPrefix as $elem) {
-                if (is_object($data) || !isset($data[$elem])) {
-                    continue 2;
-                }
-                $data = $data[$elem];
-            }
-            $name = $explodedPrefix[count($explodedPrefix) - 1];
-            $constraints = $modelAspect->getConstraints($action);
-
-            $errors = Validator::validateParams([$name => $constraints], $data);
-            if ($errors) {
-                throw new ValidationException($errors);
-            }
-
-            $finalValue = UnsafeParameter::getFinalValue($data);
-            if ($data != $finalValue) {
-                // TODO: check if ArrayExtra::magicalSet shouldn't be used
-                Helper::setFinalValue($params, $explodedPrefix, $finalValue);
-            }
-
-        }
-
-        return $params;
-
-    }
 
 
 

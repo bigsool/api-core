@@ -6,7 +6,6 @@ namespace Core\Validation;
 
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Error\Error;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
 use Symfony\Component\Validator\Constraints;
@@ -15,17 +14,16 @@ use Symfony\Component\Validator\Validation;
 class Validator {
 
     /**
-     * TODO : who change params in ActionContext now ?
      * @param Constraint[][] $constraintsList
      * @param array          $params
      * @param bool           $forceOptional
      *
-     * @return Error[]
+     * @return ValidationResult
      */
     public static function validateParams (array $constraintsList, array $params, $forceOptional = false) {
 
-        $errorManager = ApplicationContext::getInstance()->getErrorManager();
         $errors = [];
+        $validatedParams = [];
 
         foreach ($constraintsList as $field => $constraints) {
 
@@ -34,28 +32,64 @@ class Validator {
                 continue;
             }
 
-            $value = isset($params[$field]) ? $params[$field] : NULL;
-
-            $validator = Validation::createValidator();
-            foreach ($constraints as $constraint) {
-                // TODO : check if we can validate several constraint at the same time
-                $violations = $validator->validate($value, [$constraint]);
-                if ($violations->count()) {
-                    $errors[] = $errorManager->getError($constraint->getErrorCode(), $field);
-                }
+            $fieldValidationResult = static::validateParam($params, $field, $constraints);
+            if ($fieldValidationResult->hasErrors()) {
+                $errors = array_merge($errors, $fieldValidationResult->getErrors());
+            } else {
+                $validatedParams[$field] = $fieldValidationResult->getValue();
             }
 
         }
 
-        return $errors;
+        return new ValidationResult($validatedParams, $errors);
 
     }
 
     /**
+     * @param array        $params
+     * @param string       $field
+     * @param Constraint[] $constraints
+     *
+     * @return FieldValidationResult
+     */
+    public static function validateParam ($params, $field, $constraints) {
+
+        return static::validateValue(UnsafeParameter::findFinalValue($params, $field), $constraints, $field);
+
+    }
+
+    /**
+     * @param mixed        $value
+     * @param Constraint[] $constraints
+     * @param string       $field Used to specify in the error which field failed
+     *
+     * @return FieldValidationResult
+     */
+    public static function validateValue ($value, array $constraints, $field = NULL) {
+
+        $errorManager = ApplicationContext::getInstance()->getErrorManager();
+        $errors = [];
+
+        $validator = Validation::createValidator();
+        foreach ($constraints as $constraint) {
+            // TODO : check if we can validate several constraint at the same time
+            $violations = $validator->validate($value, [$constraint]);
+            if ($violations->count()) {
+                $errors[] = $errorManager->getError($constraint->getErrorCode(), $field);
+            }
+        }
+
+        return new FieldValidationResult($field, $value, $errors);
+
+    }
+
+    /**
+     * TODO : remove this method
      * @param ActionContext $context
      * @param array         $constraints
      *
      * @throws \Core\Error\FormattedError
+     * @deprecated
      */
     public static function validate (ActionContext $context, array $constraints) {
 
@@ -106,6 +140,7 @@ class Validator {
      * @param mixed               $value
      *
      * @return bool
+     * @deprecated
      */
     protected static function validateField (ActionContext $context, $path, ConstraintsProvider $constraintsProvider,
                                              $forceOptional, $value) {

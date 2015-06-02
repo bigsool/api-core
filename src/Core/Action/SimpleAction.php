@@ -136,6 +136,7 @@ class SimpleAction extends Action {
      */
     public function validate (ActionContext $context) {
 
+        // TODO : check how we validation actions now ?
         Validator::validate($context, $this->params);
 
     }

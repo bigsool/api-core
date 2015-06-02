@@ -5,31 +5,37 @@ namespace Core\Context;
 
 
 use Core\Error\Error;
+use Core\Error\ValidationException;
+use Core\Helper\AggregatedModuleEntity\Helper;
 use Core\Module\AggregatedModuleEntityDefinition;
 use Core\Module\ModelAspect;
 use Core\Module\ModuleEntity;
+use Core\Parameter\UnsafeParameter;
+use Core\Validation\Parameter\Object;
+use Core\Validation\Validator;
 
 class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
 
     /**
-     * @var ModuleEntityUpsertContext[]
+     * @var array
      */
     protected $childrenUpsertContexts = [];
 
     /**
-     * @var ModelAspect[]
+     * @var string[]
      */
     protected $disabledModelAspects = [];
 
     /**
      * @param AggregatedModuleEntityDefinition $definition
      * @param int|null                         $entityId
+     * @param array                            $params
      * @param ActionContext                    $actionContext
      */
-    public function __construct (AggregatedModuleEntityDefinition $definition, $entityId = NULL,
+    public function __construct (AggregatedModuleEntityDefinition $definition, $entityId = NULL, array $params,
                                  ActionContext $actionContext) {
 
-        parent::__construct($definition, $entityId, $actionContext);
+        parent::__construct($definition, $entityId, $params, $actionContext);
 
     }
 
@@ -109,7 +115,20 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      */
     public function getDisabledAspects () {
 
-        return $this->disabledModelAspects;
+        return array_filter($this->getDefinition()->getModelAspects(), function (ModelAspect $modelAspect) {
+
+            return in_array($modelAspect->getPrefix(), $this->disabledModelAspects);
+
+        });
+
+    }
+
+    /**
+     * @param string $prefix
+     */
+    public function disableAspect ($prefix) {
+
+        $this->disabledModelAspects[] = $prefix;
 
     }
 
@@ -162,5 +181,53 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
         parent::getDefinition();
 
     }
+
+    /**
+     *
+     */
+    protected function validateParams () {
+
+        $this->validateAggregatedStructure($this->getParams());
+        parent::validateParams();
+
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return array
+     * @throws ValidationException
+     */
+    protected function validateAggregatedStructure (array $params) {
+
+        foreach ($this->getEnabledAspects() as $modelAspect) {
+
+            $explodedPrefix = explode('.', $modelAspect->getPrefix());
+            $data = $params;
+            foreach ($explodedPrefix as $elem) {
+                if (is_object($data) || !isset($data[$elem])) {
+                    continue 2;
+                }
+                $data = $data[$elem];
+            }
+            $name = $explodedPrefix[count($explodedPrefix) - 1];
+
+            $validationResult = Validator::validateParams([$name => [new Object()]], $data);
+            $validationResult->throwIfErrors();
+
+            // TODO : refactor, use $validationResult->getValidatedParams()
+            $finalValue = UnsafeParameter::getFinalValue($data);
+            if ($data != $finalValue) {
+                // TODO: check if ArrayExtra::magicalSet shouldn't be used
+                Helper::setFinalValue($params, $explodedPrefix, $finalValue);
+            }
+
+        }
+
+        return $params;
+
+    }
+
+
 
 }

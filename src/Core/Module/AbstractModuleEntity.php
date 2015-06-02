@@ -129,13 +129,14 @@ abstract class AbstractModuleEntity implements ModuleEntity {
 
         // TODO : check me : how to get validated id ?
         $entityId = $actionContext->getVerifiedParam('id');
+        // unset id from params ?
 
         return $this->modifyEntity($actionContext->getParams(), $entityId, $actionContext);
 
     }
 
     /**
-     * @param array         $unsafeParams
+     * @param array         $params
      * @param int|null      $entityId
      *
      * @param ActionContext $actionContext
@@ -143,10 +144,12 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      * @return mixed
      * @throws \Core\Error\FormattedError
      */
-    protected function modifyEntity (array $unsafeParams, $entityId, ActionContext $actionContext) {
+    protected function modifyEntity (array $params, $entityId, ActionContext $actionContext) {
 
         try {
-            $upsertContext = $this->createUpsertContextProxy($unsafeParams, $entityId, $actionContext);
+            $upsertContext = $this->createUpsertContextProxy($params, $entityId, $actionContext);
+// TODO : validate ?
+
             if ($upsertContext->getErrors()) {
                 throw new ValidationException($upsertContext->getErrors());
             }
@@ -167,15 +170,15 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     }
 
     /**
-     * @param array         $unsafeParams
+     * @param array         $params
      * @param int|null      $entityId
      * @param ActionContext $actionContext
      *
      * @return ModuleEntityUpsertContext
      */
-    protected function createUpsertContextProxy (array $unsafeParams, $entityId, ActionContext $actionContext) {
+    protected function createUpsertContextProxy (array $params, $entityId, ActionContext $actionContext) {
 
-        return $this->getDefinition()->createUpsertContext($unsafeParams, $entityId, $actionContext);
+        return $this->getDefinition()->createUpsertContext($params, $entityId, $actionContext);
 
     }
 

@@ -46,16 +46,15 @@ abstract class ModuleEntityDefinition implements ConstraintsProvider {
     public abstract function getEntityName ();
 
     /**
-     * @param array         $unsafeParams
+     * @param array         $params
      * @param int|null      $entityId
      * @param ActionContext $actionContext
      *
      * @return ModuleEntityUpsertContext
      */
-    public function createUpsertContext (array $unsafeParams, $entityId, ActionContext $actionContext) {
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $actionContext);
-        $upsertContext->setParams($unsafeParams, $this->getConstraintsList());
+        $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
         return $upsertContext;
 

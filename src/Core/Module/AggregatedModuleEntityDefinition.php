@@ -4,9 +4,12 @@
 namespace Core\Module;
 
 
+use Core\Context\ActionContext;
+use Core\Context\AggregatedModuleEntityUpsertContext;
 use Core\Context\ApplicationContext;
 use Core\Registry;
 use Core\Validation\Parameter\Constraint;
+use Symfony\Component\Validator\Exception\RuntimeException;
 
 abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
@@ -35,6 +38,21 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     }
 
     /**
+     * @param array         $params
+     * @param int|null      $entityId
+     * @param ActionContext $actionContext
+     *
+     * @return AggregatedModuleEntityUpsertContext
+     */
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
+
+        $upsertContext = new AggregatedModuleEntity($this, $entityId, $params, $actionContext);
+
+        return $upsertContext;
+
+    }
+
+    /**
      * @return Constraint[][]
      */
     public function getConstraintsList () {
@@ -46,6 +64,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
             $modelAspectConstraints = [];
 
             // TODO : could it be different from Object ?
+            // Answer : nop consider it is an object
             foreach ($modelAspect->getConstraints() as $actionConstraints) {
                 $modelAspectConstraints = array_merge($modelAspectConstraints, $actionConstraints);
             }
@@ -71,7 +90,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
      */
     public function getModelAspects () {
 
-        return $this->modelAspects;
+        return array_values($this->modelAspects);
 
     }
 
@@ -184,8 +203,18 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     protected function addAspect (array $config) {
 
         $modelAspect = $this->getModelAspectFromConfig($config);
-        $this->modelAspects[$modelAspect->getRelativeField()] = $modelAspect;
-
+        $this->modelAspects[$modelAspect->getPrefix()] = $modelAspect;
     }
 
+    /**
+     * @param string $prefix
+     *
+     * @return ModuleEntityDefinition
+     */
+    protected function getDefinition($prefix) {
+        if ( ! isset($this->modelAspects[$prefix]) ) {
+            throw new \RuntimeException('access to undefined aspect '. $prefix);
+        }
+        return $this->modelAspects[$prefix]->getModuleEntity()->getDefinition();
+    }
 }
