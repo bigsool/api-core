@@ -81,7 +81,7 @@ class Helper extends BasicHelper {
      * @param               $credential
      * @param array         $params
      */
-    protected function createLoginHistory (ActionContext $actionContext, $credential, array $params) {
+    protected function createLoginHistory (ActionContext $actionContext, $credential, array $params = []) {
 
         $this->checkRealModelType($credential, 'Credential');
 
@@ -94,7 +94,8 @@ class Helper extends BasicHelper {
         $params['clientName'] = $reqCtx->getClientName();
         $params['clientVersion'] = $reqCtx->getClientVersion();
         $params['IP'] = $reqCtx->getIpAddress();
-
+        var_dump('yaaaaa');
+var_dump(json_encode($params));
         $this->basicSave($loginHistory, $params);
 
         $actionContext['loginHistory'] = $loginHistory;

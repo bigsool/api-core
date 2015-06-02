@@ -302,6 +302,7 @@ class Application {
      */
     protected function populateRequestContext (Handler $rpcHandler, RequestContext &$reqCtx) {
 
+        $reqCtx->setAuthToken($rpcHandler->getAuthToken());
         $reqCtx->setParams($rpcHandler->getParams());
         $reqCtx->setClientName($rpcHandler->getClientName());
         $reqCtx->setClientVersion($rpcHandler->getClientVersion());

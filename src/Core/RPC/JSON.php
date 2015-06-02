@@ -63,6 +63,7 @@ class JSON implements Handler {
      */
     protected $id;
 
+
     /**
      * @return string
      */
@@ -234,6 +235,7 @@ class JSON implements Handler {
         $cookies = $request->cookies->all();
         $this->params = ArrayExtra::array_merge_recursive_distinct($cookies, $getParams, $jsonParams);
 
+
         $this->id = isset($JSONContent['id']) ? $JSONContent['id'] : $request->query->get('id');
 
         $this->ipAddress = $request->getClientIp();
@@ -251,5 +253,7 @@ class JSON implements Handler {
         return $this->id;
 
     }
+
+    public function getAuthToken () {}
 
 }

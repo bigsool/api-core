@@ -40,11 +40,13 @@ class ModuleManager extends AbstractModuleManager {
 
                 $credential = $helper->getCredentialFromLogin($params['login']);
 
-                return [
+                $context['authToken'] = [
                     'authToken' => $authToken,
                     'login'     => $params['login'],
                     'id'        => $credential->getId(),
                 ];
+
+                return $context['authToken'];
 
             }));
 
@@ -61,7 +63,8 @@ class ModuleManager extends AbstractModuleManager {
 
                 $appCtx = ApplicationContext::getInstance();
                 $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
-
+                $authToken = $ctx->getParam('authToken');
+                $params =  $ctx->getParams();
                 $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
                                                          $expire,'/',null,false,false));
 
@@ -167,6 +170,9 @@ class ModuleManager extends AbstractModuleManager {
             $helper->updateCredential($context, $credential, $params);
 
             $credential = $context['credential'];
+
+            $helper = new Helper;
+            $authToken = $helper->login($context, $params);
 
             return $credential;
 
