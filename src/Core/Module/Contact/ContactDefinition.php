@@ -21,11 +21,9 @@ class ContactDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @param array $params
-     *
      * @return \Core\Validation\Parameter\Constraint[][]
      */
-    public function getConstraintsList (array &$params) {
+    public function getConstraintsList () {
 
         return [
             'label'    => [

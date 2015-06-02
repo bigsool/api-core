@@ -23,7 +23,9 @@ abstract class ModuleManager {
 
         $context->addModuleManager($this);
 
-        foreach ($this->createModuleEntityDefinitions($context) as $moduleEntityDefinition) {
+        $moduleEntityDefinitions = $this->createModuleEntityDefinitions($context);
+
+        foreach ($moduleEntityDefinitions as $moduleEntityDefinition) {
             $moduleEntity = $moduleEntityDefinition instanceof AggregatedModuleEntityDefinition ?
                 new AggregatedModuleEntity($context, $moduleEntityDefinition)
                 : new DbModuleEntity($context, $moduleEntityDefinition);
@@ -31,15 +33,18 @@ abstract class ModuleManager {
             $context->addModuleEntity($moduleEntity);
         }
 
+        // loading of model aspect must be done after the definition of all Module Entities
+        // so loadModuleEntities is called later by Application
+
         foreach ($this->moduleEntities as $moduleEntity) {
 
-            foreach ($moduleEntity->getFilters() as $filter) {
+            foreach ($moduleEntity->getDefinition()->getFilters() as $filter) {
                 $context->addFilter($filter);
             }
 
             $entityName = $moduleEntity->getDefinition()->getDBEntityName();
 
-            foreach ($moduleEntity->getCalculatedFields() as $fieldName => $calculatedField) {
+            foreach ($moduleEntity->getDefinition() as $fieldName => $calculatedField) {
                 $context->addCalculatedField($entityName, $fieldName, $calculatedField);
             }
 

@@ -11,6 +11,7 @@ use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
+use Core\Module\MagicalModuleManager;
 use Core\Module\ModuleManager;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
@@ -209,6 +210,12 @@ class Application {
 
         foreach ($this->getModuleManagers() as $moduleManager) {
             $moduleManager->load($this->appCtx);
+        }
+
+        foreach ($this->moduleManagers as $moduleManager) {
+            if ($moduleManager instanceof MagicalModuleManager) {
+                $moduleManager->loadModelAspects($this->appCtx);
+            }
         }
 
         $this->appCtx->getTraceLogger()->trace('modules loaded');

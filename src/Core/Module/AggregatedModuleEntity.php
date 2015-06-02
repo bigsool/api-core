@@ -10,7 +10,6 @@ use Core\Context\AggregatedModuleEntityUpsertContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\ModuleEntityUpsertContext;
-use Core\Filter\StringFilter;
 use Core\Helper\AggregatedModuleEntity\EntityParamsTranslatorHelper;
 use Core\Helper\AggregatedModuleEntity\UpsertContextHelper;
 use Core\Helper\AggregatedModuleEntity\UpsertHelper;
@@ -142,13 +141,16 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
     }
 
     /**
-     * @param MagicalEntity                       $entity
-     * @param AggregatedModuleEntityUpsertContext $aggregatedModuleEntityUpsertContext
+     * @param MagicalEntity             $entity
+     * @param ModuleEntityUpsertContext $upsertContext
      */
-    protected function postModifyProxy ($entity,
-                                        AggregatedModuleEntityUpsertContext $aggregatedModuleEntityUpsertContext) {
+    protected function postModifyProxy ($entity, ModuleEntityUpsertContext $upsertContext) {
 
-        foreach ($aggregatedModuleEntityUpsertContext->getChildrenUpsertContexts() as $childContextContext) {
+        if (!($upsertContext instanceof AggregatedModuleEntityUpsertContext)) {
+            throw new \RuntimeException('$upsertContext must be a AggregatedModuleEntityUpsertContext');
+        }
+
+        foreach ($upsertContext->getChildrenUpsertContexts() as $childContextContext) {
             /**
              * @var ModuleEntityUpsertContext $childContext
              */
@@ -162,8 +164,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
             $moduleEntity->getDefinition()->postModify($childContext->getEntity(), $childContext);
         }
 
-        $this->getDefinition()
-             ->postModify($aggregatedModuleEntityUpsertContext->getEntity(), $aggregatedModuleEntityUpsertContext);
+        $this->getDefinition()->postModify($upsertContext->getEntity(), $upsertContext);
     }
 
     /**
@@ -201,17 +202,12 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
             $childContext = $childContextWithModelAspect[0];
 
             $params = $childContext->getValidatedParams();
-            
-            // TODO : handle sub-sub-entities (company.contact if company id is provided)
-            // in case of creation, we should handle id instead of object definition (ie: company for sub-user)
-            if ($upsertContext->isCreation() && array_key_exists('id', $params)) {
-                // TODO : has he the right to do it ? (assign)
-                $reqCtx = $upsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields();
-                $qryCtx = new FindQueryContext($modelAspect->getModel(), $reqCtx);
-                $qryCtx->addField('id');
-                $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $params['id']);
-                $subEntity = $qryCtx->findOne();
-            } else {
+
+            // if entity already assign
+            if ($childContext->getEntity()) {
+                continue;
+            }
+            else {
                 /**
                  * TODO : $moduleEntity is a ModuleEntity not an AbstractModuleEntity
                  * @var AbstractModuleEntity $moduleEntity

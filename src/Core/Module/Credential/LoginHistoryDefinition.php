@@ -5,16 +5,15 @@ namespace Core\Module\Credential;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ModuleEntityUpsertContext;
 use Core\Module\ModuleEntityDefinition;
 
 class LoginHistoryDefinition extends ModuleEntityDefinition {
 
     /***
-     * @param array $params
-     *
      * @return \Core\Validation\Parameter\Constraint[][]
      */
-    public function getConstraintsList (array &$params) {
+    public function getConstraintsList () {
 
         return [];
 
@@ -30,22 +29,26 @@ class LoginHistoryDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @return callable
+     * @param array         $params
+     * @param int|null      $entityId
+     * @param ActionContext $actionContext
+     *
+     * @return ModuleEntityUpsertContext
      */
-    public function getPreModifyCallback () {
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        return function (array &$params, $isCreation, ActionContext $context) {
+        if (!$entityId) {
+            $reqCtx = $actionContext->getRequestContext();
 
-            if ($isCreation) {
-                $reqCtx = $context->getRequestContext();
+            $params['date'] = new \DateTime();
+            $params['clientName'] = $reqCtx->getClientName();
+            $params['clientVersion'] = $reqCtx->getClientVersion();
+            $params['IP'] = $reqCtx->getIpAddress();
+        }
 
-                $params['date'] = new \DateTime();
-                $params['clientName'] = $reqCtx->getClientName();
-                $params['clientVersion'] = $reqCtx->getClientVersion();
-                $params['IP'] = $reqCtx->getIpAddress();
-            }
+        $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
-        };
+        return $upsertContext;
 
     }
 

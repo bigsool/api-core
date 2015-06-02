@@ -42,15 +42,6 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @return string
-     */
-    public function getEntityName () {
-
-        return $this->dbEntityName;
-
-    }
-
-    /**
      * @return ModelAspect[]
      */
     public function getAllModelAspects () {
@@ -186,4 +177,9 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
         return $this->modelAspects[$prefix]->getModuleEntity()->getDefinition();
     }
+
+    /**
+     * @param ApplicationContext $applicationContext
+     */
+    public abstract function loadModelAspects(ApplicationContext $applicationContext);
 }

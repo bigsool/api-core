@@ -4,6 +4,8 @@
 namespace Core\Module\Credential;
 
 
+use Core\Context\ActionContext;
+use Core\Context\ModuleEntityUpsertContext;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -25,11 +27,9 @@ class CredentialDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @param array $params
-     *
      * @return \Core\Validation\Parameter\Constraint[][]
      */
-    public function getConstraintsList (array &$params) {
+    public function getConstraintsList () {
 
         return [
             'type'      =>
@@ -68,20 +68,22 @@ class CredentialDefinition extends ModuleEntityDefinition {
 
     }
 
-
-
     /**
-     * @return callable
+     * @param array         $params
+     * @param int|null      $entityId
+     * @param ActionContext $actionContext
+     *
+     * @return ModuleEntityUpsertContext
      */
-    public function getPreModifyCallback () {
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        return function (array &$params) {
+        if (array_key_exists('password', $params)) {
+            $params['password'] = CredentialHelper::encryptPassword($params['password']);
+        }
 
-            if (array_key_exists('password', $params)) {
-                $params['password'] = CredentialHelper::encryptPassword($params['password']);
-            }
+        $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
-        };
+        return $upsertContext;
 
     }
 

@@ -14,22 +14,6 @@ use Core\Module\ModuleManager as AbstractModuleManager;
 class ModuleManager extends AbstractModuleManager {
 
     /**
-     * @param ApplicationContext $appCtx
-     *
-     * @return Action[]
-     */
-    public function createActions (ApplicationContext &$appCtx) {
-
-        $studentInfoModuleEntity = $this->getModuleEntity('StudentInfo');
-
-        return [
-            new BasicCreateAction('Core\Student', $studentInfoModuleEntity, [], []),
-            new BasicUpdateAction('Core\Student', $studentInfoModuleEntity, [], [])
-        ];
-
-    }
-
-    /**
      * @param ApplicationContext $applicationContext
      *
      * @return ModuleEntity[]

@@ -144,7 +144,7 @@ class ApplicationContext {
     /**
      * @var ModuleEntity[]
      */
-    protected $moduleEntities;
+    protected $moduleEntities = [];
 
     /**
      * @var ModuleManager[]
@@ -665,7 +665,12 @@ class ApplicationContext {
      */
     public function addModuleEntity (ModuleEntity $moduleEntity) {
 
-        $this->moduleEntities[$moduleEntity->getDefinition()] = $moduleEntity;
+        $entityName = $moduleEntity->getDefinition()->getEntityName();
+        if (array_key_exists($entityName, $this->moduleEntities)) {
+            throw new \RuntimeException(sprintf('moduleEntity for %s already defined', $entityName));
+        }
+
+        $this->moduleEntities[$entityName] = $moduleEntity;
 
         $moduleEntity->setRegistry($this->getNewRegistry());
 

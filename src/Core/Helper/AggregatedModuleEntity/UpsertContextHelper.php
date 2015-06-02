@@ -7,6 +7,7 @@ namespace Core\Helper\AggregatedModuleEntity;
 use Core\Context\ActionContext;
 use Core\Context\AggregatedModuleEntityUpsertContext;
 use Core\Context\FindQueryContext;
+use Core\Context\ModuleEntityUpsertContext;
 use Core\Error\ValidationException;
 use Core\Filter\StringFilter;
 use Core\Module\AggregatedModuleEntityDefinition;
@@ -48,13 +49,28 @@ class UpsertContextHelper {
 
         }
 
-        try {
-            $childUpsertContext =
-                $moduleEntity->getDefinition()->createUpsertContext($aspectParams, $entityId, $actionContext);
+        // TODO : handle sub-sub-entities (company.contact if company id is provided)
+        // in case of creation, we should handle id instead of object definition (ie: company for sub-user)
+        if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams)) {
+            // TODO : has he the right to do it ? (assign)
+            $reqCtx = $aggregatedUpsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields();
+            $qryCtx = new FindQueryContext($modelAspect->getModel(), $reqCtx);
+            $qryCtx->addField('id');
+            $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $aspectParams['id']);
+            $subEntity = $qryCtx->findOne();
+
+            $childUpsertContext = new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
+            $childUpsertContext->setEntity($subEntity);
         }
-        catch (ValidationException $exception) {
-            $aggregatedUpsertContext->addErrors($exception->getErrors(), $modelAspect);
-            throw new ValidationException($aggregatedUpsertContext->getErrors());
+        else {
+            try {
+                $childUpsertContext =
+                    $moduleEntity->getDefinition()->createUpsertContext($aspectParams, $entityId, $actionContext);
+            }
+            catch (ValidationException $exception) {
+                $aggregatedUpsertContext->addErrors($exception->getErrors(), $modelAspect);
+                throw new ValidationException($aggregatedUpsertContext->getErrors());
+            }
         }
 
         $aggregatedUpsertContext->addErrors($childUpsertContext->getErrors(), $modelAspect);
