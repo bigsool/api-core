@@ -8,8 +8,6 @@ use Core\Context\ActionContext;
 use Core\Context\AggregatedModuleEntityUpsertContext;
 use Core\Context\ApplicationContext;
 use Core\Registry;
-use Core\Validation\Parameter\Constraint;
-use Symfony\Component\Validator\Exception\RuntimeException;
 
 abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
@@ -29,15 +27,6 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     protected $modelAspects = [];
 
     /**
-     * @return ModelAspect
-     */
-    public function getMainAspect () {
-
-        return $this->mainAspect;
-
-    }
-
-    /**
      * @param array         $params
      * @param int|null      $entityId
      * @param ActionContext $actionContext
@@ -53,34 +42,29 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @return Constraint[][]
-     */
-    public function getConstraintsList () {
-
-        $constraints = parent::getConstraintsList();
-
-        foreach ($this->getModelAspects() as $modelAspect) {
-
-            $modelAspectConstraints = [];
-
-            // TODO : could it be different from Object ?
-            // Answer : nop consider it is an object
-            foreach ($modelAspect->getConstraints() as $actionConstraints) {
-                $modelAspectConstraints = array_merge($modelAspectConstraints, $actionConstraints);
-            }
-
-            $constraints[$modelAspect->getPrefix()] = $modelAspectConstraints;
-
-        }
-
-    }
-
-    /**
      * @return string
      */
     public function getEntityName () {
 
         return $this->dbEntityName;
+
+    }
+
+    /**
+     * @return ModelAspect[]
+     */
+    public function getAllModelAspects () {
+
+        return array_merge([$this->getMainAspect()], $this->getModelAspects());
+
+    }
+
+    /**
+     * @return ModelAspect
+     */
+    public function getMainAspect () {
+
+        return $this->mainAspect;
 
     }
 
@@ -91,16 +75,6 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     public function getModelAspects () {
 
         return array_values($this->modelAspects);
-
-    }
-
-
-    /**
-     * @return ModelAspect[]
-     */
-    public function getAllModelAspects () {
-
-        return array_merge([$this->getMainAspect()], $this->getModelAspects());
 
     }
 
@@ -158,7 +132,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
         $withPrefixedFields = isset($config['withPrefixedFields']) ? $config['withPrefixedFields'] : false;
 
         $actionNames = ['create', 'find', 'update', 'delete'];
-        $constraints = [];
+        $shouldBeIgnored = [];
         $actions = [];
 
         foreach ($actionNames as $actionName) {
@@ -169,16 +143,8 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
             $configOfTheAction = $config[$actionName];
 
-            if (isset($configOfTheAction['constraints'])) {
-                $constraints[$actionName] = $configOfTheAction['constraints'];
-                if (!is_array($configOfTheAction['constraints'])) {
-                    throw new \RuntimeException('invalid constraints');
-                }
-                foreach ($constraints[$actionName] as $constraint) {
-                    if (!($constraint instanceof Constraint)) {
-                        throw new \RuntimeException('invalid constraint');
-                    }
-                }
+            if (isset($configOfTheAction['ignore'])) {
+                $shouldBeIgnored[$actionName] = !!$configOfTheAction['ignore'];
             }
 
             if (isset($configOfTheAction['action'])) {
@@ -190,8 +156,8 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
 
         }
 
-        $modelAspect =
-            new ModelAspect($model, $module, $prefix, $constraints, $actions, $relativeField, $withPrefixedFields);
+        $modelAspect = new ModelAspect($model, $module, $prefix, $actions, $shouldBeIgnored, $relativeField,
+                                       $withPrefixedFields);
         ApplicationContext::getInstance()->finalizeModelAspect($modelAspect);
 
         return $modelAspect;
@@ -211,10 +177,12 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
      *
      * @return ModuleEntityDefinition
      */
-    protected function getDefinition($prefix) {
-        if ( ! isset($this->modelAspects[$prefix]) ) {
-            throw new \RuntimeException('access to undefined aspect '. $prefix);
+    protected function getDefinition ($prefix) {
+
+        if (!isset($this->modelAspects[$prefix])) {
+            throw new \RuntimeException('access to undefined aspect ' . $prefix);
         }
+
         return $this->modelAspects[$prefix]->getModuleEntity()->getDefinition();
     }
 }

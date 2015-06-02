@@ -6,7 +6,6 @@ namespace Core\Module;
 
 use Core\Action\Action;
 use Core\Field\RelativeField;
-use Core\Validation\Parameter\Constraint;
 
 class ModelAspect {
 
@@ -14,6 +13,11 @@ class ModelAspect {
      * @var string
      */
     protected $module;
+
+    /**
+     * @var bool[]
+     */
+    protected $shouldBeIgnored;
 
     /**
      * @var string
@@ -24,11 +28,6 @@ class ModelAspect {
      * @var string|null
      */
     private $prefix;
-
-    /**
-     * @var Constraint[][]
-     */
-    private $constraints;
 
     /**
      * @var string|null
@@ -51,26 +50,25 @@ class ModelAspect {
      */
     private $moduleEntity;
 
-
     /**
      * @param string                          $model
-     * @param                                 $module
+     * @param string                          $module
      * @param string                          $prefix
-     * @param Constraint[][]                  $constraints
      * @param Action[]                        $actions
+     * @param bool[]                          $shouldBeIgnored
      * @param RelativeField|null              $relativeField
      * @param Boolean                         $withPrefixedFields
      */
-    public function __construct ($model, $module, $prefix, array $constraints, array $actions,
-                                 $relativeField = NULL, $withPrefixedFields = false) {
+    public function __construct ($model, $module, $prefix, array $actions, array $shouldBeIgnored,
+                                 $relativeField = NULL,
+                                 $withPrefixedFields = false) {
 
         $this->model = $model;
         $this->prefix = $prefix;
-        $this->constraints = $constraints;
         $this->relativeField = $relativeField;
         $this->actions = $actions;
         $this->withPrefixedFields = $withPrefixedFields;
-
+        $this->shouldBeIgnored = $shouldBeIgnored;
         $this->module = $module;
 
     }
@@ -103,40 +101,16 @@ class ModelAspect {
     }
 
     /**
-     * @param null $actionName
-     *
-     * @return Constraint[]|Constraint[][]
-     */
-    public function getConstraints ($actionName = NULL) {
-
-        return isset($actionName)
-            ? (isset($this->constraints[$actionName])
-                ? $this->constraints[$actionName]
-                : [])
-            : $this->constraints;
-
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getRelativeField () {
-
-        return $this->relativeField;
-
-    }
-
-    /**
-     * @param $action
+     * @param string $action
      *
      * @return bool
      */
 
-    public function isDisabledForAction($action) {
-        return false;
+    public function isDisabledForAction ($action) {
+
+        return array_key_exists($action, $this->shouldBeIgnored) ? $this->shouldBeIgnored[$action] : false;
+
     }
-
-
 
     /**
      * @return boolean
@@ -150,8 +124,19 @@ class ModelAspect {
     /**
      * @return bool
      */
-    public function isMainAspect() {
-        return $this->getRelativeField() == null;
+    public function isMainAspect () {
+
+        return $this->getRelativeField() == NULL;
+
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRelativeField () {
+
+        return $this->relativeField;
+
     }
 
     /**
@@ -160,6 +145,7 @@ class ModelAspect {
     public function getModuleEntity () {
 
         return $this->moduleEntity;
+
     }
 
     /**
@@ -168,6 +154,7 @@ class ModelAspect {
     public function setModuleEntity ($moduleEntity) {
 
         $this->moduleEntity = $moduleEntity;
+
     }
 
 }
