@@ -90,7 +90,7 @@ class UserDefinition extends ModuleEntityDefinition {
      */
     public function getFilters () {
 
-        return [new StringFilter('User', 'userForId', 'id = :id')];
+        return [new StringFilter('User', 'UserForId', 'id = :id')];
 
     }
 
