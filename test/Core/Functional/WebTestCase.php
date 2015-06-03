@@ -204,7 +204,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      */
     public function assertSuccess ($response, $id = NULL, $hasMoreProperties = false) {
 
-        $this->assertInternalType('array', $response);
+        $this->assertInternalType('array', $response, json_encode($response));
 
         if ($hasMoreProperties) {
             $this->assertGreaterThan(3, count($response), json_encode($response));
