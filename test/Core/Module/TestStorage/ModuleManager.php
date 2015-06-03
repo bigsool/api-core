@@ -42,7 +42,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * {@inheritDoc}
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+    public function getModuleEntitiesName (ApplicationContext &$context) {
 
         $storageEntity = new DbModuleEntity($context, 'TestStorage', [
                                                         new StringFilter('TestStorage', 'TestStorageForId', 'id = :id')

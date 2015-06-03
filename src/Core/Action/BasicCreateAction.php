@@ -40,7 +40,7 @@ class BasicCreateAction extends SimpleAction {
 
                 $params = $context->getVerifiedParams();
 
-                $entityObj = $moduleEntity->create($context, $params);
+                $entityObj = $moduleEntity->create($params, $context);
                 $moduleEntity->save($entityObj);
 
                 $entityName = $moduleEntity->getDefinition()->getEntityName();

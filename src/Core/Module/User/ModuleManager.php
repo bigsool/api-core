@@ -15,10 +15,10 @@ class ModuleManager extends AbstractModuleManager {
      *
      * @return ModuleEntity[]
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$appCtx) {
+    public function getModuleEntitiesName (ApplicationContext &$appCtx) {
 
         return [
-            new UserDefinition
+            'User'
         ];
 
     }

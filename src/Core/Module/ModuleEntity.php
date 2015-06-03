@@ -24,18 +24,21 @@ interface ModuleEntity {
     public function find (FindQueryContext $findQueryContext);
 
     /**
+     * @param array         $params
      * @param ActionContext $context
      *
      * @return mixed
      */
-    public function create (ActionContext $context);
+    public function create (array $params, ActionContext $context);
 
     /**
+     * @param int           $entityId
+     * @param array         $params
      * @param ActionContext $context
      *
      * @return mixed
      */
-    public function update (ActionContext $context);
+    public function update ($entityId, array $params, ActionContext $context);
 
     /**
      * @return ModuleEntityDefinition

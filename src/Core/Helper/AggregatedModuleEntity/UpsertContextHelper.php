@@ -53,10 +53,11 @@ class UpsertContextHelper {
         // in case of creation, we should handle id instead of object definition (ie: company for sub-user)
         if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams)) {
             // TODO : has he the right to do it ? (assign)
+            $subEntityId = UnsafeParameter::getFinalValue($aspectParams['id']);
             $reqCtx = $aggregatedUpsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields();
             $qryCtx = new FindQueryContext($modelAspect->getModel(), $reqCtx);
             $qryCtx->addField('id');
-            $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $aspectParams['id']);
+            $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $subEntityId);
             $subEntity = $qryCtx->findOne();
 
             $childUpsertContext = new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
@@ -110,7 +111,9 @@ class UpsertContextHelper {
         $translatedParams = UnsafeParameter::getFinalValue($translatedParams);
         // prepares sub context by filtering out non company related fields
         foreach ($translatedParams as $key => $value) {
-            if (!static::isParamLinkedToAspectModel($definition, $relativeField, $key)) {
+            $isParamLinkedToAspectModel = static::isParamLinkedToAspectModel($definition, $relativeField, $key);
+            $isParamLinkedToAggregated = $relativeField || !array_key_exists($key,$definition->getConstraintsList());
+            if (!$isParamLinkedToAspectModel && $isParamLinkedToAggregated) {
                 $entityParams[$key] = $value;
             }
         }

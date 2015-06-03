@@ -212,9 +212,21 @@ class Application {
             $moduleManager->load($this->appCtx);
         }
 
+        // loading of model aspect must be done after the definition of all Module Entities
+        // so loadModuleEntities is called later by Application
         foreach ($this->moduleManagers as $moduleManager) {
             if ($moduleManager instanceof MagicalModuleManager) {
                 $moduleManager->loadModelAspects($this->appCtx);
+            }
+        }
+
+        // loading of calculated fields must be done after the load of model aspects
+        foreach ($this->moduleManagers as $moduleManager) {
+            foreach ($moduleManager->getModuleEntities() as $moduleEntity) {
+                $dbEntityName = $moduleEntity->getDefinition()->getDBEntityName();
+                foreach ($moduleEntity->getDefinition()->getFields() as $fieldName => $calculatedField) {
+                    $this->appCtx->addCalculatedField($dbEntityName, $fieldName, $calculatedField);
+                }
             }
         }
 

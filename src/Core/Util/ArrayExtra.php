@@ -99,15 +99,16 @@ class ArrayExtra {
     }
 
     /**
-     * add the possibility to use a dot (.) to separate the different dimensions of an arraY
+     * add the possibility to use a dot (.) to separate the different dimensions of an array
      * E.g. : $arr['a']['b']['c'] = 'abc'; echo magicalGet($arr,'a.b.c'); <=> echo $arr['a']['b']['c'];
      *
      * @param array $array
      * @param mixed $key
+     * @param mixed $isset out parameter in order to know if the key exists or not
      *
      * @return mixed
      */
-    public static function magicalGet (array $array, $key) {
+    public static function magicalGet (array $array, $key, &$isset = NULL) {
 
         $exploded = explode('.', $key);
         $return = NULL;
@@ -144,6 +145,7 @@ class ArrayExtra {
             }
 
             if (!isset($array[$key])) {
+                $isset = false;
                 return NULL;
             }
             // it's not necessary to create an array for the last key
@@ -152,6 +154,8 @@ class ArrayExtra {
             }
             $array = $array[$key];
         }
+
+        $isset = true;
 
         return $return;
 

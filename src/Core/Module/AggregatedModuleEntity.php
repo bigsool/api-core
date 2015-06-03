@@ -150,7 +150,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
             throw new \RuntimeException('$upsertContext must be a AggregatedModuleEntityUpsertContext');
         }
 
-        foreach ($upsertContext->getChildrenUpsertContexts() as $childContextContext) {
+        foreach ($upsertContext->getChildrenUpsertContextsWithModuleEntities() as $childContextContext) {
             /**
              * @var ModuleEntityUpsertContext $childContext
              */
@@ -165,20 +165,6 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
         }
 
         $this->getDefinition()->postModify($upsertContext->getEntity(), $upsertContext);
-    }
-
-    /**
-     * @param mixed $entity
-     */
-    public function save ($entity) {
-
-        if (!($entity instanceof MagicalEntity)) {
-            throw new \RuntimeException(sprintf('$entity must be an MagicalEntity, %s %s given', gettype($entity),
-                                                get_class($entity)));
-        }
-
-        parent::save($entity->getMainEntity());
-
     }
 
     /**
@@ -200,8 +186,6 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
              */
             $modelAspect = $childContextWithModelAspect[1];
             $childContext = $childContextWithModelAspect[0];
-
-            $params = $childContext->getValidatedParams();
 
             // if entity already assign
             if ($childContext->getEntity()) {

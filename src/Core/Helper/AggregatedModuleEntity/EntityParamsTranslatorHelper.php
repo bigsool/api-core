@@ -154,7 +154,7 @@ class EntityParamsTranslatorHelper {
      *
      * @return mixed
      */
-    protected function removePrefixedFields ($params, $keysToRemove) {
+    protected static function removePrefixedFields ($params, $keysToRemove) {
 
         if (is_array($params)) {
             foreach ($params as $key => $value) {

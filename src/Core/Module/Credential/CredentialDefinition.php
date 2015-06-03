@@ -77,11 +77,12 @@ class CredentialDefinition extends ModuleEntityDefinition {
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        if (array_key_exists('password', $params)) {
-            $params['password'] = CredentialHelper::encryptPassword($params['password']);
-        }
-
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
+
+        if (array_key_exists('password', $params)) {
+            $hash = CredentialHelper::encryptPassword($upsertContext->getValidatedParam('password'));
+            $upsertContext->addParam('password', $hash);
+        }
 
         return $upsertContext;
 

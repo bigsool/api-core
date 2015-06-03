@@ -18,10 +18,10 @@ class ModuleManager extends AbstractModuleManager {
      *
      * @return ModuleEntity[]
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+    public function getModuleEntitiesName (ApplicationContext &$context) {
 
         return [
-            new MarketingInfoDefinition()
+            'MarketingInfo'
         ];
 
     }

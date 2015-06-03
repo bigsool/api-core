@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Validation;
 
 use Core\Validation\Parameter\Constraint;

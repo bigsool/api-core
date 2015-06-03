@@ -40,13 +40,29 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     }
 
     /**
+     * @param array         $params
      * @param ActionContext $actionContext
      *
      * @return mixed
+     * @throws \Core\Error\FormattedError
      */
-    public function create (ActionContext $actionContext) {
+    public function create (array $params, ActionContext $actionContext) {
 
-        return $this->modifyEntity($actionContext->getParams(), NULL, $actionContext);
+        return $this->modifyEntity($params, NULL, $actionContext);
+
+    }
+
+    /**
+     * @param int           $entityId
+     * @param array         $params
+     * @param ActionContext $actionContext
+     *
+     * @return mixed
+     * @throws \Core\Error\FormattedError
+     */
+    public function update ($entityId, array $params, ActionContext $actionContext) {
+
+        return $this->modifyEntity($params, $entityId, $actionContext);
 
     }
 
@@ -100,7 +116,7 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      */
     public function save ($entity) {
 
-        $realModelClassName = $this->registry->realModelClassName($this->definition);
+        $realModelClassName = $this->registry->realModelClassName($this->definition->getEntityName());
         $className = '\\' . get_class($entity);
         if (!($entity instanceof $realModelClassName)) {
             throw new \RuntimeException(sprintf('$entity must be a %s, %s %s given', $realModelClassName,
@@ -121,21 +137,6 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     }
 
     /**
-     * @param ActionContext $actionContext
-     *
-     * @return mixed
-     */
-    public function update (ActionContext $actionContext) {
-
-        // TODO : check me : how to get validated id ?
-        $entityId = $actionContext->getVerifiedParam('id');
-        // unset id from params ?
-
-        return $this->modifyEntity($actionContext->getParams(), $entityId, $actionContext);
-
-    }
-
-    /**
      * @param array         $params
      * @param int|null      $entityId
      *
@@ -148,13 +149,14 @@ abstract class AbstractModuleEntity implements ModuleEntity {
 
         try {
             $upsertContext = $this->createUpsertContextProxy($params, $entityId, $actionContext);
-// TODO : validate ?
+            // TODO : validate ?
 
             if ($upsertContext->getErrors()) {
                 throw new ValidationException($upsertContext->getErrors());
             }
 
             $entity = $this->upsert($upsertContext);
+            // TODO : save ?
 
             $this->postModifyProxy($entity, $upsertContext);
 

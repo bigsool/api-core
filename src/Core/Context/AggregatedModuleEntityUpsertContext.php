@@ -106,7 +106,11 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      */
     public function getEnabledAspects () {
 
-        return array_diff($this->getDefinition()->getModelAspects(), $this->getDisabledAspects());
+        return array_filter($this->getDefinition()->getModelAspects(), function (ModelAspect $modelAspect) {
+
+            return !in_array($modelAspect->getPrefix(), $this->disabledModelAspects);
+
+        });
 
     }
 
@@ -178,7 +182,7 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      */
     public function getDefinition () {
 
-        parent::getDefinition();
+        return parent::getDefinition();
 
     }
 
@@ -187,7 +191,7 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
      */
     protected function validateParams () {
 
-        $this->validateAggregatedStructure($this->getParams());
+        $this->params = $this->validateAggregatedStructure($this->getParams());
         parent::validateParams();
 
     }
@@ -210,13 +214,12 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
                 }
                 $data = $data[$elem];
             }
-            $name = $explodedPrefix[count($explodedPrefix) - 1];
+            $finalValue = UnsafeParameter::getFinalValue($data);
 
-            $validationResult = Validator::validateParams([$name => [new Object()]], $data);
+            $validationResult = Validator::validateValue($finalValue, [new Object()], $modelAspect->getPrefix());
             $validationResult->throwIfErrors();
 
             // TODO : refactor, use $validationResult->getValidatedParams()
-            $finalValue = UnsafeParameter::getFinalValue($data);
             if ($data != $finalValue) {
                 // TODO: check if ArrayExtra::magicalSet shouldn't be used
                 Helper::setFinalValue($params, $explodedPrefix, $finalValue);

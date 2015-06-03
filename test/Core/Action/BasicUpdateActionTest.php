@@ -28,7 +28,7 @@ class BasicUpdateActionTest extends TestCase {
 
         $userModuleManager = new ModuleManager();
 
-        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
+        $moduleEntities = $userModuleManager->getModuleEntitiesName($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
@@ -45,7 +45,7 @@ class BasicUpdateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
+        $moduleEntities = $userModuleManager->getModuleEntitiesName($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
@@ -91,7 +91,7 @@ class BasicUpdateActionTest extends TestCase {
         $companyModuleManager = new CompanyModuleManager();
         $companyModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $companyModuleManager->createModuleEntityDefinitions($appCtx);
+        $moduleEntities = $companyModuleManager->getModuleEntitiesName($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 
@@ -120,7 +120,7 @@ class BasicUpdateActionTest extends TestCase {
         $userModuleManager = new UserModuleManager();
         $userModuleManager->loadHelpers($appCtx);
 
-        $moduleEntities = $userModuleManager->createModuleEntityDefinitions($appCtx);
+        $moduleEntities = $userModuleManager->getModuleEntitiesName($appCtx);
         $moduleEntity = $moduleEntities[0];
         $appCtx->addModuleEntity($moduleEntity);
 

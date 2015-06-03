@@ -8,6 +8,8 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\NotNull;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Validation;
 
@@ -49,12 +51,15 @@ class Validator {
      * @param array        $params
      * @param string       $field
      * @param Constraint[] $constraints
+     * @param bool         $forceOptional
      *
      * @return FieldValidationResult
      */
-    public static function validateParam ($params, $field, $constraints) {
+    public static function validateParam ($params, $field, $constraints, $forceOptional = false) {
 
-        return static::validateValue(UnsafeParameter::findFinalValue($params, $field), $constraints, $field);
+        $value = UnsafeParameter::findFinalValue($params, $field);
+
+        return static::validateValue($value, $constraints, $field, $forceOptional);
 
     }
 
@@ -62,18 +67,22 @@ class Validator {
      * @param mixed        $value
      * @param Constraint[] $constraints
      * @param string       $field Used to specify in the error which field failed
+     * @param bool         $forceOptional
      *
      * @return FieldValidationResult
      */
-    public static function validateValue ($value, array $constraints, $field = NULL) {
+    public static function validateValue ($value, array $constraints, $field = NULL, $forceOptional = false) {
 
         $errorManager = ApplicationContext::getInstance()->getErrorManager();
         $errors = [];
 
         $validator = Validation::createValidator();
         foreach ($constraints as $constraint) {
+            if ($forceOptional && ($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
+                continue;
+            }
             // TODO : check if we can validate several constraint at the same time
-            $violations = $validator->validate($value, [$constraint]);
+            $violations = $validator->validate($value, [$constraint->getConstraint()]);
             if ($violations->count()) {
                 $errors[] = $errorManager->getError($constraint->getErrorCode(), $field);
             }

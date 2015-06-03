@@ -10,9 +10,4 @@ abstract class MagicalEntity {
      */
     public abstract function getMainEntity ();
 
-    /**
-     * @return mixed
-     */
-    public abstract function getId ();
-
 }

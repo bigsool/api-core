@@ -27,7 +27,7 @@ class SimpleActionTest extends TestCase {
 
         $params = ['a' => 'A', 'b', 'c' => ['C']];
         $action = new SimpleAction('module', 'name', [], $params, $this->getCallable());
-        $this->assertSame($params, $action->getParams());
+        $this->assertSame($params, $action->getConstraintsList());
 
     }
 

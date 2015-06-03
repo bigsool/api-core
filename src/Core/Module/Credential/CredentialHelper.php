@@ -10,7 +10,7 @@ use Core\Error\ToResolveException;
 use Core\Helper\GenericModuleEntityHelper;
 use Core\Model\Credential;
 
-class CredentialHelper extends GenericModuleEntityHelper {
+class CredentialHelper {
 
     /**
      * @param string $password

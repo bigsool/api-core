@@ -8,6 +8,12 @@ use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
+use Core\Error\ValidationException;
+use Core\Util\ArrayExtra;
+use Core\Validation\ConstraintsProvider;
+use Core\Validation\Parameter\Constraint;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\NotNull;
 use Core\Validation\Validator;
 
 class SimpleAction extends Action {
@@ -35,7 +41,7 @@ class SimpleAction extends Action {
     /**
      * @var array
      */
-    protected $params;
+    protected $constraintsList;
 
     /**
      * @param string          $module
@@ -61,16 +67,16 @@ class SimpleAction extends Action {
             $process/*, $this)*/
         ;
         $this->minRights = (array)$minRights;
-        $this->params = $params;
+        $this->constraintsList = $params;
 
     }
 
     /**
      * @return array
      */
-    public function getParams () {
+    public function getConstraintsList () {
 
-        return $this->params;
+        return $this->constraintsList;
     }
 
     /**
@@ -132,12 +138,60 @@ class SimpleAction extends Action {
     /**
      * @param ActionContext $context
      *
-     * @throws FormattedError
+     * @throws ValidationException
      */
     public function validate (ActionContext $context) {
 
-        // TODO : check how we validation actions now ?
-        Validator::validate($context, $this->params);
+        $errors = [];
+        foreach ($this->constraintsList as $originalField => $constraints) {
+
+            $explodedField = explode('.', $originalField);
+            $field = end($explodedField);
+
+            if (!is_array($constraints) || count($constraints) < 1) {
+                throw new \RuntimeException('invalid constraints');
+            }
+
+            // handle constraintsProvider case
+            if ($constraints[0] instanceof ConstraintsProvider) {
+                $constraintsFor = $constraints[0]->getConstraintsFor($field);
+
+                // handle forceOptional
+                if (isset($constraints[1]) && $constraints[1]) {
+                    $constraintsFor = array_reduce($constraintsFor, function ($constraints, Constraint $constraint) {
+
+                        if (!($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
+                            $constraints[] = $constraint;
+                        }
+
+                        return $constraints;
+
+                    }, []);
+                }
+            }
+            // handle constraint[] case
+            else {
+                $constraintsFor = [];
+                foreach ($constraints as $constraint) {
+                    if (!($constraint instanceof Constraint)) {
+                        throw new \RuntimeException(sprintf('invalid constraints for %s', $originalField));
+                    }
+                    $constraintsFor[] = $constraint;
+                }
+            }
+
+            $finalValue = $context->getFinalParam($originalField);
+            $validationResult = Validator::validateValue($finalValue,$constraintsFor, $originalField);
+            if ($validationResult->hasErrors()) {
+                $errors = array_merge($errors, $validationResult->getErrors());
+            } else {
+                $context->setParam($originalField, $finalValue);
+            }
+        }
+
+        if ($errors) {
+            throw new ValidationException($errors);
+        }
 
     }
 }

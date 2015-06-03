@@ -4,6 +4,8 @@
 namespace Core\Module\Contact;
 
 
+use Core\Context\ActionContext;
+use Core\Context\ModuleEntityUpsertContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Email;
 use Core\Validation\Parameter\Length;
@@ -64,4 +66,17 @@ class ContactDefinition extends ModuleEntityDefinition {
         ];
 
     }
+
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
+
+        $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
+
+        // TODO : check with Thomas how ugly is it
+        foreach (array_keys($this->getConstraintsList()) as $field) {
+            $upsertContext->setDefaultParam($field, '');
+        }
+
+        return $upsertContext;
+    }
+
 }

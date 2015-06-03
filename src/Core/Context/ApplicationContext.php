@@ -18,9 +18,12 @@ use Core\Logger\RequestLogger;
 use Core\Logger\SQLLogger;
 use Core\Logger\TraceLogger;
 use Core\Module\AggregatedModuleEntity;
+use Core\Module\AggregatedModuleEntityDefinition;
+use Core\Module\DbModuleEntity;
 use Core\Module\MagicalEntity;
 use Core\Module\ModelAspect;
 use Core\Module\ModuleEntity;
+use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager;
 use Core\Registry;
 use Core\Rule\Processor;
@@ -185,6 +188,157 @@ class ApplicationContext {
 
         $this->moduleManagers[get_class($moduleManager)] = $moduleManager;
 
+        $moduleEntityDefinitions = [];
+        foreach ($moduleManager->getModuleEntitiesName($this) as $moduleEntityName) {
+            $moduleEntityDefinitions[] = $this->getModuleEntityDefinition($moduleEntityName);
+        }
+
+        foreach ($moduleEntityDefinitions as $moduleEntityDefinition) {
+            $moduleEntity = $moduleEntityDefinition instanceof AggregatedModuleEntityDefinition ?
+                new AggregatedModuleEntity($this, $moduleEntityDefinition)
+                : new DbModuleEntity($this, $moduleEntityDefinition);
+            $moduleManager->addModuleEntity($moduleEntity);
+
+            $entityName = $moduleEntity->getDefinition()->getEntityName();
+            if (!array_key_exists($entityName, $this->moduleEntities)) {
+                $this->moduleEntities[$entityName] = $moduleEntity;
+                $moduleEntity->setRegistry($this->getNewRegistry());
+
+                foreach ($moduleEntity->getDefinition()->getFilters() as $filter) {
+                    $this->addFilter($filter);
+                }
+
+                // loading of calculated fields must be done after the load of model aspects
+                /*
+                $dbEntityName = $moduleEntity->getDefinition()->getDBEntityName();
+                foreach ($moduleEntity->getDefinition()->getFields() as $fieldName => $calculatedField) {
+                    $this->addCalculatedField($dbEntityName, $fieldName, $calculatedField);
+                }
+                */
+
+            }
+
+        }
+
+        // loading of model aspect must be done after the definition of all Module Entities
+        // so loadModuleEntities is called later by Application
+
+        foreach ($moduleManager->createModuleFilters($this) as $filter) {
+            $this->addFilter($filter);
+        }
+
+        foreach ($moduleManager->createRules($this) as $rule) {
+            $this->addRule($rule);
+        }
+
+        foreach ($moduleManager->createActions($this) as $action) {
+            $this->addAction($action);
+        }
+
+    }
+
+    /**
+     * @param string $moduleEntityName
+     *
+     * @return ModuleEntityDefinition
+     */
+    protected function getModuleEntityDefinition ($moduleEntityName) {
+
+        foreach ($this->application->getModuleManagers() as $moduleManager) {
+            $moduleManagerClassName = get_class($moduleManager);
+            $product = strstr($moduleManagerClassName, '\\', true);
+            $baseClassName =
+                substr($moduleManagerClassName, strlen($product),
+                       strrpos($moduleManagerClassName, '\\') + 1 - strlen($product));
+            $className = $baseClassName . $moduleEntityName . 'Definition';
+            if (class_exists($fullClassName = $product . $className)) {
+                return new $fullClassName;
+            }
+            if (class_exists($fullClassName = 'Core' . $className)) {
+                return new $fullClassName;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
+
+    }
+
+    /**
+     * @return Registry
+     */
+    protected function getNewRegistry () {
+
+        $registry = new Registry($this->entityManager, $this);
+
+        $this->entityManager->getEventManager()->addEventSubscriber($registry);
+
+        return $registry;
+
+    }
+
+    /**
+     * @param Filter $filter
+     */
+    public function addFilter (Filter $filter) {
+
+
+        $filterName = $filter->getName();
+        if (isset($this->filters[$filterName])) {
+            throw new \RuntimeException(sprintf('Filter %s already defined', $filterName));
+        }
+
+        $this->filters[$filterName] = $filter;
+
+    }
+
+    /**
+     * @param string          $entityName
+     * @param string          $fieldName
+     * @param CalculatedField $calculatedField
+     */
+    public function addCalculatedField ($entityName, $fieldName, CalculatedField $calculatedField) {
+
+        $this->calculatedFields[$entityName][$fieldName] = $calculatedField;
+
+    }
+
+    /**
+     * @param Rule $rule
+     */
+    public function addRule (Rule $rule) {
+
+        $this->rules[] = $rule;
+
+    }
+
+    /**
+     * @param Action $theAction
+     */
+    public function addAction (Action $theAction) {
+
+        $i = 0;
+        foreach ($this->actions as $action) {
+            if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
+                //$this->actions[$i] = $theAction;
+                //return;
+                throw new \RuntimeException('action already defined for this module and name (' . $action->getModule()
+                                            . ',' . $action->getName() . ')');
+            }
+            ++$i;
+        }
+        if (!in_array($theAction, $this->getActions(), true)) {
+            $this->actions[] = $theAction;
+        }
+
+    }
+
+    /**
+     * @return Action[]
+     */
+    public function getActions () {
+
+        return $this->actions;
+
     }
 
     public function isUnitTest () {
@@ -319,21 +473,6 @@ class ApplicationContext {
     }
 
     /**
-     * @param Filter $filter
-     */
-    public function addFilter (Filter $filter) {
-
-
-        $filterName = $filter->getName();
-        if (isset($this->filters[$filterName])) {
-            throw new \RuntimeException(sprintf('Filter %s already defined', $filterName));
-        }
-
-        $this->filters[$filterName] = $filter;
-
-    }
-
-    /**
      * @return Filter[]
      */
     public function getFilters () {
@@ -358,50 +497,11 @@ class ApplicationContext {
     }
 
     /**
-     * @param Rule $rule
-     */
-    public function addRule (Rule $rule) {
-
-        $this->rules[] = $rule;
-
-    }
-
-    /**
      * @return Rule[]
      */
     public function getRules () {
 
         return $this->rules;
-
-    }
-
-    /**
-     * @param Action $theAction
-     */
-    public function addAction (Action $theAction) {
-
-        $i = 0;
-        foreach ($this->actions as $action) {
-            if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
-                //$this->actions[$i] = $theAction;
-                //return;
-                throw new \RuntimeException('action already defined for this module and name (' . $action->getModule()
-                                            . ',' . $action->getName() . ')');
-            }
-            ++$i;
-        }
-        if (!in_array($theAction, $this->getActions(), true)) {
-            $this->actions[] = $theAction;
-        }
-
-    }
-
-    /**
-     * @return Action[]
-     */
-    public function getActions () {
-
-        return $this->actions;
 
     }
 
@@ -661,51 +761,12 @@ class ApplicationContext {
     }
 
     /**
-     * @param ModuleEntity $moduleEntity
-     */
-    public function addModuleEntity (ModuleEntity $moduleEntity) {
-
-        $entityName = $moduleEntity->getDefinition()->getEntityName();
-        if (array_key_exists($entityName, $this->moduleEntities)) {
-            throw new \RuntimeException(sprintf('moduleEntity for %s already defined', $entityName));
-        }
-
-        $this->moduleEntities[$entityName] = $moduleEntity;
-
-        $moduleEntity->setRegistry($this->getNewRegistry());
-
-    }
-
-    /**
-     * @return Registry
-     */
-    protected function getNewRegistry () {
-
-        $registry = new Registry($this->entityManager, $this);
-
-        $this->entityManager->getEventManager()->addEventSubscriber($registry);
-
-        return $registry;
-
-    }
-
-    /**
      * @param FindQueryContext $findQueryContext
      */
     public function finalizeFindQueryContext (FindQueryContext $findQueryContext) {
 
         $moduleEntity = $this->getModuleEntity($findQueryContext->getEntity());
         $findQueryContext->setModuleEntity($moduleEntity);
-
-    }
-
-    /**
-     * @param ModelAspect $modelAspect
-     */
-    public function finalizeModelAspect (ModelAspect $modelAspect) {
-
-        $moduleEntity = $this->getModuleEntity($modelAspect->getModel());
-        $modelAspect->setModuleEntity($moduleEntity);
 
     }
 
@@ -727,13 +788,12 @@ class ApplicationContext {
     }
 
     /**
-     * @param string          $entityName
-     * @param string          $fieldName
-     * @param CalculatedField $calculatedField
+     * @param ModelAspect $modelAspect
      */
-    public function addCalculatedField ($entityName, $fieldName, CalculatedField $calculatedField) {
+    public function finalizeModelAspect (ModelAspect $modelAspect) {
 
-        $this->calculatedFields[$entityName][$fieldName] = $calculatedField;
+        $moduleEntity = $this->getModuleEntity($modelAspect->getModel());
+        $modelAspect->setModuleEntity($moduleEntity);
 
     }
 

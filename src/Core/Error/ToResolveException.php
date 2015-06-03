@@ -21,7 +21,7 @@ class ToResolveException extends \Exception {
     public function __construct ($errorCode, $field = NULL) {
 
         $this->errorCode = $errorCode;
-        $this->$field = $field;
+        $this->field = $field;
 
     }
 

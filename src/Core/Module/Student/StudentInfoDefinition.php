@@ -5,8 +5,8 @@ namespace Core\Module\Student;
 
 
 use Core\Module\ModuleEntityDefinition;
+use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\String;
-use Symfony\Component\Validator\Constraints\Length;
 
 class StudentInfoDefinition extends ModuleEntityDefinition {
 

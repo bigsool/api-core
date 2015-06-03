@@ -35,7 +35,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        $upsertContext = new AggregatedModuleEntity($this, $entityId, $params, $actionContext);
+        $upsertContext = new AggregatedModuleEntity($actionContext->getApplicationContext(), $this);
 
         return $upsertContext;
 
@@ -56,6 +56,15 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     public function getMainAspect () {
 
         return $this->mainAspect;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getDBEntityName() {
+
+        return $this->dbEntityName;
 
     }
 

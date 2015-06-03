@@ -82,7 +82,7 @@ class ModuleManager extends MagicalModuleManager {
      *
      * @return ModuleEntity[]
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+    public function getModuleEntitiesName (ApplicationContext &$context) {
 
         return [
             new AccountModuleEntity($context)

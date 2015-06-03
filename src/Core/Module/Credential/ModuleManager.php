@@ -11,10 +11,8 @@ use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\ToResolveException;
 use Core\Field\Field;
-use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
-use Core\Module\AddressBook\Validation;
 use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
@@ -31,8 +29,8 @@ class ModuleManager extends AbstractModuleManager {
     public function createActions (ApplicationContext &$appCtx) {
 
         return [
-            new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new Validation()],
-                                                                'password' => [new Validation()]
+            new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
+                                                                'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) {
 
@@ -40,10 +38,11 @@ class ModuleManager extends AbstractModuleManager {
 
                     $params = $context->getVerifiedParams();
 
-                    $credential =
-                        CredentialHelper::credentialForLoginAndPassword($params['login'], $params['password']);
+                    $login = $params['login'];
+                    $password = $params['password'];
+                    $credential = CredentialHelper::credentialForLoginAndPassword($login, $password);
 
-                    $this->getModuleEntity('LoginHistory')->create($context, ['credential' => $credential]);
+                    $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
 
                     $authToken = AuthenticationHelper::generateAuthToken($credential);
 
@@ -53,13 +52,13 @@ class ModuleManager extends AbstractModuleManager {
 
                     return [
                         'authToken' => $authToken,
-                        'login'     => $params['login'],
+                        'login'     => $login,
                         'id'        => $credential->getId(),
                     ];
 
                 }),
             new SimpleAction('Core\Credential', 'setAuthCookie', [],
-                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
 
@@ -77,7 +76,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new SimpleAction('Core\Credential', 'checkAuth', [],
-                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $authToken = $ctx->getParam('authToken');
 
@@ -87,7 +86,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new SimpleAction('Core\Credential', 'renewAuthCookie', [],
-                             ['authToken' => [new Validation()]], function (ActionContext $ctx) {
+                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
 
@@ -110,9 +109,9 @@ class ModuleManager extends AbstractModuleManager {
                                                              $expire, '/', NULL, false, false));
 
                 }),
-            new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new Validation()],
-                                                                 'type'     => [new Validation()],
-                                                                 'password' => [new Validation()]
+            new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new CredentialDefinition()],
+                                                                 'type'     => [new CredentialDefinition()],
+                                                                 'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) {
 
@@ -129,14 +128,14 @@ class ModuleManager extends AbstractModuleManager {
                         throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
                     }
 
-                    return $this->getModuleEntity('Credential')->create($context);
+                    return $this->getModuleEntity('Credential')->create($context->getParams(), $context);
 
                 }),
             new SimpleAction('Core\Credential', 'update', NULL, [
-                'id'              => [new Validation(), true],
-                'login'           => [new Validation()],
-                'password'        => [new Validation()],
-                'currentPassword' => [new Validation(), true]
+                'id'              => [new CredentialDefinition(), true],
+                'login'           => [new CredentialDefinition()],
+                'password'        => [new CredentialDefinition()],
+                'currentPassword' => [new CredentialDefinition(), true]
             ], function (ActionContext $context) {
 
                 $params = $context->getVerifiedParams();
@@ -149,7 +148,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $context->unsetParam('currentPassword');
 
-                return $this->getModuleEntity('Credential')->update($context);
+                return $this->getModuleEntity('Credential')->update($context->getParam('id'), $context->getParams(), $context);
 
             }),
             new SimpleAction('Core\Credential', 'logout', NULL, [],
@@ -159,20 +158,6 @@ class ModuleManager extends AbstractModuleManager {
                     $response->headers->clearCookie('authToken');
 
                 })
-        ];
-
-    }
-
-    /**
-     * @param ApplicationContext $context
-     *
-     * @return ModuleEntityDefinition[]
-     */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
-
-        return [
-            new CredentialDefinition(),
-            new LoginHistoryDefinition()
         ];
 
     }
@@ -200,6 +185,20 @@ class ModuleManager extends AbstractModuleManager {
         return [
             new FieldRule(new Field('Credential', 'password'),
                           new StringFilter('Credential', 'passwordIsForbidden', '1 = 0'))
+        ];
+
+    }
+
+    /**
+     * @param ApplicationContext $context
+     *
+     * @return ModuleEntityDefinition[]
+     */
+    public function getModuleEntitiesName (ApplicationContext &$context) {
+
+        return [
+            'Credential',
+            'LoginHistory'
         ];
 
     }

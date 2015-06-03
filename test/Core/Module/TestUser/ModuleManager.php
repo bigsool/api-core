@@ -50,7 +50,7 @@ class ModuleManager extends AbstractModuleManager {
      *
      * @return ModuleEntity[]
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+    public function getModuleEntitiesName (ApplicationContext &$context) {
 
         $testUserModuleEntity = new DbModuleEntity($context, 'TestUser', [
                                                                new StringFilter('TestUser', 'TestUserForId', 'id = :id')

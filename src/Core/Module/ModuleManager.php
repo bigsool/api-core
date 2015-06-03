@@ -23,45 +23,6 @@ abstract class ModuleManager {
 
         $context->addModuleManager($this);
 
-        $moduleEntityDefinitions = $this->createModuleEntityDefinitions($context);
-
-        foreach ($moduleEntityDefinitions as $moduleEntityDefinition) {
-            $moduleEntity = $moduleEntityDefinition instanceof AggregatedModuleEntityDefinition ?
-                new AggregatedModuleEntity($context, $moduleEntityDefinition)
-                : new DbModuleEntity($context, $moduleEntityDefinition);
-            $this->moduleEntities[$moduleEntity->getDefinition()->getEntityName()] = $moduleEntity;
-            $context->addModuleEntity($moduleEntity);
-        }
-
-        // loading of model aspect must be done after the definition of all Module Entities
-        // so loadModuleEntities is called later by Application
-
-        foreach ($this->moduleEntities as $moduleEntity) {
-
-            foreach ($moduleEntity->getDefinition()->getFilters() as $filter) {
-                $context->addFilter($filter);
-            }
-
-            $entityName = $moduleEntity->getDefinition()->getDBEntityName();
-
-            foreach ($moduleEntity->getDefinition() as $fieldName => $calculatedField) {
-                $context->addCalculatedField($entityName, $fieldName, $calculatedField);
-            }
-
-        }
-
-        foreach ($this->createModuleFilters($context) as $filter) {
-            $context->addFilter($filter);
-        }
-
-        foreach ($this->createRules($context) as $rule) {
-            $context->addRule($rule);
-        }
-
-        foreach ($this->createActions($context) as $action) {
-            $context->addAction($action);
-        }
-
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
         if (class_exists($classname = $namespace . '\\API')) {
@@ -77,9 +38,9 @@ abstract class ModuleManager {
     /**
      * @param ApplicationContext $context
      *
-     * @return ModuleEntityDefinition[]
+     * @return string[]
      */
-    public function createModuleEntityDefinitions (ApplicationContext &$context) {
+    public function getModuleEntitiesName (ApplicationContext &$context) {
 
         return [];
 
@@ -134,6 +95,15 @@ abstract class ModuleManager {
     }
 
     /**
+     * @return ModuleEntity[]
+     */
+    public function getModuleEntities () {
+
+        return array_values($this->moduleEntities);
+
+    }
+
+    /**
      * @return string
      */
     public function getActionModuleName () {
@@ -152,6 +122,20 @@ abstract class ModuleManager {
         $namespace = (new \ReflectionClass($this))->getNamespaceName();
 
         return substr($namespace, strrpos($namespace, '\\') + 1);
+
+    }
+
+    /**
+     * @param ModuleEntity $moduleEntity
+     */
+    public function addModuleEntity(ModuleEntity $moduleEntity) {
+
+        $entityName = $moduleEntity->getDefinition()->getEntityName();
+        if (array_key_exists($entityName, $this->moduleEntities)) {
+            throw new \RuntimeException('ModuleEntity already added');
+        }
+
+        $this->moduleEntities[$entityName] = $moduleEntity;
 
     }
 

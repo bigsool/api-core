@@ -73,13 +73,7 @@ class ModuleEntityUpsertContext {
      */
     public function getEntity () {
 
-        if (!$this->entity) {
-
-            // TODO : check if you have the right (Assign filter)
-
-            if (!$this->getEntityId()) {
-                throw new \RuntimeException('cannot find entity if id is not specified');
-            }
+        if (!$this->entity && $this->getEntityId()) {
 
             $entityName = $this->getDefinition()->getEntityName();
             $dbEntityName = $this->getDefinition()->getDBEntityName();
@@ -181,18 +175,18 @@ class ModuleEntityUpsertContext {
     /**
      * @return bool
      */
-    public function isCreation () {
+    public function isUpdate () {
 
-        return $this->getEntityId() == NULL;
+        return !$this->isCreation();
 
     }
 
     /**
      * @return bool
      */
-    public function isUpdate () {
+    public function isCreation () {
 
-        return !$this->isCreation();
+        return $this->getEntityId() == NULL;
 
     }
 
@@ -213,13 +207,16 @@ class ModuleEntityUpsertContext {
 
     }
 
+    /**
+     *
+     */
     protected function validateParams () {
 
-        // TODO : to implement
         $validationResult = Validator::validateParams($this->constraints, $this->getParams(), $this->isUpdate());
-        $this->params =
-            ArrayExtra::array_merge_recursive_distinct($this->params, $validationResult->getValidatedParams());
+        $validatedParams = $validationResult->getValidatedParams();
+        $this->params = ArrayExtra::array_merge_recursive_distinct($this->params, $validatedParams);
         $this->addErrors($validationResult->getErrors());
+
     }
 
     /**
@@ -229,6 +226,18 @@ class ModuleEntityUpsertContext {
     public function getParams () {
 
         return $this->params;
+
+    }
+
+    /**
+     * @param $key
+     * @param $defaultValue
+     */
+    public function setDefaultParam($key, $defaultValue){
+
+        if (!array_key_exists($key, $this->params)) {
+            $this->addParam($key, $defaultValue);
+        }
 
     }
 

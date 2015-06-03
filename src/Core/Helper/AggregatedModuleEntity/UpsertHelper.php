@@ -22,7 +22,7 @@ class UpsertHelper {
 
         $modelNameForKeyPath = [];
 
-        foreach ($context->getDefinition()->getModelAspects() as $modelAspect) {
+        foreach ($context->getEnabledAspects() as $modelAspect) {
 
             $relativeField = $modelAspect->getRelativeField();
             $modelNameForKeyPath[$relativeField] = $modelAspect->getModel();
@@ -47,7 +47,7 @@ class UpsertHelper {
 
             $explodedKeyPath = explode('.', $relativeField);
             if (count($explodedKeyPath) == 1) {
-                $sourceKeyPath = 'main';
+                $sourceKeyPath = NULL;
             }
             else {
                 array_pop($explodedKeyPath);
