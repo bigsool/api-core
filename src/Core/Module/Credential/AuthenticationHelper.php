@@ -20,7 +20,7 @@ class AuthenticationHelper {
      *
      * @return array
      */
-    public static function renewAuthToken ($authToken, Credential $credential) {
+    public static function renewAuthToken ($authToken, $credential) {
 
         static::checkAuthTokenStructure($authToken);
 
