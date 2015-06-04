@@ -86,6 +86,10 @@ class BuildEntitiesCommand extends Command {
         }
 
         $modulesManagers = $application->getModuleManagers();
+        $refMethLoadModules = new \ReflectionMethod($application,'loadModules');
+        $refMethLoadModules->setAccessible(true);
+        $refMethLoadModules->invoke($application);
+
         $magicalModuleManagers = [];
 
         $this->setCurrentProgression(5);
@@ -95,7 +99,6 @@ class BuildEntitiesCommand extends Command {
         // get and merge all yml
         $ymls = [];
         foreach ($modulesManagers as $moduleManager) {
-            $moduleManager->load($appCtx);
             $loadYml = function (\ReflectionClass $class) use (&$ymls, &$loadYml) {
 
                 if (($parentClass = $class->getParentClass()) && !$parentClass->isAbstract()) {
@@ -132,13 +135,12 @@ class BuildEntitiesCommand extends Command {
             mkdir($this->modelDIr);
         }
 
-        $refPropModuleEntities = new \ReflectionProperty($appCtx, 'moduleEntities');
-        $refPropModuleEntities->setAccessible(true);
-        $modulesEntities = $refPropModuleEntities->getValue($appCtx);
         $aggregatedModuleEntities = [];
-        foreach ($modulesEntities as $modulesEntity) {
-            if ($modulesEntity instanceof AggregatedModuleEntity) {
-                $aggregatedModuleEntities[] = $modulesEntity;
+        foreach ($appCtx->getModuleManagers() as $moduleManager) {
+            foreach ($moduleManager->getModuleEntities() as $modulesEntity) {
+                if ($modulesEntity instanceof AggregatedModuleEntity) {
+                    $aggregatedModuleEntities[] = $modulesEntity;
+                }
             }
         }
 
@@ -262,8 +264,7 @@ class BuildEntitiesCommand extends Command {
             $modelAspects = $aggregatedModuleEntity->getDefinition()->getModelAspects();
             $mainEntity = $aggregatedModuleEntity->getDefinition()->getMainAspect();
 
-            $classComponents = explode('\\', get_class($aggregatedModuleEntity));
-            $magicalEntityName = $classComponents[count($classComponents) - 2];
+            $magicalEntityName = $aggregatedModuleEntity->getDefinition()->getEntityName();
             $class = $this->createMagicalClassHeader($magicalEntityName);
             $class .= $this->createMagicalConstructor($mainEntity->getModel());
             //$class .= $this->createMagicalModuleManagerGetter($magicalEntityName);

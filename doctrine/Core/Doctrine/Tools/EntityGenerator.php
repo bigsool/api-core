@@ -68,10 +68,9 @@ public function <methodName>()
 <spaces><spaces>}
 <spaces><spaces>$this->$faultedVar = false; // TODO : set to false in the hydrator too
 <spaces><spaces>$reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-<spaces><spaces>$reqCtx->setReturnedFields([new \Core\Field\RelativeField("id"),new \Core\Field\RelativeField("<fieldName>")]);
 <spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<entity>", $reqCtx);
-<spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"));
-<spaces><spaces>$qryContext->setParam("id",$this->getId());
+<spaces><spaces>$qryContext->addFields("id","<fieldName>");
+<spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"), $this->getId());
 <spaces><spaces>$qryContext->findAll();
 <spaces>}
 
