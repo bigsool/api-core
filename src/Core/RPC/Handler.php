@@ -76,4 +76,9 @@ interface Handler {
      */
     public function getIpAddress ();
 
+    /**
+     * @return array
+     */
+    public function getAuthToken ();
+
 } 

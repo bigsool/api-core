@@ -201,4 +201,13 @@ class HTTP implements Handler {
         $this->returnedFields = [];
 
     }
+
+    /**
+     * @return array
+     */
+    public function getAuthToken () {
+
+        return json_decode($this->params['authToken'], true);
+
+    }
 }

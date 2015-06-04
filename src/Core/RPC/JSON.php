@@ -254,6 +254,13 @@ class JSON implements Handler {
 
     }
 
-    public function getAuthToken () {}
+    /**
+     * @return array
+     */
+    public function getAuthToken () {
+
+        return json_decode($this->params['authToken'], true);
+
+    }
 
 }

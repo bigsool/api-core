@@ -172,6 +172,7 @@ class ModuleManager extends AbstractModuleManager {
             $credential = $context['credential'];
 
             $helper = new Helper;
+            $params['login'] = $credential->getLogin();
             $authToken = $helper->login($context, $params);
 
             return $credential;
