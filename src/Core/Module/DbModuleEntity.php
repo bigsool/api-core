@@ -55,6 +55,9 @@ class DbModuleEntity extends AbstractModuleEntity {
 
         // TODO : should we loop on setter or on params ? validatedParams or AllParamas ?
         foreach ($upsertContext->getValidatedParams() as $field => $param) {
+            if ($field == 'id') {
+                continue;
+            }
             $method = 'set' . ucfirst($field);
             if (!is_callable([$entity, $method], false, $callableName)) {
                 throw new \RuntimeException($callableName . ' is not callable');

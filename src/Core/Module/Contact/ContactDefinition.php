@@ -31,6 +31,7 @@ class ContactDefinition extends ModuleEntityDefinition {
             'label'    => [
                 new String(),
                 new Length(['max' => 255]),
+                // new Nullable('') TODO
             ],
             'streets'  => [
                 new String(),

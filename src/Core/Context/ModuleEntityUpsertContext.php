@@ -208,14 +208,20 @@ class ModuleEntityUpsertContext {
     }
 
     /**
+     * @param bool $shouldThrowException
      *
+     * @throws \Core\Error\ValidationException
      */
-    protected function validateParams () {
+    public function validateParams ($shouldThrowException = false) {
 
         $validationResult = Validator::validateParams($this->constraints, $this->getParams(), $this->isUpdate());
         $validatedParams = $validationResult->getValidatedParams();
         $this->params = ArrayExtra::array_merge_recursive_distinct($this->params, $validatedParams);
         $this->addErrors($validationResult->getErrors());
+
+        if ($shouldThrowException) {
+            $validationResult->throwIfErrors();
+        }
 
     }
 

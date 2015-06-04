@@ -62,12 +62,13 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
 
         // validate params of aggregated : constraints from aggregatedDefinition + structure validation
-        $validatedAggregatedParams = $aggregatedUpsertContext->getValidatedParams();
+        $aggregatedUpsertContext->validateParams(true);
+        $aggregatedParams = $aggregatedUpsertContext->getParams();
 
 
         // translates input params to match real entities names
         $translatedParams =
-            EntityParamsTranslatorHelper::translatePrefixesToKeyPaths($validatedAggregatedParams,
+            EntityParamsTranslatorHelper::translatePrefixesToKeyPaths($aggregatedParams,
                                                                       $this->getDefinition()->getAllModelAspects());
 
 
@@ -118,6 +119,10 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
     public function find (FindQueryContext $findQueryContext) {
 
         $findQueryContext->setEntity($this->getDefinition()->getDBEntityName());
+
+        EntityParamsTranslatorHelper::translatedRequestedFieldsInRequestContext($findQueryContext->getRequestContext(),
+                                                                                $this->getDefinition()
+                                                                                     ->getAllModelAspects());
 
         $results = parent::find($findQueryContext);
 
@@ -188,7 +193,7 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
             $childContext = $childContextWithModelAspect[0];
 
             // if entity already assign
-            if ($childContext->getEntity()) {
+            if ($childContext->isCreation() && $childContext->getEntity()) {
                 continue;
             }
             else {

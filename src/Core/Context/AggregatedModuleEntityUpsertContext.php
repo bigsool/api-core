@@ -187,12 +187,12 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
     }
 
     /**
-     *
+     * @param bool $shouldThrowException
      */
-    protected function validateParams () {
+    public function validateParams ($shouldThrowException = false) {
 
         $this->params = $this->validateAggregatedStructure($this->getParams());
-        parent::validateParams();
+        parent::validateParams($shouldThrowException);
 
     }
 

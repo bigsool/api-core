@@ -4,10 +4,53 @@
 namespace Core\Helper\AggregatedModuleEntity;
 
 
+use Core\Context\RequestContext;
+use Core\Field\RelativeField;
 use Core\Module\ModelAspect;
 use Core\Util\ArrayExtra;
 
 class EntityParamsTranslatorHelper {
+
+    /**
+     * @param RequestContext $requestContext
+     * @param ModelAspect[]  $modelsAspects
+     */
+    public static function translatedRequestedFieldsInRequestContext (RequestContext $requestContext, $modelsAspects) {
+
+        $requestedFields = $requestContext->getReturnedFields();
+        $fields = [];
+        foreach ($requestedFields as $requestedField) {
+            ArrayExtra::magicalSet($fields, $requestedField->getValue(), []);
+        }
+
+        $formattedFields = static::translatePrefixesToKeyPaths($fields, $modelsAspects);
+
+        $formattedRelativeFields = [];
+        static::reformat($formattedRelativeFields, $formattedFields);
+
+        // TODO refactor should not be done here
+        $requestContext->setFormattedReturnedFields($formattedRelativeFields);
+
+    }
+
+    /**
+     * TODO rename
+     * @param array       $formattedRelativeFields
+     * @param array       $formattedFields
+     * @param null|string $parentField
+     */
+    protected static function reformat (array &$formattedRelativeFields, array $formattedFields, $parentField = '') {
+
+        foreach ($formattedFields as $formattedField => $subFormattedFields) {
+            if (!count($subFormattedFields)) {
+                $formattedRelativeFields[] = new RelativeField($parentField . $formattedField);
+            }
+            else {
+                static::reformat($formattedRelativeFields, $subFormattedFields, $parentField . $formattedField . '.');
+            }
+        }
+
+    }
 
     /**
      * converts ['firm' => []] to ['company' => []] and ['student_name' => 'qwe'] to ['student']['name'] = 'qwe'
@@ -17,8 +60,6 @@ class EntityParamsTranslatorHelper {
      *
      * @return array
      */
-
-
     public static function translatePrefixesToKeyPaths ($params, $modelAspects) {
 
         $formattedParams = [];
