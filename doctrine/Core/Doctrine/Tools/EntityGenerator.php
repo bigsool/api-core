@@ -70,8 +70,11 @@ public function <methodName>()
 <spaces><spaces>$reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
 <spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<targetEntity>", $reqCtx);
 <spaces><spaces>$qryContext->addFields("id","<inversedBy>");
-<spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"), $this->getId());
+<spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<targetEntity>","","<inversedBy>.id = :id"), $this->getId());
 <spaces><spaces>$qryContext->findAll();
+<spaces><spaces>// this query will hydrate <entity> and <targetEntity>
+<spaces><spaces>// RestrictedObjectHydrator will automatically hydrate <fieldName>RestrictedId
+<spaces><spaces>// Since Doctrine shares model instances, <fieldName>RestrictedId will be automatically available
 <spaces>}
 
 <spaces>return $this-><fieldName> && $this-><fieldName>->getId() == $this-><fieldName>RestrictedId ? $this-><fieldName> : NULL;
