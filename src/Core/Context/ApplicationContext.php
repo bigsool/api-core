@@ -202,8 +202,6 @@ class ApplicationContext {
             $entityName = $moduleEntity->getDefinition()->getEntityName();
             if (!array_key_exists($entityName, $this->moduleEntities)) {
                 $this->moduleEntities[$entityName] = $moduleEntity;
-                $moduleEntity->setRegistry($this->getNewRegistry());
-
                 foreach ($moduleEntity->getDefinition()->getFilters() as $filter) {
                     $this->addFilter($filter);
                 }
@@ -444,6 +442,9 @@ class ApplicationContext {
 
         $this->entityManager = $entityManager;
         $entityManager->getConfiguration()->setSQLLogger($this->getSQLLogger());
+
+        Registry::setApplicationContext($this);
+        Registry::setEntityManager($entityManager);
 
     }
 

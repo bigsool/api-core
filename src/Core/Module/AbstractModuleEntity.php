@@ -24,11 +24,6 @@ abstract class AbstractModuleEntity implements ModuleEntity {
     protected $applicationContext;
 
     /**
-     * @var Registry
-     */
-    protected $registry;
-
-    /**
      * @param ApplicationContext     $applicationContext
      * @param ModuleEntityDefinition $definition
      */
@@ -71,14 +66,14 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      */
     public function delete ($entity) {
 
-        $realModelClassName = $this->registry->realModelClassName($this->definition);
+        $realModelClassName = Registry::realModelClassName($this->definition->getEntityName());
         $className = '\\' . get_class($entity);
         if (!($entity instanceof $realModelClassName)) {
             throw new \RuntimeException(sprintf('$entity must be a %s, %s %s given', $realModelClassName,
                                                 gettype($entity), $className));
         }
 
-        $this->registry->delete($entity);
+        (new Registry)->delete($entity);
 
     }
 
@@ -89,7 +84,7 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      */
     public function find (FindQueryContext $findQueryContext) {
 
-        return $this->registry->find($findQueryContext);
+        return (new Registry)->find($findQueryContext);
 
     }
 
@@ -116,23 +111,14 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      */
     public function save ($entity) {
 
-        $realModelClassName = $this->registry->realModelClassName($this->definition->getEntityName());
+        $realModelClassName = Registry::realModelClassName($this->definition->getEntityName());
         $className = '\\' . get_class($entity);
         if (!($entity instanceof $realModelClassName)) {
             throw new \RuntimeException(sprintf('$entity must be a %s, %s %s given', $realModelClassName,
                                                 gettype($entity), $className));
         }
 
-        $this->registry->save($entity);
-
-    }
-
-    /**
-     * @param Registry $registry
-     */
-    public function setRegistry (Registry $registry) {
-
-        $this->registry = $registry;
+        (new Registry)->save($entity);
 
     }
 
@@ -206,7 +192,7 @@ abstract class AbstractModuleEntity implements ModuleEntity {
      */
     protected function createEntity () {
 
-        $className = $this->registry->realModelClassName($this->getDefinition()->getEntityName());
+        $className = Registry::realModelClassName($this->getDefinition()->getEntityName());
 
         return new $className;
 

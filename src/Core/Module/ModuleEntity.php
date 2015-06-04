@@ -55,9 +55,4 @@ interface ModuleEntity {
      */
     public function delete ($entity);
 
-    /**
-     * @param Registry $registry
-     */
-    public function setRegistry (Registry $registry);
-
 }

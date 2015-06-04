@@ -35,12 +35,12 @@ class Registry implements EventSubscriber {
     /**
      * @var EntityManager
      */
-    protected $entityManager;
+    protected static $entityManager;
 
     /**
      * @var ApplicationContext
      */
-    protected $appCtx;
+    protected static $appCtx;
 
     /**
      * @var QueryBuilder
@@ -63,13 +63,29 @@ class Registry implements EventSubscriber {
     protected $params = [];
 
     /**
-     * @param EntityManager      $entityManager
-     * @param ApplicationContext $ctx
+     *
      */
-    public function __construct (EntityManager $entityManager, ApplicationContext $ctx) {
+    public function __construct () {
 
-        $this->entityManager = $entityManager;
-        $this->appCtx = $ctx;
+        static::$entityManager->getEventManager()->addEventSubscriber($this);
+
+    }
+
+    /**
+     * @param EntityManager $entityManager
+     */
+    public static function setEntityManager (EntityManager $entityManager) {
+
+        self::$entityManager = $entityManager;
+
+    }
+
+    /**
+     * @param ApplicationContext $appCtx
+     */
+    public static function setApplicationContext (ApplicationContext $appCtx) {
+
+        self::$appCtx = $appCtx;
 
     }
 
@@ -105,8 +121,8 @@ class Registry implements EventSubscriber {
 
         $ruleProcessor = new Processor();
         $ruleProcessor->apply($saveQueryContext);
-        $this->entityManager->persist($model);
-        $this->entityManager->flush();
+        static::$entityManager->persist($model);
+        static::$entityManager->flush();
 
     }
 
@@ -150,7 +166,7 @@ class Registry implements EventSubscriber {
     protected function getQueryBuilder ($entity) {
 
         if (!isset($this->queryBuilder)) {
-            $this->queryBuilder = $this->entityManager->createQueryBuilder();
+            $this->queryBuilder = static::$entityManager->createQueryBuilder();
             $alias = lcfirst($entity);
             $this->queryBuilder->from($this->realModelClassName($entity), $alias);
             $this->addAliasForEntity($entity, $alias);
@@ -478,14 +494,14 @@ class Registry implements EventSubscriber {
             $classOrObject = ClassUtils::getClass($classOrObject);
         }
 
-        return !$this->entityManager->getMetadataFactory()->isTransient($classOrObject);
+        return !static::$entityManager->getMetadataFactory()->isTransient($classOrObject);
 
     }
 
     public function delete ($model) {
 
-        $this->entityManager->remove($model);
-        $this->entityManager->flush();
+        static::$entityManager->remove($model);
+        static::$entityManager->flush();
 
     }
 
