@@ -68,8 +68,8 @@ public function <methodName>()
 <spaces><spaces>}
 <spaces><spaces>$this->$faultedVar = false; // TODO : set to false in the hydrator too
 <spaces><spaces>$reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
-<spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<entity>", $reqCtx);
-<spaces><spaces>$qryContext->addFields("id","<fieldName>");
+<spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<targetEntity>", $reqCtx);
+<spaces><spaces>$qryContext->addFields("id","<inversedBy>");
 <spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<entity>","","id = :id"), $this->getId());
 <spaces><spaces>$qryContext->findAll();
 <spaces>}
@@ -229,6 +229,11 @@ public function <methodName>(<methodTypeHint>$<variableName>)
                 $methodTypeHint = '\\' . $typeHint . ' ';
             }
 
+            $associationMapping = $metadata->getAssociationMapping($fieldName);
+            $explodedTargetEntity = explode('\\', $associationMapping['targetEntity']);
+            $targetEntity = end($explodedTargetEntity);
+
+            $inversedBy = $associationMapping['inversedBy'] ?: $associationMapping['mappedBy'];
             $replacements = array(
                 '<description>'     => ucfirst($type) . ' ' . $variableName,
                 '<methodTypeHint>'  => $methodTypeHint,
@@ -236,8 +241,10 @@ public function <methodName>(<methodTypeHint>$<variableName>)
                 '<variableName>'    => $variableName,
                 '<methodName>'      => $methodName,
                 '<fieldName>'       => $fieldName,
+                '<inversedBy>'      => $inversedBy,
                 '<variableDefault>' => ($defaultValue !== NULL) ? (' = ' . $defaultValue) : '',
-                '<entity>'          => $this->getClassName($metadata)
+                '<entity>'          => $this->getClassName($metadata),
+                '<targetEntity>'    => $targetEntity,
             );
 
             $method = str_replace(

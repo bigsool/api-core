@@ -111,6 +111,35 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                     $refProp->setValue($object, $ids[0]);
                 }
 
+
+                // inverse relation
+                // TODO : improve and test, may not work
+                $inversedGetter = 'get' . ucfirst($key);
+                $inversedObjects = $object->$inversedGetter();
+                if (!$isCollection) {
+                    $inversedObjects = [$inversedObjects];
+                }
+                foreach ($inversedObjects as $inversedObject) {
+                    $inversedMetadata = $this->_em->getClassMetadata(get_class($inversedObject));
+                    $associationMapping = $metadata->getAssociationMapping($key);
+                    $inversedKey = $associationMapping['inversedBy'] ?: $associationMapping['mappedBy'];
+                    $inversedIsCollection = $inversedMetadata->isCollectionValuedAssociation($inversedKey);
+                    $inversedPropertyName = $inversedKey . 'RestrictedId' . ($inversedIsCollection ? 's' : '');
+                    // TODO: $refProp mustn't be instantiated more than once
+                    $inversedRefProp = new \ReflectionProperty($inversedObject, $inversedPropertyName);
+                    $inversedRefProp->setAccessible(true);
+                    if ($inversedIsCollection) {
+                        $inversedRefProp->setValue($inversedObject,
+                                                   array_merge($inversedRefProp->getValue($inversedObject),
+                                                               [$object->getId()]));
+                    }
+                    else {
+                        $inversedRefProp->setValue($inversedObject, $object->getId());
+                    }
+                }
+
+
+
                 $newObjectResult = $metadata->getReflectionProperty($key)->getValue($object);
                 if (!$isCollection) {
                     $newObjectResult = [$newObjectResult];
