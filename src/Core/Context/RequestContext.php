@@ -63,6 +63,8 @@ class RequestContext {
      */
     protected $response;
 
+    protected $authToken;
+
     /**
      */
     public function __construct () {
@@ -322,8 +324,10 @@ class RequestContext {
      */
     public function setParams (array $params) {
 
-        if (isset($params['authToken'])) {
-            $authToken = json_decode($params['authToken'], true);
+        if ($this->authToken) {
+
+            $authToken = $this->authToken;
+
             $appCtx = $this->getApplicationContext();
             $checkAuthCtx = $appCtx->getActionContext(new RequestContext(), 'Core\Credential', 'checkAuth');
             $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
@@ -337,6 +341,7 @@ class RequestContext {
             $appCtx->getOnSuccessActionQueue()
                    ->addAction($setAuthAction, ['authToken' => $authToken, 'credentialId' => $cred->getId()]);
             unset($params['authToken']);
+            
         }
 
         $this->params = $params;
@@ -399,6 +404,12 @@ class RequestContext {
         $reqCtx->setFormattedReturnedFields([]);
 
         return $reqCtx;
+
+    }
+
+    public function setAuthToken ($authToken) {
+
+        $this->authToken = $authToken;
 
     }
 

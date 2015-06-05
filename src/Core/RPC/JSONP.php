@@ -268,4 +268,12 @@ class JSONP implements Handler {
 
     }
 
+    /**
+     * @return array
+     */
+    public function getAuthToken () {
+
+        return json_decode($this->params['authToken'], true);
+
+    }
 }
