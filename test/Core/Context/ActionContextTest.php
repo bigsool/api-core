@@ -136,6 +136,9 @@ class ActionContextTest extends TestCase {
 
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
     public function testNoticeArrayObject () {
 
         $reqCtx = $this->getMockRequestContext();
