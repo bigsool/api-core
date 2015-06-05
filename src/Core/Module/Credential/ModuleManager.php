@@ -42,7 +42,8 @@ class ModuleManager extends AbstractModuleManager {
                     $password = $params['password'];
                     $credential = CredentialHelper::credentialForLoginAndPassword($login, $password);
 
-                    $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
+                    $loginHistory = $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
+                    $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
                     $authToken = AuthenticationHelper::generateAuthToken($credential);
 
@@ -128,13 +129,17 @@ class ModuleManager extends AbstractModuleManager {
                         throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
                     }
 
-                    return $this->getModuleEntity('Credential')->create($context->getParams(), $context);
+                    $credential = $this->getModuleEntity('Credential')->create($context->getParams(), $context);
+
+                    $this->getModuleEntity('Credential')->save($credential);
+
+                    return $credential;
 
                 }),
             new SimpleAction('Core\Credential', 'update', NULL, [
-                'id'              => [new CredentialDefinition(), true],
-                'login'           => [new CredentialDefinition()],
-                'password'        => [new CredentialDefinition()],
+                'id'              => [new CredentialDefinition()],
+                'login'           => [new CredentialDefinition(), true],
+                'password'        => [new CredentialDefinition(), true],
                 'currentPassword' => [new CredentialDefinition(), true]
             ], function (ActionContext $context) {
 
@@ -148,7 +153,11 @@ class ModuleManager extends AbstractModuleManager {
 
                 $context->unsetParam('currentPassword');
 
-                return $this->getModuleEntity('Credential')->update($context->getParam('id'), $context->getParams(), $context);
+                $credential = $this->getModuleEntity('Credential')->update($context->getParam('id'), $context->getParams(), $context);
+
+                $this->getModuleEntity('Credential')->save($credential);
+
+                return $credential;
 
             }),
             new SimpleAction('Core\Credential', 'logout', NULL, [],
