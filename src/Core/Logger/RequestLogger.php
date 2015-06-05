@@ -18,9 +18,10 @@ class RequestLogger extends AbstractLogger {
         $uri = $request->getUri();
         $get = json_encode($request->query->all());
         $post = json_encode($request->request->all());
+        $content = json_encode($request->getContent());
         $server = json_encode($request->server->all());
 
-        $this->getMLogger()->addInfo("<-- {$ip} {$method} {$uri} {$get} {$post} {$server}");
+        $this->getMLogger()->addInfo("<-- {$ip} {$method} {$uri} {$get} {$post} {$content} {$server}");
 
     }
 
