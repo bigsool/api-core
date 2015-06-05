@@ -24,7 +24,7 @@ class UpdateTag extends Base {
 
         parent::execute($input, $output);
 
-        $config = Yaml::parse($this->paths['environmentFile']);
+        $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
 
         $this->getOutput()->write(sprintf('Moving tag <info>%s</info>... ', $config['git_tag']));
 

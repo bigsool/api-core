@@ -86,7 +86,7 @@ class Send extends Base {
 
         if ($shouldCopy) {
 
-            $config = Yaml::parse($this->paths['environmentFile']);
+            $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
             $remotePrevFolder =
                 Helper::getRemoteDestLink($this->paths['environmentFile']) . '-' . $this->revOnTheServer;
             $remoteNextFolder = Helper::getRemoteDestLink($this->paths['environmentFile']) . '-' . $revision;
@@ -108,7 +108,7 @@ class Send extends Base {
 
     protected function rsync () {
 
-        $config = Yaml::parse($this->paths['environmentFile']);
+        $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
 
         $this->getOutput()->write("Sending files on the server ( it could take a while ) ... ");
 

@@ -19,7 +19,7 @@ class Helper {
      */
     public static function getRevisionOnTheServer (InputInterface $input, OutputInterface $output, $envPath, $envFile) {
 
-        $config = Yaml::parse($envFile);
+        $config = Yaml::parse(file_get_contents($envFile));
         $remoteDestLink = self::getRemoteDestLink($envFile);
 
         $cmd = "ssh -i {$envPath}{$config['key']} {$config['user']}@{$config['host']} "
@@ -40,7 +40,7 @@ class Helper {
      */
     public static function getRemoteDestLink ($envFile) {
 
-        $config = Yaml::parse($envFile);
+        $config = Yaml::parse(file_get_contents($envFile));
 
         return $config['dest_dir'] . $config['env'];
 
@@ -54,7 +54,7 @@ class Helper {
      */
     public static function getRemoteDestFolder ($envFile, $revision) {
 
-        $config = Yaml::parse($envFile);
+        $config = Yaml::parse(file_get_contents($envFile));
 
         $remoteDestFolder = self::getRemoteDestLink($envFile);
 

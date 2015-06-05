@@ -47,7 +47,7 @@ class ConfigManager {
                 // don't try to load empty file
                 continue;
             }
-            $config = Yaml::parse($yamlFilePath);
+            $config = Yaml::parse(file_get_contents($yamlFilePath));
             if (!is_array($config)) {
                 throw new \RuntimeException('invalid config file');
             }

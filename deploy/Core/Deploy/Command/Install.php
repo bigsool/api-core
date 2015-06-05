@@ -296,7 +296,7 @@ class Install extends Base {
             $this->abort(sprintf('Config file %s cannot be found.', $file));
         }
 
-        $config = Yaml::parse($file);
+        $config = Yaml::parse(file_get_contents($file));
 
         if (!isset($config) || !isset($config['db'])) {
             $this->abort(sprintf('Config cannot be found in the file %s', $file));
@@ -614,7 +614,7 @@ class Install extends Base {
 
         $doctrineFolder = $this->paths['root'] . '/doctrine/';
 
-        $migrationConfig = Yaml::parse($doctrineFolder . 'migrations.yml');
+        $migrationConfig = Yaml::parse(file_get_contents($doctrineFolder . 'migrations.yml'));
 
         if (count(glob($doctrineFolder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
 
@@ -716,7 +716,7 @@ class Install extends Base {
     protected function getEnvConf () {
 
         if (!isset($this->envConf)) {
-            $this->envConf = Yaml::parse($this->paths['environmentFile']);
+            $this->envConf = Yaml::parse(file_get_contents($this->paths['environmentFile']));
         }
 
         return $this->envConf;

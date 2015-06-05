@@ -107,7 +107,7 @@ class BuildEntitiesCommand extends Command {
                 $moduleFolder = dirname($class->getFileName());
                 $modelFiles = glob($moduleFolder . '/Model/*.dcm.yml');
                 foreach ($modelFiles as $modelFile) {
-                    $ymls = array_merge_recursive($ymls, Yaml::parse($modelFile));
+                    $ymls = array_merge_recursive($ymls, Yaml::parse(file_get_contents($modelFile)));
                 }
 
             };

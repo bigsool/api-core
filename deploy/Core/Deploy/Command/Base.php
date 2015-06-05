@@ -109,7 +109,7 @@ abstract class Base extends Command {
         $this->paths['env'] = $this->paths['root'] . '/deploy/' . $this->getEnv() . '/';
         $this->paths['environmentFile'] = $this->paths['env'] . 'environment.yml';
 
-        $config = Yaml::parse($this->paths['environmentFile']);
+        $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
         $keyPath = $this->paths['env'] . $config['key'];
         if (!file_exists($keyPath)) {
             $this->abort(sprintf('Unable to find private key %s', $keyPath));

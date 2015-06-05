@@ -48,7 +48,7 @@ class Deploy extends Base {
             $this->abort($sendArgs['command'] . ' failed with error code: ' . $errorCode);
         }
 
-        $config = Yaml::parse($this->paths['environmentFile']);
+        $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
         $verboseOption = ($input->getOption('verbose')) ? ' -v ' : '';
         $cmdInstall =
             "ssh -t -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "

@@ -108,7 +108,7 @@ class CheckRevision extends Base {
 
     protected function checkIfRevisionAlreadyPushed ($revision) {
 
-        $config = Yaml::parse($this->paths['environmentFile']);
+        $config = Yaml::parse(file_get_contents($this->paths['environmentFile']));
         $completeOutputPath = $config['dest_dir'] . $this->getEnv() . '-' . substr($revision, 0, 7);
         $cmd = "ssh -i {$this->paths['env']}{$config['key']} {$config['user']}@{$config['host']} "
                . "'ls \"{$completeOutputPath}\" 2> /dev/null'";
