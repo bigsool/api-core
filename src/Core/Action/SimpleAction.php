@@ -158,9 +158,10 @@ class SimpleAction extends Action {
 
                 // handle forceOptional
                 if (isset($constraints[1]) && $constraints[1]) {
-                    $constraintsFor = array_reduce($constraintsFor, function ($constraints, Constraint $constraint) {
+                    $constraintsFor =
+                        array_reduce($constraintsFor ?: [], function ($constraints, Constraint $constraint) {
 
-                        if (!($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
+                            if (!($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
                             $constraints[] = $constraint;
                         }
 
@@ -181,10 +182,10 @@ class SimpleAction extends Action {
             }
 
             $finalValue = $context->getFinalParam($originalField);
-            $validationResult = Validator::validateValue($finalValue,$constraintsFor, $originalField);
+            $validationResult = Validator::validateValue($finalValue,$constraintsFor?:[], $originalField);
             if ($validationResult->hasErrors()) {
                 $errors = array_merge($errors, $validationResult->getErrors());
-            } else {
+            } elseif ($context->doesParamExist($originalField)) {
                 $context->setParam($originalField, $finalValue);
             }
         }

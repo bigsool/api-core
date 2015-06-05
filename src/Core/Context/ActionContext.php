@@ -156,6 +156,30 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function doesParamExist($key) {
+
+        $exploded = explode('.', $key);
+        $params = $this->params;
+        foreach ($exploded as $index => $key) {
+            if (!array_key_exists($key, $params)) {
+                return false;
+            }
+            // it's not necessary to create an array for the last key
+            if ($index + 1 == count($exploded)) {
+                break;
+            }
+            $params = UnsafeParameter::getFinalValue($params[$key]);
+        }
+
+        return array_key_exists($key, $params);
+
+    }
+
+    /**
      * @param string $moduleName
      * @param string $actionName
      *
