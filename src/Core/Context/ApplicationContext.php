@@ -245,6 +245,9 @@ class ApplicationContext {
         foreach ($this->application->getModuleManagers() as $moduleManager) {
             $moduleManagerClassName = get_class($moduleManager);
             $product = strstr($moduleManagerClassName, '\\', true);
+            if ($product == 'Core') {
+                continue;
+            }
             $baseClassName =
                 substr($moduleManagerClassName, strlen($product),
                        strrpos($moduleManagerClassName, '\\') + 1 - strlen($product));
