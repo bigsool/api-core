@@ -255,7 +255,7 @@ class ApplicationContext {
     public function getHelperClassName($helperName) {
 
         foreach ($this->getHelperLoader() as $helper) {
-            if ($className = $helper->getHelperClassName($helperName)) {
+            if ($className = $helper::getHelperClassName($helperName)) {
                 return $className;
             }
         }
@@ -318,6 +318,15 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
+
+    }
+
+    /**
+     * @return Application
+     */
+    public function getApplication () {
+
+        return $this->application;
 
     }
 
