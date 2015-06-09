@@ -13,24 +13,32 @@ Contact:
         streets:
             type: text
             length: 65535
+            nullable: true
         city:
             type: string
             length: 255
+            nullable: true
         state:
             type: string
             length: 255
+            nullable: true
         zip:
             type: string
             length: 255
+            nullable: true
         country:
             type: string
             length: 255
+            nullable: true
         email:
             type: string
             length: 255
+            nullable: true
         mobile:
             type: string
             length: 255
+            nullable: true
         landLine:
             type: string
             length: 255
+            nullable: true
