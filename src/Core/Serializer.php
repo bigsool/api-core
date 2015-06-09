@@ -110,8 +110,6 @@ class Serializer {
             $this->dataSerialized = $data;
         }
 
-        $this->dataSerialized = ['success' => true, 'data' => $this->dataSerialized];
-
         return $this;
 
     }

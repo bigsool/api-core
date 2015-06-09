@@ -83,6 +83,27 @@ class JSON implements Handler {
     }
 
     /**
+     * @param Serializer $serializer
+     * @param mixed      $data
+     *
+     * @return Response
+     */
+    public function getSuccessResponse (Serializer $serializer, $data) {
+
+        return new Response(json_encode(['jsonrpc' => '2.0',
+                                         'result'  => ['success' => true,
+                                                       'data'    => $serializer->serialize($data)->get()
+                                         ],
+                                         'id'      => $this->getId(),
+                                        ]),
+                            Response::HTTP_OK, [
+                'Content-type' => 'application/json',
+                'Access-Control-Allow-Origin' => '*'
+            ]);
+
+    }
+
+    /**
      * @param FormattedError $error
      *
      * @return Response
@@ -173,25 +194,6 @@ class JSON implements Handler {
     public function getService () {
 
         return $this->service;
-
-    }
-
-    /**
-     * @param Serializer $serializer
-     * @param mixed      $data
-     *
-     * @return Response
-     */
-    public function getSuccessResponse (Serializer $serializer, $data) {
-
-        return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'result'  => $serializer->serialize($data)->get(),
-                                         'id'      => $this->getId(),
-                                        ]),
-                            Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
 
     }
 
