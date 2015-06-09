@@ -12,6 +12,7 @@ use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
+use Core\Helper\ModuleManagerHelperLoader;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
 use Core\Logger\RequestLogger;
@@ -21,6 +22,7 @@ use Core\Module\AggregatedModuleEntity;
 use Core\Module\AggregatedModuleEntityDefinition;
 use Core\Module\DbModuleEntity;
 use Core\Module\MagicalEntity;
+use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
 use Core\Module\ModuleEntity;
 use Core\Module\ModuleEntityDefinition;
@@ -155,6 +157,16 @@ class ApplicationContext {
     protected $moduleManagers = [];
 
     /**
+     * @var ModuleManager[]|null
+     */
+    protected $sortedModuleManagers = NULL;
+
+    /**
+     * @var ModuleManagerHelperLoader(]
+     */
+    protected $helperLoaders = [];
+
+    /**
      *
      */
     protected function __construct () {
@@ -236,6 +248,52 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $helperName
+     *
+     * @return string
+     */
+    public function getHelperClassName($helperName) {
+
+        foreach ($this->getHelperLoader() as $helper) {
+            if ($className = $helper::getHelperClassName($helperName)) {
+                return $className;
+            }
+        }
+
+        $moduleManagers = $this->getSortedModuleManagers();
+
+        foreach ($moduleManagers as $moduleManager) {
+            $baseClassName = $moduleManager->getNamespace();
+            $className = $baseClassName . $helperName . 'Helper';
+            if (class_exists($className)) {
+                return $className;
+            }
+        }
+
+    }
+
+    /**
+     * @return ModuleManagerHelperLoader[]
+     */
+    public function getHelperLoader(){
+
+        if (!$this->helperLoaders) {
+
+            foreach ($this->getSortedModuleManagers() as $moduleManager) {
+                $baseClassName = $moduleManager->getNamespace();
+                $className = $baseClassName . 'HelperLoader';
+                if (class_exists($className)) {
+                    $this->helperLoaders[] = $className;
+                }
+            }
+
+        }
+
+        return $this->helperLoaders;
+
+    }
+
+    /**
      * @param string $moduleEntityName
      *
      * @return ModuleEntityDefinition
@@ -249,8 +307,7 @@ class ApplicationContext {
                 continue;
             }
             $baseClassName =
-                substr($moduleManagerClassName, strlen($product),
-                       strrpos($moduleManagerClassName, '\\') + 1 - strlen($product));
+                substr($moduleManager->getNamespace(), strlen($product));
             $className = $baseClassName . $moduleEntityName . 'Definition';
             if (class_exists($fullClassName = $product . $className)) {
                 return new $fullClassName;
@@ -261,6 +318,51 @@ class ApplicationContext {
         }
 
         throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
+
+    }
+
+    /**
+     * @return Application
+     */
+    public function getApplication () {
+
+        return $this->application;
+
+    }
+
+    /**
+     * @return \Core\Module\ModuleManager[]
+     */
+    public function getSortedModuleManagers () {
+
+        if (!$this->sortedModuleManagers) {
+
+            $this->sortedModuleManagers = $this->application->getModuleManagers();
+            usort($this->sortedModuleManagers, function (ModuleManager $mm1, ModuleManager $mm2) {
+
+                $mm1ClassName = get_class($mm1);
+                $mm1Product = strstr($mm1ClassName, '\\', true);
+
+                $mm2ClassName = get_class($mm2);
+                $mm2Product = strstr($mm2ClassName, '\\', true);
+
+                if ($mm1Product != $mm2Product) {
+                    return $mm1Product == 'Core' ? -1 : 1;
+                }
+
+                $isMm1Magical = $mm1 instanceof MagicalModuleManager;
+                $isMm2Magical = $mm2 instanceof MagicalModuleManager;
+
+                if ($isMm1Magical xor $isMm2Magical) {
+                    return $isMm1Magical ? 1 : -1;
+                }
+
+                return 0;
+
+            });
+        }
+
+        return $this->sortedModuleManagers;
 
     }
 

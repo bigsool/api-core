@@ -36,6 +36,17 @@ abstract class ModuleManager {
     }
 
     /**
+     * @return string
+     */
+    public static function getNamespace () {
+
+        $moduleManagerClassName = get_called_class();
+
+        return substr($moduleManagerClassName, 0, strrpos($moduleManagerClassName, '\\') + 1);
+
+    }
+
+    /**
      * @param ApplicationContext $context
      *
      * @return string[]

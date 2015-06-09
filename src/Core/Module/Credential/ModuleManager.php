@@ -32,20 +32,20 @@ class ModuleManager extends AbstractModuleManager {
             new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
                                                                 'password' => [new CredentialDefinition()]
             ],
-                function (ActionContext $context) {
-
-                    $appCtx = ApplicationContext::getInstance();
+                function (ActionContext $context) use ($appCtx) {
 
                     $params = $context->getVerifiedParams();
 
                     $login = $params['login'];
                     $password = $params['password'];
-                    $credential = CredentialHelper::credentialForLoginAndPassword($login, $password);
+                    $credentialHelper = $this->getCredentialHelper();
+                    $credential = $credentialHelper::credentialForLoginAndPassword($login, $password);
 
                     $loginHistory = $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
                     $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
-                    $authToken = AuthenticationHelper::generateAuthToken($credential);
+                    $authenticationHelper = $this->getAuthenticationHelper();
+                    $authToken = $authenticationHelper::generateAuthToken($credential);
 
                     $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
                                                                                      'setAuthCookie'),
@@ -69,7 +69,7 @@ class ModuleManager extends AbstractModuleManager {
 
                     }
 
-                    $appCtx = ApplicationContext::getInstance();
+                    $appCtx = $ctx->getApplicationContext();
                     $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
                     $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
@@ -81,7 +81,8 @@ class ModuleManager extends AbstractModuleManager {
 
                     $authToken = $ctx->getParam('authToken');
 
-                    $credential = AuthenticationHelper::checkAuthToken($authToken);
+                    $authenticationHelper = $this->getAuthenticationHelper();
+                    $credential = $authenticationHelper::checkAuthToken($authToken);
 
                     return $credential;
 
@@ -100,10 +101,13 @@ class ModuleManager extends AbstractModuleManager {
                     $authToken = $ctx->getParam('authToken');
                     $credentialId = $ctx->getParam('credentialId');
 
-                    $credential = CredentialHelper::credentialForId($credentialId);
-                    $newAuthToken = AuthenticationHelper::renewAuthToken($authToken, $credential);
+                    $credentialHelper = $this->getCredentialHelper();
+                    $credential = $credentialHelper::credentialForId($credentialId);
 
-                    $appCtx = ApplicationContext::getInstance();
+                    $authenticationHelper = $this->getAuthenticationHelper();
+                    $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credential);
+
+                    $appCtx = $ctx->getApplicationContext();
                     $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
 
                     $response->headers->setCookie(new Cookie('authToken', json_encode($newAuthToken),
@@ -209,6 +213,24 @@ class ModuleManager extends AbstractModuleManager {
             'Credential',
             'LoginHistory'
         ];
+
+    }
+
+    /**
+     * @return AuthenticationHelper
+     */
+    protected function getAuthenticationHelper() {
+
+        return ApplicationContext::getInstance()->getHelperClassName('Authentication');
+
+    }
+
+    /**
+     * @return CredentialHelper
+     */
+    protected function getCredentialHelper() {
+
+        return ApplicationContext::getInstance()->getHelperClassName('Credential');
 
     }
 
