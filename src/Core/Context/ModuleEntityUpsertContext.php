@@ -50,6 +50,11 @@ class ModuleEntityUpsertContext {
     protected $params;
 
     /**
+     * @var array
+     */
+    protected $inputParams;
+
+    /**
      * @param ModuleEntityDefinition $definition
      * @param int|null               $entityId
      * @param array                  $params
@@ -62,7 +67,7 @@ class ModuleEntityUpsertContext {
         $this->entityId = $entityId;
 
         // TODO : be sure to test this line in the unit tests in different cases
-        $this->params = $params;
+        $this->params = $this->inputParams = $params;
 
         $this->definition = $definition;
         $this->constraints = $this->definition->getConstraintsList();
@@ -128,6 +133,24 @@ class ModuleEntityUpsertContext {
     }
 
     /**
+     * @return bool
+     */
+    public function isUpdate () {
+
+        return !$this->isCreation();
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCreation () {
+
+        return $this->getEntityId() == NULL;
+
+    }
+
+    /**
      * @param array          $params
      * @param Constraint[][] $additionalConstraints
      */
@@ -159,35 +182,7 @@ class ModuleEntityUpsertContext {
      */
     public function getValidatedParam ($field, $constraints = NULL) {
 
-        if (!$constraints) {
-            // TODO  : what to do if no constraints found ?
-            $constraints = isset($this->constraints[$field]) ? $this->constraints[$field] : [];
-        }
-
-        // TODO : what should I return if forceOptional = true and $field not defined in $params ?
-        // Depending on this answer i should use Validator::validateParam
-        $validationResult = Validator::validateParams([$field => $constraints], $this->params, $this->isUpdate());
-
-        return $validationResult->getValidatedValue($field);
-
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUpdate () {
-
-        return !$this->isCreation();
-
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCreation () {
-
-        return $this->getEntityId() == NULL;
-
+        return $this->validateParam($constraints, $field, $this->params);
     }
 
     /**
@@ -204,6 +199,33 @@ class ModuleEntityUpsertContext {
             return !($param instanceof UnsafeParameter);
 
         });
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getInputParams() {
+
+        return $this->inputParams;
+
+    }
+
+    /**
+     * @param string     $key
+     * @param mixed $defaultValue
+     *
+     * @return mixed
+     */
+    public function getInputParam($key, $defaultValue = NULL){
+
+        return isset($this->inputParams[$key]) ? $this->inputParams[$key] : $defaultValue;
+
+    }
+
+    public function getValidatedInputParam($key) {
+
+        return $this->validateParam(NULL, $key, $this->inputParams);
 
     }
 
@@ -272,6 +294,26 @@ class ModuleEntityUpsertContext {
 
         $this->errors = $errors;
 
+    }
+
+    /**
+     * @param $constraints
+     * @param $field
+     *
+     * @return mixed
+     */
+    protected function validateParam ($constraints, $field, array $params) {
+
+        if (!$constraints) {
+            // TODO  : what to do if no constraints found ?
+            $constraints = isset($this->constraints[$field]) ? $this->constraints[$field] : [];
+        }
+
+        // TODO : what should I return if forceOptional = true and $field not defined in $params ?
+        // Depending on this answer i should use Validator::validateParam
+        $validationResult = Validator::validateParams([$field => $constraints], $params, $this->isUpdate());
+
+        return $validationResult->getValidatedValue($field);
     }
 
 }
