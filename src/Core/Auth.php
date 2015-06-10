@@ -100,4 +100,11 @@ class Auth {
 
     }
 
+    public function addRootRight () {
+
+        $this->rights[] = static::ROOT;
+
+    }
+
+
 } 
