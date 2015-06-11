@@ -478,4 +478,12 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         return $this->auth;
     }
 
+    public function callV1API ($service, $method, $params) {
+        $reqCtx = $this->getRequestContext();
+
+        $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
+
+        $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
+    }
+
 }

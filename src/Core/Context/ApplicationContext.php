@@ -983,4 +983,17 @@ class ApplicationContext {
 
     }
 
+    public function callV1API ($service, $method, $params, $client, $auth) {
+
+        $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
+
+        require_once ROOT_DIR . '/' . $this->config['path'] . 'include/lib/dispatcher/localDispatcher.php';
+
+        $pdo = $this->entityManager->getConnection()->getWrappedConnection();
+
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $client, '')->getResult();
+
+
+    }
+
 } 
