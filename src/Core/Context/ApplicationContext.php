@@ -5,6 +5,7 @@ namespace Core\Context;
 
 
 use Core\Action\Action;
+use Core\Action\SimpleAction;
 use Core\ActionQueue;
 use Core\Application;
 use Core\Config\ConfigManager;
@@ -618,6 +619,18 @@ class ApplicationContext {
      * @return Action
      */
     public function getAction ($module, $name) {
+
+        // TODO : move this out of Core (must be in Archipad)
+        // Don't call V1Compatibility Actions in test context
+        if ($this->isUnitTest() && $module == 'V1Compatibility' && !preg_match('/Mock$/', $name)) {
+            try {
+                return $this->getAction($module, $name . 'Mock');
+            }
+            catch (\RuntimeException $e) {
+                return new SimpleAction('', '', [], [], function () {
+                });
+            }
+        }
 
         foreach ($this->getActions() as $action) {
             if ($action->getModule() == $module && $action->getName() == $name) {
