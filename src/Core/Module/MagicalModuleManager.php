@@ -2,7 +2,7 @@
 
 namespace Core\Module;
 
-use Core\Action\SimpleAction;
+use Core\Action\GenericAction;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;

@@ -4,7 +4,7 @@
 namespace Core\Module\Credential;
 
 use Core\Action\Action;
-use Core\Action\SimpleAction;
+use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
@@ -29,7 +29,7 @@ class ModuleManager extends AbstractModuleManager {
     public function createActions (ApplicationContext &$appCtx) {
 
         return [
-            new SimpleAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
+            new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
                                                                 'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) use ($appCtx) {
@@ -58,7 +58,7 @@ class ModuleManager extends AbstractModuleManager {
                     ];
 
                 }),
-            new SimpleAction('Core\Credential', 'setAuthCookie', [],
+            new GenericAction('Core\Credential', 'setAuthCookie', [],
                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
@@ -76,7 +76,7 @@ class ModuleManager extends AbstractModuleManager {
                                                              $expire, '/', NULL, false, false));
 
                 }),
-            new SimpleAction('Core\Credential', 'checkAuth', [],
+            new GenericAction('Core\Credential', 'checkAuth', [],
                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $authToken = $ctx->getParam('authToken');
@@ -87,7 +87,7 @@ class ModuleManager extends AbstractModuleManager {
                     return $credential;
 
                 }),
-            new SimpleAction('Core\Credential', 'renewAuthCookie', [],
+            new GenericAction('Core\Credential', 'renewAuthCookie', [],
                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
@@ -114,7 +114,7 @@ class ModuleManager extends AbstractModuleManager {
                                                              $expire, '/', NULL, false, false));
 
                 }),
-            new SimpleAction('Core\Credential', 'create', NULL, ['login'    => [new CredentialDefinition()],
+            new GenericAction('Core\Credential', 'create', NULL, ['login'    => [new CredentialDefinition()],
                                                                  'type'     => [new CredentialDefinition()],
                                                                  'password' => [new CredentialDefinition()]
             ],
@@ -140,7 +140,7 @@ class ModuleManager extends AbstractModuleManager {
                     return $credential;
 
                 }),
-            new SimpleAction('Core\Credential', 'update', NULL, [
+            new GenericAction('Core\Credential', 'update', NULL, [
                 'id'              => [new CredentialDefinition()],
                 'login'           => [new CredentialDefinition(), true],
                 'password'        => [new CredentialDefinition(), true],
@@ -164,7 +164,7 @@ class ModuleManager extends AbstractModuleManager {
                 return $credential;
 
             }),
-            new SimpleAction('Core\Credential', 'logout', NULL, [],
+            new GenericAction('Core\Credential', 'logout', NULL, [],
                 function (ActionContext $context) {
 
                     $response = $context->getRequestContext()->getResponse();

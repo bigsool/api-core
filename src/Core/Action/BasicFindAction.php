@@ -7,7 +7,7 @@ use Core\Context\ActionContext;
 use Core\Context\FindQueryContext;
 use Core\Module\ModuleEntity;
 
-class BasicFindAction extends SimpleAction {
+class BasicFindAction extends GenericAction {
 
     /**
      * @param string       $module

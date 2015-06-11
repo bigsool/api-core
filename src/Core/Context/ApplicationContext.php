@@ -5,7 +5,7 @@ namespace Core\Context;
 
 
 use Core\Action\Action;
-use Core\Action\SimpleAction;
+use Core\Action\GenericAction;
 use Core\ActionQueue;
 use Core\Application;
 use Core\Config\ConfigManager;
@@ -627,7 +627,7 @@ class ApplicationContext {
                 return $this->getAction($module, $name . 'Mock');
             }
             catch (\RuntimeException $e) {
-                return new SimpleAction('', '', [], [], function () {
+                return new GenericAction('', '', [], [], function () {
                 });
             }
         }

@@ -13,7 +13,7 @@ use Core\Validation\Parameter\Int;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\RuntimeConstraintsProvider;
 
-class BasicUpdateAction extends SimpleAction {
+class BasicUpdateAction extends GenericAction {
 
     /**
      * @param string           $module

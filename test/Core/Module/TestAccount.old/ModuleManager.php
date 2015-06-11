@@ -4,7 +4,7 @@ namespace Core\Module\TestAccount;
 
 
 use Core\Action\Action;
-use Core\Action\SimpleAction;
+use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Model\TestAccount;
@@ -27,7 +27,7 @@ class ModuleManager extends MagicalModuleManager {
         $testAccountModuleEntity = $this->getModuleEntity('TestUser');
 
         return [
-            new SimpleAction('Core\Account', 'create', [], [],
+            new GenericAction('Core\Account', 'create', [], [],
                 function (ActionContext $context) use ($testAccountModuleEntity) {
 
                     /**
@@ -44,7 +44,7 @@ class ModuleManager extends MagicalModuleManager {
                     return $account;
 
                 }),
-            new SimpleAction('Core\Account', 'update', [], [],
+            new GenericAction('Core\Account', 'update', [], [],
                 function (ActionContext $context) use ($testAccountModuleEntity) {
 
                     $account = $testAccountModuleEntity->update($context, $context->getVerifiedParams());
@@ -52,13 +52,13 @@ class ModuleManager extends MagicalModuleManager {
                     return $account;
 
                 }),
-            new SimpleAction('Core\Account', 'find', [], [],
+            new GenericAction('Core\Account', 'find', [], [],
                 function (ActionContext $context) {
 
                     throw new \RuntimeException('Not implemented yet');
 
                 }),
-            new SimpleAction('TestAccount', 'createStorage', [], [],
+            new GenericAction('TestAccount', 'createStorage', [], [],
                 function (ActionContext $context) use ($testAccountModuleEntity) {
 
                     $company = $context['company'];

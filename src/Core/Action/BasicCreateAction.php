@@ -6,7 +6,7 @@ namespace Core\Action;
 use Core\Context\ActionContext;
 use Core\Module\ModuleEntity;
 
-class BasicCreateAction extends SimpleAction {
+class BasicCreateAction extends GenericAction {
 
     /**
      * @param string       $module
