@@ -64,11 +64,11 @@ class GenericAction extends Action {
         }
 
         if (!is_callable($validate) && !is_array($validate)) {
-            throw new \InvalidArgumentException('$validate must be a callable or an array');
+            throw new \InvalidArgumentException(sprintf('$validate must be a callable or an array, %s given',gettype($validate)));
         }
 
-        if (!is_callable($authorize) && !is_array($authorize) && !is_string($authorize)) {
-            throw new \InvalidArgumentException('$authorize must be a callable or a string or an array of string');
+        if (!is_callable($authorize) && !is_array($authorize) && !is_string($authorize) && !is_null($authorize)) {
+            throw new \InvalidArgumentException(sprintf('$authorize must be a callable or a string or an array of string, %s given', gettype($authorize)));
         }
 
         $this->module = $module;
