@@ -622,12 +622,12 @@ class ApplicationContext {
 
         // TODO : move this out of Core (must be in Archipad)
         // Don't call V1Compatibility Actions in test context
-        if ($this->isUnitTest() && $module == 'V1Compatibility' && !preg_match('/Mock$/', $name)) {
+        if ($this->isUnitTest() && preg_match('/V1Compatibility$/', $module) && !preg_match('/Mock$/', $name)) {
             try {
                 return $this->getAction($module, $name . 'Mock');
             }
             catch (\RuntimeException $e) {
-                return new GenericAction('', '', [], [], function () {
+                return new GenericAction($module, $name, [], [], function () {
                 });
             }
         }
