@@ -592,7 +592,7 @@ class Install extends Base {
 
         $returnCode = NULL;
         $_unused = NULL;
-        $cmd = 'mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' < ' . $dumpPath;
+        $cmd = 'sed \'s/^.*DEFINER=.*$//g\' '.$dumpPath.' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname;
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
