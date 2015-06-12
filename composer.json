@@ -30,11 +30,6 @@
       "Core": "test/"
     }
   },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.0.x-dev"
-    }
-  },
   "bin": [
     "bin/doctrine-generate-database",
     "bin/doctrine-generate-yml",
