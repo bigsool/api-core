@@ -150,7 +150,7 @@ class Install extends Base {
         $this->dumpFolder = $this->paths['root'] .'/dump';
         $revision =
             $this->getQuestion()->ask($this->getInput(), $this->getOutput(),
-                                      new Question(sprintf("Please enter the last Archiweb revision deployed on <env>%s</env>\n[e.g. bc2e1f3]",
+                                      new Question(sprintf("Please enter the last Archiweb revision deployed on <env>%s</env>\n[e.g. bc2e1f3] ",
                                                            $this->getEnv())));
 
         $this->getEnvConf();
@@ -522,7 +522,7 @@ class Install extends Base {
         exec($cmd, $unused, $returnCode);
 
         if ($returnCode !== 0 || !file_exists($dumpPath) || filesize($dumpPath) == 0) {
-            $this->abort(sprintf('Unable to dump <env>%s</env> data base, aborting...', $this->getEnv()));
+            $this->abort(sprintf('Unable to dump <env>%s</env> database, aborting...', $this->getEnv()));
         }
 
         $this->getOutput()->writeln("OK\n");
