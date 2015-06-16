@@ -148,15 +148,10 @@ class Install extends Base {
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
         $this->dumpFolder = $this->paths['root'] .'/dump';
-        $revision =
-            $this->getQuestion()->ask($this->getInput(), $this->getOutput(),
-                                      new Question(sprintf("Please enter the last Archiweb revision deployed on <env>%s</env>\n[e.g. bc2e1f3] ",
-                                                           $this->getEnv())));
 
         $this->getEnvConf();
         $configFolderArchiweb =
-            $this->envConf['archiweb_path_root'] . $this->getEnv() . '-api-' . substr($revision, 0, 7)
-            . '/include/config/';
+            $this->envConf['archiweb_path_root'] . $this->getEnv() . '-api/include/config/';
         $configDirArchiweb = $configFolderArchiweb . 'envs/';
 
         $this->dbConfigDirectory = $this->envConf['conf_directory'];
