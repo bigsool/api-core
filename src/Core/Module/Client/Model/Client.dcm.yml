@@ -1,0 +1,26 @@
+Client:
+    type: entity
+    table: client
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+        version:
+            type: string
+            nullable: false
+            length: 255
+    manyToOne:
+        device:
+             targetEntity: Core\Model\Device
+             inversedBy: clients
+             joinColumns:
+                 device_id:
+                     referencedColumnName: id
+                     nullable: true
+             cascade: ["persist"]

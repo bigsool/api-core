@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Module\Company;
+namespace Core\Module\Client;
 
 use Core\Context\ApplicationContext;
 use Core\Module\ModuleEntityDefinition;
@@ -17,7 +17,7 @@ class ModuleManager extends AbstractModuleManager {
     public function getModuleEntitiesName (ApplicationContext &$context) {
 
         return [
-            'Company'
+            'Client', 'Device'
         ];
 
     }

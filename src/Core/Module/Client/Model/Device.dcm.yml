@@ -1,0 +1,26 @@
+Device:
+    type: entity
+    table: device
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        UDID:
+            type: string
+            nullable: true
+            length: 255
+        name:
+            type: string
+            nullable: true
+            length: 255
+        type:
+            type: string
+            nullable: true
+            length: 255
+    oneToMany:
+         clients:
+             targetEntity: Core\Model\Client
+             mappedBy: device
+             cascade: ["persist"]
