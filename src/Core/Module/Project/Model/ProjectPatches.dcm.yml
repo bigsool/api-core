@@ -1,0 +1,19 @@
+ProjectPatches:
+    type: entity
+    table: project_patches
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: datetime
+            nullable: false
+    ManyToOne:
+        project:
+            targetEntity: Core\Model\Project
+            inversedBy: patches
+            joinColumn:
+                name: project_id
+                referencedColumnName: id
