@@ -26,7 +26,7 @@ $errorManager->defineError(new Error(ERROR_CLIENT_IS_INVALID, 'client invalide',
 $errorManager->defineError(new Error(ERROR_PROTOCOL_IS_INVALID, 'protocole non reconnu', 'invalid protocol',
                                      ERROR_REQUEST_INVALID));
 
-@define('ERROR_PERMISSION_DENIED', -7);
+@define('ERROR_PERMISSION_DENIED', 7);
 $errorManager->defineError(new Error(ERROR_PERMISSION_DENIED, 'accès refusé', 'permission denied'));
 
 @define('ERROR_BAD_VERSION', -8);
