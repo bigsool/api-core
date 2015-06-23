@@ -391,7 +391,7 @@ class TestCompany
     {
         $this->owner = $owner;
         $this->ownerRestrictedId = $owner ? $owner->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -417,7 +417,7 @@ class TestCompany
             // RestrictedObjectHydrator will automatically hydrate ownerRestrictedId
             // Since Doctrine shares model instances, ownerRestrictedId will be automatically available
         }
-    
+
         return $this->owner && $this->owner->getId() == $this->ownerRestrictedId ? $this->owner : NULL;
     }
 
@@ -442,7 +442,7 @@ class TestCompany
     {
         $this->storage = $storage;
         $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -468,7 +468,7 @@ class TestCompany
             // RestrictedObjectHydrator will automatically hydrate storageRestrictedId
             // Since Doctrine shares model instances, storageRestrictedId will be automatically available
         }
-    
+
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
@@ -493,7 +493,7 @@ class TestCompany
     {
         $this->users[] = $user;
         $this->usersRestrictedIds[] = $user->getId();
-    
+
         return $this;
     }
 
@@ -516,10 +516,10 @@ class TestCompany
     public function getUsers()
     {
         $inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this->usersRestrictedIds);
-    
+
         $criteria = \Doctrine\Common\Collections\Criteria::create();
         $criteria->where($inExpr);
-    
+
         return $this->users->matching($criteria);
     }
 
