@@ -100,6 +100,9 @@ class GenericAction extends Action {
      */
     public static function simpleValidate (array $constraintsList, ActionContext $context) {
 
+
+        $errors = [];
+
         foreach ($constraintsList as $originalField => $constraints) {
 
             $explodedField = explode('.', $originalField);
@@ -132,16 +135,19 @@ class GenericAction extends Action {
             $finalParams = $context->getFinalParams();
             $explodedField = explode('.', $originalField);
             for ($i = 0 ; $i < count($explodedField) - 1 ; ++$i) {
-                $finalParams = $finalParams[$explodedField[$i]];
+                if (isset($finalParams[$explodedField[$i]])) {
+                    $finalParams = $finalParams[$explodedField[$i]];
+                }
+                else {
+                    break;
+                }
             }
+            
             $result = Validator::validateParams([$explodedField[count($explodedField) - 1] => $constraintsFor],$finalParams,$forceOptional);
 
             if ($result->hasErrors()) {
 
-                $errMgr = $context->getApplicationContext()->getErrorManager();
-                $errMgr->addErrors($result->getErrors());
-
-                throw $errMgr->getFormattedError();
+                $errors = array_merge($errors,$result->getErrors());
 
             }
             elseif ($context->doesParamExist($originalField)) {
@@ -149,6 +155,15 @@ class GenericAction extends Action {
                 $context->setParam($originalField, $finalValue);
 
             }
+
+        }
+
+        if (count($errors) > 0) {
+
+            $errMgr = $context->getApplicationContext()->getErrorManager();
+            $errMgr->addErrors($errors);
+
+            throw $errMgr->getFormattedError();
 
         }
 
