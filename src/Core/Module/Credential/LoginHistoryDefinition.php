@@ -42,10 +42,6 @@ class LoginHistoryDefinition extends ModuleEntityDefinition {
 
             $params['date'] = new \DateTime();
             $params['IP'] = $reqCtx->getIpAddress();
-
-            //TODO : move to Client module
-            $params['clientName'] = $reqCtx->getClientName();
-            $params['clientVersion'] = $reqCtx->getClientVersion();
         }
 
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
