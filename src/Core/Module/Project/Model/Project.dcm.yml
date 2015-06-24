@@ -3,9 +3,10 @@ Project:
   table: project
   id:
       id:
-          type: integer
+          type: string
+          length: 16
           generator:
-              strategy: AUTO
+              strategy: NONE
   fields:
       name:
           type: string
