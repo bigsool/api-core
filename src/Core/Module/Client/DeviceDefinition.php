@@ -4,11 +4,38 @@
 namespace Core\Module\Client;
 
 
+use Core\Filter\Filter;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
+use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
+use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\String;
 
 class DeviceDefinition extends ModuleEntityDefinition {
+
+    /**
+     * @return \Core\Validation\Parameter\Constraint[][]
+     */
+    public function getConstraintsList () {
+
+        return [
+            'UUID' => [
+                new String(),
+                new Length(['max' => 255]),
+                new NotBlank(),
+            ],
+            'name' => [
+                new String(),
+                new Length(['max' => 255]),
+            ],
+            'type' => [
+                new Choice(['choices' => ['ipad']]),
+                new NotBlank(),
+            ],
+        ];
+
+    }
 
     /**
      * @return string
@@ -20,24 +47,11 @@ class DeviceDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @return \Core\Validation\Parameter\Constraint[][]
+     * @return Filter[]
      */
-    public function getConstraintsList () {
+    public function getFilters () {
 
-        return [
-            'UDID' => [
-                new String(),
-                new Length(['max'=>255]),
-            ],
-            'name' => [
-                new String(),
-                new Length(['max'=>255]),
-            ],
-            'type' => [
-                new String(),
-                new Length(['max'=>255]),
-            ],
-        ];
+        return [new StringFilter('Device', 'DeviceForUUID', 'UUID = :UUID')];
 
     }
 

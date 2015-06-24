@@ -7,17 +7,18 @@ Device:
             generator:
                 strategy: AUTO
     fields:
-        UDID:
+        UUID:
             type: string
-            nullable: true
+            nullable: false
             length: 255
+            unique: true
         name:
             type: string
             nullable: true
             length: 255
         type:
             type: string
-            nullable: true
+            nullable: false
             length: 255
     oneToMany:
          clients:
