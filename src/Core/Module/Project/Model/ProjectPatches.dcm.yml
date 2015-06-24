@@ -10,7 +10,7 @@ ProjectPatches:
         date:
             type: datetime
             nullable: false
-    ManyToOne:
+    manyToOne:
         project:
             targetEntity: Core\Model\Project
             inversedBy: patches
