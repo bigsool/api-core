@@ -51,7 +51,7 @@ class UpsertContextHelper {
 
         // TODO : handle sub-sub-entities (company.contact if company id is provided)
         // in case of creation, we should handle id instead of object definition (ie: company for sub-user)
-        if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams)) {
+        if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams) && !($modelAspect->isMainAspect())) {
             // TODO : has he the right to do it ? (assign)
             $subEntityId = UnsafeParameter::getFinalValue($aspectParams['id']);
             $reqCtx = $aggregatedUpsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields();
