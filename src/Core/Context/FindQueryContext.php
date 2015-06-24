@@ -246,7 +246,7 @@ class FindQueryContext implements QueryContext {
 
         $count = count($entities);
 
-        if ($count != 1) {
+        if ($count != 1 && $exception !== false) {
 
             if (is_int($exception)) {
                 $appCtx = $this->getRequestContext()->getApplicationContext();
@@ -260,7 +260,7 @@ class FindQueryContext implements QueryContext {
 
         }
 
-        return $entities[0];
+        return $count ? $entities[0] : NULL;
 
     }
 
