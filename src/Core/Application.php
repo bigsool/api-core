@@ -58,6 +58,9 @@ class Application {
 
     }
 
+    /**
+     *
+     */
     protected function __construct () {
 
         static::defineRootDir();
