@@ -37,11 +37,11 @@ class ProjectDefinition extends ModuleEntityDefinition{
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],
-            'creation_date' => [
+            'creationDate' => [
                 new DateTime(),
                 new NotBlank(),
             ],
-            'last_modification' => [
+            'lastModification' => [
                 new DateTime(),
             ],
         ];
