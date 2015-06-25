@@ -12,12 +12,14 @@ Project:
           type: string
           nullable: false
           length: 255
-      creation_date:
+      creationDate:
           type: datetime
           nullable: false
-      last_modification:
+          column: creation_date
+      lastModification:
           type: datetime
           nullable: false
+          column: last_modification
   oneToMany:
       patches:
           targetEntity: Core\Model\ProjectPatches
