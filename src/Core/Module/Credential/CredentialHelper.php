@@ -23,10 +23,14 @@ class CredentialHelper {
 
     }
 
-    public static function credentialForLoginAndPassword ($login, $password) {
+    public static function credentialForAuthParams ($authParams) {
 
-        $credential = static::credentialForLogin($login);
-        if (!password_verify($password, $credential->getPassword())) {
+        if ( $authParams['authType'] != 'password' ) {
+            throw new \Exception('unknown auth type');
+        }
+
+        $credential = static::credentialForLogin($authParams['login']);
+        if (!password_verify($authParams['password'], $credential->getPassword())) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
 

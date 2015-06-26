@@ -91,3 +91,6 @@ $errorManager->defineError(new Error(ERROR_CREDENTIAL_ALREADY_EXIST, "ce login e
 $errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED, "compte déjà vérifié",
                                      'account already confirmed'));
 
+@define('ERROR_IPAD_ALREADY_CONNECTED', -7005);
+$errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED, "votre compte est déjà connecté sur un autre iPad",
+                                     'Your account is already connected on another iPad'));

@@ -51,6 +51,11 @@ class CredentialDefinition extends ModuleEntityDefinition {
                     new Length(['max' => 255]),
                     new NotBlank(),
                 ]
+            ,'authType'      =>
+                [
+                    new String(),
+                    new NotBlank(),
+                ]
             ,
         ];
 

@@ -348,14 +348,14 @@ class ApplicationContext {
                 $mm2Product = strstr($mm2ClassName, '\\', true);
 
                 if ($mm1Product != $mm2Product) {
-                    return $mm1Product == 'Core' ? -1 : 1;
+                    return $mm1Product == 'Core' ? 1 : -1;
                 }
 
                 $isMm1Magical = $mm1 instanceof MagicalModuleManager;
                 $isMm2Magical = $mm2 instanceof MagicalModuleManager;
 
                 if ($isMm1Magical xor $isMm2Magical) {
-                    return $isMm1Magical ? 1 : -1;
+                    return $isMm1Magical ? -1 : 1;
                 }
 
                 return 0;
@@ -422,6 +422,10 @@ class ApplicationContext {
 
         $i = 0;
         foreach ($this->actions as $action) {
+
+            // if RedefineGenericAction and alreqdy exists do not throw
+            // if RedefinedGenecirQction qnd not qlreqdy registered; throw
+
             if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
                 //$this->actions[$i] = $theAction;
                 //return;

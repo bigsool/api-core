@@ -113,11 +113,17 @@ class AuthenticationHelper {
 
         $authTokenGenerated = static::createToken($login, $expiration, $credential->getPassword(), $type);
 
-        if ($authTokenGenerated != $authToken) {
+        if (!static::areAuthTokensEqual($authTokenGenerated,$authToken)) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
         return $credential;
+
+    }
+
+    protected static function areAuthTokensEqual($authTokenGenerated, $authToken) {
+
+        return $authTokenGenerated == $authToken;
 
     }
 

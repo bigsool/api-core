@@ -30,21 +30,20 @@ class ModuleManager extends AbstractModuleManager {
 
         return [
             new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
-                                                                'password' => [new CredentialDefinition()]
+                                                                'password' => [new CredentialDefinition()],
+                                                                               'authType' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) use ($appCtx) {
 
                     $params = $context->getVerifiedParams();
 
-                    $login = $params['login'];
-                    $password = $params['password'];
                     $credentialHelper = $this->getCredentialHelper();
-                    $credential = $credentialHelper::credentialForLoginAndPassword($login, $password);
+                    $credential = $credentialHelper::credentialForAuthParams($params);
 
                     $loginHistory = $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
                     $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
-                    $authenticationHelper = $this->getAuthenticationHelper();
+                    $authenticationHelper = ApplicationContext::getInstance()->getHelperClassName('Authentication');
                     $authToken = $authenticationHelper::generateAuthToken($credential);
 
                     $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
@@ -53,7 +52,7 @@ class ModuleManager extends AbstractModuleManager {
 
                     return [
                         'authToken' => $authToken,
-                        'login'     => $login,
+                        'login'     => $credential->getLogin(),
                         'id'        => $credential->getId(),
                     ];
 

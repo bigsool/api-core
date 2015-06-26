@@ -88,6 +88,7 @@ class RequestContext {
             $reqCtx->setClientVersion($current->getClientVersion());
             $reqCtx->setClientName($current->getClientName());
             $reqCtx->setIpAddress($current->getIpAddress());
+            $reqCtx->setAuthToken($current->getAuthToken());
 
         }
 
@@ -410,6 +411,12 @@ class RequestContext {
     public function setAuthToken ($authToken) {
 
         $this->authToken = $authToken;
+
+    }
+
+    public function getAuthToken () {
+
+        return $this->authToken;
 
     }
 
