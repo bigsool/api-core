@@ -26,7 +26,7 @@ $errorManager->defineError(new Error(ERROR_CLIENT_IS_INVALID, 'client invalide',
 $errorManager->defineError(new Error(ERROR_PROTOCOL_IS_INVALID, 'protocole non reconnu', 'invalid protocol',
                                      ERROR_REQUEST_INVALID));
 
-@define('ERROR_PERMISSION_DENIED', -7);
+@define('ERROR_PERMISSION_DENIED', 7);
 $errorManager->defineError(new Error(ERROR_PERMISSION_DENIED, 'accès refusé', 'permission denied'));
 
 @define('ERROR_BAD_VERSION', -8);
@@ -91,3 +91,6 @@ $errorManager->defineError(new Error(ERROR_CREDENTIAL_ALREADY_EXIST, "ce login e
 $errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED, "compte déjà vérifié",
                                      'account already confirmed'));
 
+@define('ERROR_IPAD_ALREADY_CONNECTED', -7005);
+$errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED, "votre compte est déjà connecté sur un autre iPad",
+                                     'Your account is already connected on another iPad'));

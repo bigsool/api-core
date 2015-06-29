@@ -94,12 +94,15 @@ class GenericAction extends Action {
     /**
      * @param array         $constraintsList
      * @param ActionContext $context
+
      *
      * @throws ValidationException
      */
     public static function simpleValidate (array $constraintsList, ActionContext $context) {
 
+
         $errors = [];
+
         foreach ($constraintsList as $originalField => $constraints) {
 
             $explodedField = explode('.', $originalField);
@@ -109,22 +112,12 @@ class GenericAction extends Action {
                 throw new \RuntimeException('invalid constraints');
             }
 
+            $forceOptional = false;
             // handle constraintsProvider case
             if ($constraints[0] instanceof ConstraintsProvider) {
                 $constraintsFor = $constraints[0]->getConstraintsFor($field);
-
-                // handle forceOptional
-                if (isset($constraints[1]) && $constraints[1]) {
-                    $constraintsFor =
-                        array_reduce($constraintsFor ?: [], function ($constraints, Constraint $constraint) {
-
-                            if (!($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
-                                $constraints[] = $constraint;
-                            }
-
-                            return $constraints;
-
-                        }, []);
+                if (isset($constraints[1])) {
+                    $forceOptional = $constraints[1];
                 }
             }
             // handle constraint[] case
@@ -139,17 +132,39 @@ class GenericAction extends Action {
             }
 
             $finalValue = $context->getFinalParam($originalField);
-            $validationResult = Validator::validateValue($finalValue, $constraintsFor ?: [], $originalField);
-            if ($validationResult->hasErrors()) {
-                $errors = array_merge($errors, $validationResult->getErrors());
+            $finalParams = $context->getFinalParams();
+            $explodedField = explode('.', $originalField);
+            for ($i = 0 ; $i < count($explodedField) - 1 ; ++$i) {
+                if (isset($finalParams[$explodedField[$i]])) {
+                    $finalParams = $finalParams[$explodedField[$i]];
+                }
+                else {
+                    break;
+                }
+            }
+            
+            $result = Validator::validateParams([$explodedField[count($explodedField) - 1] => $constraintsFor],$finalParams,$forceOptional);
+
+            if ($result->hasErrors()) {
+
+                $errors = array_merge($errors,$result->getErrors());
+
             }
             elseif ($context->doesParamExist($originalField)) {
+
                 $context->setParam($originalField, $finalValue);
+
             }
+
         }
 
-        if ($errors) {
-            throw new ValidationException($errors);
+        if (count($errors) > 0) {
+
+            $errMgr = $context->getApplicationContext()->getErrorManager();
+            $errMgr->addErrors($errors);
+
+            throw $errMgr->getFormattedError();
+
         }
 
     }
