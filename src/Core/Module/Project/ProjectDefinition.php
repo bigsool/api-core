@@ -32,6 +32,11 @@ class ProjectDefinition extends ModuleEntityDefinition{
     public function getConstraintsList () {
 
         return [
+            'id' => [
+                new String(),
+                new Length(['max' => 16]),
+                new NotBlank(),
+            ],
             'name' => [
                 new String(),
                 new Length(['max' => 255]),
