@@ -2,10 +2,11 @@ ProjectPatches:
     type: entity
     table: project_patches
     id:
-        id:
-            type: integer
-            generator:
-                strategy: AUTO
+          id:
+              type: string
+              length: 16
+              generator:
+                  strategy: NONE
     fields:
         date:
             type: datetime
