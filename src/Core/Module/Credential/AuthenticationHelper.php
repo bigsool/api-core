@@ -24,7 +24,11 @@ class AuthenticationHelper {
 
         static::checkAuthTokenStructure($authToken);
 
-        return static::generateAuthToken($credential, $authToken['type']);
+        $type = $authToken['type'];
+
+        unset($authToken['type'], $authToken['login'], $authToken['expiration'], $authToken['hash']);
+
+        return static::generateAuthToken($credential, $type, NULL, $authToken);
 
     }
 
@@ -48,11 +52,13 @@ class AuthenticationHelper {
      * @param Credential $credential
      * @param string     $authTokenType
      * @param int        $expirationTimestamp
+     * @param array      $additionalParams
      *
      * @return array
      * @throws ToResolveException
      */
-    public static function generateAuthToken ($credential, $authTokenType = NULL, $expirationTimestamp = NULL) {
+    public static function generateAuthToken ($credential, $authTokenType = NULL, $expirationTimestamp = NULL,
+                                              array $additionalParams = []) {
 
         if (is_null($credential)) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
@@ -65,11 +71,11 @@ class AuthenticationHelper {
         if (!$expirationTimestamp) {
             $expirationTimestamp =
                 time() + intval(ApplicationContext::getInstance()->getConfigManager()
-                                                  ->getConfig()['expirationAuthToken']);
+                                                  ->getConfig()['credential']['expirationAuthToken']);
         }
 
         return static::createToken($credential->getLogin(), $expirationTimestamp, $credential->getPassword(),
-                                   $authTokenType);
+                                   $authTokenType, $additionalParams);
 
     }
 
@@ -78,22 +84,40 @@ class AuthenticationHelper {
      * @param string $expiration
      * @param string $hashedPassword
      * @param string $type
+     * @param array  $additionalParams
      *
      * @return array
      */
-    protected static function createToken ($login, $expiration, $hashedPassword, $type) {
+    protected static function createToken ($login, $expiration, $hashedPassword, $type, array $additionalParams = []) {
 
-        return [
-            'hash'       => sha1($login . $expiration . $hashedPassword . $type),
+        $token = [
             'login'      => $login,
             'expiration' => $expiration,
             'type'       => $type
         ];
 
+        $token = array_merge($token, $additionalParams);
+
+        $token['hash'] = self::generateHash($hashedPassword, $token);
+
+        return $token;
+
     }
 
     /**
-     * @param mixed            $authToken
+     * @param $hashedPassword
+     * @param $token
+     *
+     * @return string
+     */
+    protected static function generateHash ($hashedPassword, $token) {
+
+        return sha1(implode($token) . $hashedPassword);
+
+    }
+
+    /**
+     * @param mixed $authToken
      *
      * @return Credential
      * @throws ToResolveException
@@ -103,17 +127,13 @@ class AuthenticationHelper {
         static::checkAuthTokenStructure($authToken);
 
         $login = $authToken['login'];
-
         $expiration = $authToken['expiration'];
-        $type = $authToken['type'];
 
         if ($expiration < time() || !($credential = CredentialHelper::credentialForLogin($login))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        $authTokenGenerated = static::createToken($login, $expiration, $credential->getPassword(), $type);
-
-        if (!static::areAuthTokensEqual($authTokenGenerated,$authToken)) {
+        if (!static::isAuthTokenValid($authToken, $credential->getPassword())) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
@@ -121,9 +141,23 @@ class AuthenticationHelper {
 
     }
 
-    protected static function areAuthTokensEqual($authTokenGenerated, $authToken) {
+    /**
+     * @param array  $authToken
+     * @param string $hashedPassword
+     *
+     * @return bool
+     */
+    protected static function isAuthTokenValid (array $authToken, $hashedPassword) {
 
-        return $authTokenGenerated == $authToken;
+        if (!isset($authToken['hash'])) {
+            return false;
+        }
+
+        $hash = $authToken['hash'];
+
+        unset($authToken['hash']);
+
+        return $hash == self::generateHash($hashedPassword, $authToken);
 
     }
 
