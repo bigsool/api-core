@@ -15,16 +15,25 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
 
     const TYPE = 'change_subscription_plan';
 
+    /**
+     * @var array
+     */
     protected $subscriptionParams;
 
+    /**
+     * @var TODO
+     */
     protected $uiParams;
 
+    /**
+     * @return string
+     */
     public function getType() {
         return self::TYPE;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getSubscriptionParams () {
 
@@ -32,9 +41,9 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     }
 
     /**
-     * @param mixed $subscriptionParams
+     * @param array $subscriptionParams
      */
-    public function setSubscriptionParams ($subscriptionParams) {
+    public function setSubscriptionParams (array $subscriptionParams) {
 
         $this->subscriptionParams = $subscriptionParams;
     }
