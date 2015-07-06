@@ -23,11 +23,18 @@ class AlertInteraction implements Interaction {
      */
     protected $message = null;
 
+    /**
+     * @param string $topic
+     * @param string $message
+     */
     public function __construct($topic, $message) {
         $this->topic    = $topic;
         $this->message  = $message;
     }
 
+    /**
+     * @return string
+     */
     public function getType() {
         return self::TYPE;
     }
