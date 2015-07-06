@@ -94,9 +94,8 @@ class GenericAction extends Action {
     /**
      * @param array         $constraintsList
      * @param ActionContext $context
-
      *
-     * @throws ValidationException
+     * @throws FormattedError
      */
     public static function simpleValidate (array $constraintsList, ActionContext $context) {
 

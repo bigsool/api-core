@@ -1,4 +1,5 @@
-expirationAuthToken: 3600
+credential:
+  expirationAuthToken: 3600
 characters: abcdefhjkmnpqrtwxyzABCDEFHJKLMNPRTWXYZ1234789
 mailer:
   from: 'support@archipad.com'
