@@ -5,11 +5,8 @@ namespace Core\Context;
 
 use Archipad\RightsManager;
 use Core\Auth;
-use Core\Module\ModuleEntityDefinition;
 use Core\Parameter\UnsafeParameter;
-use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\Constraint;
-use Core\Validation\Validator;
 
 class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
@@ -130,8 +127,8 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
-     * @param mixed $key
-     * @param mixed $default
+     * @param mixed        $key
+     * @param mixed        $default
      * @param Constraint[] $constraints
      *
      * @return mixed
@@ -160,7 +157,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
      *
      * @return bool
      */
-    public function doesParamExist($key) {
+    public function doesParamExist ($key) {
 
         $exploded = explode('.', $key);
         $params = $this->params;
@@ -306,14 +303,15 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     /**
      * @param mixed $key
+     * @param mixed $default
      *
      * @return mixed
      */
-    public function getVerifiedParam ($key) {
+    public function getVerifiedParam ($key, $default = NULL) {
 
         $params = $this->getVerifiedParams();
 
-        return isset($params[$key]) ? $params[$key] : NULL;
+        return isset($params[$key]) ? $params[$key] : $default;
 
     }
 
@@ -345,29 +343,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
                 unset($this->params[$key]);
             }
         }
-
-    }
-
-    /**
-     * @return RequestContext
-     */
-    public function getRequestContext () {
-
-        $context = $this;
-        while (!($context instanceof RequestContext)) {
-            $context = $context->getParentContext();
-        }
-
-        return $context;
-
-    }
-
-    /**
-     * @return RequestContext|ActionContext
-     */
-    public function getParentContext () {
-
-        return $this->parentContext;
 
     }
 
@@ -450,6 +425,15 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
+     * @return RequestContext|ActionContext
+     */
+    public function getParentContext () {
+
+        return $this->parentContext;
+
+    }
+
+    /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Retrieve an external iterator
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php     *
@@ -479,11 +463,26 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     public function callV1API ($service, $method, $params) {
+
         $reqCtx = $this->getRequestContext();
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
         $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getRequestContext () {
+
+        $context = $this;
+        while (!($context instanceof RequestContext)) {
+            $context = $context->getParentContext();
+        }
+
+        return $context;
+
     }
 
 }
