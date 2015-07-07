@@ -17,21 +17,40 @@ class ProjectInteractionHelper {
     /**
      * Returns an Interaction (or not) for a given feature
      *
-     * @param                               $feature
+     * @param string                        $feature
      * @param ProjectInteractionsDefinition $definition
      *
      * @return Interaction|null
      */
-    static public function getInteractionForFeature($feature, ProjectInteractionsDefinition $definition) {
+    public static function getInteractionForFeature ($feature, ProjectInteractionsDefinition $definition) {
+
         $callables = $definition->getInteractionCallablesForFeature($feature);
 
         foreach ($callables as $callable) {
             $interaction = call_user_func($callable);
-            if ( $interaction )
+            if ($interaction) {
                 return $interaction;
+            }
         }
 
-        return null;
+        return NULL;
+
+    }
+
+    /**
+     * @param ProjectInteractionsDefinition $definition
+     *
+     * @return array
+     */
+    public static function getInteractions (ProjectInteractionsDefinition $definition) {
+
+        $interactions = [];
+
+        foreach ($definition->getFeatures() as $feature) {
+            $interactions[$feature] = static::getInteractionForFeature($feature, $definition);
+        }
+
+        return $interactions;
 
     }
 
