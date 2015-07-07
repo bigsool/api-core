@@ -6,6 +6,7 @@ namespace Core\Module\Client;
 
 use Core\Context\ActionContext;
 use Core\Context\ModuleEntityUpsertContext;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
@@ -62,6 +63,19 @@ class ClientDefinition extends ModuleEntityDefinition {
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
         return $upsertContext;
+
+    }
+
+    /**
+     * @return \Core\Filter\Filter[]
+     */
+    public function getFilters () {
+
+        return [
+            new StringFilter('Client','ClientForDevice','device = :device'),
+            new StringFilter('Client','ClientForName','name = :name'),
+            new StringFilter('Client','ClientForVersion','version = :version'),
+        ];
 
     }
 
