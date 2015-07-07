@@ -9,6 +9,8 @@
 namespace Core\Module\Project;
 
 
+use Core\Filter\Filter;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
@@ -49,6 +51,18 @@ class ProjectDefinition extends ModuleEntityDefinition{
             'lastModification' => [
                 new DateTime(),
             ],
+        ];
+
+    }
+
+
+    /**
+     * @return Filter[]
+     */
+    public function getFilters () {
+
+        return [
+          new StringFilter('Project','ProjectForId', 'id = :id'),
         ];
 
     }
