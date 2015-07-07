@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bigsool
- * Date: 19/06/15
- * Time: 15:09
- */
 
 namespace Core\Module\Project;
 
