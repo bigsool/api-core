@@ -54,6 +54,9 @@ class ModuleManager extends AbstractModuleManager {
                                                                                      'setAuthCookie'),
                                                                   ['authToken' => $authToken]);
 
+                    $context->getRequestContext()->setAuthToken($authToken);
+                    $context->getRequestContext()->getAuth()->setCredential($credential);
+
                     return [
                         'authToken' => $authToken,
                         'login'     => $credential->getLogin(),
