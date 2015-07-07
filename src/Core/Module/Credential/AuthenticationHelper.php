@@ -112,6 +112,8 @@ class AuthenticationHelper {
      */
     protected static function generateHash ($hashedPassword, $token) {
 
+        ksort($token);
+
         return sha1(implode($token) . $hashedPassword);
 
     }
