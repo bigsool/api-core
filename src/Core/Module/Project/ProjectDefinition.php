@@ -30,7 +30,7 @@ class ProjectDefinition extends ModuleEntityDefinition{
         return [
             'id' => [
                 new String(),
-                new Length(['max' => 16]),
+                new Length(['max' => 32]),
                 new NotBlank(),
             ],
             'name' => [
