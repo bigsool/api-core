@@ -269,6 +269,10 @@ class FindQueryContext implements QueryContext {
      */
     public function findAll () {
 
+        if (!count($this->fields)) {
+            $this->addField('*');
+        }
+
         $this->getRequestContext()->getApplicationContext()->finalizeFindQueryContext($this);
 
         return $this->moduleEntity->find($this);
