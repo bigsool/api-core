@@ -36,13 +36,13 @@ class RuntimeConstraintsProvider implements ConstraintsProvider {
     /**
      * @param string $field
      *
-     * @return Constraint[]|null
+     * @return Constraint[]
      */
     public function getConstraintsFor ($field) {
 
         $constraints = $this->getConstraintsList();
 
-        return isset($constraints[$field]) ? $constraints[$field] : NULL;
+        return isset($constraints[$field]) ? $constraints[$field] : [];
 
     }
 
