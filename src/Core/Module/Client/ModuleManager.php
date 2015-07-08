@@ -29,18 +29,23 @@ class ModuleManager extends AbstractModuleManager {
                 $device = NULL;
 
                 if ($context->doesParamExist('UUID')) {
-
-                    /**
-                     * @var Device $device
-                     */
-                    $device =
-                        $context->newDerivedContextFor('Core\Client', 'createOrUpdateDevice')
-                                ->process($context->getParams());
-
+                    $params = $context->getParams();
+                }
+                else {
+                    $params = ['UUID' => '','name' => '', 'type' => ''];
                 }
 
 
+                /**
+                 * @var Device $device
+                 */
+                $device =
+                    $context->newDerivedContextFor('Core\Client', 'createOrUpdateDevice')
+                            ->process($params);
+
+
                 $reqCtx = $context->getRequestContext();
+                $params = [];
                 $params['name'] = $reqCtx->getClientName();
                 $params['version'] = $reqCtx->getClientVersion();
                 $params['device'] = $device;
