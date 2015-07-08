@@ -4,7 +4,7 @@ ProjectPatches:
     id:
           id:
               type: string
-              length: 16
+              length: 32
               generator:
                   strategy: NONE
     fields:
