@@ -68,13 +68,13 @@ abstract class ModuleEntityDefinition implements ConstraintsProvider {
     /**
      * @param string $field
      *
-     * @return \Core\Validation\Parameter\Constraint[]|null
+     * @return \Core\Validation\Parameter\Constraint[]
      */
     public function getConstraintsFor ($field) {
 
         $constraints = $this->getConstraintsList();
 
-        return isset($constraints[$field]) ? $constraints[$field] : NULL;
+        return isset($constraints[$field]) ? $constraints[$field] : [];
 
     }
 
