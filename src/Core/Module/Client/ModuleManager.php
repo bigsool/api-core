@@ -26,10 +26,7 @@ class ModuleManager extends AbstractModuleManager {
 
             new GenericAction('Core\Client', 'create', [], [], function (ActionContext $context) {
 
-                /**
-                 * @var Client $client
-                 */
-                $client = $this->getModuleEntity('Client')->create([], $context);
+                $device = NULL;
 
                 if ($context->doesParamExist('UUID')) {
 
@@ -39,9 +36,31 @@ class ModuleManager extends AbstractModuleManager {
                     $device =
                         $context->newDerivedContextFor('Core\Client', 'createOrUpdateDevice')
                                 ->process($context->getParams());
-                    $client->setDevice($device);
-                    $device->addClient($client);
 
+                }
+
+
+                $reqCtx = $context->getRequestContext();
+                $params['name'] = $reqCtx->getClientName();
+                $params['version'] = $reqCtx->getClientVersion();
+                $params['device'] = $device;
+
+                $qryCtx = new FindQueryContext('Client', $reqCtx->createNewInternalRequestContext());
+                $qryCtx->addFilter('ClientForDevice', $params['device']);
+                $qryCtx->addFilter('ClientForName', $params['name']);
+                $qryCtx->addFilter('ClientForVersion', $params['version']);
+
+                /**
+                 * @var Client $client
+                 */
+                $client = $qryCtx->findOne(false);
+
+                if (!$client) {
+                    $client = $this->getModuleEntity('Client')->create($params, $context);
+                }
+
+                if ($device) {
+                    $device->addClient($client);
                 }
 
                 $this->getModuleEntity('Client')->save($client);

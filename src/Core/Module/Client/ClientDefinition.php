@@ -53,12 +53,15 @@ class ClientDefinition extends ModuleEntityDefinition {
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        if (!$entityId) {
-            $reqCtx = $actionContext->getRequestContext();
+        $reqCtx = $actionContext->getRequestContext();
 
+        if (!isset($params['name'])) {
             $params['name'] = $reqCtx->getClientName();
+        }
+        if (!isset($params['version'])) {
             $params['version'] = $reqCtx->getClientVersion();
         }
+        // TODO : type
 
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
