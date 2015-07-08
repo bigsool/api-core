@@ -179,8 +179,8 @@ class FindQueryContext implements QueryContext {
                                                 gettype($filter)));
         }
 
-        if ($params !== NULL) {
-            $filter->setParams((array)$params);
+        if (func_num_args() == 2) {
+            $filter->setParams(is_array($params) ? $params : [$params]);
         }
 
         $this->filters[] = $filter;
