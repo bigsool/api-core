@@ -236,6 +236,17 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function parameterExists($key) {
+
+        return array_key_exists($key, $this->params);
+
+    }
+
+    /**
      * @param int|\Exception $exception
      *
      * @return mixed
