@@ -7,6 +7,7 @@ use Archipad\RightsManager;
 use Core\Auth;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
+use Core\Validation\Validator;
 
 class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
@@ -146,6 +147,14 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
                 break;
             }
             $params = UnsafeParameter::getFinalValue($params[$key]);
+        }
+
+        if ($constraints) {
+            $validationResult = Validator::validateParam($params, $key, $constraints);
+            $validationResult->throwIfErrors();
+
+            return $validationResult->getValue();
+
         }
 
         return $params[$key];
@@ -462,13 +471,20 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         return $this->auth;
     }
 
+    /**
+     * @param string $service
+     * @param string $method
+     * @param array $params
+     *
+     * @return mixed
+     */
     public function callV1API ($service, $method, $params) {
 
         $reqCtx = $this->getRequestContext();
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
-        $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
+        return $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
     }
 
     /**
