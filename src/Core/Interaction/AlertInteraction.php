@@ -16,27 +16,31 @@ class AlertInteraction implements Interaction {
     /**
      * @var string
      */
-    protected $topic = null;
+    protected $topic = NULL;
 
     /**
      * @var string
      */
-    protected $message = null;
+    protected $message = NULL;
 
     /**
      * @param string $topic
      * @param string $message
      */
-    public function __construct($topic, $message) {
-        $this->topic    = $topic;
-        $this->message  = $message;
+    public function __construct ($topic, $message) {
+
+        $this->topic = $topic;
+        $this->message = $message;
+
     }
 
     /**
      * @return string
      */
-    public function getType() {
+    public function getType () {
+
         return self::TYPE;
+
     }
 
     /**
@@ -45,6 +49,7 @@ class AlertInteraction implements Interaction {
     public function getTopic () {
 
         return $this->topic;
+
     }
 
     /**
@@ -53,6 +58,7 @@ class AlertInteraction implements Interaction {
     public function setTopic ($topic) {
 
         $this->topic = $topic;
+
     }
 
     /**
@@ -61,6 +67,7 @@ class AlertInteraction implements Interaction {
     public function getMessage () {
 
         return $this->message;
+
     }
 
     /**
@@ -69,9 +76,16 @@ class AlertInteraction implements Interaction {
     public function setMessage ($message) {
 
         $this->message = $message;
+
     }
 
+    /**
+     * @return array
+     */
+    public function toArray () {
 
+        return ['type' => $this->getType(), 'topic' => $this->getTopic(), 'message' => $this->getMessage()];
 
+    }
 
 }
