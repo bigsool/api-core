@@ -4,6 +4,7 @@
 namespace Core\Doctrine\Hydrator;
 
 
+use Core\Context\ApplicationContext;
 use Core\Util\ArrayExtra;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 
@@ -74,7 +75,9 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                 }
             }
             if (is_null($object)) {
-                throw new \RuntimeException('$object not found');
+                ApplicationContext::getInstance()->getLogger()->getMLogger()
+                                  ->addWarning('$object not found', ['class' => __CLASS__, 'method' => __METHOD__]);
+                continue;
             }
             $metadata = $this->_em->getClassMetadata(get_class($object));
             // foreach relations
@@ -137,7 +140,6 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                         $inversedRefProp->setValue($inversedObject, $object->getId());
                     }
                 }
-
 
 
                 $newObjectResult = $metadata->getReflectionProperty($key)->getValue($object);
