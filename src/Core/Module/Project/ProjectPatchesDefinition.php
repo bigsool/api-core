@@ -9,9 +9,12 @@
 namespace Core\Module\Project;
 
 
+use Core\Context\ActionContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\DateTime;
+use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\String;
 
 class ProjectPatchesDefinition extends ModuleEntityDefinition {
 
@@ -40,6 +43,14 @@ class ProjectPatchesDefinition extends ModuleEntityDefinition {
                 new NotBlank(),
             ]
         ];
+
+    }
+
+    public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
+
+        $params['date'] = new \DateTime();
+
+        return parent::createUpsertContext($params, $entityId, $actionContext);
 
     }
 
