@@ -42,7 +42,7 @@ class ProjectDefinition extends ModuleEntityDefinition{
                 new DateTime(),
                 new NotBlank(),
             ],
-            'lastModification' => [
+            'lastModificationDate' => [
                 new DateTime(),
             ],
         ];
