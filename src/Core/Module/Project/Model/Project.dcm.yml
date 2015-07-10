@@ -16,10 +16,10 @@ Project:
           type: datetime
           nullable: false
           column: creation_date
-      lastModification:
+      lastModificationDate:
           type: datetime
           nullable: false
-          column: last_modification
+          column: last_modification_date
   oneToMany:
       patches:
           targetEntity: Core\Model\ProjectPatches

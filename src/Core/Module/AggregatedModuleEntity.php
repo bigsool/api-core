@@ -95,21 +95,6 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
     }
 
-    /**
-     * @param MagicalEntity $entity
-     */
-    public function delete ($entity) {
-
-        if (!($entity instanceof MagicalEntity)) {
-
-            throw new \InvalidArgumentException(sprintf('$entity must be an MagicalEntity, %s %s given',
-                                                        gettype($entity), get_class($entity)));
-
-        }
-
-        parent::delete($entity->getMainEntity());
-
-    }
 
     /**
      * @param FindQueryContext $findQueryContext
