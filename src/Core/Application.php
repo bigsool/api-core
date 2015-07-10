@@ -166,6 +166,8 @@ class Application {
 
                 $this->populateRequestContext($rpcHandler, $reqCtx);
 
+                $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
+
                 $sfReqCtx = new SfRequestContext();
                 $sfReqCtx->fromRequest($request);
 

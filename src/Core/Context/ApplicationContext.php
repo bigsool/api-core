@@ -168,6 +168,29 @@ class ApplicationContext {
     protected $helperLoaders = [];
 
     /**
+     * @var RequestContext
+     */
+    protected $initialRequestContext = NULL;
+
+    /**
+     * @param RequestContext $initialRequestContext
+     */
+    public function setInitialRequestContext ($initialRequestContext) {
+
+        $this->initialRequestContext = $initialRequestContext;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getInitialRequestContext () {
+
+        return $this->initialRequestContext;
+
+    }
+
+    /**
      *
      */
     protected function __construct () {
