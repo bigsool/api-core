@@ -500,6 +500,10 @@ class Registry implements EventSubscriber {
 
     public function delete ($model) {
 
+        if ($model instanceof MagicalEntity) {
+            $model = $model->getMainEntity();
+        }
+
         static::$entityManager->remove($model);
         static::$entityManager->flush();
 
