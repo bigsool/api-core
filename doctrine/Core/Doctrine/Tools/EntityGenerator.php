@@ -42,6 +42,22 @@ class EntityGenerator extends \Doctrine\ORM\Tools\EntityGenerator {
  */
 public function <methodName>()
 {
+
+<spaces>if (!$this-><fieldName>RestrictedIds && $this->findQueryContext) {
+<spaces><spaces>$faultedVar = "is".ucfirst("<fieldName>")."Faulted";
+<spaces><spaces>if ($this->$faultedVar) {
+<spaces><spaces><spaces>$this->$faultedVar = false; // TODO : set to false in the hydrator too
+<spaces><spaces><spaces>$reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+<spaces><spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<targetEntity>", $reqCtx);
+<spaces><spaces><spaces>$qryContext->addFields("id","<inversedBy>");
+<spaces><spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<targetEntity>","","<inversedBy>.id = :id"), $this->getId());
+<spaces><spaces><spaces>$qryContext->findAll();
+<spaces><spaces><spaces>// this query will hydrate <entity> and <targetEntity>
+<spaces><spaces><spaces>// RestrictedObjectHydrator will automatically hydrate <fieldName>RestrictedId
+<spaces><spaces><spaces>// Since Doctrine shares model instances, <fieldName>RestrictedId will be automatically available
+<spaces><spaces>}
+<spaces>}
+
 <spaces>$inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this-><fieldName>RestrictedIds);
 
 <spaces>$criteria = \Doctrine\Common\Collections\Criteria::create();
