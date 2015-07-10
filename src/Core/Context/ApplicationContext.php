@@ -276,7 +276,7 @@ class ApplicationContext {
      *
      * @return string
      */
-    public function getHelperClassName($helperName) {
+    public function getHelperClassName ($helperName) {
 
         foreach ($this->getHelperLoader() as $helper) {
             if ($className = $helper::getHelperClassName($helperName)) {
@@ -299,7 +299,7 @@ class ApplicationContext {
     /**
      * @return ModuleManagerHelperLoader[]
      */
-    public function getHelperLoader(){
+    public function getHelperLoader () {
 
         if (!$this->helperLoaders) {
 
@@ -1023,7 +1023,18 @@ class ApplicationContext {
 
     }
 
-    public function callV1API ($service, $method, $params, $client, $auth) {
+    /**
+     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     * @param string         $service
+     * @param string         $method
+     * @param array          $params
+     * @param string         $client
+     * @param mixed          $auth
+     * @param RequestContext $reqCtx
+     *
+     * @return mixed
+     */
+    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx) {
 
         $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
 
@@ -1031,7 +1042,7 @@ class ApplicationContext {
 
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $client, '')->getResult();
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '')->getResult();
 
 
     }

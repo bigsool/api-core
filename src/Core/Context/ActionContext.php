@@ -472,6 +472,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
+     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
      * @param string $service
      * @param string $method
      * @param array $params
@@ -484,7 +485,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
-        return $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
+        return $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth(), $reqCtx);
     }
 
     /**
