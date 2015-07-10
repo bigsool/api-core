@@ -71,7 +71,7 @@ class ProjectDefinition extends ModuleEntityDefinition {
 
                 return !count($patches);
 
-            }, ['patches'], true),
+            }, ['patches.id'], true),
         ];
 
     }
