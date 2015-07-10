@@ -1,20 +1,28 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tom
- * Date: 02/07/15
- * Time: 14:10
- */
 
 namespace Core\Interaction;
 
 
 interface Interaction {
 
+    /**
+     * @return string
+     */
     public function getType();
 
+    /**
+     * @return string
+     */
     public function getTopic();
 
+    /**
+     * @return string
+     */
     public function getMessage();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 
 }

@@ -28,7 +28,8 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     /**
      * @return string
      */
-    public function getType() {
+    public function getType () {
+
         return self::TYPE;
     }
 
@@ -64,6 +65,19 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
         $this->uiParams = $uiParams;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray () {
 
+        return [
+            'type'                    => $this->getType(),
+            'topic'                   => $this->getTopic(),
+            'message'                 => $this->getMessage(),
+            'subscription_definition' => $this->getSubscriptionParams(),
+            'ui'                      => $this->getUiParams()
+        ];
+
+    }
 
 }

@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tom
- * Date: 02/07/15
- * Time: 15:59
- */
 
-namespace Core\Module\Project;
+namespace Core\Module\Project\Interaction;
 
 
 use Core\Interaction\Interaction;
@@ -40,7 +34,7 @@ class ProjectInteractionHelper {
     /**
      * @param ProjectInteractionsDefinition $definition
      *
-     * @return array
+     * @return Interaction[]
      */
     public static function getInteractions (ProjectInteractionsDefinition $definition) {
 
