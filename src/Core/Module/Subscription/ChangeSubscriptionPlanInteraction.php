@@ -13,7 +13,7 @@ use Core\Interaction\AlertInteraction;
 
 class ChangeSubscriptionPlanInteraction extends AlertInteraction {
 
-    const TYPE = 'change_subscription_plan';
+    const TYPE = 'plan_change';
 
     /**
      * @var array
