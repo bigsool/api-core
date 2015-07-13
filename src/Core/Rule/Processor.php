@@ -67,6 +67,12 @@ class Processor {
 
     }
 
+    /**
+     * @param Rule         $rule
+     * @param QueryContext $context
+     *
+     * @return array
+     */
     protected function flatten (Rule $rule, QueryContext $context) {
 
         $result = [];
@@ -78,6 +84,10 @@ class Processor {
 
     }
 
+    /**
+     * @param array $accumulator
+     * @param Rule  $rule
+     */
     protected function flattenRec (array &$accumulator, Rule $rule) {
 
         if (!in_array($rule, $accumulator)) {

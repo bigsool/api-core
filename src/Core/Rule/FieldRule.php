@@ -68,6 +68,7 @@ class FieldRule implements Rule {
      * @param QueryContext $ctx
      *
      * @return bool
+     * @throws \Exception
      */
     public function shouldApply (QueryContext $ctx) {
 
