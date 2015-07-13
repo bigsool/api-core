@@ -37,6 +37,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Translation\Translator;
 
 class ApplicationContext {
 
@@ -171,6 +172,11 @@ class ApplicationContext {
      * @var RequestContext
      */
     protected $initialRequestContext = NULL;
+
+    /**
+     * @var Translator
+     */
+    protected $translator;
 
     /**
      * @param RequestContext $initialRequestContext
@@ -773,6 +779,27 @@ class ApplicationContext {
 
     }
 
+    /**
+     * @param Translator $translator
+     */
+    public function setTranslator(Translator $translator) {
+
+        $this->translator = $translator;
+
+    }
+
+    /**
+     * @return Translator
+     */
+    public function getTranslator(){
+
+        return $this->translator;
+
+    }
+
+    /**
+     * @return ConfigManager
+     */
     public function getConfigManager () {
 
         if (!isset($this->configManager)) {

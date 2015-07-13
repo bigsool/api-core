@@ -5,6 +5,7 @@ namespace Core;
 
 
 use Core\Action\Action;
+use Core\Config\ConfigManager;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -21,6 +22,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SfRequestContext;
+use Symfony\Component\Translation\Loader\PoFileLoader;
+use Symfony\Component\Translation\Translator;
 
 class Application {
 
@@ -136,6 +139,21 @@ class Application {
     }
 
     /**
+     * @param string $locale fr or en
+     */
+    public function initTranslation($locale) {
+
+        $translator = new Translator($locale);
+        $translator->setFallbackLocales(['en','fr']);
+        $translator->addLoader('po', new PoFileLoader());
+        $translator->addResource('po', ROOT_DIR . '/resources/translations/fr.po','fr');
+        $translator->addResource('po', ROOT_DIR . '/resources/translations/en.po','en');
+
+        $this->appCtx->setTranslator($translator);
+
+    }
+
+    /**
      *
      */
     public function run () {
@@ -163,6 +181,8 @@ class Application {
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
                 $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
+
+                $this->initTranslation($rpcHandler->getLocale());
 
                 $this->populateRequestContext($rpcHandler, $reqCtx);
 
