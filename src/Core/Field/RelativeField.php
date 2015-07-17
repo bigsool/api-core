@@ -73,6 +73,9 @@ class RelativeField {
 
         $fields = [];
 
+        $appCtx = $ctx->getApplicationContext();
+        $resolvedEntity = $this->getResolvedEntity();
+        $resolvedField = $this->getResolvedField();
         if ($isRealField) {
 
             $components = explode('.', $this->getValue());
@@ -93,11 +96,9 @@ class RelativeField {
             $fields[] = $field;
 
         }
-        else {
+        elseif ($appCtx->isCalculatedField($resolvedEntity, $resolvedField)) {
 
-            $field =
-                $ctx->getApplicationContext()
-                    ->getCalculatedField($this->getResolvedEntity(), $this->getResolvedField());
+            $field = $appCtx->getCalculatedField($resolvedEntity, $resolvedField);
             $fields = $field->getFinalFields($registry, $ctx);
             $fields[] = $field;
 

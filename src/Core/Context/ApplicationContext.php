@@ -971,6 +971,18 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $entityName
+     * @param string $fieldName
+     *
+     * @return bool
+     */
+    public function isCalculatedField($entityName, $fieldName) {
+
+        return isset($this->calculatedFields[$entityName][$fieldName]);
+
+    }
+
+    /**
      * @param $entityName
      * @param $fieldName
      *
@@ -978,7 +990,7 @@ class ApplicationContext {
      */
     public function getCalculatedField ($entityName, $fieldName) {
 
-        if (!isset($this->calculatedFields[$entityName][$fieldName])) {
+        if (!$this->isCalculatedField($entityName, $fieldName)) {
             throw new \RuntimeException(sprintf("Calculated field %s.%s not found", $entityName, $fieldName));
         }
 
