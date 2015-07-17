@@ -26,7 +26,7 @@ class AuthenticationHelper {
 
         $type = $authToken['type'];
 
-        unset($authToken['type'], $authToken['login'], $authToken['expiration'], $authToken['hash']);
+        unset($authToken['type'], $authToken['login'], $authToken['end'], $authToken['hash']);
 
         return static::generateAuthToken($credential, $type, NULL, $authToken);
 
@@ -40,7 +40,7 @@ class AuthenticationHelper {
     protected static function checkAuthTokenStructure ($authToken) {
 
 
-        if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['expiration'])
+        if (!is_array($authToken) || !isset($authToken['login']) || !isset($authToken['end'])
             || !isset($authToken['type'])
         ) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
@@ -91,9 +91,9 @@ class AuthenticationHelper {
     protected static function createToken ($login, $expiration, $hashedPassword, $type, array $additionalParams = []) {
 
         $token = [
-            'login'      => $login,
-            'expiration' => $expiration,
-            'type'       => $type
+            'login' => $login,
+            'end'   => $expiration,
+            'type'  => $type
         ];
 
         $token = array_merge($token, $additionalParams);
@@ -129,7 +129,7 @@ class AuthenticationHelper {
         static::checkAuthTokenStructure($authToken);
 
         $login = $authToken['login'];
-        $expiration = $authToken['expiration'];
+        $expiration = $authToken['end'];
 
         if ($expiration < time() || !($credential = CredentialHelper::credentialForLogin($login))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
