@@ -473,19 +473,22 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     /**
      * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     *
      * @param string $service
      * @param string $method
-     * @param array $params
+     * @param array  $params
+     * @param bool   $checkAuth
      *
      * @return mixed
      */
-    public function callV1API ($service, $method, $params) {
+    public function callV1API ($service, $method, $params, $checkAuth = true) {
 
         $reqCtx = $this->getRequestContext();
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
-        return $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth(), $reqCtx);
+        return $this->getApplicationContext()
+                    ->callV1API($service, $method, $params, $client, $this->getAuth(), $reqCtx, $checkAuth);
     }
 
     /**

@@ -1064,16 +1064,18 @@ class ApplicationContext {
 
     /**
      * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     *
      * @param string         $service
      * @param string         $method
      * @param array          $params
      * @param string         $client
      * @param mixed          $auth
      * @param RequestContext $reqCtx
+     * @param bool           $checkAuth
      *
      * @return mixed
      */
-    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx) {
+    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx, $checkAuth = true) {
 
         $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
 
@@ -1081,7 +1083,7 @@ class ApplicationContext {
 
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '')->getResult();
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '', $checkAuth)->getResult();
 
 
     }
