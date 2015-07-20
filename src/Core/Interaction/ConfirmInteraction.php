@@ -16,12 +16,12 @@ class ConfirmInteraction extends AlertInteraction {
     /**
      * @var string
      */
-    protected $confirmAction = null;
+    protected $confirmAction = NULL;
 
     /**
      * @var string
      */
-    protected $cancelAction = null;
+    protected $cancelAction = NULL;
 
     /**
      * @return string
@@ -55,6 +55,19 @@ class ConfirmInteraction extends AlertInteraction {
         $this->confirmAction = $confirmAction;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray () {
 
+        return [
+            'type'    => $this->getType(),
+            'topic'   => $this->getTopic(),
+            'message' => $this->getMessage(),
+            'action'  => $this->getConfirmAction(),
+            'cancel'  => $this->getCancelAction()
+        ];
+
+    }
 
 }

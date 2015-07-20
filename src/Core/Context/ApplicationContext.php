@@ -37,6 +37,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Translation\Translator;
 
 class ApplicationContext {
 
@@ -168,6 +169,34 @@ class ApplicationContext {
     protected $helperLoaders = [];
 
     /**
+     * @var RequestContext
+     */
+    protected $initialRequestContext = NULL;
+
+    /**
+     * @var Translator
+     */
+    protected $translator;
+
+    /**
+     * @param RequestContext $initialRequestContext
+     */
+    public function setInitialRequestContext ($initialRequestContext) {
+
+        $this->initialRequestContext = $initialRequestContext;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getInitialRequestContext () {
+
+        return $this->initialRequestContext;
+
+    }
+
+    /**
      *
      */
     protected function __construct () {
@@ -253,7 +282,7 @@ class ApplicationContext {
      *
      * @return string
      */
-    public function getHelperClassName($helperName) {
+    public function getHelperClassName ($helperName) {
 
         foreach ($this->getHelperLoader() as $helper) {
             if ($className = $helper::getHelperClassName($helperName)) {
@@ -276,7 +305,7 @@ class ApplicationContext {
     /**
      * @return ModuleManagerHelperLoader[]
      */
-    public function getHelperLoader(){
+    public function getHelperLoader () {
 
         if (!$this->helperLoaders) {
 
@@ -750,6 +779,27 @@ class ApplicationContext {
 
     }
 
+    /**
+     * @param Translator $translator
+     */
+    public function setTranslator(Translator $translator) {
+
+        $this->translator = $translator;
+
+    }
+
+    /**
+     * @return Translator
+     */
+    public function getTranslator(){
+
+        return $this->translator;
+
+    }
+
+    /**
+     * @return ConfigManager
+     */
     public function getConfigManager () {
 
         if (!isset($this->configManager)) {
@@ -921,6 +971,18 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $entityName
+     * @param string $fieldName
+     *
+     * @return bool
+     */
+    public function isCalculatedField($entityName, $fieldName) {
+
+        return isset($this->calculatedFields[$entityName][$fieldName]);
+
+    }
+
+    /**
      * @param $entityName
      * @param $fieldName
      *
@@ -928,7 +990,7 @@ class ApplicationContext {
      */
     public function getCalculatedField ($entityName, $fieldName) {
 
-        if (!isset($this->calculatedFields[$entityName][$fieldName])) {
+        if (!$this->isCalculatedField($entityName, $fieldName)) {
             throw new \RuntimeException(sprintf("Calculated field %s.%s not found", $entityName, $fieldName));
         }
 
@@ -1000,7 +1062,18 @@ class ApplicationContext {
 
     }
 
-    public function callV1API ($service, $method, $params, $client, $auth) {
+    /**
+     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     * @param string         $service
+     * @param string         $method
+     * @param array          $params
+     * @param string         $client
+     * @param mixed          $auth
+     * @param RequestContext $reqCtx
+     *
+     * @return mixed
+     */
+    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx) {
 
         $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
 
@@ -1008,7 +1081,7 @@ class ApplicationContext {
 
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $client, '')->getResult();
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '')->getResult();
 
 
     }

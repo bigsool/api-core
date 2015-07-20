@@ -6,6 +6,7 @@ namespace Core\Module\Client;
 
 use Core\Context\ActionContext;
 use Core\Context\ModuleEntityUpsertContext;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
@@ -52,16 +53,32 @@ class ClientDefinition extends ModuleEntityDefinition {
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
-        if (!$entityId) {
-            $reqCtx = $actionContext->getRequestContext();
+        $reqCtx = $actionContext->getRequestContext();
 
+        if (!isset($params['name'])) {
             $params['name'] = $reqCtx->getClientName();
+        }
+        if (!isset($params['version'])) {
             $params['version'] = $reqCtx->getClientVersion();
         }
+        // TODO : type
 
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
         return $upsertContext;
+
+    }
+
+    /**
+     * @return \Core\Filter\Filter[]
+     */
+    public function getFilters () {
+
+        return [
+            new StringFilter('Client','ClientForDevice','device = :device'),
+            new StringFilter('Client','ClientForName','name = :name'),
+            new StringFilter('Client','ClientForVersion','version = :version'),
+        ];
 
     }
 

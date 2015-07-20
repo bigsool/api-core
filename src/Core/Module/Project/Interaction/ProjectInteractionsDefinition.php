@@ -22,4 +22,11 @@ interface ProjectInteractionsDefinition {
      */
     public function getInteractionCallablesForFeature($feature);
 
+    /**
+     * Return the list of features applicable to Project
+     *
+     * @return string[]
+     */
+    public static function getFeatures();
+
 }

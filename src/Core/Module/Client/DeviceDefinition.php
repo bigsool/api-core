@@ -22,8 +22,7 @@ class DeviceDefinition extends ModuleEntityDefinition {
         return [
             'UUID' => [
                 new String(),
-                new Length(['max' => 255]),
-                new NotBlank(),
+                new Length(['max' => 255])
             ],
             'name' => [
                 new String(),

@@ -279,13 +279,16 @@ class TestStorage
      */
     public function getCompany()
     {
-        if (!$this->companyRestrictedId && $this->findQueryContext) {
+
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+
+        if (!$this->companyRestrictedId) {
             $faultedVar = "is".ucfirst("company")."Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
             $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
             $qryContext->addFields("id","storage");
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","storage.id = :id"), $this->getId());
@@ -330,13 +333,16 @@ class TestStorage
      */
     public function getUser()
     {
-        if (!$this->userRestrictedId && $this->findQueryContext) {
+
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+
+        if (!$this->userRestrictedId) {
             $faultedVar = "is".ucfirst("user")."Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
             $qryContext = new \Core\Context\FindQueryContext("TestUser", $reqCtx);
             $qryContext->addFields("id","storage");
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestUser","","storage.id = :id"), $this->getId());

@@ -13,6 +13,9 @@ class ModelConverter {
      */
     protected $applicationContext;
 
+    /**
+     * @param ApplicationContext $appCtx
+     */
     public function __construct (ApplicationContext $appCtx) {
 
         $this->applicationContext = $appCtx;
