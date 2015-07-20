@@ -7,8 +7,14 @@ use Core\TestCase;
 
 class FormattedErrorTest extends TestCase {
 
+    /**
+     * @var FormattedError
+     */
     private $formattedError;
 
+    /**
+     * @var FormattedError[]
+     */
     private $childErrors;
 
     public function setUp () {
@@ -79,7 +85,8 @@ class FormattedErrorTest extends TestCase {
 
         FormattedError::setLang("fr");
         $formattedError = new FormattedError($error);
-        $this->assertEquals('echec authentification', $formattedError->getMessage());
+        $this->assertEquals('login fail', $formattedError->getMessage());
+        $this->assertEquals('echec authentification', $formattedError->getLocalizedMessage());
 
         FormattedError::setLang("en");
         $formattedError = new FormattedError($error);
@@ -96,14 +103,16 @@ class FormattedErrorTest extends TestCase {
         $this->formattedError->addChildError($this->childErrors[1]);
         $childErrors = $this->formattedError->getChildErrors();
 
-        $tab = ["code"    => $this->formattedError->getCode(),
-                "message" => $this->formattedError->getMessage(),
-                "field"   => $this->formattedError->getField(),
-                "errors"  => [
+        $tab = ["code"             => $this->formattedError->getCode(),
+                "message"          => $this->formattedError->getMessage(),
+                "localizedMessage" => $this->formattedError->getLocalizedMessage(),
+                "field"            => $this->formattedError->getField(),
+                "errors"           => [
                     [
-                        "code"    => $childErrors[0]->getCode(),
-                        "message" => $childErrors[0]->getMessage(),
-                        "field"   => $childErrors[0]->getField(),
+                        "code"             => $childErrors[0]->getCode(),
+                        "message"          => $childErrors[0]->getMessage(),
+                        "localizedMessage" => $childErrors[0]->getLocalizedMessage(),
+                        "field"            => $childErrors[0]->getField(),
                     ],
                     [
                         "code"    => $childErrors[1]->getCode(),
@@ -113,7 +122,7 @@ class FormattedErrorTest extends TestCase {
                 ]
         ];
 
-        $this->assertEquals($this->formattedError, json_encode($tab));
+        $this->assertEquals(json_decode($this->formattedError, true), $tab);
 
     }
 

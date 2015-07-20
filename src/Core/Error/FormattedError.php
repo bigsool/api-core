@@ -61,7 +61,10 @@ class FormattedError extends \Exception {
     protected function buildWithError (Error $error, $field) {
 
         $this->code = $error->getCode();
-        $this->message = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
+        $this->message = $error->getEnMessage() ?: $error->getFrMessage();
+        if ($error->getFrMessage() && $error->getEnMessage()) {
+            $this->localizedMessage = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
+        }
         $this->field = $field ? $field : $error->getField();
 
     }
@@ -175,5 +178,16 @@ class FormattedError extends \Exception {
         return $result;
 
     }
+
+    /**
+     * @return null|string
+     */
+    public function getLocalizedMessage () {
+
+        return $this->localizedMessage;
+
+    }
+
+
 
 }
