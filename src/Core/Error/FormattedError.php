@@ -168,7 +168,9 @@ class FormattedError extends \Exception {
             $result["errors"] = $childErrors;
         }
 
-        $result['localizedMessage'] = $this->localizedMessage ?: $this->message;
+        if ($this->localizedMessage) {
+            $result['localizedMessage'] = $this->localizedMessage;
+        }
 
         return $result;
 
