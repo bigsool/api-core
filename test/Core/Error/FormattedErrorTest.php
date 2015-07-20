@@ -7,9 +7,6 @@ use Core\TestCase;
 
 class FormattedErrorTest extends TestCase {
 
-    /**
-     * @var FormattedError
-     */
     private $formattedError;
 
     private $childErrors;
@@ -102,24 +99,21 @@ class FormattedErrorTest extends TestCase {
         $tab = ["code"    => $this->formattedError->getCode(),
                 "message" => $this->formattedError->getMessage(),
                 "field"   => $this->formattedError->getField(),
-                "localizedMessage" => $this->formattedError->getMessage(),
                 "errors"  => [
                     [
                         "code"    => $childErrors[0]->getCode(),
                         "message" => $childErrors[0]->getMessage(),
                         "field"   => $childErrors[0]->getField(),
-                        "localizedMessage" => $childErrors[0]->getMessage(),
                     ],
                     [
                         "code"    => $childErrors[1]->getCode(),
                         "message" => $childErrors[1]->getMessage(),
                         "field"   => $childErrors[1]->getField(),
-                        "localizedMessage" => $childErrors[1]->getMessage(),
                     ]
                 ]
         ];
 
-        $this->assertEquals(json_decode($this->formattedError,true), $tab);
+        $this->assertEquals($this->formattedError, json_encode($tab));
 
     }
 
@@ -154,22 +148,20 @@ class FormattedErrorTest extends TestCase {
 
         $errorArray = ['code'    => 123,
                        'message' => 'message 123',
-                       'localizedMessage' => 'message 123',
                        'errors'  => [
                            ['code'    => 456,
                             'message' => 'message 456',
-                            'localizedMessage' => 'message 456',
                             'errors'  => [
-                                ['code' => 789, 'message' => 'message 789', 'localizedMessage' => 'message 789'],
-                                ['code' => 101112, 'message' => 'message 101112', 'localizedMessage' => 'message 101112']
+                                ['code' => 789, 'message' => 'message 789'],
+                                ['code' => 101112, 'message' => 'message 101112']
                             ]
                            ],
-                           ['code' => 131415, 'message' => 'message 131415', 'localizedMessage' => 'message 131415']
+                           ['code' => 131415, 'message' => 'message 131415']
                        ]
         ];
 
         $formattedError = new FormattedError($errorArray);
-        $this->assertEquals($errorArray, $formattedError->toArray());
+        $this->assertSame($errorArray, $formattedError->toArray());
 
     }
 
