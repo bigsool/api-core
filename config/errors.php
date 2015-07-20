@@ -37,60 +37,60 @@ $errorManager->defineError(new Error(ERROR_API_UNAVAILABLE, 'service temporairem
                                      'service temporarily unavailable', ERROR_INTERNAL_ERROR));
 
 
-@define('ERROR_BAD_ENTITY', -28);
+@define('ERROR_BAD_ENTITY', 16028);
 $errorManager->defineError(new Error(ERROR_BAD_ENTITY, "entité demandé non disponible",
                                      'requested entity not available', ERROR_REQUEST_INVALID));
 
-@define('ERROR_BAD_FIELD', -29);
+@define('ERROR_BAD_FIELD', 16029);
 $errorManager->defineError(new Error(ERROR_BAD_FIELD, "au moins un des fields est invalide",
                                      'one or more field are invalid', ERROR_REQUEST_INVALID));
 
-@define('ERROR_INVALID_PARAM', -100);
+@define('ERROR_INVALID_PARAM', 16100);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM, "au moins un paramètre est invalid",
                                      'one or more parameters are invalid'));
-@define('ERROR_INVALID_PARAM_STRING', -101);
+@define('ERROR_INVALID_PARAM_STRING', 16101);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_STRING, "paramètre de type chaine de caractères attendu",
                                      'string parameter expected', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_EMAIL', -102);
+@define('ERROR_INVALID_PARAM_EMAIL', 16102);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_EMAIL, "email invalide",
                                      'invalid email', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_INT', -103);
+@define('ERROR_INVALID_PARAM_INT', 16103);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_INT, "int invalide",
                                      'invalid int', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_CHOICE', -104);
+@define('ERROR_INVALID_PARAM_CHOICE', 16104);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_CHOICE, "valeur non acceptée",
                                      'value not in white list', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_DATETIME', -105);
+@define('ERROR_INVALID_PARAM_DATETIME', 16105);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_DATETIME, "datetime invalide",
                                      'invalid datetime', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_OBJECT', -106);
+@define('ERROR_INVALID_PARAM_OBJECT', 16106);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_OBJECT, "object invalide",
                                      'invalid object', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_NULL', -107);
+@define('ERROR_INVALID_PARAM_NULL', 16107);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NULL, "null attendu",
                                      'null expected', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_LENGTH', -108);
+@define('ERROR_INVALID_PARAM_LENGTH', 16108);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_LENGTH, "valeur hors limites",
                                      'out of range value', ERROR_INVALID_PARAM));
-@define('ERROR_INVALID_PARAM_NOT_NULL', -109);
+@define('ERROR_INVALID_PARAM_NOT_NULL', 16109);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, "paramètre vide",
                                      'empty parameter', ERROR_INVALID_PARAM));
-@define('ERROR_MISSING_PARAM', -110);
+@define('ERROR_MISSING_PARAM', 16110);
 $errorManager->defineError(new Error(ERROR_MISSING_PARAM, "paramètre manquant",
                                      'missing parameter', ERROR_INVALID_PARAM));
 
-@define('ERROR_COMPANY_NOT_FOUND', -6001);
+@define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, "société inexistante", 'company not found'));
 
-@define('ERROR_USER_NOT_FOUND', -7001);
+@define('ERROR_USER_NOT_FOUND', 16301);
 $errorManager->defineError(new Error(ERROR_USER_NOT_FOUND, "compte inexistant", 'user not found'));
-@define('ERROR_CREDENTIAL_ALREADY_EXIST', -7002);
+@define('ERROR_CREDENTIAL_ALREADY_EXIST', 16302);
 $errorManager->defineError(new Error(ERROR_CREDENTIAL_ALREADY_EXIST, "ce login est déjà utilisé",
                                      'this login is already used'));
-@define('ERROR_ACCOUNT_ALREADY_CONFIRMED', -7004);
+@define('ERROR_ACCOUNT_ALREADY_CONFIRMED', 16304);
 $errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED, "compte déjà vérifié",
                                      'account already confirmed'));
 
-@define('ERROR_IPAD_ALREADY_CONNECTED', -7005);
+@define('ERROR_IPAD_ALREADY_CONNECTED', 16305);
 $errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED, "votre compte est déjà connecté sur un autre iPad",
                                      'Your account is already connected on another iPad'));
