@@ -332,4 +332,25 @@ public function <methodName>(<methodTypeHint>$<variableName>)
         return $methods;
 
     }
+
+
+
+    /**
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return string
+     */
+    protected function generateEntityDocBlock(ClassMetadataInfo $metadata)
+    {
+
+        $docBlock = parent::generateEntityDocBlock($metadata);
+
+        $lines = explode("\n", $docBlock);
+        $countLines = count($lines);
+        $lines[$countLines] = $lines[$countLines-1];
+        $lines[$countLines-1] = " * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.";
+
+        return implode("\n", $lines);
+
+    }
 }
