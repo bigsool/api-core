@@ -324,9 +324,6 @@ use Core\Context\ApplicationContext;
 use Core\Module\MagicalEntity;
 use Core\Module\MagicalModuleManager;
 
-/**
- * @internal You don't have to explicitly call new $magicalEntityName. Use the ModuleEntity instead.
- */
 class $magicalEntityName extends MagicalEntity {
 
 

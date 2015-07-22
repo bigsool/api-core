@@ -14,6 +14,49 @@ class EntityGenerator extends \Doctrine\ORM\Tools\EntityGenerator {
     /**
      * @var string
      */
+    protected static $constructorMethodTemplate =
+        '/**
+ * Constructor
+ * @internal You don\'t have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
+ */
+public function __construct()
+{
+<spaces><collections>
+}
+';
+
+    /**
+     * @var string
+     */
+    protected static $embeddableConstructorMethodTemplate =
+        '/**
+ * Constructor
+ * @internal You don\'t have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
+ *
+ * <paramTags>
+ */
+public function __construct(<params>)
+{
+<spaces><fields>
+}
+';
+
+    /**
+     * @var string
+     */
+    protected static $emptyConstructorMethodTemplate =
+        '/**
+ * Constructor
+ * @internal You don\'t have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
+ */
+public function __construct()
+{
+}
+';
+
+    /**
+     * @var string
+     */
     protected static $classTemplate =
         '<?php
 
@@ -333,24 +376,19 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
     }
 
-
-
     /**
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function generateEntityDocBlock(ClassMetadataInfo $metadata)
-    {
+    protected function generateEntityConstructor(ClassMetadataInfo $metadata) {
 
-        $docBlock = parent::generateEntityDocBlock($metadata);
+        $constructor = parent::generateEntityConstructor($metadata);
 
-        $lines = explode("\n", $docBlock);
-        $countLines = count($lines);
-        $lines[$countLines] = $lines[$countLines-1];
-        $lines[$countLines-1] = " * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.";
+        if (!$constructor) {
+            $constructor = $this->prefixCodeWithSpaces(static::$emptyConstructorMethodTemplate);
+        }
 
-        return implode("\n", $lines);
+        return $constructor;
 
     }
+
 }
