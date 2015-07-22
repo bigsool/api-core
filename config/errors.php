@@ -94,3 +94,6 @@ $errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED, "compte d�
 @define('ERROR_IPAD_ALREADY_CONNECTED', 16305);
 $errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED, "votre compte est déjà connecté sur un autre iPad",
                                      'Your account is already connected on another iPad'));
+@define('ERROR_PRODUCT_NOT_FOUND', 16306);
+$errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, "produit introuvable",
+                                     'product not found'));
