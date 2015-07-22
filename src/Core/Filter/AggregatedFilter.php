@@ -23,13 +23,16 @@ class AggregatedFilter extends Filter {
      * @param LogicOperator $operator
      * @param Filter[]         $filters
      */
-    function __construct ($entity, $name, LogicOperator $operator, array $filters) {
+    function __construct ($entity, $name, LogicOperator $operator, array $filters = null) {
 
         parent::__construct($entity, $name, NULL);
         $this->operator = $operator;
 
-        foreach ($filters as $filter) {
-            $this->addFilter($filter);
+        if ( !is_null($filters) ) {
+
+            foreach ($filters as $filter) {
+                $this->addFilter($filter);
+            }
         }
 
     }
