@@ -18,12 +18,12 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     /**
      * @var array
      */
-    protected $subscriptionParams;
+    protected $subscriptionParams = [];
 
     /**
-     * @var TODO
+     * @var array
      */
-    protected $uiParams;
+    protected $uiParams = [];
 
     /**
      * @return string
@@ -31,6 +31,7 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     public function getType () {
 
         return self::TYPE;
+
     }
 
     /**
@@ -39,6 +40,7 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     public function getSubscriptionParams () {
 
         return $this->subscriptionParams;
+
     }
 
     /**
@@ -47,22 +49,25 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     public function setSubscriptionParams (array $subscriptionParams) {
 
         $this->subscriptionParams = $subscriptionParams;
+
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getUiParams () {
 
         return $this->uiParams;
+
     }
 
     /**
-     * @param mixed $uiParams
+     * @param array $uiParams
      */
-    public function setUiParams ($uiParams) {
+    public function setUiParams (array $uiParams) {
 
         $this->uiParams = $uiParams;
+
     }
 
     /**
