@@ -32,7 +32,6 @@ class ModuleManager extends AbstractModuleManager {
             new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
                                                                  'password' => [new CredentialDefinition()],
                                                                  'authType' => [new CredentialDefinition()],
-                                                                 'authType' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) use ($appCtx) {
 
