@@ -608,6 +608,10 @@ class ApplicationContext {
      */
     public function getClassMetadata ($class) {
 
+        if (!$this->entityManager) {
+            throw new \Exception;
+        }
+
         return $this->entityManager->getClassMetadata($class);
 
     }
@@ -792,6 +796,10 @@ class ApplicationContext {
      * @return Translator
      */
     public function getTranslator(){
+
+        if (is_null($this->translator)) {
+            throw new \RuntimeException('qwe');
+        }
 
         return $this->translator;
 

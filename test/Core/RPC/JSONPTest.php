@@ -63,7 +63,7 @@ class JSONPTest extends TestCase {
         $response = $JSONP->getSuccessResponse(new Serializer($this->getActionContext()), 'qwe');
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
-        $response = $JSONP->getErrorResponse(new FormattedError(new Error(1, '', '')));
+        $response = $JSONP->getErrorResponse(new FormattedError(new Error(1, '')));
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
     }

@@ -117,6 +117,8 @@ class Application {
 
         $this->appCtx->getTraceLogger()->trace('config loaded');
 
+        $this->initTranslation();
+
         // We should use require_once but some tests will fail if we do that
         require ROOT_DIR . '/doctrine/config.php';
         if (file_exists($errorFile = ROOT_DIR . '/vendor/api/core/config/errors.php')) {
@@ -139,15 +141,21 @@ class Application {
     }
 
     /**
-     * @param string $locale fr or en
+     *
      */
-    public function initTranslation($locale) {
+    public function initTranslation() {
 
-        $translator = new Translator($locale);
+        $translator = new Translator('en');
         $translator->setFallbackLocales(['en','fr']);
         $translator->addLoader('po', new PoFileLoader());
-        $translator->addResource('po', ROOT_DIR . '/resources/translations/fr.po','fr');
-        $translator->addResource('po', ROOT_DIR . '/resources/translations/en.po','en');
+        $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
+        if (file_exists($frPoFile)) {
+            $translator->addResource('po', $frPoFile, 'fr');
+        }
+        $enPoFile = ROOT_DIR . '/resources/translations/en.po';
+        if (file_exists($enPoFile)) {
+            $translator->addResource('po', $enPoFile, 'en');
+        }
 
         $this->appCtx->setTranslator($translator);
 
@@ -182,7 +190,7 @@ class Application {
 
                 $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
 
-                $this->initTranslation($rpcHandler->getLocale());
+                $this->appCtx->getTranslator()->setLocale($rpcHandler->getLocale());
 
                 $this->populateRequestContext($rpcHandler, $reqCtx);
 

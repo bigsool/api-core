@@ -61,8 +61,8 @@ class FormattedError extends \Exception {
     protected function buildWithError (Error $error, $field) {
 
         $this->code = $error->getCode();
-        $this->message = $error->getEnMessage() ?: $error->getFrMessage();
-        if ($error->getFrMessage() && $error->getEnMessage()) {
+        $this->message = $error->getMessage();
+        if ($error instanceof LocalizedError) {
             $this->localizedMessage = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
         }
         $this->field = $field ? $field : $error->getField();

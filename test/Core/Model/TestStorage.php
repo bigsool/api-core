@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="storage")
  * @ORM\Entity
+ * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
  */
 class TestStorage
 {

@@ -79,9 +79,10 @@ class FormattedErrorTest extends TestCase {
 
     public function testGetMessage () {
 
-        $error = $this->getMockError();
+        $error = $this->getMockLocalizedError();
         $error->method('getFrMessage')->willReturn('echec authentification');
         $error->method('getEnMessage')->willReturn('login fail');
+        $error->method('getMessage')->willReturn('login fail');
 
         FormattedError::setLang("fr");
         $formattedError = new FormattedError($error);
@@ -105,13 +106,11 @@ class FormattedErrorTest extends TestCase {
 
         $tab = ["code"             => $this->formattedError->getCode(),
                 "message"          => $this->formattedError->getMessage(),
-                "localizedMessage" => $this->formattedError->getLocalizedMessage(),
                 "field"            => $this->formattedError->getField(),
                 "errors"           => [
                     [
                         "code"             => $childErrors[0]->getCode(),
                         "message"          => $childErrors[0]->getMessage(),
-                        "localizedMessage" => $childErrors[0]->getLocalizedMessage(),
                         "field"            => $childErrors[0]->getField(),
                     ],
                     [
