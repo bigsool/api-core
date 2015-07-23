@@ -12,7 +12,7 @@ use Core\Context\ApplicationContext;
 use Core\Module\ModuleManager as AbstractModuleManager;
 
 
-class ModuleManager extends AbstractModuleManager{
+class ModuleManager extends AbstractModuleManager {
 
     public function getModuleEntitiesName (ApplicationContext &$context) {
 

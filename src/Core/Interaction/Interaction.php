@@ -8,21 +8,21 @@ interface Interaction {
     /**
      * @return string
      */
-    public function getType();
+    public function getType ();
 
     /**
      * @return string
      */
-    public function getTopic();
+    public function getTopic ();
 
     /**
      * @return string
      */
-    public function getMessage();
+    public function getMessage ();
 
     /**
      * @return array
      */
-    public function toArray();
+    public function toArray ();
 
 }

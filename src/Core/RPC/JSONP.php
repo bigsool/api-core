@@ -103,9 +103,9 @@ class JSONP implements Handler {
                                     'id'      => $this->getId(),
                                 ]) . ')',
                             Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+                                'Content-type'                => 'application/json',
+                                'Access-Control-Allow-Origin' => '*'
+                            ]);
 
     }
 
@@ -121,9 +121,9 @@ class JSONP implements Handler {
                                                                       'id'      => $this->getId(),
                                                                      ]) . ')',
                             Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+                                'Content-type'                => 'application/json',
+                                'Access-Control-Allow-Origin' => '*'
+                            ]);
 
     }
 

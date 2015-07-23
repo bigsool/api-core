@@ -5,7 +5,6 @@ namespace Core;
 
 
 use Core\Action\Action;
-use Core\Config\ConfigManager;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
@@ -143,10 +142,10 @@ class Application {
     /**
      *
      */
-    public function initTranslation() {
+    public function initTranslation () {
 
         $translator = new Translator('en');
-        $translator->setFallbackLocales(['en','fr']);
+        $translator->setFallbackLocales(['en', 'fr']);
         $translator->addLoader('po', new PoFileLoader());
         $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
         if (file_exists($frPoFile)) {

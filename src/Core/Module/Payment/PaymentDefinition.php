@@ -18,7 +18,7 @@ use Core\Validation\Parameter\String;
 use Core\Validation\Parameter\Text;
 
 
-class PaymentDefinition extends ModuleEntityDefinition{
+class PaymentDefinition extends ModuleEntityDefinition {
 
     /**
      * @return string
@@ -35,12 +35,12 @@ class PaymentDefinition extends ModuleEntityDefinition{
     public function getConstraintsList () {
 
         return [
-            'id' => [
+            'id'          => [
                 new Int(),
                 new Length(['max' => 11]),
                 new NotBlank(),
             ],
-            'gateway' => [
+            'gateway'     => [
                 new String(),
                 new Length(['max' => 255]),
                 new NotBlank(),
@@ -50,25 +50,25 @@ class PaymentDefinition extends ModuleEntityDefinition{
                 new NotBlank(),
                 new Length(['max' => 65000]),
             ],
-            'status' => [
+            'status'      => [
                 new String(),
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],
-            'amount' => [
+            'amount'      => [
                 new Float(),
                 new NotBlank(),
             ],
-            'vat' => [
+            'vat'         => [
                 new Float(),
                 new NotBlank(),
             ],
-            'currency' => [
+            'currency'    => [
                 new String(),
                 new Length(['max' => 3]),
                 new NotBlank(),
             ],
-            'date' => [
+            'date'        => [
                 new DateTime(),
                 new NotBlank(),
             ]

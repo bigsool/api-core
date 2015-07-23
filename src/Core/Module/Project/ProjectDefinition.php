@@ -29,17 +29,17 @@ class ProjectDefinition extends ModuleEntityDefinition {
     public function getConstraintsList () {
 
         return [
-            'id'               => [
+            'id'                   => [
                 new String(),
                 new Length(['max' => 32]),
                 new NotBlank(),
             ],
-            'name'             => [
+            'name'                 => [
                 new String(),
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],
-            'creationDate'     => [
+            'creationDate'         => [
                 new DateTime(),
                 new NotBlank(),
             ],

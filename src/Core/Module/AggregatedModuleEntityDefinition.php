@@ -62,7 +62,7 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     /**
      * @return string
      */
-    public function getDBEntityName() {
+    public function getDBEntityName () {
 
         return $this->dbEntityName;
 
@@ -190,5 +190,5 @@ abstract class AggregatedModuleEntityDefinition extends ModuleEntityDefinition {
     /**
      * @param ApplicationContext $applicationContext
      */
-    public abstract function loadModelAspects(ApplicationContext $applicationContext);
+    public abstract function loadModelAspects (ApplicationContext $applicationContext);
 }

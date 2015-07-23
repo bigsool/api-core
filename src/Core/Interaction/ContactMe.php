@@ -14,8 +14,8 @@ class ContactMe extends AbstractInteraction {
     public function toArray () {
 
         return [
-            'type' => $this->getType(),
-            'topic' => $this->getTopic(),
+            'type'    => $this->getType(),
+            'topic'   => $this->getTopic(),
             'message' => $this->getMessage(),
             // TODO
         ];

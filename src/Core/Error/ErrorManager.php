@@ -173,7 +173,7 @@ class ErrorManager {
     /**
      * @param Error[] $errors
      */
-    public function addErrors(array $errors) {
+    public function addErrors (array $errors) {
 
         foreach ($errors as $error) {
             $this->errors[] = $error;

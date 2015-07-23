@@ -129,7 +129,8 @@ class FindQueryContext implements QueryContext {
     /**
      * @param RelativeField|string $field,...
      */
-    public function addFields($field) {
+    public function addFields ($field) {
+
         foreach (func_get_args() as $field) {
             $this->addField($field);
         }
@@ -240,7 +241,7 @@ class FindQueryContext implements QueryContext {
      *
      * @return bool
      */
-    public function parameterExists($key) {
+    public function parameterExists ($key) {
 
         return array_key_exists($key, $this->params);
 

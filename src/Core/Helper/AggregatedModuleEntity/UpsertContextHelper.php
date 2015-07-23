@@ -17,10 +17,10 @@ use Core\Parameter\UnsafeParameter;
 class UpsertContextHelper {
 
     /**
-     * @param ModelAspect                         $modelAspect
+     * @param ModelAspect $modelAspect
      * @param AggregatedModuleEntityUpsertContext $aggregatedUpsertContext
-     * @param array                               $translatedParams
-     * @param ActionContext                       $actionContext
+     * @param array $translatedParams
+     * @param ActionContext $actionContext
      *
      * @throws ValidationException
      */
@@ -51,7 +51,9 @@ class UpsertContextHelper {
 
         // TODO : handle sub-sub-entities (company.contact if company id is provided)
         // in case of creation, we should handle id instead of object definition (ie: company for sub-user)
-        if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams) && !($modelAspect->isMainAspect())) {
+        if ($aggregatedUpsertContext->isCreation() && array_key_exists('id', $aspectParams)
+            && !($modelAspect->isMainAspect())
+        ) {
             // TODO : has he the right to do it ? (assign)
             $subEntityId = UnsafeParameter::getFinalValue($aspectParams['id']);
             $reqCtx = $aggregatedUpsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields();
@@ -60,7 +62,8 @@ class UpsertContextHelper {
             $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $subEntityId);
             $subEntity = $qryCtx->findOne();
 
-            $childUpsertContext = new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
+            $childUpsertContext =
+                new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
             $childUpsertContext->setEntity($subEntity);
         }
         else {
@@ -112,7 +115,7 @@ class UpsertContextHelper {
         // prepares sub context by filtering out non company related fields
         foreach ($translatedParams as $key => $value) {
             $isParamLinkedToAspectModel = static::isParamLinkedToAspectModel($definition, $relativeField, $key);
-            $isParamLinkedToAggregated = $relativeField || !array_key_exists($key,$definition->getConstraintsList());
+            $isParamLinkedToAggregated = $relativeField || !array_key_exists($key, $definition->getConstraintsList());
             if (!$isParamLinkedToAspectModel && $isParamLinkedToAggregated) {
                 $entityParams[$key] = $value;
             }

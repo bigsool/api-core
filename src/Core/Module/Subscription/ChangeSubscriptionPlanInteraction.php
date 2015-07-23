@@ -76,11 +76,11 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     public function toArray () {
 
         return array_merge([
-            'type'                    => $this->getType(),
-            'topic'                   => $this->getTopic(),
-            'message'                 => $this->getMessage(),
-            'subscription_definition' => $this->getSubscriptionParams(),
-        ], $this->getUiParams());
+                               'type'                    => $this->getType(),
+                               'topic'                   => $this->getTopic(),
+                               'message'                 => $this->getMessage(),
+                               'subscription_definition' => $this->getSubscriptionParams(),
+                           ], $this->getUiParams());
 
     }
 

@@ -11,6 +11,6 @@ interface ModuleManagerHelperLoader {
      *
      * @return string|false
      */
-    public static function getHelperClassName($helperName);
+    public static function getHelperClassName ($helperName);
 
 }

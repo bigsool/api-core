@@ -4,7 +4,6 @@
 namespace Core\Module;
 
 
-use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\ModuleEntityUpsertContext;
@@ -39,7 +38,8 @@ class DbModuleEntity extends AbstractModuleEntity {
         if ($upsertContext->getEntityId()) {
             $entityName = $this->getDefinition()->getEntityName();
             $qryCtx =
-                new FindQueryContext($entityName, $upsertContext->getActionContext()->getRequestContext()->copyWithoutRequestedFields());
+                new FindQueryContext($entityName, $upsertContext->getActionContext()->getRequestContext()
+                                                                ->copyWithoutRequestedFields());
             $qryCtx->addField('*');
             $qryCtx->addFilter(new StringFilter($entityName, '', 'id = :id'), $upsertContext->getEntityId());
 

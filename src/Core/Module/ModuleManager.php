@@ -139,7 +139,7 @@ abstract class ModuleManager {
     /**
      * @param ModuleEntity $moduleEntity
      */
-    public function addModuleEntity(ModuleEntity $moduleEntity) {
+    public function addModuleEntity (ModuleEntity $moduleEntity) {
 
         $entityName = $moduleEntity->getDefinition()->getEntityName();
         if (array_key_exists($entityName, $this->moduleEntities)) {

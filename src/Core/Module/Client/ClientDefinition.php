@@ -29,14 +29,14 @@ class ClientDefinition extends ModuleEntityDefinition {
     public function getConstraintsList () {
 
         return [
-            'name' => [
+            'name'    => [
                 new String(),
-                new Length(['max'=>255]),
+                new Length(['max' => 255]),
                 new NotBlank()
             ],
             'version' => [
                 new String(),
-                new Length(['max'=>255]),
+                new Length(['max' => 255]),
                 new NotBlank()
             ],
             // TODO : LOCALE ?
@@ -75,9 +75,9 @@ class ClientDefinition extends ModuleEntityDefinition {
     public function getFilters () {
 
         return [
-            new StringFilter('Client','ClientForDevice','device = :device'),
-            new StringFilter('Client','ClientForName','name = :name'),
-            new StringFilter('Client','ClientForVersion','version = :version'),
+            new StringFilter('Client', 'ClientForDevice', 'device = :device'),
+            new StringFilter('Client', 'ClientForName', 'name = :name'),
+            new StringFilter('Client', 'ClientForVersion', 'version = :version'),
         ];
 
     }

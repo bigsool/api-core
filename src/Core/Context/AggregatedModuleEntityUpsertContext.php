@@ -37,17 +37,17 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
 
         parent::__construct($definition, $entityId, $params, $actionContext);
 
-        if($this->isUpdate()) {
-            foreach($this->getDefinition()->getAllModelAspects() as $aspect) {
-                if($aspect->isDisabledForAction('update')) {
+        if ($this->isUpdate()) {
+            foreach ($this->getDefinition()->getAllModelAspects() as $aspect) {
+                if ($aspect->isDisabledForAction('update')) {
                     array_push($this->disabledModelAspects, $aspect->getPrefix());
                 }
             }
         }
 
-        if($this->isCreation()) {
-            foreach($this->getDefinition()->getAllModelAspects() as $aspect) {
-                if($aspect->isDisabledForAction('create')) {
+        if ($this->isCreation()) {
+            foreach ($this->getDefinition()->getAllModelAspects() as $aspect) {
+                if ($aspect->isDisabledForAction('create')) {
                     array_push($this->disabledModelAspects, $aspect->getPrefix());
                 }
             }
@@ -246,7 +246,5 @@ class AggregatedModuleEntityUpsertContext extends ModuleEntityUpsertContext {
         return $params;
 
     }
-
-
 
 }

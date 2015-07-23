@@ -5,6 +5,7 @@ namespace Core\Error;
 
 
 class LocalizedError extends Error {
+
     /**
      * @var string
      */
@@ -24,7 +25,7 @@ class LocalizedError extends Error {
      */
     public function __construct ($code, $frMessage, $enMessage, $parentCode = NULL, $field = NULL) {
 
-        parent::__construct($code, $enMessage?: $frMessage, $parentCode, $field);
+        parent::__construct($code, $enMessage ?: $frMessage, $parentCode, $field);
 
         $this->frMessage = $frMessage;
         $this->enMessage = $enMessage;

@@ -786,7 +786,7 @@ class ApplicationContext {
     /**
      * @param Translator $translator
      */
-    public function setTranslator(Translator $translator) {
+    public function setTranslator (Translator $translator) {
 
         $this->translator = $translator;
 
@@ -795,7 +795,7 @@ class ApplicationContext {
     /**
      * @return Translator
      */
-    public function getTranslator(){
+    public function getTranslator () {
 
         if (is_null($this->translator)) {
             throw new \RuntimeException('qwe');
@@ -984,7 +984,7 @@ class ApplicationContext {
      *
      * @return bool
      */
-    public function isCalculatedField($entityName, $fieldName) {
+    public function isCalculatedField ($entityName, $fieldName) {
 
         return isset($this->calculatedFields[$entityName][$fieldName]);
 
@@ -1091,8 +1091,8 @@ class ApplicationContext {
 
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '', $checkAuth)->getResult();
-
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '',
+                                  $checkAuth)->getResult();
 
     }
 

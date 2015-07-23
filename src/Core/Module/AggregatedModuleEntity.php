@@ -95,7 +95,6 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
 
     }
 
-
     /**
      * @param FindQueryContext $findQueryContext
      *
@@ -214,7 +213,5 @@ class AggregatedModuleEntity extends AbstractModuleEntity {
         return new $className($entity);
 
     }
-
-
 
 }

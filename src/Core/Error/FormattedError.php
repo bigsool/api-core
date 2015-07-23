@@ -188,6 +188,4 @@ class FormattedError extends \Exception {
 
     }
 
-
-
 }

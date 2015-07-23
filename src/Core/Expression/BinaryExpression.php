@@ -76,12 +76,14 @@ class BinaryExpression implements ExpressionWithOperator {
         if ($this->getLeft() instanceof Parameter || $this->getRight() instanceof Parameter) {
             if ($this->getOperator() instanceof EqualOperator) {
 
-                return sprintf('(NOT (%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) OR (%1$s IS NULL AND %2$s IS NULL))', $leftStr, $rightStr);
+                return sprintf('(NOT (%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) OR (%1$s IS NULL AND %2$s IS NULL))',
+                               $leftStr, $rightStr);
 
             }
             if ($this->getOperator() instanceof NotEqualOperator) {
 
-                return sprintf('((%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) AND NOT (%1$s IS NULL AND %2$s IS NULL))', $leftStr, $rightStr);
+                return sprintf('((%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) AND NOT (%1$s IS NULL AND %2$s IS NULL))',
+                               $leftStr, $rightStr);
 
             }
         }

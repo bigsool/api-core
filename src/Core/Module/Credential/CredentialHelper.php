@@ -25,7 +25,7 @@ class CredentialHelper {
 
     public static function credentialForAuthParams ($authParams) {
 
-        if ( $authParams['authType'] != 'password' ) {
+        if ($authParams['authType'] != 'password') {
             throw new \Exception('unknown auth type');
         }
 

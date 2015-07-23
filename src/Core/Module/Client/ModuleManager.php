@@ -32,7 +32,7 @@ class ModuleManager extends AbstractModuleManager {
                     $params = $context->getParams();
                 }
                 else {
-                    $params = ['UUID' => '','name' => '', 'type' => ''];
+                    $params = ['UUID' => '', 'name' => '', 'type' => ''];
                 }
 
 

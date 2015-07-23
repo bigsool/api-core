@@ -4,7 +4,6 @@ namespace Core\Module\Project\Interaction;
 
 
 use Core\Interaction\Interaction;
-use Core\Module\Project\Interaction\ProjectInteractionsDefinition;
 
 class ProjectInteractionHelper {
 

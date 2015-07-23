@@ -9,7 +9,6 @@ use Core\Context\ModuleEntityUpsertContext;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\Validation\ConstraintsProvider;
-use Core\Validation\Validator;
 
 abstract class ModuleEntityDefinition implements ConstraintsProvider {
 

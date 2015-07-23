@@ -20,13 +20,13 @@ interface ProjectInteractionsDefinition {
      *
      * @return callable[]
      */
-    public function getInteractionCallablesForFeature($feature);
+    public function getInteractionCallablesForFeature ($feature);
 
     /**
      * Return the list of features applicable to Project
      *
      * @return string[]
      */
-    public static function getFeatures();
+    public static function getFeatures ();
 
 }

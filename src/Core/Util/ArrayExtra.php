@@ -120,6 +120,7 @@ class ArrayExtra {
 
                 if (!count($array)) {
                     $isset = false;
+
                     return NULL;
                 }
 
@@ -131,7 +132,7 @@ class ArrayExtra {
                     if (!is_array($subArray)) {
                         continue;
                     }
-                    $tmpIsset = null;
+                    $tmpIsset = NULL;
                     $tmpGet = static::magicalGet($subArray, $newKey, $tmpIsset);
                     if (!$tmpIsset) {
                         continue;
@@ -153,6 +154,7 @@ class ArrayExtra {
 
             if (!isset($array[$key])) {
                 $isset = false;
+
                 return NULL;
             }
             // it's not necessary to create an array for the last key

@@ -33,7 +33,7 @@ class ProjectPatchesDefinition extends ModuleEntityDefinition {
     public function getConstraintsList () {
 
         return [
-            'id' => [
+            'id'   => [
                 new String(),
                 new Length(['max' => 32]),
                 new NotBlank(),
