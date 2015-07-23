@@ -13,8 +13,4 @@ class ErrorInteraction extends AlertInteraction {
 
     const TYPE = "error";
 
-    public function getType() {
-        return self::TYPE;
-    }
-
 }

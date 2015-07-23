@@ -24,6 +24,21 @@ class ConfirmInteraction extends AlertInteraction {
     protected $cancelAction = NULL;
 
     /**
+     * @param string $topic
+     * @param string $message
+     * @param string $confirmAction
+     * @param string $cancelAction
+     */
+    public function __construct ($topic, $message, $confirmAction = NULL, $cancelAction = NULL) {
+
+        parent::__construct($topic, $message);
+
+        $this->setConfirmAction($confirmAction);
+        $this->setCancelAction($cancelAction);
+
+    }
+
+    /**
      * @return string
      */
     public function getCancelAction () {
