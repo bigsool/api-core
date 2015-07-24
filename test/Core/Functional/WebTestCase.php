@@ -248,12 +248,9 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('error', $response, json_encode($response));
         $error = $response['error'];
         $this->assertInternalType('array', $error, json_encode($response));
+        $this->assertArrayHasKey('code', $error, json_encode($response));
 
-        if (is_null($errorCode)) {
-            $this->assertArrayNotHasKey('code', $error, json_encode($response));
-        }
-        else {
-            $this->assertArrayHasKey('code', $error, json_encode($response));
+        if(!is_null($errorCode)) {
             $this->assertEquals($errorCode, $error['code'], json_encode($response));
         }
 
