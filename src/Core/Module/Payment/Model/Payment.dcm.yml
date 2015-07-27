@@ -4,7 +4,6 @@ Payment:
   id:
       id:
           type: integer
-          length: 11
           options:
               unsigned: true
           generator:
