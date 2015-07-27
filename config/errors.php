@@ -82,14 +82,14 @@ $errorManager->defineError(new LocalizedError(ERROR_CREDENTIAL_ALREADY_EXIST,
                                               $t->trans('ERROR_CREDENTIAL_ALREADY_EXIST', [], NULL, 'en')));
 // "ce login est déjà utilisé", 'this login is already used'
 @define('ERROR_ACCOUNT_ALREADY_CONFIRMED', 16304);
-$errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED,
+$errorManager->defineError(new LocalizedError(ERROR_ACCOUNT_ALREADY_CONFIRMED,
                                      $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
                                      $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
 
 @define('ERROR_IPAD_ALREADY_CONNECTED', 16305);
-$errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED,
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
+$errorManager->defineError(new LocalizedError(ERROR_IPAD_ALREADY_CONNECTED,
+                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'fr'),
+                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'en')));
 //"votre compte est déjà connecté sur un autre iPad",'Your account is already connected on another iPad'
 @define('ERROR_PRODUCT_NOT_FOUND', 16306);
 $errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, 'product not found'));
