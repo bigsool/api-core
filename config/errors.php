@@ -93,3 +93,5 @@ $errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED,
 //"votre compte est déjà connecté sur un autre iPad",'Your account is already connected on another iPad'
 @define('ERROR_PRODUCT_NOT_FOUND', 16306);
 $errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, 'product not found'));
+@define('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', 16307);
+$errorManager->defineError(new Error(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE, 'cannot login with old plan without archipad license'));
