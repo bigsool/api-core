@@ -25,15 +25,15 @@ Payment:
           type: decimal
           precision: 22
           scale: 2
-          nullable: false
+          nullable: true
       vat:
           type: decimal
           precision: 22
           scale: 2
-          nullable: false
+          nullable: true
       currency:
           type: string
-          nullable: false
+          nullable: true
           length: 3
       date:
           type: datetime

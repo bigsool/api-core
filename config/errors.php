@@ -31,12 +31,12 @@ $errorManager->defineError(new LocalizedError(ERROR_PERMISSION_DENIED,
                                               $t->trans('ERROR_PERMISSION_DENIED', [], NULL, 'en')));
 
 @define('ERROR_BAD_VERSION', -8);
-$errorManager->defineError(new Error(ERROR_BAD_VERSION,
+$errorManager->defineError(new LocalizedError(ERROR_BAD_VERSION,
                                      $t->trans('ERROR_BAD_VERSION', [], NULL, 'fr'),
                                      $t->trans('ERROR_BAD_VERSION', [], NULL, 'en')));
 
 @define('ERROR_API_UNAVAILABLE', -9);
-$errorManager->defineError(new Error(ERROR_API_UNAVAILABLE,
+$errorManager->defineError(new LocalizedError(ERROR_API_UNAVAILABLE,
                                      $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'fr'),
                                      $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'en'),
                                      ERROR_INTERNAL_ERROR));
@@ -82,16 +82,17 @@ $errorManager->defineError(new LocalizedError(ERROR_CREDENTIAL_ALREADY_EXIST,
                                               $t->trans('ERROR_CREDENTIAL_ALREADY_EXIST', [], NULL, 'en')));
 // "ce login est déjà utilisé", 'this login is already used'
 @define('ERROR_ACCOUNT_ALREADY_CONFIRMED', 16304);
-$errorManager->defineError(new Error(ERROR_ACCOUNT_ALREADY_CONFIRMED,
+$errorManager->defineError(new LocalizedError(ERROR_ACCOUNT_ALREADY_CONFIRMED,
                                      $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
                                      $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
 
 @define('ERROR_IPAD_ALREADY_CONNECTED', 16305);
-$errorManager->defineError(new Error(ERROR_IPAD_ALREADY_CONNECTED,
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
-//"votre compte est déjà connecté sur un autre iPad",'Your account is already connected on another iPad'
+$errorManager->defineError(new LocalizedError(ERROR_IPAD_ALREADY_CONNECTED,
+                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'fr'),
+                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'en')));
+
 @define('ERROR_PRODUCT_NOT_FOUND', 16306);
 $errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, 'product not found'));
+
 @define('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', 16307);
 $errorManager->defineError(new Error(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE, 'cannot login with old plan without archipad license'));
