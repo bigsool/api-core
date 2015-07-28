@@ -70,6 +70,8 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_LENGTH, 'out of range v
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_NOT_NULL, 'empty parameter', ERROR_INVALID_PARAM));
 @define('ERROR_MISSING_PARAM', 16110);
 $errorManager->defineError(new Error(ERROR_MISSING_PARAM, 'missing parameter', ERROR_INVALID_PARAM));
+@define('ERROR_INVALID_PARAM_FLOAT', 16111);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_FLOAT, 'invalid float', ERROR_INVALID_PARAM));
 
 @define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
