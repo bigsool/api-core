@@ -30,12 +30,6 @@ class IdObjectList extends Callback {
                 return;
             }
 
-            if (count($list) != 1) {
-                $context->addViolation('The project must have no other key than id');
-
-                return;
-            }
-
         });
 
     }
