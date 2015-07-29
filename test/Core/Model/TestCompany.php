@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="company")
  * @ORM\Entity
- * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
  */
 class TestCompany
 {
@@ -149,6 +148,7 @@ class TestCompany
 
     /**
      * Constructor
+     * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
      */
     public function __construct()
     {

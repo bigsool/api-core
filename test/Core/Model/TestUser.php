@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="userEmail", columns={"email"})})
  * @ORM\Entity
- * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
  */
 class TestUser
 {
@@ -154,6 +153,13 @@ class TestUser
      */
     protected $isCompanyFaulted = true;
 
+    /**
+     * Constructor
+     * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
+     */
+    public function __construct()
+    {
+    }
 
     /**
      * Get id
