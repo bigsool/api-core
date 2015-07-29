@@ -47,29 +47,29 @@ class ErrorManagerTest extends TestCase {
         self::resetApplicationContext();
         $this->errorManager = self::getApplicationContext()->getErrorManager();
 
-        @define('__TEST__ERR_1', rand());
+        defined('__TEST__ERR_1') || define('__TEST__ERR_1', rand());
         $this->errorManager->defineError(
             $this->error1 = new LocalizedError(__TEST__ERR_1, 'message fr 1', 'message en 1', NULL, 'field1'));
 
-        @define('__TEST__ERR_10', rand());
+        defined('__TEST__ERR_10') || define('__TEST__ERR_10', rand());
         $this->errorManager->defineError(
             $this->error10 = new LocalizedError(__TEST__ERR_10, 'message fr 10', 'message en 10', __TEST__ERR_1, 'field10'));
 
-        @define('__TEST__ERR_100', rand());
+        defined('__TEST__ERR_100') || define('__TEST__ERR_100', rand());
         $this->errorManager->defineError(
             $this->error100 =
                 new LocalizedError(__TEST__ERR_100, 'message fr 100', 'message en 100', __TEST__ERR_10, 'field100'));
-        @define('__TEST__ERR_101', rand());
+        defined('__TEST__ERR_101') || define('__TEST__ERR_101', rand());
         $this->errorManager->defineError(
             $this->error101 =
                 new LocalizedError(__TEST__ERR_101, 'message fr 101', 'message en 101', __TEST__ERR_10, 'field101'));
 
-        @define('__TEST__ERR_1000', rand());
+        defined('__TEST__ERR_1000') || define('__TEST__ERR_1000', rand());
         $this->errorManager->defineError(
             $this->error1000 =
                 new LocalizedError(__TEST__ERR_1000, 'message fr 1000', 'message en 1000', __TEST__ERR_101, 'field1000'));
 
-        @define('__TEST__ERR_11', rand());
+        defined('__TEST__ERR_11') || define('__TEST__ERR_11', rand());
         $this->errorManager->defineError(
             $this->error11 = new LocalizedError(__TEST__ERR_11, 'message fr 11', 'message en 11', __TEST__ERR_1, 'field300'));
 
