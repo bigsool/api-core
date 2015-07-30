@@ -32,14 +32,14 @@ $errorManager->defineError(new LocalizedError(ERROR_PERMISSION_DENIED,
 
 defined('ERROR_BAD_VERSION') || define('ERROR_BAD_VERSION', -8);
 $errorManager->defineError(new LocalizedError(ERROR_BAD_VERSION,
-                                     $t->trans('ERROR_BAD_VERSION', [], NULL, 'fr'),
-                                     $t->trans('ERROR_BAD_VERSION', [], NULL, 'en')));
+                                              $t->trans('ERROR_BAD_VERSION', [], NULL, 'fr'),
+                                              $t->trans('ERROR_BAD_VERSION', [], NULL, 'en')));
 
 defined('ERROR_API_UNAVAILABLE') || define('ERROR_API_UNAVAILABLE', -9);
 $errorManager->defineError(new LocalizedError(ERROR_API_UNAVAILABLE,
-                                     $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'fr'),
-                                     $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'en'),
-                                     ERROR_INTERNAL_ERROR));
+                                              $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'fr'),
+                                              $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'en'),
+                                              ERROR_INTERNAL_ERROR));
 
 
 defined('ERROR_BAD_ENTITY') || define('ERROR_BAD_ENTITY', 16028);
@@ -85,16 +85,18 @@ $errorManager->defineError(new LocalizedError(ERROR_CREDENTIAL_ALREADY_EXIST,
 // "ce login est déjà utilisé", 'this login is already used'
 defined('ERROR_ACCOUNT_ALREADY_CONFIRMED') || define('ERROR_ACCOUNT_ALREADY_CONFIRMED', 16304);
 $errorManager->defineError(new LocalizedError(ERROR_ACCOUNT_ALREADY_CONFIRMED,
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
-                                     $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
+                                              $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'fr'),
+                                              $t->trans('ERROR_ACCOUNT_ALREADY_CONFIRMED', [], NULL, 'en')));
 
 defined('ERROR_IPAD_ALREADY_CONNECTED') || define('ERROR_IPAD_ALREADY_CONNECTED', 16305);
 $errorManager->defineError(new LocalizedError(ERROR_IPAD_ALREADY_CONNECTED,
-                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'fr'),
-                                     $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'en')));
+                                              $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'fr'),
+                                              $t->trans('ERROR_IPAD_ALREADY_CONNECTED', [], NULL, 'en')));
 
 defined('ERROR_PRODUCT_NOT_FOUND') || define('ERROR_PRODUCT_NOT_FOUND', 16306);
 $errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, 'product not found'));
 
 defined('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE') || define('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', 16307);
-$errorManager->defineError(new Error(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE, 'cannot login with old plan without archipad license'));
+$errorManager->defineError(new LocalizedError(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE,
+                                              $t->trans('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', [], NULL, 'fr'),
+                                              $t->trans('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', [], NULL, 'en')));//'cannot login with old plan without archipad license'));
