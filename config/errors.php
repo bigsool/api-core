@@ -99,4 +99,7 @@ $errorManager->defineError(new Error(ERROR_PRODUCT_NOT_FOUND, 'product not found
 defined('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE') || define('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', 16307);
 $errorManager->defineError(new LocalizedError(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE,
                                               $t->trans('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', [], NULL, 'fr'),
-                                              $t->trans('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', [], NULL, 'en')));//'cannot login with old plan without archipad license'));
+                                              $t->trans('ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_LICENSE', [], NULL, 'en')));
+
+defined('ERROR_PROJECT_NOT_FOUND') || define('ERROR_PROJECT_NOT_FOUND', 16308);
+$errorManager->defineError(new Error(ERROR_PROJECT_NOT_FOUND, 'project not found'));
