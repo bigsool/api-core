@@ -60,7 +60,7 @@ class ModuleManager extends AbstractModuleManager {
                         $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
                     }
 
-                    $credential = count($credentials) == 1 ? $credentials[0] : $credentials[1];
+                    $credential = $credentials[0];
 
                     return [
                         'authToken' => $authToken,
