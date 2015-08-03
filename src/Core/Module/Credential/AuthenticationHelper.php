@@ -16,11 +16,11 @@ class AuthenticationHelper {
 
     /**
      * @param mixed      $authToken
-     * @param Credential $credential
+     * @param Credential[] $credentials
      *
      * @return array
      */
-    public static function renewAuthToken ($authToken, $credential) {
+    public static function renewAuthToken ($authToken, array $credentials) {
 
         static::checkAuthTokenStructure($authToken);
 
@@ -28,7 +28,7 @@ class AuthenticationHelper {
 
         unset($authToken['type'], $authToken['login'], $authToken['end'], $authToken['hash']);
 
-        return static::generateAuthToken($credential, $type, NULL, $authToken);
+        return static::generateAuthToken($credentials, $type, NULL, $authToken);
 
     }
 
@@ -49,19 +49,21 @@ class AuthenticationHelper {
     }
 
     /**
-     * @param Credential $credential
-     * @param string     $authTokenType
-     * @param int        $expirationTimestamp
-     * @param array      $additionalParams
+     * @param Credential[] $credentials
+     * @param string       $authTokenType
+     * @param int          $expirationTimestamp
+     * @param array        $additionalParams
      *
      * @return array
      * @throws ToResolveException
      */
-    public static function generateAuthToken ($credential, $authTokenType = NULL, $expirationTimestamp = NULL,
+    public static function generateAuthToken (array $credentials, $authTokenType = NULL, $expirationTimestamp = NULL,
                                               array $additionalParams = []) {
 
-        if (is_null($credential)) {
-            throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
+        foreach ($credentials as $credential) {
+            if (!is_object($credential)) {
+                throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
+            }
         }
 
         if (!$authTokenType) {
@@ -74,7 +76,11 @@ class AuthenticationHelper {
                                                   ->getConfig()['credential']['expirationAuthToken']);
         }
 
-        return static::createToken($credential->getLogin(), $expirationTimestamp, $credential->getPassword(),
+        $login =
+            count($credentials) == 1
+                ? $credentials[0]->getLogin() : $credentials[1]->getLogin() . '#' . $credentials[0]->getLogin();
+
+        return static::createToken($login, $expirationTimestamp, $credentials[0]->getPassword(),
                                    $authTokenType, $additionalParams);
 
     }
@@ -121,25 +127,33 @@ class AuthenticationHelper {
     /**
      * @param mixed $authToken
      *
-     * @return Credential
+     * @return Credential[]
      * @throws ToResolveException
      */
     public static function checkAuthToken ($authToken) {
 
         static::checkAuthTokenStructure($authToken);
 
-        $login = $authToken['login'];
+        $logins = explode('#', $authToken['login']);
+        $superLogin = $logins[0];
+        $login = isset($logins[1]) ? $logins[1] : NULL;
         $expiration = $authToken['end'];
+        $credential = NULL;
+        $superUserCredential = NULL;
 
-        if ($expiration < time() || !($credential = CredentialHelper::credentialForLogin($login))) {
+        if ($expiration < time() || !($superUserCredential = CredentialHelper::credentialForLogin($superLogin))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        if (!static::isAuthTokenValid($authToken, $credential->getPassword())) {
+        if ($login && !($credential = CredentialHelper::credentialForLogin($login))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        return $credential;
+        if (!static::isAuthTokenValid($authToken, $superUserCredential->getPassword())) {
+            throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
+
+        return $login ? [$credential, $superUserCredential] : [$superUserCredential];
 
     }
 

@@ -38,23 +38,29 @@ class ModuleManager extends AbstractModuleManager {
                     $params = $context->getVerifiedParams();
 
                     $credentialHelper = $this->getCredentialHelper();
-                    $credential = $credentialHelper::credentialForAuthParams($params);
+                    $credentials = $credentialHelper::credentialsForAuthParams($params);
 
+                    // TODO : we may add superUser in LoginHistory
                     $loginHistory =
-                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
+                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credentials[0]], $context);
                     $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
                     $additionalParams = $context->getVerifiedParam('additionalParams', []);
 
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $authToken = $authenticationHelper::generateAuthToken($credential, NULL, NULL, $additionalParams);
+                    $authToken = $authenticationHelper::generateAuthToken($credentials, NULL, NULL, $additionalParams);
 
                     $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
                                                                                      'setAuthCookie'),
                                                                   ['authToken' => $authToken]);
 
                     $context->getRequestContext()->setAuthToken($authToken);
-                    $context->getRequestContext()->getAuth()->setCredential($credential);
+                    $context->getRequestContext()->getAuth()->setCredential($credentials[0]);
+                    if (count($credentials) == 2) {
+                        $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
+                    }
+
+                    $credential = count($credentials) == 1 ? $credentials[0] : $credentials[1];
 
                     return [
                         'authToken' => $authToken,
@@ -87,9 +93,9 @@ class ModuleManager extends AbstractModuleManager {
                     $authToken = $ctx->getParam('authToken');
 
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $credential = $authenticationHelper::checkAuthToken($authToken);
+                    $credentials = $authenticationHelper::checkAuthToken($authToken);
 
-                    return $credential;
+                    return $credentials;
 
                 }),
             new GenericAction('Core\Credential', 'renewAuthCookie', [],
@@ -104,13 +110,10 @@ class ModuleManager extends AbstractModuleManager {
                     }
 
                     $authToken = $ctx->getParam('authToken');
-                    $credentialId = $ctx->getParam('credentialId');
-
-                    $credentialHelper = $this->getCredentialHelper();
-                    $credential = $credentialHelper::credentialForId($credentialId);
+                    $credentials = $ctx->getParam('credentials');
 
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credential);
+                    $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
 
                     $appCtx = $ctx->getApplicationContext();
                     $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];

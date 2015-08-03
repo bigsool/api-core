@@ -23,18 +23,34 @@ class CredentialHelper {
 
     }
 
-    public static function credentialForAuthParams ($authParams) {
+    /**
+     * @param array $authParams
+     *
+     * @return Credential[]
+     * @throws ToResolveException
+     * @throws \Exception
+     */
+    public static function credentialsForAuthParams (array $authParams) {
 
         if ($authParams['authType'] != 'password') {
             throw new \Exception('unknown auth type');
         }
 
-        $credential = static::credentialForLogin($authParams['login']);
-        if (!password_verify($authParams['password'], $credential->getPassword())) {
+        $logins = explode('#', $authParams['login']);
+        $superLogin = $logins[0];
+        $login = isset($logins[1]) ? $logins[1] : NULL;
+
+        $superUserCredential = static::credentialForLogin($superLogin);
+        if (!password_verify($authParams['password'], $superUserCredential->getPassword())) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
 
-        return $credential;
+        $credential = NULL;
+        if ($login) {
+            $credential = static::credentialForLogin($login);
+        }
+
+        return isset($login) ? [$credential, $superUserCredential] : [$superUserCredential];
     }
 
     /**

@@ -8,6 +8,7 @@ use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
+use Core\Model\Credential;
 use Core\Parameter\UnsafeParameter;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -333,14 +334,20 @@ class RequestContext {
             $checkAuthCtx = $appCtx->getActionContext(new RequestContext(), 'Core\Credential', 'checkAuth');
             $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
             $appCtx = ApplicationContext::getInstance();
-            $cred = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
+            /**
+             * @var Credential[] $credentials
+             */
+            $credentials = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
             $auth = new Auth();
-            $auth->setCredential($cred);
+            $auth->setCredential($credentials[0]);
+            if (count($credentials) == 2) {
+                $auth->setSuperUserCredential($credentials[1]);
+            }
             $this->setAuth($auth);
 
             $setAuthAction = $appCtx->getAction('Core\Credential', 'renewAuthCookie');
             $appCtx->getOnSuccessActionQueue()
-                   ->addAction($setAuthAction, ['authToken' => $authToken, 'credentialId' => $cred->getId()]);
+                   ->addAction($setAuthAction, ['authToken' => $authToken, 'credentials' => $credentials]);
             unset($params['authToken']);
 
         }
