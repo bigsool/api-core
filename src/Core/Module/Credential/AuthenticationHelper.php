@@ -78,9 +78,10 @@ class AuthenticationHelper {
 
         $login =
             count($credentials) == 1
-                ? $credentials[0]->getLogin() : $credentials[1]->getLogin() . '#' . $credentials[0]->getLogin();
+                ? $credentials[0]->getLogin() : $credentials[0]->getLogin() . '#' . $credentials[1]->getLogin();
+        $password = count($credentials) == 1 ? $credentials[0]->getPassword() : $credentials[1]->getPassword();
 
-        return static::createToken($login, $expirationTimestamp, $credentials[0]->getPassword(),
+        return static::createToken($login, $expirationTimestamp, $password,
                                    $authTokenType, $additionalParams);
 
     }
@@ -135,25 +136,26 @@ class AuthenticationHelper {
         static::checkAuthTokenStructure($authToken);
 
         $logins = explode('#', $authToken['login']);
-        $superLogin = $logins[0];
-        $login = isset($logins[1]) ? $logins[1] : NULL;
+
+        $loginUsedToLogIn = isset($logins[1]) ? $logins[1] : $logins[0];
+        $guestLogin = isset($logins[1]) ? $logins[0] : NULL;
         $expiration = $authToken['end'];
-        $credential = NULL;
-        $superUserCredential = NULL;
+        $guestCredential = NULL;
+        $credentialUsedToLogIn = NULL;
 
-        if ($expiration < time() || !($superUserCredential = CredentialHelper::credentialForLogin($superLogin))) {
+        if ($expiration < time() || !($credentialUsedToLogIn = CredentialHelper::credentialForLogin($loginUsedToLogIn))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        if ($login && !($credential = CredentialHelper::credentialForLogin($login))) {
+        if ($guestLogin && !($guestCredential = CredentialHelper::credentialForLogin($guestLogin))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        if (!static::isAuthTokenValid($authToken, $superUserCredential->getPassword())) {
+        if (!static::isAuthTokenValid($authToken, $credentialUsedToLogIn->getPassword())) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 
-        return $login ? [$credential, $superUserCredential] : [$superUserCredential];
+        return $guestLogin ? [$guestCredential, $credentialUsedToLogIn] : [$credentialUsedToLogIn];
 
     }
 

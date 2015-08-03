@@ -37,8 +37,8 @@ class CredentialHelper {
         }
 
         $logins = explode('#', $authParams['login']);
-        $superLogin = $logins[0];
-        $login = isset($logins[1]) ? $logins[1] : NULL;
+        $superLogin = isset($logins[1]) ? $logins[1] : $logins[0];
+        $login = isset($logins[1]) ? $logins[0] : NULL;
 
         $superUserCredential = static::credentialForLogin($superLogin);
         if (!password_verify($authParams['password'], $superUserCredential->getPassword())) {
