@@ -103,3 +103,6 @@ $errorManager->defineError(new LocalizedError(ERROR_LOGIN_WITH_OLD_PLAN_WITHOUT_
 
 defined('ERROR_PROJECT_NOT_FOUND') || define('ERROR_PROJECT_NOT_FOUND', 16308);
 $errorManager->defineError(new Error(ERROR_PROJECT_NOT_FOUND, 'project not found'));
+
+defined('ERROR_PROJECT_PARTICIPANT_NOT_FOUND') || define('ERROR_PROJECT_PARTICIPANT_NOT_FOUND', 16309);
+$errorManager->defineError(new Error(ERROR_PROJECT_PARTICIPANT_NOT_FOUND, 'project participation not found'));
