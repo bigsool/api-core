@@ -95,6 +95,9 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                 }
                 $ids = [];
                 foreach ($values as $value) {
+                    if (is_null($value)) {
+                        continue 2;
+                    }
                     if (!is_array($value)) {
                         throw new \RuntimeException('$value must be an array');
                     }
