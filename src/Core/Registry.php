@@ -195,13 +195,34 @@ class Registry implements EventSubscriber {
      */
     protected function doJoins (FindQueryContext $ctx) {
 
-        $queryBuilder = $this->getQueryBuilder($ctx->getEntity());
+        $joins = [];
+        foreach ($this->getLeftJoins() as $join => $alias) {
+            $joins[$join] = [$alias, true];
+        }
         foreach ($this->getInnerJoins() as $join => $alias) {
-            $queryBuilder->innerJoin($join, $alias);
+            $joins[$join] = [$alias, false];
         }
 
-        foreach ($this->getLeftJoins() as $join => $alias) {
-            $queryBuilder->leftJoin($join, $alias);
+        // sort joins otherwise you will have this error
+        // [Semantical Error] near '.user userCredentialUser':
+        // Error:Identification Variable userCredential used in join path expression but was not defined before.
+        uksort($joins, function ($joinA, $joinB) {
+
+            $diffDots = substr_count($joinA, '.') - substr_count($joinB, '.');
+
+            return $diffDots != 0 ? $diffDots : strlen($joinA) - strlen($joinB);
+
+        });
+
+        $queryBuilder = $this->getQueryBuilder($ctx->getEntity());
+
+        foreach ($joins as $join => list($alias, $isLeftJoin)) {
+            if ($isLeftJoin) {
+                $queryBuilder->leftJoin($join, $alias);
+            }
+            else {
+                $queryBuilder->innerJoin($join, $alias);
+            }
         }
 
     }
