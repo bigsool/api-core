@@ -248,7 +248,7 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param int|\Exception $exception
+     * @param int|bool|\Exception $exception
      *
      * @return mixed
      */
