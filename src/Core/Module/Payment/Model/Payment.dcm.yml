@@ -2,39 +2,44 @@ Payment:
   type: entity
   table: payment
   id:
-      id:
-          type: integer
-          options:
-              unsigned: true
-          generator:
-              strategy: IDENTITY
+    id:
+      type: integer
+      options:
+        unsigned: true
+      generator:
+        strategy: IDENTITY
   fields:
-      gateway:
-          type: string
-          nullable: false
-          length: 255
-      gatewayData:
-          type: text
-          nullable: false
-          column: gateway_data
-      status:
-          type: string
-          nullable: false
-          length: 255
-      amount:
-          type: decimal
-          precision: 22
-          scale: 2
-          nullable: true
-      vat:
-          type: decimal
-          precision: 22
-          scale: 2
-          nullable: true
-      currency:
-          type: string
-          nullable: true
-          length: 3
-      date:
-          type: datetime
-          nullable: false
+    gateway:
+      type: string
+      nullable: false
+      length: 255
+    gatewayData:
+      type: text
+      nullable: false
+      column: gateway_data
+    externalId:
+      type: string
+      nullable: true
+      column: external_id
+      length: 255
+    status:
+      type: string
+      nullable: false
+      length: 255
+    amount:
+      type: decimal
+      precision: 22
+      scale: 2
+      nullable: true
+    vat:
+      type: decimal
+      precision: 22
+      scale: 2
+      nullable: true
+    currency:
+      type: string
+      nullable: true
+      length: 3
+    date:
+      type: datetime
+      nullable: false
