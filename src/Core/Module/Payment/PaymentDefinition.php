@@ -8,6 +8,8 @@
 
 namespace Core\Module\Payment;
 
+use Core\Filter\Filter;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Float;
@@ -50,6 +52,10 @@ class PaymentDefinition extends ModuleEntityDefinition {
                 new NotBlank(),
                 new Length(['max' => 65000]),
             ],
+            'externalId'     => [
+                new String(),
+                new Length(['max' => 255]),
+            ],
             'status'      => [
                 new String(),
                 new Length(['max' => 255]),
@@ -72,6 +78,18 @@ class PaymentDefinition extends ModuleEntityDefinition {
                 new DateTime(),
                 new NotBlank(),
             ]
+        ];
+
+    }
+
+    /**
+     * @return Filter[]
+     */
+    public function getFilters () {
+
+        return [
+            new StringFilter('Payment','PaymentForGateway', 'gateway = :gateway'),
+            new StringFilter('Payment','PaymentForExternalId', 'externalId = :externalId'),
         ];
 
     }
