@@ -7,22 +7,22 @@ $applicationContext = \Core\Context\ApplicationContext::getInstance();
 $errorManager = $applicationContext->getErrorManager();
 $t = $applicationContext->getTranslator();
 
-defined('ERROR_INTERNAL_ERROR') || define('ERROR_INTERNAL_ERROR', -1);
+defined('ERROR_INTERNAL_ERROR') || define('ERROR_INTERNAL_ERROR', 1);
 $errorManager->defineError(new Error(ERROR_INTERNAL_ERROR, 'internal error'));
 
-defined('ERROR_REQUEST_INVALID') || define('ERROR_REQUEST_INVALID', -2);
+defined('ERROR_REQUEST_INVALID') || define('ERROR_REQUEST_INVALID', 2);
 $errorManager->defineError(new Error(ERROR_REQUEST_INVALID, 'invalid request'));
 
-defined('ERROR_SERVICE_NOT_FOUND') || define('ERROR_SERVICE_NOT_FOUND', -3);
+defined('ERROR_SERVICE_NOT_FOUND') || define('ERROR_SERVICE_NOT_FOUND', 3);
 $errorManager->defineError(new Error(ERROR_SERVICE_NOT_FOUND, 'service not found', ERROR_REQUEST_INVALID));
 
-defined('ERROR_METHOD_NOT_FOUND') || define('ERROR_METHOD_NOT_FOUND', -4);
+defined('ERROR_METHOD_NOT_FOUND') || define('ERROR_METHOD_NOT_FOUND', 4);
 $errorManager->defineError(new Error(ERROR_METHOD_NOT_FOUND, 'method not found', ERROR_REQUEST_INVALID));
 
-defined('ERROR_CLIENT_IS_INVALID') || define('ERROR_CLIENT_IS_INVALID', -5);
+defined('ERROR_CLIENT_IS_INVALID') || define('ERROR_CLIENT_IS_INVALID', 5);
 $errorManager->defineError(new Error(ERROR_CLIENT_IS_INVALID, 'invalid client', ERROR_REQUEST_INVALID));
 
-defined('ERROR_PROTOCOL_IS_INVALID') || define('ERROR_PROTOCOL_IS_INVALID', -6);
+defined('ERROR_PROTOCOL_IS_INVALID') || define('ERROR_PROTOCOL_IS_INVALID', 6);
 $errorManager->defineError(new Error(ERROR_PROTOCOL_IS_INVALID, 'invalid protocol', ERROR_REQUEST_INVALID));
 
 defined('ERROR_PERMISSION_DENIED') || define('ERROR_PERMISSION_DENIED', 7);
@@ -30,12 +30,12 @@ $errorManager->defineError(new LocalizedError(ERROR_PERMISSION_DENIED,
                                               $t->trans('ERROR_PERMISSION_DENIED', [], NULL, 'fr'),
                                               $t->trans('ERROR_PERMISSION_DENIED', [], NULL, 'en')));
 
-defined('ERROR_BAD_VERSION') || define('ERROR_BAD_VERSION', -8);
+defined('ERROR_BAD_VERSION') || define('ERROR_BAD_VERSION', 8);
 $errorManager->defineError(new LocalizedError(ERROR_BAD_VERSION,
                                               $t->trans('ERROR_BAD_VERSION', [], NULL, 'fr'),
                                               $t->trans('ERROR_BAD_VERSION', [], NULL, 'en')));
 
-defined('ERROR_API_UNAVAILABLE') || define('ERROR_API_UNAVAILABLE', -9);
+defined('ERROR_API_UNAVAILABLE') || define('ERROR_API_UNAVAILABLE', 9);
 $errorManager->defineError(new LocalizedError(ERROR_API_UNAVAILABLE,
                                               $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'fr'),
                                               $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'en'),
