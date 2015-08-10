@@ -258,7 +258,7 @@ class JSON implements Handler {
      */
     public function getAuthToken () {
 
-        return isset($this->params['authToken']) ? json_decode($this->params['authToken'], true) : [];
+        return isset($this->params['authToken']) && is_string($this->params['authToken']) ? json_decode($this->params['authToken'], true) : [];
 
     }
 
