@@ -42,6 +42,10 @@ $errorManager->defineError(new LocalizedError(ERROR_API_UNAVAILABLE,
                                               ERROR_INTERNAL_ERROR));
 
 
+defined('ERROR_AUTH_TOKEN_EXPIRED') || define('ERROR_AUTH_TOKEN_EXPIRED', 19);
+$errorManager->defineError(new Error(ERROR_AUTH_TOKEN_EXPIRED, 'Auth token expired', ERROR_PERMISSION_DENIED));
+
+
 defined('ERROR_BAD_ENTITY') || define('ERROR_BAD_ENTITY', 16028);
 $errorManager->defineError(new Error(ERROR_BAD_ENTITY, 'requested entity not available', ERROR_REQUEST_INVALID));
 
