@@ -191,6 +191,12 @@ class Application {
 
                 $this->appCtx->getTranslator()->setLocale($rpcHandler->getLocale());
 
+                // handle API is temporary down during deploy
+                $config = $this->appCtx->getConfigManager()->getConfig();
+                if (isset($config['down']) && $config['down']) {
+                    throw new ToResolveException(ERROR_API_UNAVAILABLE);
+                }
+
                 $this->populateRequestContext($rpcHandler, $reqCtx);
 
                 $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
