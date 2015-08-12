@@ -6,6 +6,9 @@ Client:
             type: integer
             generator:
                 strategy: AUTO
+    uniqueConstraints:
+        idx_client_device_id_name_version:
+            columns: [ device_id, name, version ]
     fields:
         name:
             type: string
@@ -22,4 +25,5 @@ Client:
              joinColumns:
                  device_id:
                      referencedColumnName: id
+                     nullable: false
              cascade: ["persist"]
