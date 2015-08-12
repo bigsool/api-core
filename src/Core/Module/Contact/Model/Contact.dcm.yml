@@ -10,6 +10,7 @@ Contact:
         label:
             type: string
             length: 255
+            nullable: true
         streets:
             type: text
             length: 65535

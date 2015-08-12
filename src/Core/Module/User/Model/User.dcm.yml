@@ -9,11 +9,11 @@ User:
     fields:
         lastName:
             type: string
-            nullable: false
+            nullable: true
             length: 255
         firstName:
             type: string
-            nullable: false
+            nullable: true
             length: 255
         lang:
             type: string

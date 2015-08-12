@@ -9,9 +9,8 @@ Device:
     fields:
         UUID:
             type: string
-            nullable: false
+            nullable: true
             length: 255
-            unique: true
         name:
             type: string
             nullable: true
