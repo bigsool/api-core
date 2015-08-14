@@ -11,6 +11,7 @@ namespace Core\Module\Payment;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
+use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Float;
 use Core\Validation\Parameter\Int;
@@ -21,6 +22,12 @@ use Core\Validation\Parameter\Text;
 
 
 class PaymentDefinition extends ModuleEntityDefinition {
+
+    const PAYMENT_STATUS_PAID = "PAID";
+
+    const PAYMENT_STATUS_CANCELLED = "CANCELED";
+
+    const PAYMENT_STATUS_PENDING = "CANCELED";
 
     /**
      * @return string
@@ -52,7 +59,7 @@ class PaymentDefinition extends ModuleEntityDefinition {
                 new NotBlank(),
                 new Length(['max' => 65000]),
             ],
-            'externalId'     => [
+            'externalId'  => [
                 new String(),
                 new Length(['max' => 255]),
             ],
@@ -60,6 +67,14 @@ class PaymentDefinition extends ModuleEntityDefinition {
                 new String(),
                 new Length(['max' => 255]),
                 new NotBlank(),
+                new Choice(
+                    [
+                        'choices' => [
+                            static::PAYMENT_STATUS_PAID,
+                            static::PAYMENT_STATUS_CANCELLED,
+                            static::PAYMENT_STATUS_PENDING
+                        ]
+                    ]),
             ],
             'amount'      => [
                 new Float(),
@@ -88,8 +103,8 @@ class PaymentDefinition extends ModuleEntityDefinition {
     public function getFilters () {
 
         return [
-            new StringFilter('Payment','PaymentForGateway', 'gateway = :gateway'),
-            new StringFilter('Payment','PaymentForExternalId', 'externalId = :externalId'),
+            new StringFilter('Payment', 'PaymentForGateway', 'gateway = :gateway'),
+            new StringFilter('Payment', 'PaymentForExternalId', 'externalId = :externalId'),
         ];
 
     }
