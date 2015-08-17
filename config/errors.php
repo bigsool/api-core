@@ -110,3 +110,6 @@ $errorManager->defineError(new Error(ERROR_PROJECT_NOT_FOUND, 'project not found
 
 defined('ERROR_PROJECT_PARTICIPANT_NOT_FOUND') || define('ERROR_PROJECT_PARTICIPANT_NOT_FOUND', 16309);
 $errorManager->defineError(new Error(ERROR_PROJECT_PARTICIPANT_NOT_FOUND, 'project participation not found'));
+
+defined('ERROR_HAVE_THIS_RECURRING_PRODUCT') || define('ERROR_HAVE_THIS_RECURRING_PRODUCT', 16310);
+$errorManager->defineError(new Error(ERROR_HAVE_THIS_RECURRING_PRODUCT, 'You actually have this recurring product'));
