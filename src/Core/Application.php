@@ -13,6 +13,7 @@ use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModuleManager;
+use Core\RPC\CLI;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Core\Rule\Processor;
@@ -240,6 +241,50 @@ class Application {
     /**
      *
      */
+    public function runCli () {
+
+        $traceLogger = $this->appCtx->getTraceLogger();
+
+        $logger = $this->appCtx->getLogger()->getMLogger();
+
+        $traceLogger->trace('start run');
+
+        try {
+
+            $this->loadModules();
+
+            $reqCtx = new RequestContext();
+            $reqCtx->setAuth(Auth::createInternalAuth());
+
+            $rpcHandler = new CLI();
+            $rpcHandler->parse(new Request());
+            $this->populateRequestContext($rpcHandler, $reqCtx);
+
+            $this->appCtx->getTranslator()->setLocale($reqCtx->getLocale());
+
+            $controller = new Controller($rpcHandler->getAction(), $rpcHandler->getModule());
+
+            $this->executeController($controller,$reqCtx,$rpcHandler);
+
+        }
+        catch (\Exception $e) {
+
+            $logger->addEmergency(json_encode(['code'       => $e->getCode(),
+                                               'message'    => $e->getMessage(),
+                                               'stackTrace' => $e->getTraceAsString()
+                                              ]));
+
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            exit('Internal Server Error');
+
+        }
+
+
+    }
+
+    /**
+     *
+     */
     protected function loadModules () {
 
         foreach ($this->getModuleManagers() as $moduleManager) {
@@ -293,7 +338,8 @@ class Application {
 
     }
 
-    /**
+
+        /**
      * @param Request $request
      *
      * @return Handler
