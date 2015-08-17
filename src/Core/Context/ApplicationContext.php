@@ -816,6 +816,9 @@ class ApplicationContext {
                 if (file_exists($configFile = $coreConfDir . 'default.yml')) {
                     $configFiles[] = $configFile;
                 }
+                if (file_exists($configFile = $coreConfDir . 'isDown.yml')) {
+                    $configFiles[] = $configFile;
+                }
                 $configPath = NULL;
                 $dbPath = NULL;
                 switch ($this->getEnv()) {

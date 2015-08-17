@@ -84,6 +84,8 @@ class Install extends Base {
 
         $this->getOutput()->writeln('');
 
+        $this->generateOptimizedAutoLoader();
+
         $isFirstInstall = true;
         $isStageOrProd = $this->isStageOrProd();
 
@@ -147,7 +149,7 @@ class Install extends Base {
 
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
-        $this->dumpFolder = $this->paths['root'] .'/dump';
+        $this->dumpFolder = $this->paths['root'] . '/dump';
 
         $this->getEnvConf();
         $configFolderArchiweb =
@@ -587,7 +589,9 @@ class Install extends Base {
 
         $returnCode = NULL;
         $_unused = NULL;
-        $cmd = 'sed \'s/^.*DEFINER=.*$//g\' '.$dumpPath.' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname;
+        $cmd =
+            'sed \'s/^.*DEFINER=.*$//g\' ' . $dumpPath . ' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd
+            . ' ' . $dbname;
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
@@ -711,6 +715,44 @@ class Install extends Base {
         }
 
         return $this->envConf;
+    }
+
+    /**
+     *
+     */
+    protected function generateOptimizedAutoLoader () {
+
+        $this->getOutput()->writeln('Generation of optimized auto-loader...');
+
+        $cmd =
+            'cd ' . escapeshellarg($this->deployDestDir)
+            . '; curl -sS https://getcomposer.org/installer | php; php composer.phar dumpautoload -o';
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+        }
+
+        $returnCode = NULL;
+        $unused = NULL;
+
+        if ($this->getInput()->getOption('verbose')) {
+            passthru($cmd, $returnCode);
+        }
+        else {
+            exec($cmd, $unused, $returnCode);
+        }
+
+        if ($returnCode !== 0) {
+            $this->getOutput()->writeln('<warning>Unable to generate optimized auto-loader</warning>');
+            if (!$this->confirm("<warning>Do you want to continue?\n[Y/n] </warning>")) {
+                $this->abort('Installation aborted by user');
+            }
+        }
+        else {
+            $this->getOutput()->writeln('OK');
+        }
+
+        $this->getOutput()->writeln('');
+
     }
 
 }
