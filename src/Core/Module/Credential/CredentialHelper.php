@@ -19,7 +19,7 @@ class CredentialHelper {
      */
     public static function encryptPassword ($password) {
 
-        return password_hash($password, PASSWORD_BCRYPT);
+        return $password;
 
     }
 
@@ -32,16 +32,23 @@ class CredentialHelper {
      */
     public static function credentialsForAuthParams (array $authParams) {
 
-        if ($authParams['authType'] != 'password') {
+        if (!isset($authParams['authType']) || $authParams['authType'] != 'password') {
             throw new \Exception('unknown auth type');
         }
 
-        $logins = explode('#', $authParams['login']);
+        $logins = explode('#', isset($authParams['login']) ? $authParams['login'] : '');
         $superLogin = isset($logins[1]) ? $logins[1] : $logins[0];
         $login = isset($logins[1]) ? $logins[0] : NULL;
+        $timestamp = isset($authParams['timestamp']) ? $authParams['timestamp'] : 0;
+
+        // if timestamp is not enough close, refuse the authentication
+        if ($timestamp > (time() + 30) || $timestamp < (time() - 30)) {
+            throw new ToResolveException(ERROR_PERMISSION_DENIED);
+        }
 
         $superUserCredential = static::credentialForLogin($superLogin);
-        if (!password_verify($authParams['password'], $superUserCredential->getPassword())) {
+        $superHash = sha1($superLogin . $superUserCredential->getPassword() . $timestamp);
+        if ($superHash != (isset($authParams['hash']) ? $authParams['hash'] : '')) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
 
