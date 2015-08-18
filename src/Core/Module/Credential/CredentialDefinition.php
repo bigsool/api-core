@@ -82,6 +82,7 @@ class CredentialDefinition extends ModuleEntityDefinition {
      * @param ActionContext $actionContext
      *
      * @return ModuleEntityUpsertContext
+     * @throws ToResolveException
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
