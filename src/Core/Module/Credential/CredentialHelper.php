@@ -47,7 +47,7 @@ class CredentialHelper {
         }
 
         $superUserCredential = static::credentialForLogin($superLogin);
-        $superHash = sha1($superLogin . $superUserCredential->getPassword() . $timestamp);
+        $superHash = sha1(implode('#', $logins) . $superUserCredential->getPassword() . $timestamp);
         if ($superHash != (isset($authParams['hash']) ? $authParams['hash'] : '')) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
