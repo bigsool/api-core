@@ -5,7 +5,10 @@ namespace Core\Module\Credential;
 
 
 use Core\Context\ActionContext;
+use Core\Context\FindQueryContext;
 use Core\Context\ModuleEntityUpsertContext;
+use Core\Context\RequestContext;
+use Core\Error\ToResolveException;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -79,6 +82,7 @@ class CredentialDefinition extends ModuleEntityDefinition {
      * @param ActionContext $actionContext
      *
      * @return ModuleEntityUpsertContext
+     * @throws ToResolveException
      */
     public function createUpsertContext (array $params, $entityId, ActionContext $actionContext) {
 
@@ -87,6 +91,23 @@ class CredentialDefinition extends ModuleEntityDefinition {
         if (array_key_exists('password', $params)) {
             $hash = CredentialHelper::encryptPassword($upsertContext->getValidatedParam('password'));
             $upsertContext->addParam('password', $hash);
+        }
+
+        if (!$entityId) {
+
+            $login = $upsertContext->getValidatedParam('login');
+
+            $internalReqCtx = RequestContext::createNewInternalRequestContext();
+
+            $findQueryContext = new FindQueryContext('Credential', $internalReqCtx);
+            $findQueryContext->addField('*');
+            $findQueryContext->addFilter('CredentialForLogin', $login);
+
+            // TODO count request directly
+            if (count($findQueryContext->findAll()) != 0) {
+                throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
+            }
+
         }
 
         return $upsertContext;

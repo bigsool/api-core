@@ -21,10 +21,8 @@ class Mailer {
      */
     function __construct (ApplicationContext $appCtx) {
 
-        $configKey = $appCtx->isUnitTest() ? 'sandboxAPIKey' : 'APIKey';
-
         $config = $appCtx->getConfigManager()->getConfig();
-        $APIKey = $config['mailer'][$configKey];
+        $APIKey = $config['mailer']['APIKey'];
         $email = $config['mailer']['from'];
 
         $this->mandrill = new \Mandrill($APIKey);

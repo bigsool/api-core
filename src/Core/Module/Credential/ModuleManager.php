@@ -128,19 +128,6 @@ class ModuleManager extends AbstractModuleManager {
             ],
                 function (ActionContext $context) {
 
-                    $params = $context->getVerifiedParams();
-
-                    $internalReqCtx = RequestContext::createNewInternalRequestContext();
-
-                    $findQueryContext = new FindQueryContext('Credential', $internalReqCtx);
-                    $findQueryContext->addField('*');
-                    $findQueryContext->addFilter('CredentialForLogin', $params['login']);
-
-                    // TODO count request directly
-                    if (count($findQueryContext->findAll()) != 0) {
-                        throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
-                    }
-
                     $credential = $this->getModuleEntity('Credential')->create($context->getParams(), $context);
 
                     $this->getModuleEntity('Credential')->save($credential);
