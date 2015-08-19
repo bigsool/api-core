@@ -7,8 +7,6 @@ use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
-use Core\Context\RequestContext;
 use Core\Error\ToResolveException;
 use Core\Field\Field;
 use Core\Filter\Filter;
@@ -17,6 +15,9 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
 use Core\Rule\Rule;
+use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\String;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ModuleManager extends AbstractModuleManager {
@@ -29,9 +30,10 @@ class ModuleManager extends AbstractModuleManager {
     public function createActions (ApplicationContext &$appCtx) {
 
         return [
-            new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
-                                                                 'password' => [new CredentialDefinition()],
-                                                                 'authType' => [new CredentialDefinition()],
+            new GenericAction('Core\Credential', 'login', NULL, ['login'     => [new CredentialDefinition()],
+                                                                 'timestamp' => [new Int(), new NotBlank()],
+                                                                 'hash'      => [new String(), new NotBlank()],
+                                                                 'authType'  => [new CredentialDefinition()],
             ],
                 function (ActionContext $context) use ($appCtx) {
 
@@ -146,7 +148,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $password = $context->getAuth()->getCredential()->getPassword();
 
-                if (!password_verify($params['currentPassword'], $password)) {
+                if ($params['currentPassword'] != $password) {
                     throw new ToResolveException(ERROR_PERMISSION_DENIED);
                 }
 
