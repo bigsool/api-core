@@ -214,6 +214,9 @@ class Application {
 
                 $response = $this->handleException($reqCtx, $e, $rpcHandler);
 
+                // handle function which must be executed after the commit/rollback
+                $this->executeFunctionsAfterCommitOrRollback(false);
+
             }
 
             $this->appCtx->getQueryLogger()->logResponse($response);
@@ -236,6 +239,9 @@ class Application {
                                               ]));
 
             ob_end_clean();
+
+            // handle function which must be executed after the commit/rollback
+            $this->executeFunctionsAfterCommitOrRollback(false);
 
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
@@ -483,7 +489,7 @@ class Application {
         $traceLogger->trace('database committed');
 
         // handle function which must be
-        $this->executeFunctionsAfterCommit();
+        $this->executeFunctionsAfterCommitOrRollback(true);
 
         return $response;
 
@@ -524,12 +530,12 @@ class Application {
     /**
      * Functions added in this queue must be executed after the commit
      */
-    protected function executeFunctionsAfterCommit() {
+    protected function executeFunctionsAfterCommitOrRollback($success) {
 
-        $queue = $this->appCtx->getFunctionsQueueAfterCommit();
+        $queue = $this->appCtx->getFunctionsQueueAfterCommitOrRollback();
         while (!$queue->isEmpty()) {
             $callable = $queue->dequeue();
-            call_user_func($callable);
+            call_user_func($callable,$success);
         }
 
     }

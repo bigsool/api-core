@@ -182,7 +182,7 @@ class ApplicationContext {
     /**
      * @var FunctionQueue
      */
-    protected $functionsQueueAfterCommit;
+    protected $functionsQueueAfterCommitOrRollback;
 
     /**
      * @param RequestContext $initialRequestContext
@@ -940,13 +940,13 @@ class ApplicationContext {
     /**
      * @return FunctionQueue
      */
-    public function getFunctionsQueueAfterCommit() {
+    public function getFunctionsQueueAfterCommitOrRollback() {
 
-        if (!isset($this->functionsQueueAfterCommit)) {
-            $this->functionsQueueAfterCommit = new FunctionQueue();
+        if (!isset($this->functionsQueueAfterCommitOrRollback)) {
+            $this->functionsQueueAfterCommitOrRollback = new FunctionQueue();
         }
 
-        return $this->functionsQueueAfterCommit;
+        return $this->functionsQueueAfterCommitOrRollback;
 
     }
 
