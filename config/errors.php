@@ -113,3 +113,6 @@ $errorManager->defineError(new Error(ERROR_PROJECT_PARTICIPANT_NOT_FOUND, 'proje
 
 defined('ERROR_HAVE_THIS_RECURRING_PRODUCT') || define('ERROR_HAVE_THIS_RECURRING_PRODUCT', 16310);
 $errorManager->defineError(new Error(ERROR_HAVE_THIS_RECURRING_PRODUCT, 'You actually have this recurring product'));
+
+defined('ERROR_WITH_STRIPE') || define('ERROR_WITH_STRIPE', 16311);
+$errorManager->defineError(new Error(ERROR_WITH_STRIPE, 'error during stripe payment'));
