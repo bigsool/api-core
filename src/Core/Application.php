@@ -482,6 +482,9 @@ class Application {
         $this->entityManager->commit();
         $traceLogger->trace('database committed');
 
+        // handle function which must be
+        $this->executeFunctionsAfterCommit();
+
         return $response;
 
     }
@@ -515,6 +518,19 @@ class Application {
         }
 
         $this->appCtx->getTraceLogger()->trace('success queue processed');
+
+    }
+
+    /**
+     * Functions added in this queue must be executed after the commit
+     */
+    protected function executeFunctionsAfterCommit() {
+
+        $queue = $this->appCtx->getFunctionsQueueAfterCommit();
+        while (!$queue->isEmpty()) {
+            $callable = $queue->dequeue();
+            call_user_func($callable);
+        }
 
     }
 

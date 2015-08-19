@@ -13,6 +13,7 @@ use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
+use Core\FunctionQueue;
 use Core\Helper\ModuleManagerHelperLoader;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
@@ -177,6 +178,11 @@ class ApplicationContext {
      * @var Translator
      */
     protected $translator;
+
+    /**
+     * @var FunctionQueue
+     */
+    protected $functionsQueueAfterCommit;
 
     /**
      * @param RequestContext $initialRequestContext
@@ -928,6 +934,19 @@ class ApplicationContext {
         }
 
         return $this->onSuccessActionQueue;
+
+    }
+
+    /**
+     * @return FunctionQueue
+     */
+    public function getFunctionsQueueAfterCommit() {
+
+        if (!isset($this->functionsQueueAfterCommit)) {
+            $this->functionsQueueAfterCommit = new FunctionQueue();
+        }
+
+        return $this->functionsQueueAfterCommit;
 
     }
 
