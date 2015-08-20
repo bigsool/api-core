@@ -95,7 +95,8 @@ class JSON implements Handler {
                                         ]),
                             Response::HTTP_OK, [
                                 'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*'
+                                'Access-Control-Allow-Origin' => '*',
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept'
                             ]);
 
     }
@@ -113,7 +114,8 @@ class JSON implements Handler {
                                         ]),
                             Response::HTTP_OK, [
                                 'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*'
+                                'Access-Control-Allow-Origin' => '*',
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept'
                             ]);
 
     }
