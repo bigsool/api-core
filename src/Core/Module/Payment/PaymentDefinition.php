@@ -27,7 +27,7 @@ class PaymentDefinition extends ModuleEntityDefinition {
 
     const PAYMENT_STATUS_CANCELLED = "CANCELED";
 
-    const PAYMENT_STATUS_PENDING = "CANCELED";
+    const PAYMENT_STATUS_PENDING = "PENDING";
 
     /**
      * @return string
