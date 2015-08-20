@@ -105,7 +105,8 @@ class JSONP implements Handler {
                             Response::HTTP_OK, [
                                 'Content-type'                => 'application/json',
                                 'Access-Control-Allow-Origin' => '*',
-                                'Access-Control-Allow-Headers' => 'Content-Type, Accept'
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                                'Access-Control-Max-Age' => 60*60*24 // 1 day in seconds
                             ]);
 
     }
@@ -124,7 +125,8 @@ class JSONP implements Handler {
                             Response::HTTP_OK, [
                                 'Content-type'                => 'application/json',
                                 'Access-Control-Allow-Origin' => '*',
-                                'Access-Control-Allow-Headers' => 'Content-Type, Accept'
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                                'Access-Control-Max-Age' => 60*60*24 // 1 day in seconds
                             ]);
 
     }
