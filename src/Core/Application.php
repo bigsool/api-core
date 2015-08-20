@@ -188,26 +188,38 @@ class Application {
                 $request = Request::createFromGlobals();
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
-                $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
+                if (strtoupper($_SERVER['REQUEST_METHOD']) == 'OPTIONS') {
 
-                $this->appCtx->getTranslator()->setLocale($rpcHandler->getLocale());
+                    $response = new Response('', Response::HTTP_OK, [
+                        'Content-type'                 => 'application/json',
+                        'Access-Control-Allow-Origin'  => '*',
+                        'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                        'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
+                    ]);
+                } else {
 
-                // handle API is temporary down during deploy
-                $config = $this->appCtx->getConfigManager()->getConfig();
-                if (isset($config['down']) && $config['down']) {
-                    throw new ToResolveException(ERROR_API_UNAVAILABLE);
+                    $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
+
+                    $this->appCtx->getTranslator()->setLocale($rpcHandler->getLocale());
+
+                    // handle API is temporary down during deploy
+                    $config = $this->appCtx->getConfigManager()->getConfig();
+                    if (isset($config['down']) && $config['down']) {
+                        throw new ToResolveException(ERROR_API_UNAVAILABLE);
+                    }
+
+                    $this->populateRequestContext($rpcHandler, $reqCtx);
+
+                    $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
+
+                    $sfReqCtx = new SfRequestContext();
+                    $sfReqCtx->fromRequest($request);
+
+                    $controller = $this->getController($sfReqCtx, $rpcHandler, $reqCtx);
+
+                    $response = $this->executeController($controller, $reqCtx, $rpcHandler);
+
                 }
-
-                $this->populateRequestContext($rpcHandler, $reqCtx);
-
-                $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
-
-                $sfReqCtx = new SfRequestContext();
-                $sfReqCtx->fromRequest($request);
-
-                $controller = $this->getController($sfReqCtx, $rpcHandler, $reqCtx);
-
-                $response = $this->executeController($controller, $reqCtx, $rpcHandler);
 
             }
             catch (\Exception $e) {
@@ -276,7 +288,7 @@ class Application {
 
             $controller = new Controller($rpcHandler->getAction(), $rpcHandler->getModule());
 
-            $this->executeController($controller,$reqCtx,$rpcHandler);
+            $this->executeController($controller, $reqCtx, $rpcHandler);
 
         }
         catch (\Exception $e) {
@@ -290,7 +302,6 @@ class Application {
             exit('Internal Server Error');
 
         }
-
 
     }
 
@@ -350,8 +361,7 @@ class Application {
 
     }
 
-
-        /**
+    /**
      * @param Request $request
      *
      * @return Handler
@@ -530,12 +540,12 @@ class Application {
     /**
      * Functions added in this queue must be executed after the commit
      */
-    protected function executeFunctionsAfterCommitOrRollback($success) {
+    protected function executeFunctionsAfterCommitOrRollback ($success) {
 
         $queue = $this->appCtx->getFunctionsQueueAfterCommitOrRollback();
         while (!$queue->isEmpty()) {
             $callable = $queue->dequeue();
-            call_user_func($callable,$success);
+            call_user_func($callable, $success);
         }
 
     }
