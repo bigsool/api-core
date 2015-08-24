@@ -275,7 +275,7 @@ class TestStorage
     {
         $this->company = $company;
         $this->companyRestrictedId = $company ? $company->getId() : NULL;
-
+    
         return $this;
     }
 
@@ -286,9 +286,9 @@ class TestStorage
      */
     public function getCompany()
     {
-
+    
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-
+    
         if (!$this->companyRestrictedId) {
             $faultedVar = "is".ucfirst("company")."Faulted";
             if (!$this->$faultedVar) {
@@ -304,7 +304,7 @@ class TestStorage
             // RestrictedObjectHydrator will automatically hydrate companyRestrictedId
             // Since Doctrine shares model instances, companyRestrictedId will be automatically available
         }
-
+    
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
@@ -329,7 +329,7 @@ class TestStorage
     {
         $this->user = $user;
         $this->userRestrictedId = $user ? $user->getId() : NULL;
-
+    
         return $this;
     }
 
@@ -340,9 +340,9 @@ class TestStorage
      */
     public function getUser()
     {
-
+    
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-
+    
         if (!$this->userRestrictedId) {
             $faultedVar = "is".ucfirst("user")."Faulted";
             if (!$this->$faultedVar) {
@@ -358,7 +358,7 @@ class TestStorage
             // RestrictedObjectHydrator will automatically hydrate userRestrictedId
             // Since Doctrine shares model instances, userRestrictedId will be automatically available
         }
-
+    
         return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
     }
 
