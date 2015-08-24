@@ -7,6 +7,7 @@ use Archipad\RightsManager;
 use Core\Auth;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
+use Core\Validation\Validator;
 
 class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
