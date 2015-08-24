@@ -30,7 +30,7 @@ class ModuleManager extends AbstractModuleManager {
 
         return [
             new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
-                                                                'password' => [new CredentialDefinition()]
+                                                                 'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) use ($appCtx) {
 
@@ -41,7 +41,8 @@ class ModuleManager extends AbstractModuleManager {
                     $credentialHelper = $this->getCredentialHelper();
                     $credential = $credentialHelper::credentialForLoginAndPassword($login, $password);
 
-                    $loginHistory = $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
+                    $loginHistory =
+                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
                     $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
                     $authenticationHelper = $this->getAuthenticationHelper();
@@ -59,7 +60,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new GenericAction('Core\Credential', 'setAuthCookie', [],
-                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
+                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
 
@@ -77,7 +78,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new GenericAction('Core\Credential', 'checkAuth', [],
-                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
+                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $authToken = $ctx->getParam('authToken');
 
@@ -88,7 +89,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new GenericAction('Core\Credential', 'renewAuthCookie', [],
-                             ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
+                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
 
                     $response = $ctx->getRequestContext()->getResponse();
 
@@ -115,8 +116,8 @@ class ModuleManager extends AbstractModuleManager {
 
                 }),
             new GenericAction('Core\Credential', 'create', NULL, ['login'    => [new CredentialDefinition()],
-                                                                 'type'     => [new CredentialDefinition()],
-                                                                 'password' => [new CredentialDefinition()]
+                                                                  'type'     => [new CredentialDefinition()],
+                                                                  'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) {
 
@@ -157,7 +158,9 @@ class ModuleManager extends AbstractModuleManager {
 
                 $context->unsetParam('currentPassword');
 
-                $credential = $this->getModuleEntity('Credential')->update($context->getParam('id'), $context->getParams(), $context);
+                $credential =
+                    $this->getModuleEntity('Credential')
+                         ->update($context->getParam('id'), $context->getParams(), $context);
 
                 $this->getModuleEntity('Credential')->save($credential);
 
@@ -219,7 +222,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @return AuthenticationHelper
      */
-    protected function getAuthenticationHelper() {
+    protected function getAuthenticationHelper () {
 
         return ApplicationContext::getInstance()->getHelperClassName('Authentication');
 
@@ -228,7 +231,7 @@ class ModuleManager extends AbstractModuleManager {
     /**
      * @return CredentialHelper
      */
-    protected function getCredentialHelper() {
+    protected function getCredentialHelper () {
 
         return ApplicationContext::getInstance()->getHelperClassName('Credential');
 

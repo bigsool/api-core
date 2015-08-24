@@ -253,7 +253,7 @@ class ApplicationContext {
      *
      * @return string
      */
-    public function getHelperClassName($helperName) {
+    public function getHelperClassName ($helperName) {
 
         foreach ($this->getHelperLoader() as $helper) {
             if ($className = $helper::getHelperClassName($helperName)) {
@@ -276,7 +276,7 @@ class ApplicationContext {
     /**
      * @return ModuleManagerHelperLoader[]
      */
-    public function getHelperLoader(){
+    public function getHelperLoader () {
 
         if (!$this->helperLoaders) {
 
@@ -1005,7 +1005,6 @@ class ApplicationContext {
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
         return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $client, '')->getResult();
-
 
     }
 

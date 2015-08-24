@@ -7,7 +7,6 @@ namespace Core\Module;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
-use Core\Registry;
 
 interface ModuleEntity {
 

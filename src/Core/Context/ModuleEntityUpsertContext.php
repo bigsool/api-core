@@ -205,25 +205,25 @@ class ModuleEntityUpsertContext {
     /**
      * @return array
      */
-    public function getInputParams() {
+    public function getInputParams () {
 
         return $this->inputParams;
 
     }
 
     /**
-     * @param string     $key
-     * @param mixed $defaultValue
+     * @param string $key
+     * @param mixed  $defaultValue
      *
      * @return mixed
      */
-    public function getInputParam($key, $defaultValue = NULL){
+    public function getInputParam ($key, $defaultValue = NULL) {
 
         return isset($this->inputParams[$key]) ? $this->inputParams[$key] : $defaultValue;
 
     }
 
-    public function getValidatedInputParam($key) {
+    public function getValidatedInputParam ($key) {
 
         return $this->validateParam(NULL, $key, $this->inputParams);
 
@@ -261,7 +261,7 @@ class ModuleEntityUpsertContext {
      * @param $key
      * @param $defaultValue
      */
-    public function setDefaultParam($key, $defaultValue){
+    public function setDefaultParam ($key, $defaultValue) {
 
         if (!array_key_exists($key, $this->params)) {
             $this->addParam($key, $defaultValue);

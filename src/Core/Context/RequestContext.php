@@ -341,7 +341,7 @@ class RequestContext {
             $appCtx->getOnSuccessActionQueue()
                    ->addAction($setAuthAction, ['authToken' => $authToken, 'credentialId' => $cred->getId()]);
             unset($params['authToken']);
-            
+
         }
 
         $this->params = $params;

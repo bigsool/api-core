@@ -147,7 +147,7 @@ class Install extends Base {
 
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
-        $this->dumpFolder = $this->paths['root'] .'/dump';
+        $this->dumpFolder = $this->paths['root'] . '/dump';
 
         $this->getEnvConf();
         $configFolderArchiweb =
@@ -587,7 +587,9 @@ class Install extends Base {
 
         $returnCode = NULL;
         $_unused = NULL;
-        $cmd = 'sed \'s/^.*DEFINER=.*$//g\' '.$dumpPath.' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname;
+        $cmd =
+            'sed \'s/^.*DEFINER=.*$//g\' ' . $dumpPath . ' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd
+            . ' ' . $dbname;
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }

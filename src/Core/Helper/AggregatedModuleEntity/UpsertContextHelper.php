@@ -60,7 +60,8 @@ class UpsertContextHelper {
             $qryCtx->addFilter(new StringFilter($modelAspect->getModel(), '', 'id = :id'), $subEntityId);
             $subEntity = $qryCtx->findOne();
 
-            $childUpsertContext = new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
+            $childUpsertContext =
+                new ModuleEntityUpsertContext($moduleEntity->getDefinition(), $entityId, $aspectParams, $actionContext);
             $childUpsertContext->setEntity($subEntity);
         }
         else {
@@ -112,7 +113,7 @@ class UpsertContextHelper {
         // prepares sub context by filtering out non company related fields
         foreach ($translatedParams as $key => $value) {
             $isParamLinkedToAspectModel = static::isParamLinkedToAspectModel($definition, $relativeField, $key);
-            $isParamLinkedToAggregated = $relativeField || !array_key_exists($key,$definition->getConstraintsList());
+            $isParamLinkedToAggregated = $relativeField || !array_key_exists($key, $definition->getConstraintsList());
             if (!$isParamLinkedToAspectModel && $isParamLinkedToAggregated) {
                 $entityParams[$key] = $value;
             }

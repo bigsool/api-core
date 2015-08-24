@@ -93,7 +93,7 @@ class AuthenticationHelper {
     }
 
     /**
-     * @param mixed            $authToken
+     * @param mixed $authToken
      *
      * @return Credential
      * @throws ToResolveException

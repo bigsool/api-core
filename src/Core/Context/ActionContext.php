@@ -5,11 +5,8 @@ namespace Core\Context;
 
 use Archipad\RightsManager;
 use Core\Auth;
-use Core\Module\ModuleEntityDefinition;
 use Core\Parameter\UnsafeParameter;
-use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\Constraint;
-use Core\Validation\Validator;
 
 class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
@@ -130,8 +127,8 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
-     * @param mixed $key
-     * @param mixed $default
+     * @param mixed        $key
+     * @param mixed        $default
      * @param Constraint[] $constraints
      *
      * @return mixed
@@ -160,7 +157,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
      *
      * @return bool
      */
-    public function doesParamExist($key) {
+    public function doesParamExist ($key) {
 
         $exploded = explode('.', $key);
         $params = $this->params;
@@ -479,6 +476,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     public function callV1API ($service, $method, $params) {
+
         $reqCtx = $this->getRequestContext();
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();

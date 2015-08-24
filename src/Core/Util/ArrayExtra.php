@@ -146,6 +146,7 @@ class ArrayExtra {
 
             if (!isset($array[$key])) {
                 $isset = false;
+
                 return NULL;
             }
             // it's not necessary to create an array for the last key

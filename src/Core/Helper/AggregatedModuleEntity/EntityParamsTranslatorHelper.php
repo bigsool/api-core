@@ -35,6 +35,7 @@ class EntityParamsTranslatorHelper {
 
     /**
      * TODO rename
+     *
      * @param array       $formattedRelativeFields
      * @param array       $formattedFields
      * @param null|string $parentField

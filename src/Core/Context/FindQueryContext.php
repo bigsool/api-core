@@ -129,7 +129,8 @@ class FindQueryContext implements QueryContext {
     /**
      * @param RelativeField|string $field,...
      */
-    public function addFields($field) {
+    public function addFields ($field) {
+
         foreach (func_get_args() as $field) {
             $this->addField($field);
         }

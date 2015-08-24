@@ -10,8 +10,6 @@ use Core\Error\FormattedError;
 use Core\Error\ValidationException;
 use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\Constraint;
-use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\NotNull;
 use Core\Validation\Validator;
 
 class GenericAction extends Action {
@@ -64,11 +62,13 @@ class GenericAction extends Action {
         }
 
         if (!is_callable($validate) && !is_array($validate)) {
-            throw new \InvalidArgumentException(sprintf('$validate must be a callable or an array, %s given',gettype($validate)));
+            throw new \InvalidArgumentException(sprintf('$validate must be a callable or an array, %s given',
+                                                        gettype($validate)));
         }
 
         if (!is_callable($authorize) && !is_array($authorize) && !is_string($authorize) && !is_null($authorize)) {
-            throw new \InvalidArgumentException(sprintf('$authorize must be a callable or a string or an array of string, %s given', gettype($authorize)));
+            throw new \InvalidArgumentException(sprintf('$authorize must be a callable or a string or an array of string, %s given',
+                                                        gettype($authorize)));
         }
 
         $this->module = $module;
@@ -94,7 +94,6 @@ class GenericAction extends Action {
     /**
      * @param array         $constraintsList
      * @param ActionContext $context
-
      *
      * @throws ValidationException
      */
@@ -131,10 +130,12 @@ class GenericAction extends Action {
             $finalValue = $context->getFinalParam($originalField);
             $finalParams = $context->getFinalParams();
             $explodedField = explode('.', $originalField);
-            for ($i = 0 ; $i < count($explodedField) - 1 ; ++$i) {
+            for ($i = 0; $i < count($explodedField) - 1; ++$i) {
                 $finalParams = $finalParams[$explodedField[$i]];
             }
-            $result = Validator::validateParams([$explodedField[count($explodedField) - 1] => $constraintsFor],$finalParams,$forceOptional);
+            $result =
+                Validator::validateParams([$explodedField[count($explodedField) - 1] => $constraintsFor], $finalParams,
+                                          $forceOptional);
 
             if ($result->hasErrors()) {
 

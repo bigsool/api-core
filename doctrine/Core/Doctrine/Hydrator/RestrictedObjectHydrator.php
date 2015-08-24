@@ -139,7 +139,6 @@ class RestrictedObjectHydrator extends ObjectHydrator {
                 }
 
 
-
                 $newObjectResult = $metadata->getReflectionProperty($key)->getValue($object);
                 if (!$isCollection) {
                     $newObjectResult = [$newObjectResult];

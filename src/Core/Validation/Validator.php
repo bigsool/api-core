@@ -37,7 +37,8 @@ class Validator {
             $fieldValidationResult = static::validateParam($params, $field, $constraints);
             if ($fieldValidationResult->hasErrors()) {
                 $errors = array_merge($errors, $fieldValidationResult->getErrors());
-            } else {
+            }
+            else {
                 $validatedParams[$field] = $fieldValidationResult->getValue();
             }
 
@@ -94,6 +95,7 @@ class Validator {
 
     /**
      * TODO : remove this method
+     *
      * @param ActionContext $context
      * @param array         $constraints
      *

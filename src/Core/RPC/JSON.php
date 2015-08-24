@@ -63,7 +63,6 @@ class JSON implements Handler {
      */
     protected $id;
 
-
     /**
      * @return string
      */
@@ -97,9 +96,9 @@ class JSON implements Handler {
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
-                'Content-type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+                                'Content-type'                => 'application/json',
+                                'Access-Control-Allow-Origin' => '*'
+                            ]);
 
     }
 
@@ -115,9 +114,9 @@ class JSON implements Handler {
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
-                'Content-type'                => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+                                'Content-type'                => 'application/json',
+                                'Access-Control-Allow-Origin' => '*'
+                            ]);
 
     }
 

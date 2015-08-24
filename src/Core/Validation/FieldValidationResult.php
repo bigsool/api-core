@@ -68,7 +68,7 @@ class FieldValidationResult {
     /**
      * @return bool
      */
-    public function hasErrors() {
+    public function hasErrors () {
 
         return !!$this->errors;
 

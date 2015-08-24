@@ -48,11 +48,10 @@ class CompanyDefinition extends ModuleEntityDefinition {
     /**
      * @return Filter[]
      */
-    public function getFilters() {
+    public function getFilters () {
 
         return [new StringFilter('Company', 'CompanyForId', 'id = :id')];
 
     }
-
 
 }

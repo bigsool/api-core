@@ -51,13 +51,13 @@ class ModelAspect {
     private $moduleEntity;
 
     /**
-     * @param string                          $model
-     * @param string                          $module
-     * @param string                          $prefix
-     * @param Action[]                        $actions
-     * @param bool[]                          $shouldBeIgnored
-     * @param RelativeField|null              $relativeField
-     * @param Boolean                         $withPrefixedFields
+     * @param string             $model
+     * @param string             $module
+     * @param string             $prefix
+     * @param Action[]           $actions
+     * @param bool[]             $shouldBeIgnored
+     * @param RelativeField|null $relativeField
+     * @param Boolean            $withPrefixedFields
      */
     public function __construct ($model, $module, $prefix, array $actions, array $shouldBeIgnored,
                                  $relativeField = NULL,
