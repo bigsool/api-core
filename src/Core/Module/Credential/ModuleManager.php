@@ -7,8 +7,6 @@ use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
-use Core\Context\RequestContext;
 use Core\Error\ToResolveException;
 use Core\Field\Field;
 use Core\Filter\Filter;
@@ -17,6 +15,9 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
 use Core\Rule\Rule;
+use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\NotBlank;
+use Core\Validation\Parameter\String;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ModuleManager extends AbstractModuleManager {
@@ -29,32 +30,43 @@ class ModuleManager extends AbstractModuleManager {
     public function createActions (ApplicationContext &$appCtx) {
 
         return [
-            new GenericAction('Core\Credential', 'login', NULL, ['login'    => [new CredentialDefinition()],
-                                                                 'password' => [new CredentialDefinition()]
+            new GenericAction('Core\Credential', 'login', NULL, ['login'     => [new CredentialDefinition()],
+                                                                 'timestamp' => [new Int(), new NotBlank()],
+                                                                 'hash'      => [new String(), new NotBlank()],
+                                                                 'authType'  => [new CredentialDefinition()],
             ],
                 function (ActionContext $context) use ($appCtx) {
 
                     $params = $context->getVerifiedParams();
 
-                    $login = $params['login'];
-                    $password = $params['password'];
                     $credentialHelper = $this->getCredentialHelper();
-                    $credential = $credentialHelper::credentialForLoginAndPassword($login, $password);
+                    $credentials = $credentialHelper::credentialsForAuthParams($params);
 
+                    // TODO : we may add superUser in LoginHistory
                     $loginHistory =
-                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credential], $context);
+                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credentials[0]], $context);
                     $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
+                    $additionalParams = $context->getVerifiedParam('additionalParams', []);
+
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $authToken = $authenticationHelper::generateAuthToken($credential);
+                    $authToken = $authenticationHelper::generateAuthToken($credentials, NULL, NULL, $additionalParams);
 
                     $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
                                                                                      'setAuthCookie'),
                                                                   ['authToken' => $authToken]);
 
+                    $context->getRequestContext()->setAuthToken($authToken);
+                    $context->getRequestContext()->getAuth()->setCredential($credentials[0]);
+                    if (count($credentials) == 2) {
+                        $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
+                    }
+
+                    $credential = $credentials[0];
+
                     return [
                         'authToken' => $authToken,
-                        'login'     => $login,
+                        'login'     => $credential->getLogin(),
                         'id'        => $credential->getId(),
                     ];
 
@@ -71,7 +83,7 @@ class ModuleManager extends AbstractModuleManager {
                     }
 
                     $appCtx = $ctx->getApplicationContext();
-                    $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+                    $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
 
                     $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
                                                              $expire, '/', NULL, false, false));
@@ -83,9 +95,9 @@ class ModuleManager extends AbstractModuleManager {
                     $authToken = $ctx->getParam('authToken');
 
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $credential = $authenticationHelper::checkAuthToken($authToken);
+                    $credentials = $authenticationHelper::checkAuthToken($authToken);
 
-                    return $credential;
+                    return $credentials;
 
                 }),
             new GenericAction('Core\Credential', 'renewAuthCookie', [],
@@ -100,16 +112,13 @@ class ModuleManager extends AbstractModuleManager {
                     }
 
                     $authToken = $ctx->getParam('authToken');
-                    $credentialId = $ctx->getParam('credentialId');
-
-                    $credentialHelper = $this->getCredentialHelper();
-                    $credential = $credentialHelper::credentialForId($credentialId);
+                    $credentials = $ctx->getParam('credentials');
 
                     $authenticationHelper = $this->getAuthenticationHelper();
-                    $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credential);
+                    $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
 
                     $appCtx = $ctx->getApplicationContext();
-                    $expire = time() + $appCtx->getConfigManager()->getConfig()['expirationAuthToken'];
+                    $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
 
                     $response->headers->setCookie(new Cookie('authToken', json_encode($newAuthToken),
                                                              $expire, '/', NULL, false, false));
@@ -120,19 +129,6 @@ class ModuleManager extends AbstractModuleManager {
                                                                   'password' => [new CredentialDefinition()]
             ],
                 function (ActionContext $context) {
-
-                    $params = $context->getVerifiedParams();
-
-                    $internalReqCtx = RequestContext::createNewInternalRequestContext();
-
-                    $findQueryContext = new FindQueryContext('Credential', $internalReqCtx);
-                    $findQueryContext->addField('*');
-                    $findQueryContext->addFilter('CredentialForLogin', $params['login']);
-
-                    // TODO count request directly
-                    if (count($findQueryContext->findAll()) != 0) {
-                        throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
-                    }
 
                     $credential = $this->getModuleEntity('Credential')->create($context->getParams(), $context);
 
@@ -152,7 +148,7 @@ class ModuleManager extends AbstractModuleManager {
 
                 $password = $context->getAuth()->getCredential()->getPassword();
 
-                if (!password_verify($params['currentPassword'], $password)) {
+                if ($params['currentPassword'] != $password) {
                     throw new ToResolveException(ERROR_PERMISSION_DENIED);
                 }
 
@@ -220,20 +216,20 @@ class ModuleManager extends AbstractModuleManager {
     }
 
     /**
-     * @return AuthenticationHelper
-     */
-    protected function getAuthenticationHelper () {
-
-        return ApplicationContext::getInstance()->getHelperClassName('Authentication');
-
-    }
-
-    /**
      * @return CredentialHelper
      */
     protected function getCredentialHelper () {
 
         return ApplicationContext::getInstance()->getHelperClassName('Credential');
+
+    }
+
+    /**
+     * @return AuthenticationHelper
+     */
+    protected function getAuthenticationHelper () {
+
+        return ApplicationContext::getInstance()->getHelperClassName('Authentication');
 
     }
 

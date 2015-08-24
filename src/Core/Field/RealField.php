@@ -29,7 +29,7 @@ class RealField implements ResolvableField {
     /**
      * @var boolean
      */
-    protected $useLeftJoin = false;
+    protected $useLeftJoin = true;
 
     /**
      * @param string $value

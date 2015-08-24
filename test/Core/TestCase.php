@@ -15,6 +15,7 @@ use Core\Doctrine\Tools\EntityGenerator;
 use Core\Error\Error;
 use Core\Error\ErrorManager;
 use Core\Error\FormattedError;
+use Core\Error\LocalizedError;
 use Core\Expression\Expression;
 use Core\Expression\ExpressionWithOperator;
 use Core\Expression\KeyPath;
@@ -347,6 +348,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $ruleMgr = new Processor();
             $ctx->setRuleProcessor($ruleMgr);
             $ctx->setEntityManager($em);
+            $app->initTranslation();
 
             //require __DIR__ . '/../../config/errors.php';
 
@@ -487,6 +489,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getMockError () {
 
         return $this->getMockBuilder('\Core\Error\Error')
+                    ->disableOriginalConstructor()
+                    ->getMock();
+
+    }
+
+    /**
+     * @return LocalizedError
+     */
+    public function getMockLocalizedError () {
+
+        return $this->getMockBuilder('\Core\Error\LocalizedError')
                     ->disableOriginalConstructor()
                     ->getMock();
 

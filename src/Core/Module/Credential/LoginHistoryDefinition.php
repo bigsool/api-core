@@ -41,8 +41,6 @@ class LoginHistoryDefinition extends ModuleEntityDefinition {
             $reqCtx = $actionContext->getRequestContext();
 
             $params['date'] = new \DateTime();
-            $params['clientName'] = $reqCtx->getClientName();
-            $params['clientVersion'] = $reqCtx->getClientVersion();
             $params['IP'] = $reqCtx->getIpAddress();
         }
 

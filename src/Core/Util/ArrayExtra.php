@@ -117,6 +117,13 @@ class ArrayExtra {
 
             // if [{},{},{}...]
             if (!static::isAssociative($array)) {
+
+                if (!count($array)) {
+                    $isset = false;
+
+                    return NULL;
+                }
+
                 $return = [];
                 $newKey = implode('.', array_slice($exploded, $i));
 
@@ -125,8 +132,9 @@ class ArrayExtra {
                     if (!is_array($subArray)) {
                         continue;
                     }
-                    $tmpGet = static::magicalGet($subArray, $newKey);
-                    if (is_null($tmpGet)) {
+                    $tmpIsset = NULL;
+                    $tmpGet = static::magicalGet($subArray, $newKey, $tmpIsset);
+                    if (!$tmpIsset) {
                         continue;
                     }
 
@@ -169,7 +177,7 @@ class ArrayExtra {
      */
     public static function isAssociative (array &$array) {
 
-        return array_keys($array) !== range(0, count($array) - 1);
+        return count($array) && array_keys($array) !== range(0, count($array) - 1);
 
     }
 

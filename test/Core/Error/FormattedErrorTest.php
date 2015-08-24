@@ -7,8 +7,14 @@ use Core\TestCase;
 
 class FormattedErrorTest extends TestCase {
 
+    /**
+     * @var FormattedError
+     */
     private $formattedError;
 
+    /**
+     * @var FormattedError[]
+     */
     private $childErrors;
 
     public function setUp () {
@@ -73,13 +79,15 @@ class FormattedErrorTest extends TestCase {
 
     public function testGetMessage () {
 
-        $error = $this->getMockError();
+        $error = $this->getMockLocalizedError();
         $error->method('getFrMessage')->willReturn('echec authentification');
         $error->method('getEnMessage')->willReturn('login fail');
+        $error->method('getMessage')->willReturn('login fail');
 
         FormattedError::setLang("fr");
         $formattedError = new FormattedError($error);
-        $this->assertEquals('echec authentification', $formattedError->getMessage());
+        $this->assertEquals('login fail', $formattedError->getMessage());
+        $this->assertEquals('echec authentification', $formattedError->getLocalizedMessage());
 
         FormattedError::setLang("en");
         $formattedError = new FormattedError($error);
@@ -113,7 +121,7 @@ class FormattedErrorTest extends TestCase {
                 ]
         ];
 
-        $this->assertEquals($this->formattedError, json_encode($tab));
+        $this->assertEquals(json_decode($this->formattedError, true), $tab);
 
     }
 

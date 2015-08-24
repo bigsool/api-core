@@ -1,0 +1,27 @@
+Project:
+  type: entity
+  table: project
+  id:
+      id:
+          type: string
+          length: 32
+          generator:
+              strategy: NONE
+  fields:
+      name:
+          type: string
+          nullable: false
+          length: 255
+      creationDate:
+          type: datetime
+          nullable: false
+          column: creation_date
+      lastModificationDate:
+          type: datetime
+          nullable: false
+          column: last_modification_date
+  oneToMany:
+      patches:
+          targetEntity: Core\Model\ProjectPatches
+          mappedBy: project
+          cascade: ["persist"]

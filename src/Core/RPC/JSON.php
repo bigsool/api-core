@@ -90,14 +90,14 @@ class JSON implements Handler {
     public function getSuccessResponse (Serializer $serializer, $data) {
 
         return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'result'  => ['success' => true,
-                                                       'data'    => $serializer->serialize($data)->get()
-                                         ],
+                                         'result'  => $serializer->serialize($data)->get(),
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
-                                'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*'
+                                'Content-type'                 => 'application/json',
+                                'Access-Control-Allow-Origin'  => '*',
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                                'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
                             ]);
 
     }
@@ -114,8 +114,10 @@ class JSON implements Handler {
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
-                                'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*'
+                                'Content-type'                 => 'application/json',
+                                'Access-Control-Allow-Origin'  => '*',
+                                'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                                'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
                             ]);
 
     }
@@ -260,7 +262,8 @@ class JSON implements Handler {
      */
     public function getAuthToken () {
 
-        return isset($this->params['authToken']) ? json_decode($this->params['authToken'], true) : [];
+        return isset($this->params['authToken']) && is_string($this->params['authToken'])
+            ? json_decode($this->params['authToken'], true) : [];
 
     }
 

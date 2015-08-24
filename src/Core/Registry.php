@@ -50,7 +50,12 @@ class Registry implements EventSubscriber {
     /**
      * @var string[]
      */
-    protected $joins = [];
+    protected $leftJoins = [];
+
+    /**
+     * @var string[]
+     */
+    protected $innerJoins = [];
 
     /**
      * @var string[][]
@@ -99,14 +104,6 @@ class Registry implements EventSubscriber {
     }
 
     /**
-     * @return \string[]
-     */
-    public function getJoins () {
-
-        return $this->joins;
-    }
-
-    /**
      * @param $model
      *
      * @return mixed
@@ -138,23 +135,95 @@ class Registry implements EventSubscriber {
     public function addJoin (FindQueryContext $ctx, $alias, $field, $entity, $useLeftJoin = false) {
 
         $join = $alias . '.' . $field;
+        $newAlias = $alias . ucfirst($field);
 
-        // TODO: even if a left join was done, we should replace it by a inner join if it is
-        if (!isset($this->joins[$join])) {
+        // if inner join
+        if (!$useLeftJoin) {
 
-            $newAlias = $alias . ucfirst($field);
-            //$ctx->addJoinedEntity($entity);
-            $joinMethod = $useLeftJoin ? 'leftJoin' : 'innerJoin';
-            $this->getQueryBuilder($ctx->getEntity())->$joinMethod($join, $newAlias);
+            // remove from left joins
+            if (array_key_exists($join, $this->leftJoins)) {
+                unset($this->leftJoins[$join]);
+            }
 
-            // TODO: if a LeftJoin was introduce and now we wanna do a innerJoin we should add a condition (IS NOT NULL)
-
-            $this->joins[$join] = $newAlias;
-            $this->addAliasForEntity($entity, $newAlias);
+            // add in inner joins
+            $this->innerJoins[$join] = $newAlias;
 
         }
+        // if left join
+        else {
 
-        return $this->joins[$join];
+            if (!array_key_exists($join, $this->innerJoins) && !array_key_exists($join, $this->leftJoins)) {
+                $this->leftJoins[$join] = $newAlias;
+            }
+        }
+
+        $this->addAliasForEntity($entity, $newAlias);
+
+        return $newAlias;
+
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getInnerJoins () {
+
+        return $this->innerJoins;
+
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getLeftJoins () {
+
+        return $this->leftJoins;
+
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getJoins () {
+
+        return array_merge($this->getInnerJoins(), $this->getLeftJoins());
+
+    }
+
+    /**
+     * @param FindQueryContext $ctx
+     */
+    protected function doJoins (FindQueryContext $ctx) {
+
+        $joins = [];
+        foreach ($this->getLeftJoins() as $join => $alias) {
+            $joins[$join] = [$alias, true];
+        }
+        foreach ($this->getInnerJoins() as $join => $alias) {
+            $joins[$join] = [$alias, false];
+        }
+
+        // sort joins otherwise you will have this error
+        // [Semantical Error] near '.user userCredentialUser':
+        // Error:Identification Variable userCredential used in join path expression but was not defined before.
+        uksort($joins, function ($joinA, $joinB) {
+
+            $diffDots = substr_count($joinA, '.') - substr_count($joinB, '.');
+
+            return $diffDots != 0 ? $diffDots : strlen($joinA) - strlen($joinB);
+
+        });
+
+        $queryBuilder = $this->getQueryBuilder($ctx->getEntity());
+
+        foreach ($joins as $join => list($alias, $isLeftJoin)) {
+            if ($isLeftJoin) {
+                $queryBuilder->leftJoin($join, $alias);
+            }
+            else {
+                $queryBuilder->innerJoin($join, $alias);
+            }
+        }
 
     }
 
@@ -334,6 +403,8 @@ class Registry implements EventSubscriber {
         }
         $qb->setParameters($this->params);
 
+        $this->doJoins($ctx);
+
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
@@ -499,6 +570,10 @@ class Registry implements EventSubscriber {
     }
 
     public function delete ($model) {
+
+        if ($model instanceof MagicalEntity) {
+            $model = $model->getMainEntity();
+        }
 
         static::$entityManager->remove($model);
         static::$entityManager->flush();

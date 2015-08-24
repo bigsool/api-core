@@ -22,11 +22,18 @@ class Parameter extends Value {
     protected $parameterValue;
 
     /**
+     * @var bool
+     */
+    protected $isParameterGiven = false;
+
+    /**
      * @param mixed $parameterValue
      */
     public function setParameterValue ($parameterValue) {
 
         $this->parameterValue = $parameterValue;
+        $this->isParameterGiven = true;
+
     }
 
     /**
@@ -72,9 +79,9 @@ class Parameter extends Value {
         }
 
         $name = substr($this->getValue(), 1);
-        $value = isset($this->parameterValue) ? $this->parameterValue : $context->getParam($name);
+        $value = $this->isParameterGiven ? $this->parameterValue : $context->getParam($name);
 
-        if (is_null($value)) {
+        if (!$this->isParameterGiven && !$context->parameterExists($name)) {
             throw new \RuntimeException("parameter $name not found");
         }
 

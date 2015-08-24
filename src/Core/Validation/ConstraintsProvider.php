@@ -9,7 +9,7 @@ interface ConstraintsProvider {
     /**
      * @param string $field
      *
-     * @return Constraint[]|null
+     * @return Constraint[]
      */
     public function getConstraintsFor ($field);
 

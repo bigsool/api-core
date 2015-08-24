@@ -14,12 +14,7 @@ class Error {
     /**
      * @var string
      */
-    protected $frMessage;
-
-    /**
-     * @var string
-     */
-    protected $enMessage;
+    protected $message;
 
     /**
      * @var string
@@ -33,16 +28,14 @@ class Error {
 
     /**
      * @param int    $code
-     * @param string $frMessage
-     * @param string $enMessage
+     * @param string $message
      * @param int    $parentCode
      * @param string $field
      */
-    public function __construct ($code, $frMessage, $enMessage, $parentCode = NULL, $field = NULL) {
+    public function __construct ($code, $message, $parentCode = NULL, $field = NULL) {
 
         $this->code = $code;
-        $this->frMessage = $frMessage;
-        $this->enMessage = $enMessage;
+        $this->message = $message;
         $this->field = $field;
         $this->parentCode = $parentCode;
 
@@ -60,18 +53,9 @@ class Error {
     /**
      * @return string
      */
-    public function getFrMessage () {
+    public function getMessage () {
 
-        return $this->frMessage;
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getEnMessage () {
-
-        return $this->enMessage;
+        return $this->message;
 
     }
 

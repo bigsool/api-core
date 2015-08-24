@@ -22,18 +22,25 @@ class Auth {
     protected $credential;
 
     /**
+     * @var Credential|null
+     */
+    protected $superUserCredential;
+
+    /**
      * @var string[]
      */
     protected $rights = [];
 
     /**
      * @param mixed $credential
+     * @param mixed $superUserCredential
      */
-    public function __construct ($credential = NULL) {
+    public function __construct ($credential = NULL, $superUserCredential = NULL) {
 
         $this->rights[] = self::GUEST;
 
         $this->setCredential($credential);
+        $this->setSuperUserCredential($superUserCredential);
 
     }
 
@@ -74,6 +81,24 @@ class Auth {
         else {
             $this->rights[] = self::AUTHENTICATED;
         }
+
+    }
+
+    /**
+     * @return Credential|null
+     */
+    public function getSuperUserCredential () {
+
+        return $this->superUserCredential;
+
+    }
+
+    /**
+     * @param Credential $credential
+     */
+    public function setSuperUserCredential ($credential) {
+
+        $this->superUserCredential = $credential;
 
     }
 

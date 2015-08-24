@@ -1,0 +1,21 @@
+ProjectPatches:
+    type: entity
+    table: project_patches
+    id:
+          id:
+              type: string
+              length: 32
+              generator:
+                  strategy: NONE
+    fields:
+        date:
+            type: datetime
+            nullable: false
+    manyToOne:
+        project:
+            targetEntity: Core\Model\Project
+            inversedBy: patches
+            joinColumn:
+                name: project_id
+                referencedColumnName: id
+                onDelete: CASCADE

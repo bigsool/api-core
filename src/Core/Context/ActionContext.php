@@ -148,6 +148,14 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
             $params = UnsafeParameter::getFinalValue($params[$key]);
         }
 
+        if ($constraints) {
+            $validationResult = Validator::validateParam($params, $key, $constraints);
+            $validationResult->throwIfErrors();
+
+            return $validationResult->getValue();
+
+        }
+
         return $params[$key];
 
     }
@@ -303,14 +311,15 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     /**
      * @param mixed $key
+     * @param mixed $default
      *
      * @return mixed
      */
-    public function getVerifiedParam ($key) {
+    public function getVerifiedParam ($key, $default = NULL) {
 
         $params = $this->getVerifiedParams();
 
-        return isset($params[$key]) ? $params[$key] : NULL;
+        return isset($params[$key]) ? $params[$key] : $default;
 
     }
 
@@ -342,29 +351,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
                 unset($this->params[$key]);
             }
         }
-
-    }
-
-    /**
-     * @return RequestContext
-     */
-    public function getRequestContext () {
-
-        $context = $this;
-        while (!($context instanceof RequestContext)) {
-            $context = $context->getParentContext();
-        }
-
-        return $context;
-
-    }
-
-    /**
-     * @return RequestContext|ActionContext
-     */
-    public function getParentContext () {
-
-        return $this->parentContext;
 
     }
 
@@ -447,6 +433,15 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     }
 
     /**
+     * @return RequestContext|ActionContext
+     */
+    public function getParentContext () {
+
+        return $this->parentContext;
+
+    }
+
+    /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Retrieve an external iterator
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php     *
@@ -475,13 +470,38 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         return $this->auth;
     }
 
-    public function callV1API ($service, $method, $params) {
+    /**
+     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     *
+     * @param string $service
+     * @param string $method
+     * @param array  $params
+     * @param bool   $checkAuth
+     *
+     * @return mixed
+     */
+    public function callV1API ($service, $method, $params, $checkAuth = true) {
 
         $reqCtx = $this->getRequestContext();
 
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
-        $this->getApplicationContext()->callV1API($service, $method, $params, $client, $this->getAuth());
+        return $this->getApplicationContext()
+                    ->callV1API($service, $method, $params, $client, $this->getAuth(), $reqCtx, $checkAuth);
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getRequestContext () {
+
+        $context = $this;
+        while (!($context instanceof RequestContext)) {
+            $context = $context->getParentContext();
+        }
+
+        return $context;
+
     }
 
 }

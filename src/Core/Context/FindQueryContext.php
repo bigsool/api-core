@@ -180,8 +180,8 @@ class FindQueryContext implements QueryContext {
                                                 gettype($filter)));
         }
 
-        if ($params !== NULL) {
-            $filter->setParams((array)$params);
+        if (func_num_args() == 2) {
+            $filter->setParams(is_array($params) ? $params : [$params]);
         }
 
         $this->filters[] = $filter;
@@ -237,7 +237,18 @@ class FindQueryContext implements QueryContext {
     }
 
     /**
-     * @param int|\Exception $exception
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function parameterExists ($key) {
+
+        return array_key_exists($key, $this->params);
+
+    }
+
+    /**
+     * @param int|bool|\Exception $exception
      *
      * @return mixed
      */
@@ -247,7 +258,7 @@ class FindQueryContext implements QueryContext {
 
         $count = count($entities);
 
-        if ($count != 1) {
+        if ($count != 1 && $exception !== false) {
 
             if (is_int($exception)) {
                 $appCtx = $this->getRequestContext()->getApplicationContext();
@@ -261,7 +272,7 @@ class FindQueryContext implements QueryContext {
 
         }
 
-        return $entities[0];
+        return $count ? $entities[0] : NULL;
 
     }
 
@@ -269,6 +280,10 @@ class FindQueryContext implements QueryContext {
      * @return array
      */
     public function findAll () {
+
+        if (!count($this->fields)) {
+            $this->addField('*');
+        }
 
         $this->getRequestContext()->getApplicationContext()->finalizeFindQueryContext($this);
 

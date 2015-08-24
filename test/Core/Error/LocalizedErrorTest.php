@@ -5,14 +5,17 @@ namespace Core\Error;
 
 use Core\TestCase;
 
-class ErrorTest extends TestCase {
+class LocalizedErrorTest extends TestCase {
 
+    /**
+     * @var LocalizedError
+     */
     private $error;
 
     public function setUp () {
 
         parent::setUp();
-        $this->error = new Error(201, "Id utilisateur invalide", "TestUser id invalid", 200, "userId");
+        $this->error = new LocalizedError(201, "Id utilisateur invalide", "TestUser id invalid", 200, "userId");
 
     }
 

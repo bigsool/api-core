@@ -153,6 +153,13 @@ class TestUser
      */
     protected $isCompanyFaulted = true;
 
+    /**
+     * Constructor
+     * @internal You don't have to explicitly call the constructor of this entity. Use the ModuleEntity instead.
+     */
+    public function __construct()
+    {
+    }
 
     /**
      * Get id
@@ -415,7 +422,7 @@ class TestUser
     {
         $this->ownedCompany = $ownedCompany;
         $this->ownedCompanyRestrictedId = $ownedCompany ? $ownedCompany->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -426,13 +433,16 @@ class TestUser
      */
     public function getOwnedCompany()
     {
-        if (!$this->ownedCompanyRestrictedId && $this->findQueryContext) {
+
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+
+        if (!$this->ownedCompanyRestrictedId) {
             $faultedVar = "is".ucfirst("ownedCompany")."Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
             $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
             $qryContext->addFields("id","owner");
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","owner.id = :id"), $this->getId());
@@ -441,7 +451,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate ownedCompanyRestrictedId
             // Since Doctrine shares model instances, ownedCompanyRestrictedId will be automatically available
         }
-    
+
         return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
     }
 
@@ -466,7 +476,7 @@ class TestUser
     {
         $this->storage = $storage;
         $this->storageRestrictedId = $storage ? $storage->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -477,13 +487,16 @@ class TestUser
      */
     public function getStorage()
     {
-        if (!$this->storageRestrictedId && $this->findQueryContext) {
+
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+
+        if (!$this->storageRestrictedId) {
             $faultedVar = "is".ucfirst("storage")."Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
             $qryContext = new \Core\Context\FindQueryContext("TestStorage", $reqCtx);
             $qryContext->addFields("id","user");
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestStorage","","user.id = :id"), $this->getId());
@@ -492,7 +505,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate storageRestrictedId
             // Since Doctrine shares model instances, storageRestrictedId will be automatically available
         }
-    
+
         return $this->storage && $this->storage->getId() == $this->storageRestrictedId ? $this->storage : NULL;
     }
 
@@ -517,7 +530,7 @@ class TestUser
     {
         $this->company = $company;
         $this->companyRestrictedId = $company ? $company->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -528,13 +541,16 @@ class TestUser
      */
     public function getCompany()
     {
-        if (!$this->companyRestrictedId && $this->findQueryContext) {
+
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+
+        if (!$this->companyRestrictedId) {
             $faultedVar = "is".ucfirst("company")."Faulted";
             if (!$this->$faultedVar) {
                 return NULL;
             }
             $this->$faultedVar = false; // TODO : set to false in the hydrator too
-            $reqCtx = $this->findQueryContext->getRequestContext()->copyWithoutRequestedFields();
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
             $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
             $qryContext->addFields("id","users");
             $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","users.id = :id"), $this->getId());
@@ -543,7 +559,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate companyRestrictedId
             // Since Doctrine shares model instances, companyRestrictedId will be automatically available
         }
-    
+
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 

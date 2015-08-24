@@ -6,6 +6,8 @@ namespace Core\Expression;
 
 use Core\Context\QueryContext;
 use Core\Operator\CompareOperator;
+use Core\Operator\EqualOperator;
+use Core\Operator\NotEqualOperator;
 use Core\Operator\Operator;
 use Core\Registry;
 
@@ -67,6 +69,24 @@ class BinaryExpression implements ExpressionWithOperator {
 
         $leftStr = $this->getLeft()->resolve($registry, $context);
         $rightStr = $this->getRight()->resolve($registry, $context);
+
+        // hack in order to handle "something = :param" where param is NULL
+        // http://www.widecodes.com/CxVkUeUgVe/how-to-write-a-nullsafe-equals-is-not-distinct-from-in-doctrine2-dql.html
+        // https://stackoverflow.com/questions/10416789/how-to-rewrite-is-distinct-from-and-is-not-distinct-from/18684859#18684859
+        if ($this->getLeft() instanceof Parameter || $this->getRight() instanceof Parameter) {
+            if ($this->getOperator() instanceof EqualOperator) {
+
+                return sprintf('(NOT (%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) OR (%1$s IS NULL AND %2$s IS NULL))',
+                               $leftStr, $rightStr);
+
+            }
+            if ($this->getOperator() instanceof NotEqualOperator) {
+
+                return sprintf('((%1$s <> %2$s OR %1$s IS NULL OR %2$s IS NULL) AND NOT (%1$s IS NULL AND %2$s IS NULL))',
+                               $leftStr, $rightStr);
+
+            }
+        }
 
         if ($this->getOperator() instanceof CompareOperator) {
 

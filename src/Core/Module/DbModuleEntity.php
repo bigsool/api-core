@@ -54,8 +54,11 @@ class DbModuleEntity extends AbstractModuleEntity {
         }
 
         // TODO : should we loop on setter or on params ? validatedParams or AllParamas ?
+        //$acceptedFields = array_keys($this->getDefinition()->getConstraintsList());
+        // This doesn't work because passwordV1 in credential is defined in V1Compatibility.
+        // CredentialDefinition is defined in Credential and doesn't know passwordV1
         foreach ($upsertContext->getValidatedParams() as $field => $param) {
-            if ($field == 'id') {
+            if ($field == 'id' && !is_callable([$entity, 'setId'], false)/*|| !in_array($field, $acceptedFields)*/) {
                 continue;
             }
             $method = 'set' . ucfirst($field);

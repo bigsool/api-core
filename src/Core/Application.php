@@ -13,6 +13,7 @@ use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModuleManager;
+use Core\RPC\CLI;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
 use Core\Rule\Processor;
@@ -21,6 +22,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext as SfRequestContext;
+use Symfony\Component\Translation\Loader\PoFileLoader;
+use Symfony\Component\Translation\Translator;
 
 class Application {
 
@@ -58,6 +61,9 @@ class Application {
 
     }
 
+    /**
+     *
+     */
     protected function __construct () {
 
         static::defineRootDir();
@@ -111,6 +117,8 @@ class Application {
 
         $this->appCtx->getTraceLogger()->trace('config loaded');
 
+        $this->initTranslation();
+
         // We should use require_once but some tests will fail if we do that
         require ROOT_DIR . '/doctrine/config.php';
         if (file_exists($errorFile = ROOT_DIR . '/vendor/api/core/config/errors.php')) {
@@ -129,6 +137,27 @@ class Application {
         $entityManager->beginTransaction();
 
         return $this->appCtx;
+
+    }
+
+    /**
+     *
+     */
+    public function initTranslation () {
+
+        $translator = new Translator('en');
+        $translator->setFallbackLocales(['en', 'fr']);
+        $translator->addLoader('po', new PoFileLoader());
+        $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
+        if (file_exists($frPoFile)) {
+            $translator->addResource('po', $frPoFile, 'fr');
+        }
+        $enPoFile = ROOT_DIR . '/resources/translations/en.po';
+        if (file_exists($enPoFile)) {
+            $translator->addResource('po', $enPoFile, 'en');
+        }
+
+        $this->appCtx->setTranslator($translator);
 
     }
 
@@ -159,21 +188,47 @@ class Application {
                 $request = Request::createFromGlobals();
                 $this->appCtx->getQueryLogger()->logRequest($request);
 
-                $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
+                if (strtoupper($_SERVER['REQUEST_METHOD']) == 'OPTIONS') {
 
-                $this->populateRequestContext($rpcHandler, $reqCtx);
+                    $response = new Response('', Response::HTTP_OK, [
+                        'Content-type'                 => 'application/json',
+                        'Access-Control-Allow-Origin'  => '*',
+                        'Access-Control-Allow-Headers' => 'Content-Type, Accept',
+                        'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
+                    ]);
+                }
+                else {
 
-                $sfReqCtx = new SfRequestContext();
-                $sfReqCtx->fromRequest($request);
+                    $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
 
-                $controller = $this->getController($sfReqCtx, $rpcHandler, $reqCtx);
+                    $this->appCtx->getTranslator()->setLocale($rpcHandler->getLocale());
 
-                $response = $this->executeController($controller, $reqCtx, $rpcHandler);
+                    // handle API is temporary down during deploy
+                    $config = $this->appCtx->getConfigManager()->getConfig();
+                    if (isset($config['down']) && $config['down']) {
+                        throw new ToResolveException(ERROR_API_UNAVAILABLE);
+                    }
+
+                    $this->populateRequestContext($rpcHandler, $reqCtx);
+
+                    $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
+
+                    $sfReqCtx = new SfRequestContext();
+                    $sfReqCtx->fromRequest($request);
+
+                    $controller = $this->getController($sfReqCtx, $rpcHandler, $reqCtx);
+
+                    $response = $this->executeController($controller, $reqCtx, $rpcHandler);
+
+                }
 
             }
             catch (\Exception $e) {
 
                 $response = $this->handleException($reqCtx, $e, $rpcHandler);
+
+                // handle function which must be executed after the commit/rollback
+                $this->executeFunctionsAfterCommitOrRollback(false);
 
             }
 
@@ -197,6 +252,52 @@ class Application {
                                               ]));
 
             ob_end_clean();
+
+            // handle function which must be executed after the commit/rollback
+            $this->executeFunctionsAfterCommitOrRollback(false);
+
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            exit('Internal Server Error');
+
+        }
+
+    }
+
+    /**
+     *
+     */
+    public function runCli () {
+
+        $traceLogger = $this->appCtx->getTraceLogger();
+
+        $logger = $this->appCtx->getLogger()->getMLogger();
+
+        $traceLogger->trace('start run');
+
+        try {
+
+            $this->loadModules();
+
+            $reqCtx = new RequestContext();
+            $reqCtx->setAuth(Auth::createInternalAuth());
+
+            $rpcHandler = new CLI();
+            $rpcHandler->parse(new Request());
+            $this->populateRequestContext($rpcHandler, $reqCtx);
+
+            $this->appCtx->getTranslator()->setLocale($reqCtx->getLocale());
+
+            $controller = new Controller($rpcHandler->getAction(), $rpcHandler->getModule());
+
+            $this->executeController($controller, $reqCtx, $rpcHandler);
+
+        }
+        catch (\Exception $e) {
+
+            $logger->addEmergency(json_encode(['code'       => $e->getCode(),
+                                               'message'    => $e->getMessage(),
+                                               'stackTrace' => $e->getTraceAsString()
+                                              ]));
 
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
@@ -398,6 +499,9 @@ class Application {
         $this->entityManager->commit();
         $traceLogger->trace('database committed');
 
+        // handle function which must be
+        $this->executeFunctionsAfterCommitOrRollback(true);
+
         return $response;
 
     }
@@ -431,6 +535,19 @@ class Application {
         }
 
         $this->appCtx->getTraceLogger()->trace('success queue processed');
+
+    }
+
+    /**
+     * Functions added in this queue must be executed after the commit
+     */
+    protected function executeFunctionsAfterCommitOrRollback ($success) {
+
+        $queue = $this->appCtx->getFunctionsQueueAfterCommitOrRollback();
+        while (!$queue->isEmpty()) {
+            $callable = $queue->dequeue();
+            call_user_func($callable, $success);
+        }
 
     }
 

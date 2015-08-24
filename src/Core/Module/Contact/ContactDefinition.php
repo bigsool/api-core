@@ -72,9 +72,12 @@ class ContactDefinition extends ModuleEntityDefinition {
 
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
-        // TODO : check with Thomas how ugly is it
-        foreach (array_keys($this->getConstraintsList()) as $field) {
-            $upsertContext->setDefaultParam($field, '');
+        // fix bug when update without any params, fix all fields to ''
+        if (!$entityId) {
+            // TODO : check with Thomas how ugly is it
+            foreach (array_keys($this->getConstraintsList()) as $field) {
+                $upsertContext->setDefaultParam($field, '');
+            }
         }
 
         return $upsertContext;

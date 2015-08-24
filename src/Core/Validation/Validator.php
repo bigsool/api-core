@@ -78,6 +78,8 @@ class Validator {
         $errors = [];
 
         $validator = Validation::createValidator();
+        $value = UnsafeParameter::getFinalValue($value);
+
         foreach ($constraints as $constraint) {
             if ($forceOptional && ($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
                 continue;

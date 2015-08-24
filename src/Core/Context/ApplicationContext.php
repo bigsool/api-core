@@ -13,6 +13,7 @@ use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
+use Core\FunctionQueue;
 use Core\Helper\ModuleManagerHelperLoader;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
@@ -37,6 +38,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Translation\Translator;
 
 class ApplicationContext {
 
@@ -166,6 +168,39 @@ class ApplicationContext {
      * @var ModuleManagerHelperLoader(]
      */
     protected $helperLoaders = [];
+
+    /**
+     * @var RequestContext
+     */
+    protected $initialRequestContext = NULL;
+
+    /**
+     * @var Translator
+     */
+    protected $translator;
+
+    /**
+     * @var FunctionQueue
+     */
+    protected $functionsQueueAfterCommitOrRollback;
+
+    /**
+     * @param RequestContext $initialRequestContext
+     */
+    public function setInitialRequestContext ($initialRequestContext) {
+
+        $this->initialRequestContext = $initialRequestContext;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getInitialRequestContext () {
+
+        return $this->initialRequestContext;
+
+    }
 
     /**
      *
@@ -348,14 +383,14 @@ class ApplicationContext {
                 $mm2Product = strstr($mm2ClassName, '\\', true);
 
                 if ($mm1Product != $mm2Product) {
-                    return $mm1Product == 'Core' ? -1 : 1;
+                    return $mm1Product == 'Core' ? 1 : -1;
                 }
 
                 $isMm1Magical = $mm1 instanceof MagicalModuleManager;
                 $isMm2Magical = $mm2 instanceof MagicalModuleManager;
 
                 if ($isMm1Magical xor $isMm2Magical) {
-                    return $isMm1Magical ? 1 : -1;
+                    return $isMm1Magical ? -1 : 1;
                 }
 
                 return 0;
@@ -422,6 +457,10 @@ class ApplicationContext {
 
         $i = 0;
         foreach ($this->actions as $action) {
+
+            // if RedefineGenericAction and alreqdy exists do not throw
+            // if RedefinedGenecirQction qnd not qlreqdy registered; throw
+
             if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
                 //$this->actions[$i] = $theAction;
                 //return;
@@ -574,6 +613,10 @@ class ApplicationContext {
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getClassMetadata ($class) {
+
+        if (!$this->entityManager) {
+            throw new \Exception;
+        }
 
         return $this->entityManager->getClassMetadata($class);
 
@@ -746,12 +789,40 @@ class ApplicationContext {
 
     }
 
+    /**
+     * @param Translator $translator
+     */
+    public function setTranslator (Translator $translator) {
+
+        $this->translator = $translator;
+
+    }
+
+    /**
+     * @return Translator
+     */
+    public function getTranslator () {
+
+        if (is_null($this->translator)) {
+            throw new \RuntimeException('qwe');
+        }
+
+        return $this->translator;
+
+    }
+
+    /**
+     * @return ConfigManager
+     */
     public function getConfigManager () {
 
         if (!isset($this->configManager)) {
             $configFiles = [];
             foreach ([ROOT_DIR . '/vendor/api/core/config/', ROOT_DIR . '/config/'] as $coreConfDir) {
                 if (file_exists($configFile = $coreConfDir . 'default.yml')) {
+                    $configFiles[] = $configFile;
+                }
+                if (file_exists($configFile = $coreConfDir . 'isDown.yml')) {
                     $configFiles[] = $configFile;
                 }
                 $configPath = NULL;
@@ -867,6 +938,19 @@ class ApplicationContext {
     }
 
     /**
+     * @return FunctionQueue
+     */
+    public function getFunctionsQueueAfterCommitOrRollback () {
+
+        if (!isset($this->functionsQueueAfterCommitOrRollback)) {
+            $this->functionsQueueAfterCommitOrRollback = new FunctionQueue();
+        }
+
+        return $this->functionsQueueAfterCommitOrRollback;
+
+    }
+
+    /**
      * @return ActionQueue
      */
     public function getOnErrorActionQueue () {
@@ -917,6 +1001,18 @@ class ApplicationContext {
     }
 
     /**
+     * @param string $entityName
+     * @param string $fieldName
+     *
+     * @return bool
+     */
+    public function isCalculatedField ($entityName, $fieldName) {
+
+        return isset($this->calculatedFields[$entityName][$fieldName]);
+
+    }
+
+    /**
      * @param $entityName
      * @param $fieldName
      *
@@ -924,7 +1020,7 @@ class ApplicationContext {
      */
     public function getCalculatedField ($entityName, $fieldName) {
 
-        if (!isset($this->calculatedFields[$entityName][$fieldName])) {
+        if (!$this->isCalculatedField($entityName, $fieldName)) {
             throw new \RuntimeException(sprintf("Calculated field %s.%s not found", $entityName, $fieldName));
         }
 
@@ -996,7 +1092,20 @@ class ApplicationContext {
 
     }
 
-    public function callV1API ($service, $method, $params, $client, $auth) {
+    /**
+     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
+     *
+     * @param string         $service
+     * @param string         $method
+     * @param array          $params
+     * @param string         $client
+     * @param mixed          $auth
+     * @param RequestContext $reqCtx
+     * @param bool           $checkAuth
+     *
+     * @return mixed
+     */
+    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx, $checkAuth = true) {
 
         $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
 
@@ -1004,7 +1113,8 @@ class ApplicationContext {
 
         $pdo = $this->entityManager->getConnection()->getWrappedConnection();
 
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $client, '')->getResult();
+        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '',
+                                  $checkAuth)->getResult();
 
     }
 
