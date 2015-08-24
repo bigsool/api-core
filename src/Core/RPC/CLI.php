@@ -237,13 +237,13 @@ class CLI implements Handler {
 
     }
 
-    public function getAction() {
+    public function getAction () {
 
         return $this->action;
 
     }
 
-    public function getModule() {
+    public function getModule () {
 
         return $this->module;
 

@@ -196,7 +196,8 @@ class Application {
                         'Access-Control-Allow-Headers' => 'Content-Type, Accept',
                         'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
                     ]);
-                } else {
+                }
+                else {
 
                     $rpcHandler = $this->getRPCHandlerFromHTTPRequest($request);
 

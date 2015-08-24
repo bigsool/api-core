@@ -15,7 +15,7 @@ class AuthenticationHelper {
     const AUTH_TOKEN_RESET_PASSWORD = 'resetPassword';
 
     /**
-     * @param mixed      $authToken
+     * @param mixed        $authToken
      * @param Credential[] $credentials
      *
      * @return array
@@ -147,7 +147,7 @@ class AuthenticationHelper {
             throw new ToResolveException(ERROR_AUTH_TOKEN_EXPIRED);
         }
 
-        if( !($credentialUsedToLogIn = CredentialHelper::credentialForLogin($loginUsedToLogIn)) ) {
+        if (!($credentialUsedToLogIn = CredentialHelper::credentialForLogin($loginUsedToLogIn))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
 

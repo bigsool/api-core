@@ -4,7 +4,6 @@
 namespace Core;
 
 
-
 class FunctionQueue extends \SplQueue {
 
     /**

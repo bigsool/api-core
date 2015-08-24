@@ -103,10 +103,10 @@ class JSONP implements Handler {
                                     'id'      => $this->getId(),
                                 ]) . ')',
                             Response::HTTP_OK, [
-                                'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*',
+                                'Content-type'                 => 'application/json',
+                                'Access-Control-Allow-Origin'  => '*',
                                 'Access-Control-Allow-Headers' => 'Content-Type, Accept',
-                                'Access-Control-Max-Age' => 60*60*24 // 1 day in seconds
+                                'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
                             ]);
 
     }
@@ -123,10 +123,10 @@ class JSONP implements Handler {
                                                                       'id'      => $this->getId(),
                                                                      ]) . ')',
                             Response::HTTP_OK, [
-                                'Content-type'                => 'application/json',
-                                'Access-Control-Allow-Origin' => '*',
+                                'Content-type'                 => 'application/json',
+                                'Access-Control-Allow-Origin'  => '*',
                                 'Access-Control-Allow-Headers' => 'Content-Type, Accept',
-                                'Access-Control-Max-Age' => 60*60*24 // 1 day in seconds
+                                'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
                             ]);
 
     }

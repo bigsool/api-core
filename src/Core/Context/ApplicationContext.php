@@ -940,7 +940,7 @@ class ApplicationContext {
     /**
      * @return FunctionQueue
      */
-    public function getFunctionsQueueAfterCommitOrRollback() {
+    public function getFunctionsQueueAfterCommitOrRollback () {
 
         if (!isset($this->functionsQueueAfterCommitOrRollback)) {
             $this->functionsQueueAfterCommitOrRollback = new FunctionQueue();

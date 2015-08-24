@@ -379,7 +379,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
     /**
      * {@inheritdoc}
      */
-    protected function generateEntityConstructor(ClassMetadataInfo $metadata) {
+    protected function generateEntityConstructor (ClassMetadataInfo $metadata) {
 
         $constructor = parent::generateEntityConstructor($metadata);
 

@@ -9,7 +9,6 @@
 namespace Core\Validation\Parameter;
 
 
-use Core\Validation\Parameter\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class IdObjectList extends Callback {

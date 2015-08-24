@@ -104,14 +104,14 @@ class FormattedErrorTest extends TestCase {
         $this->formattedError->addChildError($this->childErrors[1]);
         $childErrors = $this->formattedError->getChildErrors();
 
-        $tab = ["code"             => $this->formattedError->getCode(),
-                "message"          => $this->formattedError->getMessage(),
-                "field"            => $this->formattedError->getField(),
-                "errors"           => [
+        $tab = ["code"    => $this->formattedError->getCode(),
+                "message" => $this->formattedError->getMessage(),
+                "field"   => $this->formattedError->getField(),
+                "errors"  => [
                     [
-                        "code"             => $childErrors[0]->getCode(),
-                        "message"          => $childErrors[0]->getMessage(),
-                        "field"            => $childErrors[0]->getField(),
+                        "code"    => $childErrors[0]->getCode(),
+                        "message" => $childErrors[0]->getMessage(),
+                        "field"   => $childErrors[0]->getField(),
                     ],
                     [
                         "code"    => $childErrors[1]->getCode(),

@@ -86,7 +86,7 @@ class BuildEntitiesCommand extends Command {
         }
 
         $modulesManagers = $application->getModuleManagers();
-        $refMethLoadModules = new \ReflectionMethod($application,'loadModules');
+        $refMethLoadModules = new \ReflectionMethod($application, 'loadModules');
         $refMethLoadModules->setAccessible(true);
         $refMethLoadModules->invoke($application);
 

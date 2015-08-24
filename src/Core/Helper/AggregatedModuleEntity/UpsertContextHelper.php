@@ -17,10 +17,10 @@ use Core\Parameter\UnsafeParameter;
 class UpsertContextHelper {
 
     /**
-     * @param ModelAspect $modelAspect
+     * @param ModelAspect                         $modelAspect
      * @param AggregatedModuleEntityUpsertContext $aggregatedUpsertContext
-     * @param array $translatedParams
-     * @param ActionContext $actionContext
+     * @param array                               $translatedParams
+     * @param ActionContext                       $actionContext
      *
      * @throws ValidationException
      */

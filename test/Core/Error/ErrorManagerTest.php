@@ -53,7 +53,8 @@ class ErrorManagerTest extends TestCase {
 
         defined('__TEST__ERR_10') || define('__TEST__ERR_10', rand());
         $this->errorManager->defineError(
-            $this->error10 = new LocalizedError(__TEST__ERR_10, 'message fr 10', 'message en 10', __TEST__ERR_1, 'field10'));
+            $this->error10 =
+                new LocalizedError(__TEST__ERR_10, 'message fr 10', 'message en 10', __TEST__ERR_1, 'field10'));
 
         defined('__TEST__ERR_100') || define('__TEST__ERR_100', rand());
         $this->errorManager->defineError(
@@ -67,11 +68,13 @@ class ErrorManagerTest extends TestCase {
         defined('__TEST__ERR_1000') || define('__TEST__ERR_1000', rand());
         $this->errorManager->defineError(
             $this->error1000 =
-                new LocalizedError(__TEST__ERR_1000, 'message fr 1000', 'message en 1000', __TEST__ERR_101, 'field1000'));
+                new LocalizedError(__TEST__ERR_1000, 'message fr 1000', 'message en 1000', __TEST__ERR_101,
+                                   'field1000'));
 
         defined('__TEST__ERR_11') || define('__TEST__ERR_11', rand());
         $this->errorManager->defineError(
-            $this->error11 = new LocalizedError(__TEST__ERR_11, 'message fr 11', 'message en 11', __TEST__ERR_1, 'field300'));
+            $this->error11 =
+                new LocalizedError(__TEST__ERR_11, 'message fr 11', 'message en 11', __TEST__ERR_1, 'field300'));
 
     }
 
