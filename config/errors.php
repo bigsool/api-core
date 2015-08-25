@@ -112,10 +112,15 @@ defined('ERROR_PROJECT_PARTICIPANT_NOT_FOUND') || define('ERROR_PROJECT_PARTICIP
 $errorManager->defineError(new Error(ERROR_PROJECT_PARTICIPANT_NOT_FOUND, 'project participation not found'));
 
 defined('ERROR_HAVE_THIS_RECURRING_PRODUCT') || define('ERROR_HAVE_THIS_RECURRING_PRODUCT', 16310);
-
-defined('ERROR_WITH_STRIPE') || define('ERROR_WITH_STRIPE', 16311);
-
-$errorManager->defineError(new Error(ERROR_WITH_STRIPE, 'error during stripe payment'));
 $errorManager->defineError(new LocalizedError(ERROR_HAVE_THIS_RECURRING_PRODUCT,
                                               $t->trans('ERROR_HAVE_THIS_RECURRING_PRODUCT', [], NULL, 'fr'),
                                               $t->trans('ERROR_HAVE_THIS_RECURRING_PRODUCT', [], NULL, 'en')));
+
+defined('ERROR_WITH_STRIPE') || define('ERROR_WITH_STRIPE', 16311);
+$errorManager->defineError(new Error(ERROR_WITH_STRIPE, 'error during stripe payment'));
+
+defined('ERROR_CONNECTED_ELSEWHERE') || define('ERROR_CONNECTED_ELSEWHERE', 16312);
+$errorManager->defineError(new LocalizedError(ERROR_CONNECTED_ELSEWHERE,
+                                              $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'fr'),
+                                              $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'en'),
+                                              ERROR_PERMISSION_DENIED));
