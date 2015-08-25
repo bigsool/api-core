@@ -143,10 +143,6 @@ class AuthenticationHelper {
         $guestCredential = NULL;
         $credentialUsedToLogIn = NULL;
 
-        if ($expiration < time()) {
-            throw new ToResolveException(ERROR_AUTH_TOKEN_EXPIRED);
-        }
-
         if (!($credentialUsedToLogIn = CredentialHelper::credentialForLogin($loginUsedToLogIn))) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
         }
@@ -157,6 +153,10 @@ class AuthenticationHelper {
 
         if (!static::isAuthTokenValid($authToken, $credentialUsedToLogIn->getPassword())) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED); // we may have a better error code
+        }
+
+        if ($expiration < time()) {
+            throw new ToResolveException(ERROR_AUTH_TOKEN_EXPIRED);
         }
 
         return $guestLogin ? [$guestCredential, $credentialUsedToLogIn] : [$credentialUsedToLogIn];

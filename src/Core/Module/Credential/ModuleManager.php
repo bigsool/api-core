@@ -30,113 +30,185 @@ class ModuleManager extends AbstractModuleManager {
     public function createActions (ApplicationContext &$appCtx) {
 
         return [
-            new GenericAction('Core\Credential', 'login', NULL, ['login'     => [new CredentialDefinition()],
-                                                                 'timestamp' => [new Int(), new NotBlank()],
-                                                                 'hash'      => [new String(), new NotBlank()],
-                                                                 'authType'  => [new CredentialDefinition()],
-            ],
-                function (ActionContext $context) use ($appCtx) {
+            new GenericAction('Core\Credential', 'login', NULL, [
+                'login'     => [new CredentialDefinition()],
+                'timestamp' => [new Int(), new NotBlank()],
+                'hash'      => [new String(), new NotBlank()],
+                'authType'  => [new CredentialDefinition()],
+            ], function (ActionContext $context) use ($appCtx) {
 
-                    $params = $context->getVerifiedParams();
+                $params = $context->getVerifiedParams();
 
-                    $credentialHelper = $this->getCredentialHelper();
-                    $credentials = $credentialHelper::credentialsForAuthParams($params);
+                $credentialHelper = $this->getCredentialHelper();
+                $credentials = $credentialHelper::credentialsForAuthParams($params);
 
-                    // TODO : we may add superUser in LoginHistory
-                    $loginHistory =
-                        $this->getModuleEntity('LoginHistory')->create(['credential' => $credentials[0]], $context);
-                    $this->getModuleEntity('LoginHistory')->save($loginHistory);
+                // TODO : we may add superUser in LoginHistory
+                $loginHistory =
+                    $this->getModuleEntity('LoginHistory')->create(['credential' => $credentials[0]], $context);
+                $this->getModuleEntity('LoginHistory')->save($loginHistory);
 
-                    $additionalParams = $context->getVerifiedParam('additionalParams', []);
+                $additionalParams = $context->getVerifiedParam('additionalParams', []);
 
-                    $authenticationHelper = $this->getAuthenticationHelper();
-                    $authToken = $authenticationHelper::generateAuthToken($credentials, NULL, NULL, $additionalParams);
+                $authenticationHelper = $this->getAuthenticationHelper();
+                $authToken = $authenticationHelper::generateAuthToken($credentials, NULL, NULL, $additionalParams);
 
-                    $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
-                                                                                     'setAuthCookie'),
-                                                                  ['authToken' => $authToken]);
+                $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
+                                                                                 'setAuthCookie'),
+                                                              ['authToken' => $authToken]);
 
-                    $context->getRequestContext()->setAuthToken($authToken);
-                    $context->getRequestContext()->getAuth()->setCredential($credentials[0]);
-                    if (count($credentials) == 2) {
-                        $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
-                    }
+                $context->getRequestContext()->setAuthToken($authToken);
+                $context->getRequestContext()->getAuth()->setCredential($credentials[0]);
+                if (count($credentials) == 2) {
+                    $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
+                }
 
-                    $credential = $credentials[0];
+                $credential = $credentials[0];
 
-                    return [
-                        'authToken' => $authToken,
-                        'login'     => $credential->getLogin(),
-                        'id'        => $credential->getId(),
-                    ];
+                return [
+                    'authToken' => $authToken,
+                    'login'     => $credential->getLogin(),
+                    'id'        => $credential->getId(),
+                ];
 
-                }),
-            new GenericAction('Core\Credential', 'setAuthCookie', [],
-                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
+            }),
+            new GenericAction('Core\Credential', 'renewAuthToken', NULL, [
+                'login'            => [new CredentialDefinition(), true],
+                'timestamp'        => [new Int()],
+                'hash'             => [new String()],
+                'authType'         => [new CredentialDefinition(), true],
+                'currentAuthToken' => [new String()],
+            ], function (ActionContext $context) use (&$appCtx) {
 
-                    $response = $ctx->getRequestContext()->getResponse();
+                $currentCredential = $context->getAuth()->getCredential();
 
-                    if (is_null($response)) {
+                $authenticationHelper = $this->getAuthenticationHelper();
+                if ($currentCredential) {
 
-                        throw new \RuntimeException('Calling setAuthCookie while the response is not set');
-
-                    }
-
-                    $appCtx = $ctx->getApplicationContext();
-                    $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
-
-                    $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
-                                                             $expire, '/', NULL, false, false));
-
-                }),
-            new GenericAction('Core\Credential', 'checkAuth', [],
-                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
-
-                    $authToken = $ctx->getParam('authToken');
-
-                    $authenticationHelper = $this->getAuthenticationHelper();
+                    $authToken = $context->getRequestContext()->getAuthToken();
                     $credentials = $authenticationHelper::checkAuthToken($authToken);
-
-                    return $credentials;
-
-                }),
-            new GenericAction('Core\Credential', 'renewAuthCookie', [],
-                              ['authToken' => [new AuthenticationValidation()]], function (ActionContext $ctx) {
-
-                    $response = $ctx->getRequestContext()->getResponse();
-
-                    if (is_null($response)) {
-
-                        throw new \RuntimeException('Calling setAuthCookie while the response is not set');
-
-                    }
-
-                    $authToken = $ctx->getParam('authToken');
-                    $credentials = $ctx->getParam('credentials');
-
-                    $authenticationHelper = $this->getAuthenticationHelper();
                     $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
 
-                    $appCtx = $ctx->getApplicationContext();
-                    $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
+                }
+                else {
 
-                    $response->headers->setCookie(new Cookie('authToken', json_encode($newAuthToken),
-                                                             $expire, '/', NULL, false, false));
+                    try {
 
-                }),
-            new GenericAction('Core\Credential', 'create', NULL, ['login'    => [new CredentialDefinition()],
-                                                                  'type'     => [new CredentialDefinition()],
-                                                                  'password' => [new CredentialDefinition()]
-            ],
-                function (ActionContext $context) {
+                        $authToken = json_decode($context->getParam('currentAuthToken'));
+                        $credentials = $authenticationHelper::checkAuthToken($authToken);
+                        $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
 
-                    $credential = $this->getModuleEntity('Credential')->create($context->getParams(), $context);
+                    }
+                    catch (ToResolveException $e) {
 
-                    $this->getModuleEntity('Credential')->save($credential);
+                        if ($e->getErrorCode() == ERROR_AUTH_TOKEN_EXPIRED) {
 
-                    return $credential;
+                            $params = $context->getVerifiedParams();
 
-                }),
+                            $credentialHelper = $this->getCredentialHelper();
+                            $credentials = $credentialHelper::credentialsForAuthParams($params);
+
+                            $additionalParams = $context->getVerifiedParam('additionalParams', []);
+
+                            $newAuthToken =
+                                $authenticationHelper::generateAuthToken($credentials, NULL, NULL, $additionalParams);
+
+                            $appCtx->getOnSuccessActionQueue()->addAction($appCtx->getAction('Core\Credential',
+                                                                                             'setAuthCookie'),
+                                                                          ['authToken' => $newAuthToken]);
+
+                            $context->getRequestContext()->setAuthToken($newAuthToken);
+                            $context->getRequestContext()->getAuth()->setCredential($credentials[0]);
+                            if (count($credentials) == 2) {
+                                $context->getRequestContext()->getAuth()->setSuperUserCredential($credentials[1]);
+                            }
+
+                        }
+                        else {
+                            throw $e;
+                        }
+
+                    }
+
+                }
+
+                $credential = $credentials[0];
+
+                return [
+                    'authToken' => $newAuthToken,
+                    'login'     => $credential->getLogin(),
+                    'id'        => $credential->getId(),
+                ];
+
+            }),
+            new GenericAction('Core\Credential', 'setAuthCookie', [], [
+                'authToken' => [new AuthenticationValidation()]
+            ], function (ActionContext $ctx) {
+
+                $response = $ctx->getRequestContext()->getResponse();
+
+                if (is_null($response)) {
+
+                    throw new \RuntimeException('Calling setAuthCookie while the response is not set');
+
+                }
+
+                $appCtx = $ctx->getApplicationContext();
+                $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
+
+                $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
+                                                         $expire, '/', NULL, false, false));
+
+            }),
+            new GenericAction('Core\Credential', 'checkAuth', [], [
+                'authToken' => [new AuthenticationValidation()]
+            ], function (ActionContext $ctx) {
+
+                $authToken = $ctx->getParam('authToken');
+
+                $authenticationHelper = $this->getAuthenticationHelper();
+                $credentials = $authenticationHelper::checkAuthToken($authToken);
+
+                return $credentials;
+
+            }),
+            new GenericAction('Core\Credential', 'renewAuthCookie', [], [
+                'authToken' => [new AuthenticationValidation()]
+            ], function (ActionContext $ctx) {
+
+                $response = $ctx->getRequestContext()->getResponse();
+
+                if (is_null($response)) {
+
+                    throw new \RuntimeException('Calling setAuthCookie while the response is not set');
+
+                }
+
+                $authToken = $ctx->getParam('authToken');
+                $credentials = $ctx->getParam('credentials');
+
+                $authenticationHelper = $this->getAuthenticationHelper();
+                $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
+
+                $appCtx = $ctx->getApplicationContext();
+                $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
+
+                $response->headers->setCookie(new Cookie('authToken', json_encode($newAuthToken),
+                                                         $expire, '/', NULL, false, false));
+
+            }),
+            new GenericAction('Core\Credential', 'create', NULL, [
+                'login'    => [new CredentialDefinition()],
+                'type'     => [new CredentialDefinition()],
+                'password' => [new CredentialDefinition()]
+            ], function (ActionContext $context) {
+
+                $credential = $this->getModuleEntity('Credential')->create($context->getParams(), $context);
+
+                $this->getModuleEntity('Credential')->save($credential);
+
+                return $credential;
+
+            }),
             new GenericAction('Core\Credential', 'update', NULL, [
                 'id'              => [new CredentialDefinition()],
                 'login'           => [new CredentialDefinition(), true],
