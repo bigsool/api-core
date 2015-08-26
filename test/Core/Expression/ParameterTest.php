@@ -6,6 +6,7 @@ namespace Core\Expression;
 
 use Core\Model\Company;
 use Core\Model\TestCompany;
+use Core\Model\TestUser;
 use Core\TestCase;
 
 class ParameterTest extends TestCase {
@@ -99,9 +100,9 @@ class ParameterTest extends TestCase {
     public function testInvalidContext () {
 
         $registry = $this->getRegistry();
-        $context = $this->getSaveQueryContext(new TestCompany());
+        $context = $this->getSaveQueryContext(new TestUser());
 
-        $param = ':company';
+        $param = ':user';
 
         $param1 = new Parameter($param);
         $param1->resolve($registry, $context);
@@ -114,9 +115,9 @@ class ParameterTest extends TestCase {
     public function testParameterNotFound () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('TestCompany');
+        $context = $this->getFindQueryContext('TestUser');
 
-        $param = ':company';
+        $param = ':user';
 
         $param1 = new Parameter($param);
         $param1->resolve($registry, $context);

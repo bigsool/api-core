@@ -15,6 +15,8 @@ class RestrictedObjectHydrator extends ObjectHydrator {
      */
     protected function hydrateRowData (array $row, array &$result) {
 
+        ApplicationContext::getInstance()->getTraceLogger()->trace('Hydrating one raw');
+
         parent::hydrateRowData($row, $result);
 
         $hydrator = $this->_em->newHydrator('ArrayIdHydrator');
@@ -26,6 +28,8 @@ class RestrictedObjectHydrator extends ObjectHydrator {
 
         //TODO: handle aggregated fields
         $this->setRestrictedIds($result, $arrayResult);
+
+        ApplicationContext::getInstance()->getTraceLogger()->trace('hydratation done');
 
     }
 

@@ -96,6 +96,8 @@ class Serializer {
      */
     public function serialize ($data) {
 
+        $this->actCtx->getApplicationContext()->getTraceLogger()->trace('serialization begin');
+
         $data = $this->convertDoctrineObjects($data);
 
         if (is_array($data)) {
@@ -109,6 +111,8 @@ class Serializer {
         else {
             $this->dataSerialized = $data;
         }
+
+        $this->actCtx->getApplicationContext()->getTraceLogger()->trace('serialization end');
 
         return $this;
 

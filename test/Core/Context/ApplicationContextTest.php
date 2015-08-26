@@ -79,10 +79,10 @@ class ApplicationContextTest extends TestCase {
 
     public function testGetClassMetadata () {
 
-        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Core\Model\TestCompany');
+        $classMetadata = $this->getApplicationContext()->getClassMetadata('\Core\Model\TestUser');
 
         $this->assertInstanceOf('\Doctrine\ORM\Mapping\ClassMetadata', $classMetadata);
-        $this->assertSame('Core\Model\TestCompany', $classMetadata->getName());
+        $this->assertSame('Core\Model\TestUser', $classMetadata->getName());
 
     }
 
@@ -91,10 +91,10 @@ class ApplicationContextTest extends TestCase {
         $ctx = $this->getApplicationContext();
 
         $filters[] = $filter = $this->getMockFilter();
-        $filter->method('getEntity')->willReturn('TestCompany');
-        $filter->method('getName')->willReturn('name');
+        $filter->method('getEntity')->willReturn('TestUser');
+        $filter->method('getName')->willReturn('firstName');
         $ctx->addFilter($filter);
-        $this->assertSame($filter, $ctx->getFilterByName('name'));
+        $this->assertSame($filter, $ctx->getFilterByName('firstName'));
 
     }
 

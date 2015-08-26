@@ -5,6 +5,7 @@ namespace Core\Util;
 
 
 use Core\Context\ApplicationContext;
+use Core\Field\ResolvableField;
 
 class ModelConverter {
 
@@ -49,6 +50,9 @@ class ModelConverter {
     protected function formatFields (array $requestedFields, array &$formattedFields) {
 
         foreach ($requestedFields as $requestedField) {
+            if ($requestedField instanceof ResolvableField) {
+                $requestedField = $requestedField->getAlias();
+            }
             $exploded = explode('.', $requestedField, 2);
             if (count($exploded) == 2) {
                 if (!isset($formattedFields[$exploded[0]])) {

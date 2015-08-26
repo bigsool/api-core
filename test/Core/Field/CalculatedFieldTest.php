@@ -18,7 +18,7 @@ class CalculatedFieldTest extends TestCase {
 
             return json_encode(func_get_args());
 
-        }, ['name', 'firstname']));
+        }, ['lastName', 'firstName']));
 
     }
 
@@ -116,9 +116,9 @@ class CalculatedFieldTest extends TestCase {
         $ctx = new FindQueryContext('TestUser');
         $registry = $this->getRegistry();
         $calculatedField->resolve($registry, $ctx);
-        $data = ['name' => 'my name', 'firstname' => 'my firstname'];
+        $data = ['lastName' => 'my name', 'firstName' => 'my firstname'];
         $user = new TestUser();
-        $user->setName('my name');
+        $user->setLastName('my name');
         $user->setFirstname('my firstname');
         $this->assertSame(json_encode(array_values($data)), $calculatedField->execute($user));
 

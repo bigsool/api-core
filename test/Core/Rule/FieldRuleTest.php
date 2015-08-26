@@ -11,6 +11,7 @@ use Core\Field\Field;
 use Core\Field\RelativeField;
 use Core\Field\StarField;
 use Core\Model\TestCompany;
+use Core\Model\TestUser;
 use Core\TestCase;
 
 class FieldRuleTest extends TestCase {
@@ -70,27 +71,27 @@ class FieldRuleTest extends TestCase {
     public function testShouldApply () {
 
         $this->getApplicationContext();
-        $field = new Field('TestCompany', 'name');
-        $starField = new StarField('TestCompany');
+        $field = new Field('TestUser', 'firstName');
+        $starField = new StarField('TestUser');
 
         $rule = new FieldRule($field, $this->getMockFilter());
-        $this->assertFalse($rule->shouldApply(new SaveQueryContext(new TestCompany())));
+        $this->assertFalse($rule->shouldApply(new SaveQueryContext(new TestUser())));
 
         $reqCtx = new RequestContext();
 
         $reqUserCtx = new RequestContext();
-        $qryCtx = new FindQueryContext('TestUser', $reqUserCtx);
-        $reqUserCtx->setReturnedFields([new RelativeField('name')]);
-        $qryCtx->addField(new RelativeField('name'));
+        $qryCtx = new FindQueryContext('TestCredential', $reqUserCtx);
+        $reqUserCtx->setReturnedFields([new RelativeField('firstName')]);
+        $qryCtx->addField(new RelativeField('firstName'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
-        $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
-        $reqCtx->setReturnedFields([new RelativeField('city')]);
-        $qryCtx->addField(new RelativeField('city'));
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+        $reqCtx->setReturnedFields([new RelativeField('lastName')]);
+        $qryCtx->addField(new RelativeField('lastName'));
         $this->assertFalse($rule->shouldApply($qryCtx));
 
-        $reqCtx->setReturnedFields([new RelativeField('city'), new RelativeField('name')]);
-        $qryCtx->addField(new RelativeField('name'));
+        $reqCtx->setReturnedFields([new RelativeField('lastName'), new RelativeField('firstName')]);
+        $qryCtx->addField(new RelativeField('firstName'));
         $this->assertTrue($rule->shouldApply($qryCtx));
 
         $rule = new FieldRule($starField, $this->getMockFilter());
@@ -101,17 +102,17 @@ class FieldRuleTest extends TestCase {
     public function testApply () {
 
         $this->getApplicationContext();
-        $field = new Field('TestCompany', 'name');
+        $field = new Field('TestUser', 'firstName');
 
         $filter = $this->getMockFilter();
 
         $rule = new FieldRule($field, $filter);
 
         $reqCtx = new RequestContext();
-        $reqCtx->setReturnedFields([new RelativeField('name')]);
+        $reqCtx->setReturnedFields([new RelativeField('firstName')]);
 
-        $qryCtx = new FindQueryContext('TestCompany', $reqCtx);
-        $qryCtx->addField(new RelativeField('name'));
+        $qryCtx = new FindQueryContext('TestUser', $reqCtx);
+        $qryCtx->addField(new RelativeField('firstName'));
 
         $filters = $qryCtx->getFilters();
         $this->assertCount(0, $filters);
@@ -129,7 +130,7 @@ class FieldRuleTest extends TestCase {
      */
     public function testInvalidContextApply () {
 
-        (new FieldRule($this->getMockField(), $this->getMockFilter()))->apply(new SaveQueryContext(new TestCompany()));
+        (new FieldRule($this->getMockField(), $this->getMockFilter()))->apply(new SaveQueryContext(new TestUser()));
 
     }
 

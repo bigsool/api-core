@@ -1,102 +1,38 @@
 Core\Model\TestUser:
     oneToOne:
-        ownedCompany:
-            targetEntity: Core\Model\TestCompany
-            mappedBy: owner
-            cascade: ["persist"]
-        storage:
-            targetEntity: Core\Model\TestStorage
+        credential:
+            targetEntity: Core\Model\TestCredential
             inversedBy: user
-            cascade: ["persist","remove"]
+            cascade:
+                - persist
             joinColumns:
-                storage_id:
+                credential_id:
                     referencedColumnName: id
                     nullable: true
-                    onDelete: CASCADE
-    manyToOne:
-        company:
-            targetEntity: Core\Model\TestCompany
-            inversedBy: users
-            joinColumns:
-                company_id:
-                    referencedColumnName: id
-                    nullable: true
-                    onDelete: CASCADE
-            cascade: ["persist"]
-    type: entity
-    table: user
-    uniqueConstraints:
-        userEmail:
-            columns:
-                - email
-    id:
-        id:
-            type: integer
-            nullable: false
-            unsigned: false
-            comment: ''
-            id: true
-            generator:
-                strategy: IDENTITY
     fields:
-        email:
-            type: string
-            nullable: false
-            length: 255
-            fixed: false
-            comment: ''
-        password:
-            type: string
-            nullable: false
-            length: 255
-            fixed: false
-            comment: ''
-        name:
-            type: string
-            nullable: true
-            length: 255
-            fixed: false
-            comment: ''
-        firstname:
-            type: string
-            nullable: true
-            length: 255
-            fixed: false
-            comment: ''
-        lang:
-            type: string
-            nullable: true
-            length: 255
-            fixed: false
-            comment: ''
-        salt:
-            type: string
-            nullable: true
-            length: 255
-            fixed: false
-            comment: ''
-            column: SALT
-        registerDate:
-            type: datetime
-            nullable: false
-            comment: ''
-            column: register_date
-        lastLoginDate:
-            type: datetime
-            nullable: true
-            comment: ''
-            column: last_login_date
-        knowsFrom:
-            type: string
-            nullable: true
-            length: 255
-            fixed: false
-            comment: ''
-            column: knowsFrom
         confirmationKey:
             type: string
             nullable: true
             length: 255
-            fixed: false
-            comment: ''
-            column: confirmationKey
+        lastName:
+            type: string
+            nullable: true
+            length: 255
+        firstName:
+            type: string
+            nullable: true
+            length: 255
+        lang:
+            type: string
+            nullable: false
+            length: 255
+        creationDate:
+            type: datetime
+            nullable: false
+    type: entity
+    table: user
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO

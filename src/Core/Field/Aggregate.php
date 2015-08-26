@@ -87,14 +87,14 @@ class Aggregate implements ResolvableField {
     public function resolve (Registry $registry, FindQueryContext $ctx) {
 
         $values = "";
-        $resolvableFields = [];
+        $fieldsToUse = [];
         foreach ($this->args as $arg) {
             $relativeField = new RelativeField($arg);
-            $resolvableFields = array_merge($resolvableFields, $relativeField->resolve($registry, $ctx));
+            $resolvableFieldsFromRelativeField = $relativeField->resolve($registry, $ctx);
+            $fieldsToUse[] = end($resolvableFieldsFromRelativeField);
         }
-        $resolvableFields = Registry::removeDuplicatedFields($resolvableFields);
-        foreach ($resolvableFields as $resolvableField) {
-            $values .= implode(',', $resolvableField->resolve($registry, $ctx)) . ',';
+        foreach ($fieldsToUse as $fieldToUse) {
+            $values .= implode(',', $fieldToUse->resolve($registry, $ctx)) . ',';
         }
         $values = substr($values, 0, strlen($values) - 1);
 

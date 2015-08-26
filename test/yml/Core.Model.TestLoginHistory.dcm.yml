@@ -1,0 +1,27 @@
+Core\Model\TestLoginHistory:
+    type: entity
+    table: login_history
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: datetime
+            nullable: false
+            length: 255
+        IP:
+            type: string
+            nullable: true
+            length: 255
+    manyToOne:
+        credential:
+            targetEntity: Core\Model\TestCredential
+            inversedBy: loginHistories
+            joinColumns:
+                credential_id:
+                    referencedColumnName: id
+                    nullable: false
+            cascade:
+                - persist

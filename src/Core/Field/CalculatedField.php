@@ -189,8 +189,12 @@ class CalculatedField implements ResolvableField {
 
         foreach ($this->requiredFields as $requiredField) {
 
-            $fields[] = $field = new RealField($requiredField);
-            $field->setUseLeftJoin($this->useLeftJoin);
+            if (!($requiredField instanceof ResolvableField)) {
+                $fields[] = $field = new RealField($requiredField);
+                $field->setUseLeftJoin($this->useLeftJoin);
+            } else {
+                $fields[] = $requiredField;
+            }
 
         }
 

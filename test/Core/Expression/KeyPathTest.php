@@ -4,6 +4,7 @@
 namespace Core\Expression;
 
 use Core\Model\TestCompany;
+use Core\Model\TestUser;
 use Core\TestCase;
 
 class KeyPathTest extends TestCase {
@@ -49,26 +50,26 @@ class KeyPathTest extends TestCase {
      */
     public function testResolveField () {
 
-        $registry = $this->getRegistry('TestCompany');
-        $context = $this->getFindQueryContext('TestCompany');
+        $registry = $this->getRegistry('TestUser');
+        $context = $this->getFindQueryContext('TestUser');
 
-        $param = 'owner.company.storage.url';
+        $param = 'credential.loginHistories.date';
 
         $param1 = new KeyPath($param);
         $resolve1 = $param1->resolve($registry, $context);
 
-        $this->assertEquals('testCompanyOwnerCompanyStorage.url', $resolve1);
+        $this->assertEquals('testUserCredentialLoginHistories.date', $resolve1);
 
-        $registry = $this->getRegistry('TestCompany');
-        $param2 = new KeyPath('name');
+        $registry = $this->getRegistry('TestUser');
+        $param2 = new KeyPath('firstName');
         $resolve2 = $param2->resolve($registry, $context);
 
-        $this->assertEquals('testCompany.name', $resolve2);
+        $this->assertEquals('testUser.firstName', $resolve2);
 
-        $param3 = new KeyPath('owner.company.storage');
+        $param3 = new KeyPath('credential.loginHistories');
         $resolve3 = $param3->resolve($registry, $context);
 
-        $this->assertEquals('testCompanyOwnerCompany.storage', $resolve3);
+        $this->assertEquals('testUserCredential.loginHistories', $resolve3);
     }
 
     /**
@@ -77,9 +78,9 @@ class KeyPathTest extends TestCase {
     public function testInvalidContext () {
 
         $registry = $this->getRegistry();
-        $context = $this->getSaveQueryContext(new TestCompany());
+        $context = $this->getSaveQueryContext(new TestUser());
 
-        (new KeyPath('owner.company.storage.url'))->resolve($registry, $context);
+        (new KeyPath('credential.login'))->resolve($registry, $context);
     }
 
     /**
@@ -88,9 +89,9 @@ class KeyPathTest extends TestCase {
     public function testFieldIsFieldNotEntity () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('TestCompany');
+        $context = $this->getFindQueryContext('TestUser');
 
-        (new KeyPath('owner.name.company.storage.url'))->resolve($registry, $context);
+        (new KeyPath('credential.login.user'))->resolve($registry, $context);
     }
 
     /**
@@ -99,9 +100,9 @@ class KeyPathTest extends TestCase {
     public function testFieldNotFound () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('TestCompany');
+        $context = $this->getFindQueryContext('TestUser');
 
-        (new KeyPath('owner.qweqwe'))->resolve($registry, $context);
+        (new KeyPath('credential.qweqwe'))->resolve($registry, $context);
     }
 
     /**
@@ -110,9 +111,9 @@ class KeyPathTest extends TestCase {
     public function testStarFieldNotAtTheEnd () {
 
         $registry = $this->getRegistry();
-        $context = $this->getFindQueryContext('TestCompany');
+        $context = $this->getFindQueryContext('TestUser');
 
-        (new KeyPath('owner.*.name'))->resolve($registry, $context);
+        (new KeyPath('credential.*.date'))->resolve($registry, $context);
     }
 
     /**
@@ -120,7 +121,7 @@ class KeyPathTest extends TestCase {
      */
     public function testAliasNotFound () {
 
-        $registry = $this->getRegistry('TestCompany');
+        $registry = $this->getRegistry('TestCredential');
         $context = $this->getFindQueryContext('TestUser');
 
         $param = '*';
@@ -134,6 +135,8 @@ class KeyPathTest extends TestCase {
      */
     public function testMoreThanOneAliasFound () {
 
+        // TODO
+        /*
         $registry = $this->getRegistry('TestCompany');
         $context = $this->getFindQueryContext('TestCompany');
 
@@ -143,6 +146,7 @@ class KeyPathTest extends TestCase {
         $keyPath = new KeyPath('name');
         $keyPath->setRootEntity('TestUser');
         $keyPath->resolve($registry, $context);
+        */
 
     }
 

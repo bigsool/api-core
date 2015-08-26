@@ -13,10 +13,10 @@ class RelativeFieldTest extends TestCase {
      */
     public function testResolveEntity () {
 
-        $registry = $this->getRegistry('TestCompany');
-        $context = $this->getFindQueryContext('TestCompany');
+        $registry = $this->getRegistry('TestUser');
+        $context = $this->getFindQueryContext('TestUser');
 
-        $param = 'owner.company.storage';
+        $param = 'credential.loginHistories';
 
         $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
@@ -25,9 +25,9 @@ class RelativeFieldTest extends TestCase {
 
         $this->assertInternalType('array', $resolve1);
         $this->assertContainsOnlyInstancesOf('\Core\Field\ResolvableField', $resolve1);
-        $this->assertCount(3, $resolve1);
+        $this->assertCount(2, $resolve1);
 
-        $this->assertEquals($param, $resolve1[2]->getValue());
+        $this->assertEquals($param, $resolve1[1]->getValue());
 
         $this->assertInstanceOf('\Core\Field\StarField', $param2->getField($context));
 
@@ -38,10 +38,10 @@ class RelativeFieldTest extends TestCase {
      */
     public function testResolveUsedTwice () {
 
-        $registry = $this->getRegistry('TestCompany');
-        $context = $this->getFindQueryContext('TestCompany');
+        $registry = $this->getRegistry('TestUser');
+        $context = $this->getFindQueryContext('TestUser');
 
-        $param = 'owner.company.storage';
+        $param = 'credential.loginHistories.credential';
 
         $param1 = new RelativeField($param);
         $resolve1 = $param1->resolve($registry, $context);
@@ -60,8 +60,8 @@ class RelativeFieldTest extends TestCase {
 
         $this->assertEquals($param, $resolve1[2]->getValue());
 
-        $registry2 = $this->getRegistry('TestCompany');
-        $context2 = $this->getFindQueryContext('TestCompany');
+        $registry2 = $this->getRegistry('TestUser');
+        $context2 = $this->getFindQueryContext('TestUser');
 
         $resolve2 = $param1->resolve($registry2, $context2);
 

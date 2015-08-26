@@ -352,7 +352,7 @@ class Registry implements EventSubscriber {
         }
 
         $needGroupByClause = false;
-        $groupByClause = "";
+        $groupByClauseFields = [];
 
         foreach ($resolvableFields as $resolvableField) {
             if ($resolvableField instanceof Aggregate) {
@@ -361,10 +361,10 @@ class Registry implements EventSubscriber {
                 }
                 continue;
             }
-            $groupByClause .= implode(',', $resolvableField->resolve($this, $ctx)) . ',';
+            $groupByClauseFields = array_merge($groupByClauseFields, $resolvableField->resolve($this, $ctx));
         }
 
-        $groupByClause = substr($groupByClause, 0, strlen($groupByClause) - 1);
+        $groupByClause = implode(',', $groupByClauseFields);
 
         if ($needGroupByClause) {
             $qb->addGroupBy($groupByClause);
@@ -411,11 +411,17 @@ class Registry implements EventSubscriber {
         // this will add related entity fields
         $query->setHint(Query::HINT_INCLUDE_META_COLUMNS, true);
 
+        $ctx->getApplicationContext()->getSQLLogger()->getMLogger()->addInfo($query->getDQL());
+
+        $ctx->getApplicationContext()->getTraceLogger()->trace('before fetching from database');
+
         $result = $query->getResult('RestrictedObjectHydrator');
+
+        $ctx->getApplicationContext()->getTraceLogger()->trace('entity hydrated');
 
         array_walk_recursive($result, function ($object) use ($ctx) {
 
-            if (Registry::isEntity($object)) {
+            if (is_object($object) && Registry::isEntity($object)) {
                 // TODO faire un setter sur les entity
                 $refProp = new \ReflectionProperty($object, 'findQueryContext');
                 $refProp->setAccessible(true);
