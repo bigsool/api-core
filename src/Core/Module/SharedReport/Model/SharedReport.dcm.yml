@@ -11,6 +11,7 @@ SharedReport:
       type: string
       nullable: false
       length: 255
+      column: report_id
     hash:
       type: string
       nullable: false
@@ -22,3 +23,4 @@ SharedReport:
     shareDate:
       type: datetime
       nullable: false
+      column: share_date
