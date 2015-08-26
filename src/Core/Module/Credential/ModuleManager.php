@@ -93,7 +93,7 @@ class ModuleManager extends AbstractModuleManager {
 
                     try {
 
-                        $authToken = json_decode($context->getParam('currentAuthToken'));
+                        $authToken = json_decode($context->getParam('currentAuthToken'), true);
                         $credentials = $authenticationHelper::checkAuthToken($authToken);
                         $newAuthToken = $authenticationHelper::renewAuthToken($authToken, $credentials);
 
@@ -101,6 +101,8 @@ class ModuleManager extends AbstractModuleManager {
                     catch (ToResolveException $e) {
 
                         if ($e->getErrorCode() == ERROR_AUTH_TOKEN_EXPIRED) {
+
+                            $context->setDefaultParam('authType', 'password');
 
                             $params = $context->getVerifiedParams();
 
