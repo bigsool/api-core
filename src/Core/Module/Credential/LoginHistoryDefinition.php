@@ -6,6 +6,8 @@ namespace Core\Module\Credential;
 
 use Core\Context\ActionContext;
 use Core\Context\ModuleEntityUpsertContext;
+use Core\Filter\Filter;
+use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 
 class LoginHistoryDefinition extends ModuleEntityDefinition {
@@ -47,6 +49,17 @@ class LoginHistoryDefinition extends ModuleEntityDefinition {
         $upsertContext = new ModuleEntityUpsertContext($this, $entityId, $params, $actionContext);
 
         return $upsertContext;
+
+    }
+
+    /**
+     * @return Filter[]
+     */
+    public function getFilters () {
+
+        return [
+            new StringFilter('LoginHistory','LoginHistoryForCredential', 'credential = :credential'),
+        ];
 
     }
 
