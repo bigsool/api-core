@@ -135,8 +135,6 @@ class KeyPathTest extends TestCase {
      */
     public function testMoreThanOneAliasFound () {
 
-        // TODO
-        /*
         $registry = $this->getRegistry('TestCompany');
         $context = $this->getFindQueryContext('TestCompany');
 
@@ -146,7 +144,6 @@ class KeyPathTest extends TestCase {
         $keyPath = new KeyPath('name');
         $keyPath->setRootEntity('TestUser');
         $keyPath->resolve($registry, $context);
-        */
 
     }
 

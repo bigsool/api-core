@@ -62,6 +62,23 @@ class TestUser
     protected $creationDate;
 
     /**
+     * @var \Core\Model\TestCompany
+     *
+     * @ORM\OneToOne(targetEntity="Core\Model\TestCompany", mappedBy="owner", cascade={"persist"})
+     */
+    protected $ownedCompany;
+
+    /**
+     * @var int
+     */
+    protected $ownedCompanyRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isOwnedCompanyFaulted = true;
+
+    /**
      * @var \Core\Model\TestCredential
      *
      * @ORM\OneToOne(targetEntity="Core\Model\TestCredential", inversedBy="user", cascade={"persist"})
@@ -80,6 +97,26 @@ class TestUser
      * @var bool
      */
     protected $isCredentialFaulted = true;
+
+    /**
+     * @var \Core\Model\TestCompany
+     *
+     * @ORM\ManyToOne(targetEntity="Core\Model\TestCompany", inversedBy="users", cascade={"persist"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    protected $company;
+
+    /**
+     * @var int
+     */
+    protected $companyRestrictedId;
+
+    /**
+     * @var bool
+     */
+    protected $isCompanyFaulted = true;
 
     /**
      * Constructor
@@ -220,6 +257,60 @@ class TestUser
     }
 
     /**
+     * Set ownedCompany
+     *
+     * @param \Core\Model\TestCompany $ownedCompany
+     *
+     * @return TestUser
+     */
+    public function setOwnedCompany(\Core\Model\TestCompany $ownedCompany = null)
+    {
+        $this->ownedCompany = $ownedCompany;
+        $this->ownedCompanyRestrictedId = $ownedCompany ? $ownedCompany->getId() : NULL;
+    
+        return $this;
+    }
+
+    /**
+     * Get ownedCompany
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getOwnedCompany()
+    {
+    
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+    
+        if (!$this->ownedCompanyRestrictedId) {
+            $faultedVar = "is".ucfirst("ownedCompany")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
+            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
+            $qryContext->addFields("id","owner");
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","owner.id = :id"), $this->getId());
+            $qryContext->findAll();
+            // this query will hydrate TestUser and TestCompany
+            // RestrictedObjectHydrator will automatically hydrate ownedCompanyRestrictedId
+            // Since Doctrine shares model instances, ownedCompanyRestrictedId will be automatically available
+        }
+    
+        return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
+    }
+
+    /**
+     * Get ownedCompany
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getUnrestrictedOwnedCompany()
+    {
+        return $this->ownedCompany;
+    }
+
+    /**
      * Set credential
      *
      * @param \Core\Model\TestCredential $credential
@@ -271,6 +362,60 @@ class TestUser
     public function getUnrestrictedCredential()
     {
         return $this->credential;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Core\Model\TestCompany $company
+     *
+     * @return TestUser
+     */
+    public function setCompany(\Core\Model\TestCompany $company = null)
+    {
+        $this->company = $company;
+        $this->companyRestrictedId = $company ? $company->getId() : NULL;
+    
+        return $this;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getCompany()
+    {
+    
+        $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
+    
+        if (!$this->companyRestrictedId) {
+            $faultedVar = "is".ucfirst("company")."Faulted";
+            if (!$this->$faultedVar) {
+                return NULL;
+            }
+            $this->$faultedVar = false; // TODO : set to false in the hydrator too
+            $reqCtx = $reqCtx->copyWithoutRequestedFields();
+            $qryContext = new \Core\Context\FindQueryContext("TestCompany", $reqCtx);
+            $qryContext->addFields("id","users");
+            $qryContext->addFilter(new \Core\Filter\StringFilter("TestCompany","","users.id = :id"), $this->getId());
+            $qryContext->findAll();
+            // this query will hydrate TestUser and TestCompany
+            // RestrictedObjectHydrator will automatically hydrate companyRestrictedId
+            // Since Doctrine shares model instances, companyRestrictedId will be automatically available
+        }
+    
+        return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Core\Model\TestCompany
+     */
+    public function getUnrestrictedCompany()
+    {
+        return $this->company;
     }
 }
 
