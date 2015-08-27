@@ -725,7 +725,7 @@ class Install extends Base {
         $this->getOutput()->writeln('Generation of optimized auto-loader...');
 
         $cmd =
-            'cd ' . escapeshellarg($this->deployDestDir)
+            'cd ' . escapeshellarg($this->paths['root'])
             . '; curl -sS https://getcomposer.org/installer | php; php composer.phar dumpautoload -o';
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
