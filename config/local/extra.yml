@@ -4,5 +4,4 @@ db:
   password: ''
   dbname: core
 mailer:
-  APIKey: b8Kn2zQqRK46k5ItaTOjKA
-  sandboxAPIKey: piRvGme6JCeJgIeJ4DmfJQ
+  APIKey: piRvGme6JCeJgIeJ4DmfJQ
