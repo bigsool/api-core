@@ -209,9 +209,9 @@ class Application {
                         throw new ToResolveException(ERROR_API_UNAVAILABLE);
                     }
 
-                    $this->populateRequestContext($rpcHandler, $reqCtx);
-
                     $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
+
+                    $this->populateRequestContext($rpcHandler, $reqCtx);
 
                     $sfReqCtx = new SfRequestContext();
                     $sfReqCtx->fromRequest($request);
@@ -424,8 +424,6 @@ class Application {
      */
     protected function populateRequestContext (Handler $rpcHandler, RequestContext &$reqCtx) {
 
-        $reqCtx->setAuthToken($rpcHandler->getAuthToken());
-        $reqCtx->setParams($rpcHandler->getParams());
         $reqCtx->setClientName($rpcHandler->getClientName());
         $reqCtx->setClientVersion($rpcHandler->getClientVersion());
         $reqCtx->setLocale($rpcHandler->getLocale());
@@ -435,6 +433,8 @@ class Application {
             return new RelativeField($field);
 
         }, $rpcHandler->getReturnedFields()));
+        $reqCtx->setAuthToken($rpcHandler->getAuthToken());
+        $reqCtx->setParams($rpcHandler->getParams());
 
     }
 
