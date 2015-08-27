@@ -390,10 +390,12 @@ class Registry implements EventSubscriber {
                 if (!isset($entityAliases[$filterEntity]) || count($entityAliases[$filterEntity]) == 0) {
                     $expressions[] = $filter->getExpression();
                 }
-                foreach ($entityAliases[$filterEntity] as $entityAlias) {
-                    $filter = clone $filter;
-                    $filter->setAliasForEntityToUse($entityAlias);
-                    $expressions[] = $filter->getExpression();
+                else {
+                    foreach ($entityAliases[$filterEntity] as $entityAlias) {
+                        $filter = clone $filter;
+                        $filter->setAliasForEntityToUse($entityAlias);
+                        $expressions[] = $filter->getExpression();
+                    }
                 }
             }
         }
