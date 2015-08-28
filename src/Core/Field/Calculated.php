@@ -26,4 +26,11 @@ interface Calculated extends ResolvableField {
      */
     public function setFieldName($fieldName);
 
+    /**
+     * @param mixed $model
+     *
+     * @return mixed
+     */
+    public function execute(&$model);
+
 }

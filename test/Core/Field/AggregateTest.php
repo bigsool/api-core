@@ -73,7 +73,7 @@ class AggregateTest extends TestCase {
     public function testResolve () {
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('COUNT', ['*'])), 'nbUsers');
+        $qryCtx->addField(new RelativeField(new Aggregate('COUNT', '*')), 'nbUsers');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 
@@ -85,7 +85,7 @@ class AggregateTest extends TestCase {
 
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('MAX', ['credential.loginHistories.date'])), 'lastLoginDate');
+        $qryCtx->addField(new RelativeField(new Aggregate('MAX', 'credential.loginHistories.date')), 'lastLoginDate');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 
@@ -97,7 +97,7 @@ class AggregateTest extends TestCase {
 
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('MIN', ['credential.loginHistories.date'])), 'lastLoginDate');
+        $qryCtx->addField(new RelativeField(new Aggregate('MIN', 'credential.loginHistories.date')), 'lastLoginDate');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 

@@ -2,10 +2,17 @@
 
 namespace Core\Field;
 
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Registry;
+use Doctrine\Common\Inflector\Inflector;
 
 class Aggregate implements Calculated {
+
+    /**
+     * @var ResolvableField
+     */
+    protected $resolvableField;
 
     /**
      * @var string
@@ -15,7 +22,7 @@ class Aggregate implements Calculated {
     /**
      * @var string
      */
-    protected $args;
+    protected $field;
 
     /**
      * @var string
@@ -38,13 +45,13 @@ class Aggregate implements Calculated {
     protected $fieldName;
 
     /**
-     * @param String    $fn
-     * @param String [] $args
+     * @param String $fn
+     * @param String $field
      */
-    public function __construct ($fn, $args) {
+    public function __construct ($fn, $field) {
 
         $this->fn = $fn;
-        $this->args = $args;
+        $this->field = $field;
         $this->value = $fn;
 
     }
@@ -84,7 +91,7 @@ class Aggregate implements Calculated {
     public function isEqual (ResolvableField $resolvableField) {
 
         return $resolvableField instanceof self && $this->fn == $resolvableField->fn
-               && $this->args == $resolvableField->args;
+               && $this->field == $resolvableField->field;
 
     }
 
@@ -96,27 +103,16 @@ class Aggregate implements Calculated {
      */
     public function resolve (Registry $registry, FindQueryContext $ctx) {
 
-        $values = "";
-        /**
-         * @var $fieldsToUse ResolvableField[]
-         */
-        $fieldsToUse = [];
-        foreach ($this->args as $arg) {
-            $relativeField = new RelativeField(($this->getBase() ? $this->getBase() . '.' : '') . $arg);
-            $resolvableFieldsFromRelativeField = $relativeField->resolve($registry, $ctx);
-            $fieldsToUse[] = end($resolvableFieldsFromRelativeField);
-        }
-        foreach ($fieldsToUse as $fieldToUse) {
-            $values .= implode(',', $fieldToUse->resolve($registry, $ctx)) . ',';
-        }
-        $values = substr($values, 0, strlen($values) - 1);
+        $relativeField = new RelativeField(($this->getBase() ? $this->getBase() . '.' : '') . $this->field);
+        $resolvableFields = $relativeField->resolve($registry, $ctx);
+        $this->resolvableField = end($resolvableFields);
+        $value = implode(',', $this->resolvableField->resolve($registry, $ctx)); // TODO : should return only one value
 
-        $entity = $ctx->getEntity();
         if (!$this->getAlias()) {
             $this->setAlias(($this->getBase() ? $this->getBase() . '_' : '') . $this->getFieldName());
         }
 
-        return [$this->fn . '(' . $values . ')'];
+        return [$this->fn . '(' . $value . ')'];
 
     }
 
@@ -174,6 +170,27 @@ class Aggregate implements Calculated {
 
     }
 
+    /**
+     * @param mixed $model
+     *
+     * @return mixed
+     */
+    public function execute (&$model) {
 
+        $resolvedEntity = $this->resolvableField->getResolvedEntity();
+        $resolvedField = $this->resolvableField->getResolvedField();
+        $metadata = ApplicationContext::getInstance()->getClassMetadata(Registry::realModelClassName($resolvedEntity));
+        $type = $metadata->getTypeOfField($resolvedField);
+
+        $getter = 'get' . Inflector::classify($this->getFieldName());
+        $value = $model->$getter();
+
+        if ($type == 'datetime') {
+            return new \DateTime($value);
+        }
+
+        return $value;
+
+    }
 
 }

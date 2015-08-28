@@ -202,6 +202,12 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
 
+<spaces>$class = get_class($this);
+<spaces>$entity = ($pos = strrpos($class, "\\\\")) ? substr($class, $pos + 1) : $class;
+<spaces>$appCtx = \Core\Context\ApplicationContext::getInstance();
+
+<spaces>$this-><fieldName> = $appCtx->getCalculatedField($entity, "<fieldName>")->execute($this);
+
 <spaces>return $this;
 }';
 
