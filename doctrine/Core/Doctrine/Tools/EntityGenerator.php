@@ -5,6 +5,8 @@ namespace Core\Doctrine\Tools;
 
 
 use Core\Context\ApplicationContext;
+use Core\Field\Aggregate;
+use Core\Field\CalculatedField;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -160,6 +162,47 @@ public function <methodName>()
 <spaces>$appCtx = \Core\Context\ApplicationContext::getInstance();
 
 <spaces>return $appCtx->getCalculatedField($entity, "<fieldName>")->execute($this);
+}';
+
+    /**
+     * @var string
+     */
+    protected static $aggregatedPropertyTemplate =
+        '/**
+ * @var <variableType>
+ */
+protected $<fieldName>;';
+
+    /**
+     * @var string
+     */
+    protected static $getAggregatedMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @return <variableType>
+ */
+public function <methodName>()
+{
+<spaces>return $this-><fieldName>;
+}';
+
+    /**
+     * @var string
+     */
+    protected static $setAggregatedMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @param <variableType> $<variableName>
+ *
+ * @return <entity>
+ */
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
+{
+<spaces>$this-><fieldName> = $<variableName>;
+
+<spaces>return $this;
 }';
 
     /**
@@ -340,36 +383,56 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
         $fields = ApplicationContext::getInstance()->getCalculatedFields($className);
 
-        $type = 'get';
-        foreach ($fields as $fieldName => $field) {
-            $methodName = $type . Inflector::classify($fieldName);
-            $variableName = Inflector::camelize($fieldName);
+        foreach (['get', 'set'] as $type) {
+            foreach ($fields as $fieldName => $field) {
+                $methodName = $type . Inflector::classify($fieldName);
+                $variableName = Inflector::camelize($fieldName);
 
-            if ($this->hasMethod($methodName, $metadata)) {
-                return '';
+                if ($this->hasMethod($methodName, $metadata)) {
+                    return '';
+                }
+                $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
+
+                if ($field instanceof CalculatedField) {
+                    if ($type == 'set') {
+                        continue;
+                    }
+                    $template = static::$getCalculatedFieldMethodTemplate;
+                }
+                elseif ($field instanceof Aggregate) {
+                    if ($type == 'set') {
+                        $template = static::$setAggregatedMethodTemplate;
+                    }
+                    else {
+                        $template = static::$aggregatedPropertyTemplate;
+                        $template .= "\n\n";
+                        $template .= static::$getAggregatedMethodTemplate;
+                    }
+                }
+                else {
+                    throw new \RuntimeException('unexcepted CalculatedField');
+                }
+
+                $replacements = array(
+                    '<description>'     => ucfirst($type) . ' ' . $variableName,
+                    '<methodTypeHint>'  => NULL,
+                    '<variableType>'    => 'mixed',
+                    '<variableName>'    => $variableName,
+                    '<methodName>'      => $methodName,
+                    '<fieldName>'       => $fieldName,
+                    '<variableDefault>' => '',
+                    '<entity>'          => $this->getClassName($metadata)
+                );
+
+                $method = str_replace(
+                    array_keys($replacements),
+                    array_values($replacements),
+                    $template
+                );
+
+                $methods .= "\n\n" . $this->prefixCodeWithSpaces($method);
             }
-            $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
-            $template = static::$getCalculatedFieldMethodTemplate;
-
-            $replacements = array(
-                '<description>'     => ucfirst($type) . ' ' . $variableName,
-                '<methodTypeHint>'  => NULL,
-                '<variableType>'    => 'mixed',
-                '<variableName>'    => $variableName,
-                '<methodName>'      => $methodName,
-                '<fieldName>'       => $fieldName,
-                '<variableDefault>' => '',
-                '<entity>'          => $this->getClassName($metadata)
-            );
-
-            $method = str_replace(
-                array_keys($replacements),
-                array_values($replacements),
-                $template
-            );
-
-            $methods .= "\n\n" . $this->prefixCodeWithSpaces($method);
         }
 
         return $methods;

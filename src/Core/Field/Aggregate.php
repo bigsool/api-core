@@ -5,7 +5,7 @@ namespace Core\Field;
 use Core\Context\FindQueryContext;
 use Core\Registry;
 
-class Aggregate implements ResolvableField {
+class Aggregate implements Calculated {
 
     /**
      * @var string
@@ -26,6 +26,16 @@ class Aggregate implements ResolvableField {
      * @var string|void
      */
     protected $alias;
+
+    /**
+     * @var string
+     */
+    protected $base;
+
+    /**
+     * @var string
+     */
+    protected $fieldName;
 
     /**
      * @param String    $fn
@@ -87,9 +97,12 @@ class Aggregate implements ResolvableField {
     public function resolve (Registry $registry, FindQueryContext $ctx) {
 
         $values = "";
+        /**
+         * @var $fieldsToUse ResolvableField[]
+         */
         $fieldsToUse = [];
         foreach ($this->args as $arg) {
-            $relativeField = new RelativeField($arg);
+            $relativeField = new RelativeField(($this->getBase() ? $this->getBase() . '.' : '') . $arg);
             $resolvableFieldsFromRelativeField = $relativeField->resolve($registry, $ctx);
             $fieldsToUse[] = end($resolvableFieldsFromRelativeField);
         }
@@ -100,7 +113,7 @@ class Aggregate implements ResolvableField {
 
         $entity = $ctx->getEntity();
         if (!$this->getAlias()) {
-            $this->setAlias($entity . ucfirst($this->value));
+            $this->setAlias(($this->getBase() ? $this->getBase() . '_' : '') . $this->getFieldName());
         }
 
         return [$this->fn . '(' . $values . ')'];
@@ -124,5 +137,43 @@ class Aggregate implements ResolvableField {
         return NULL;
 
     }
+
+    /**
+     * @return string
+     */
+    public function getBase () {
+
+        return $this->base;
+
+    }
+
+    /**
+     * @param string $base
+     */
+    public function setBase ($base) {
+
+        $this->base = $base;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldName () {
+
+        return $this->fieldName;
+
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName ($fieldName) {
+
+        $this->fieldName = $fieldName;
+
+    }
+
+
 
 }

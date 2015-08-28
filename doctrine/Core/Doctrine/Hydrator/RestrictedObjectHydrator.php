@@ -6,9 +6,41 @@ namespace Core\Doctrine\Hydrator;
 
 use Core\Context\ApplicationContext;
 use Core\Util\ArrayExtra;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 
 class RestrictedObjectHydrator extends ObjectHydrator {
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateAllData () {
+
+        $results = parent::hydrateAllData();
+        $models = [];
+
+        foreach ($results as $result) {
+            if (!is_array($result)) {
+                break;
+            }
+            $models[] = $model = $result[0];
+            $additionsFields = $originalFields = array_slice(array_keys($result),1);
+            foreach ($additionsFields as $key => $additionsField) {
+                $methodName = 'set' . Inflector::classify($additionsField);
+                if (is_callable([$model, $methodName])) {
+                    $model->$methodName($result[$additionsField]);
+                    unset($originalFields[$key]);
+                }
+            }
+        }
+
+        if (isset($originalFields) && empty($originalFields)) {
+            return $models;
+        }
+
+        return $results;
+
+    }
 
     /**
      * {@inheritdoc}

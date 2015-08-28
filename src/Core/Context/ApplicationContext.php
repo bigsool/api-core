@@ -11,6 +11,7 @@ use Core\Application;
 use Core\Config\ConfigManager;
 use Core\Controller;
 use Core\Error\ErrorManager;
+use Core\Field\Calculated;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\FunctionQueue;
@@ -65,7 +66,7 @@ class ApplicationContext {
     protected $ruleProcessor;
 
     /**
-     * @var CalculatedField[][]
+     * @var Calculated[][]
      */
     protected $calculatedFields;
 
@@ -183,6 +184,19 @@ class ApplicationContext {
      * @var FunctionQueue
      */
     protected $functionsQueueAfterCommitOrRollback;
+
+    /**
+     * @param object $entityName
+     *
+     * @return string
+     */
+    protected static function getEntityNameFromEntityObject ($entityName) {
+
+        $class = get_class($entityName);
+        $entityName = ($pos = strrpos($class, "\\")) ? substr($class, $pos + 1) : $class;
+
+        return $entityName;
+    }
 
     /**
      * @param RequestContext $initialRequestContext
@@ -431,11 +445,11 @@ class ApplicationContext {
     }
 
     /**
-     * @param string          $entityName
-     * @param string          $fieldName
-     * @param CalculatedField $calculatedField
+     * @param string     $entityName
+     * @param string     $fieldName
+     * @param Calculated $calculatedField
      */
-    public function addCalculatedField ($entityName, $fieldName, CalculatedField $calculatedField) {
+    public function addCalculatedField ($entityName, $fieldName, Calculated $calculatedField) {
 
         $this->calculatedFields[$entityName][$fieldName] = $calculatedField;
 
@@ -1001,24 +1015,32 @@ class ApplicationContext {
     }
 
     /**
-     * @param string $entityName
-     * @param string $fieldName
+     * @param string|object $entityName
+     * @param string        $fieldName
      *
      * @return bool
      */
     public function isCalculatedField ($entityName, $fieldName) {
+
+        if (is_object($entityName)) {
+            $entityName = static::getEntityNameFromEntityObject($entityName);
+        }
 
         return isset($this->calculatedFields[$entityName][$fieldName]);
 
     }
 
     /**
-     * @param $entityName
-     * @param $fieldName
+     * @param string|object $entityName
+     * @param string        $fieldName
      *
-     * @return CalculatedField
+     * @return Calculated
      */
     public function getCalculatedField ($entityName, $fieldName) {
+
+        if (is_object($entityName)) {
+            $entityName = static::getEntityNameFromEntityObject($entityName);
+        }
 
         if (!$this->isCalculatedField($entityName, $fieldName)) {
             throw new \RuntimeException(sprintf("Calculated field %s.%s not found", $entityName, $fieldName));
@@ -1029,11 +1051,15 @@ class ApplicationContext {
     }
 
     /**
-     * @param string $entityName
+     * @param string|object $entityName
      *
-     * @return CalculatedField[]
+     * @return Calculated[]
      */
     public function getCalculatedFields ($entityName) {
+
+        if (is_object($entityName)) {
+            $entityName = static::getEntityNameFromEntityObject($entityName);
+        }
 
         return isset($this->calculatedFields[$entityName]) ? $this->calculatedFields[$entityName] : [];
 

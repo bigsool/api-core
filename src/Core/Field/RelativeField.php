@@ -99,8 +99,17 @@ class RelativeField {
         elseif ($appCtx->isCalculatedField($resolvedEntity, $resolvedField)) {
 
             $field = $appCtx->getCalculatedField($resolvedEntity, $resolvedField);
-            $fields = $field->getFinalFields($registry, $ctx);
-            $fields[] = $field;
+
+            // set the value of this field in order to know where we are located in the calculated field
+            $field->setBase(substr($this->getValue(),0,strrpos($this->getValue(),'.')));
+
+            if ($field instanceof Aggregate) {
+                $fields = [$field];
+            }
+            elseif ($field instanceof CalculatedField) {
+                $fields = $field->getFinalFields($registry, $ctx);
+                $fields[] = $field;
+            }
 
         }
 

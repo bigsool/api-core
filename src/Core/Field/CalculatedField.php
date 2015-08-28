@@ -13,7 +13,7 @@ use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Util\ModelConverter;
 
-class CalculatedField implements ResolvableField {
+class CalculatedField implements Calculated {
 
     use Resolver {
         Resolver::resolve as protected _resolve;
@@ -48,6 +48,16 @@ class CalculatedField implements ResolvableField {
      * @var string[]|ResolvableField[]
      */
     protected $requiredFields;
+
+    /**
+     * @var string
+     */
+    protected $base = '';
+
+    /**
+     * @var string
+     */
+    protected $fieldName;
 
     /**
      * @param callable                   $function
@@ -218,6 +228,10 @@ class CalculatedField implements ResolvableField {
                 $fields[] = $field = new RealField($requiredField);
                 $field->setUseLeftJoin($this->useLeftJoin);
             }
+            elseif ($requiredField instanceof Aggregate) {
+                $requiredField->setBase($this->getBase());
+                $fields[] = $requiredField;
+            }
             else {
                 $fields[] = $requiredField;
             }
@@ -255,4 +269,39 @@ class CalculatedField implements ResolvableField {
 
     }
 
+    /**
+     * @return string
+     */
+    public function getBase () {
+
+        return $this->base;
+
+    }
+
+    /**
+     * @param string $base
+     */
+    public function setBase ($base) {
+
+        $this->base = $base;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldName () {
+
+        return $this->fieldName;
+
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName ($fieldName) {
+
+        $this->fieldName = $fieldName;
+
+    }
 }
