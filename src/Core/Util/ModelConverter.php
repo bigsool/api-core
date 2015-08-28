@@ -25,7 +25,7 @@ class ModelConverter {
 
     /**
      * @param mixed    $object
-     * @param string[] $requestedFields
+     * @param string[]|ResolvableField[] $requestedFields
      *
      * @return array
      */
