@@ -8,6 +8,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
+use Core\Filter\StringFilter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Util\ModelConverter;
@@ -44,17 +45,16 @@ class CalculatedField implements ResolvableField {
     protected $function;
 
     /**
-     * @var array
+     * @var string[]|ResolvableField[]
      */
     protected $requiredFields;
 
     /**
-     * @param callable $function
-     * @param array    $requiredFields
-     * @param bool     $useLeftJoin
+     * @param callable                   $function
+     * @param string[]|ResolvableField[] $requiredFields
+     * @param bool                       $useLeftJoin
      */
-    public function __construct (callable $function, array $requiredFields = [],
-                                 $useLeftJoin = false) {
+    public function __construct (callable $function, array $requiredFields = [], $useLeftJoin = false) {
 
         $this->function = $function;
         $this->requiredFields = $requiredFields;
@@ -69,11 +69,36 @@ class CalculatedField implements ResolvableField {
      */
     public function execute (&$model) {
 
-        $data = (new ModelConverter(ApplicationContext::getInstance()))->toArray($model, $this->requiredFields);
+        $appCtx = ApplicationContext::getInstance();
+        $findQueryContext = new FindQueryContext($this->getResolvedEntity(), $appCtx->getInitialRequestContext());
+
+        // TODO : instead of use ID, say $this = :this and give $model
+        $findQueryContext->addFilter(new StringFilter($this->getResolvedEntity(), '', 'id = :id'), $model->getId());
+
+        foreach ($this->requiredFields as $requiredField) {
+            if (is_string($requiredField) || $requiredField instanceof RelativeField) {
+                $findQueryContext->addField($requiredField);
+            }
+            elseif ($requiredField instanceof ResolvableField) {
+                $findQueryContext->addField(new RelativeField($requiredField));
+            }
+            else {
+                throw new \RuntimeException('not handle field');
+            }
+        }
+
+        $result = $findQueryContext->findOne();
+
+        $data = (new ModelConverter($appCtx))->toArray($model, $this->requiredFields);
 
         $params = [];
         foreach ($this->requiredFields as $requiredField) {
-            $params[] = ArrayExtra::magicalGet($data, $requiredField);
+            if ($requiredField instanceof ResolvableField && array_key_exists($requiredField->getAlias(), $result)) {
+                $params[] = $result[$requiredField->getAlias()];
+            }
+            else {
+                $params[] = ArrayExtra::magicalGet($data, $requiredField);
+            }
         }
 
         // Call $callable only with requiredFields
@@ -192,7 +217,8 @@ class CalculatedField implements ResolvableField {
             if (!($requiredField instanceof ResolvableField)) {
                 $fields[] = $field = new RealField($requiredField);
                 $field->setUseLeftJoin($this->useLeftJoin);
-            } else {
+            }
+            else {
                 $fields[] = $requiredField;
             }
 
