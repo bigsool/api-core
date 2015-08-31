@@ -79,36 +79,11 @@ class CalculatedField implements Calculated {
      */
     public function execute (&$model) {
 
-        $appCtx = ApplicationContext::getInstance();
-        $findQueryContext = new FindQueryContext($this->getResolvedEntity(), $appCtx->getInitialRequestContext());
-
-        // TODO : instead of use ID, say $this = :this and give $model
-        $findQueryContext->addFilter(new StringFilter($this->getResolvedEntity(), '', 'id = :id'), $model->getId());
-
-        foreach ($this->requiredFields as $requiredField) {
-            if (is_string($requiredField) || $requiredField instanceof RelativeField) {
-                $findQueryContext->addField($requiredField);
-            }
-            elseif ($requiredField instanceof ResolvableField) {
-                $findQueryContext->addField(new RelativeField($requiredField));
-            }
-            else {
-                throw new \RuntimeException('not handle field');
-            }
-        }
-
-        $result = $findQueryContext->findOne();
-
-        $data = (new ModelConverter($appCtx))->toArray($model, $this->requiredFields);
+        $data = (new ModelConverter(ApplicationContext::getInstance()))->toArray($model, $this->requiredFields);
 
         $params = [];
         foreach ($this->requiredFields as $requiredField) {
-            if ($requiredField instanceof ResolvableField && array_key_exists($requiredField->getAlias(), $result)) {
-                $params[] = $result[$requiredField->getAlias()];
-            }
-            else {
-                $params[] = ArrayExtra::magicalGet($data, $requiredField);
-            }
+            $params[] = ArrayExtra::magicalGet($data, $requiredField);
         }
 
         // Call $callable only with requiredFields
