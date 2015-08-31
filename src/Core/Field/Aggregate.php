@@ -45,6 +45,11 @@ class Aggregate implements Calculated {
     protected $fieldName;
 
     /**
+     * @var Aggregate
+     */
+    protected $originalField;
+
+    /**
      * @param String $fn
      * @param String $field
      */
@@ -106,6 +111,9 @@ class Aggregate implements Calculated {
         $relativeField = new RelativeField(($this->getBase() ? $this->getBase() . '.' : '') . $this->field);
         $resolvableFields = $relativeField->resolve($registry, $ctx);
         $this->resolvableField = end($resolvableFields);
+        if ($this->originalField) {
+            $this->originalField->resolvableField = $this->resolvableField;
+        }
         $value = implode(',', $this->resolvableField->resolve($registry, $ctx)); // TODO : should return only one value
 
         if (!$this->getAlias()) {
@@ -190,6 +198,19 @@ class Aggregate implements Calculated {
         }
 
         return $value;
+
+    }
+
+    /**
+     * Method to use to clone the aggregate
+     * @return Aggregate
+     */
+    public function copy(){
+
+        $clone = clone $this;
+        $clone->originalField = $this;
+
+        return $clone;
 
     }
 

@@ -129,6 +129,27 @@ class AggregateTest extends TestCase {
 
         $this->assertEquals(self::$loginDates[0], $user->getLastLoginDate());
 
+
+        $qryCtx = new FindQueryContext('TestCredential');
+        $qryCtx->addField('*');
+        $qryCtx->addField('user');
+        $qryCtx->addField('user.lastLoginDate');
+        $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
+
+        $result = self::$testUserEntity->find($qryCtx);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey(0, $result);
+        $this->assertInstanceOf('\Core\Model\TestCredential', $result[0]);
+        /**
+         * @var $credential TestCredential
+         */
+        $credential = $result[0];
+
+        $this->assertEquals(self::$loginDates[0], $credential->getUnrestrictedUser()->getLastLoginDate());
+
+
     }
 
 } 
