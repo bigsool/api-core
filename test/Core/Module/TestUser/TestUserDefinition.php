@@ -4,6 +4,8 @@
 namespace Core\Module\TestUser;
 
 
+use Core\Field\Aggregate;
+use Core\Field\Calculated;
 use Core\Module\ModuleEntityDefinition;
 
 class TestUserDefinition extends ModuleEntityDefinition {
@@ -13,7 +15,7 @@ class TestUserDefinition extends ModuleEntityDefinition {
      */
     public function getEntityName () {
 
-       return 'TestUser';
+        return 'TestUser';
 
     }
 
@@ -25,4 +27,16 @@ class TestUserDefinition extends ModuleEntityDefinition {
         return [];
 
     }
+
+    /**
+     * @return Calculated[]
+     */
+    public function getFields () {
+
+        return [
+            'lastLoginDate' => new Aggregate('MAX','credential.loginHistories.date')
+        ];
+
+    }
+
 }

@@ -417,5 +417,40 @@ class TestUser
     {
         return $this->company;
     }
+
+    /**
+     * @var mixed
+     */
+    protected $lastLoginDate;
+
+    /**
+     * Get lastLoginDate
+     *
+     * @return mixed
+     */
+    public function getLastLoginDate()
+    {
+        return $this->lastLoginDate;
+    }
+
+    /**
+     * Set lastLoginDate
+     *
+     * @param mixed $lastLoginDate
+     *
+     * @return TestUser
+     */
+    public function setLastLoginDate($lastLoginDate)
+    {
+        $this->lastLoginDate = $lastLoginDate;
+    
+        $class = get_class($this);
+        $entity = ($pos = strrpos($class, "\\")) ? substr($class, $pos + 1) : $class;
+        $appCtx = \Core\Context\ApplicationContext::getInstance();
+    
+        $this->lastLoginDate = $appCtx->getCalculatedField($entity, "lastLoginDate")->execute($this);
+    
+        return $this;
+    }
 }
 

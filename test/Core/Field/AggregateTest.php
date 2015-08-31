@@ -73,7 +73,7 @@ class AggregateTest extends TestCase {
     public function testResolve () {
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('COUNT', '*')), 'nbUsers');
+        $qryCtx->addField(new RelativeField(new Aggregate('COUNT', '*')), 'theNbUsers');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 
@@ -81,11 +81,11 @@ class AggregateTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        $this->assertSame("1", $result[0]['nbUsers']);
+        $this->assertSame("1", $result[0]['theNbUsers']);
 
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('MAX', 'credential.loginHistories.date')), 'lastLoginDate');
+        $qryCtx->addField(new RelativeField(new Aggregate('MAX', 'credential.loginHistories.date')), 'theLastLoginDate');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 
@@ -93,11 +93,11 @@ class AggregateTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        $this->assertEquals(self::$loginDates[0], new \DateTime($result[0]['lastLoginDate']));
+        $this->assertEquals(self::$loginDates[0], new \DateTime($result[0]['theLastLoginDate']));
 
 
         $qryCtx = new FindQueryContext('TestUser');
-        $qryCtx->addField(new RelativeField(new Aggregate('MIN', 'credential.loginHistories.date')), 'lastLoginDate');
+        $qryCtx->addField(new RelativeField(new Aggregate('MIN', 'credential.loginHistories.date')), 'theFirstLoginDate');
         $qryCtx->addField('*');
         $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
 
@@ -105,7 +105,29 @@ class AggregateTest extends TestCase {
 
         $this->assertInternalType('array', $result);
         $this->assertCount(1, $result);
-        $this->assertEquals(end(self::$loginDates), new \DateTime($result[0]['lastLoginDate']));
+        $this->assertEquals(end(self::$loginDates), new \DateTime($result[0]['theFirstLoginDate']));
+
+    }
+
+    public function testAggregateAsField() {
+
+        $qryCtx = new FindQueryContext('TestUser');
+        $qryCtx->addField('*');
+        $qryCtx->addField('lastLoginDate');
+        $qryCtx->addFilter(new StringFilter('TestUser','','id = :id'), self::$user->getId());
+
+        $result = self::$testUserEntity->find($qryCtx);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey(0, $result);
+        $this->assertInstanceOf('\Core\Model\TestUser', $result[0]);
+        /**
+         * @var $user TestUser
+         */
+        $user = $result[0];
+
+        $this->assertEquals(self::$loginDates[0], $user->getLastLoginDate());
 
     }
 
