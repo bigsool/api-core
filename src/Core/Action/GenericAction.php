@@ -93,15 +93,20 @@ class GenericAction extends Action {
     /**
      * @param array         $constraintsList
      * @param ActionContext $context
+     * @param null|string   $basePath If provided, basePath will be added in all fields: $base.$field
      *
      * @throws FormattedError
      */
-    public static function simpleValidate (array $constraintsList, ActionContext $context) {
+    public static function simpleValidate (array $constraintsList, ActionContext $context, $basePath = NULL) {
 
 
         $errors = [];
 
         foreach ($constraintsList as $originalField => $constraints) {
+
+            if ($basePath) {
+                $originalField = $basePath . '.' . $originalField;
+            }
 
             $explodedField = explode('.', $originalField);
             $field = end($explodedField);
