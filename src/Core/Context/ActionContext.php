@@ -303,7 +303,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         $params = $this->getParams($keys);
 
         foreach ($params as &$param) {
-            $param = UnsafeParameter::getFinalValue($param);
+            $param = UnsafeParameter::getRecursiveFinalValue($param);
         }
 
         return $params;
