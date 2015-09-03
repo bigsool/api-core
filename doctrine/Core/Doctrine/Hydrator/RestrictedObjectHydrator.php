@@ -21,7 +21,7 @@ class RestrictedObjectHydrator extends ObjectHydrator {
 
 
         foreach ($results as $result) {
-            if (!is_array($result)) {
+            if (!is_array($result) || !isset($result[0])) {
                 break;
             }
             $models[] = $model = $result[0];
