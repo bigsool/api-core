@@ -104,7 +104,7 @@ class CredentialDefinition extends ModuleEntityDefinition {
             $findQueryContext->addFilter('CredentialForLogin', $login);
 
             // TODO count request directly
-            if (count($findQueryContext->findAll()) != 0) {
+            if ($findQueryContext->count() != 0) {
                 throw new ToResolveException(ERROR_CREDENTIAL_ALREADY_EXIST);
             }
 
