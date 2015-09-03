@@ -4,6 +4,7 @@
 namespace Core\Context;
 
 
+use Core\Field\Aggregate;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Module\ModuleEntity;
@@ -244,6 +245,23 @@ class FindQueryContext implements QueryContext {
     public function parameterExists ($key) {
 
         return array_key_exists($key, $this->params);
+
+    }
+
+    public function count() {
+
+        $this->setFields([]);
+        $this->addField(new RelativeField(new Aggregate('COUNT','*')), '_count');
+
+        $entities = $this->findAll();
+
+        if (!isset($entities[0]) || !isset($entities[0]['_count'])) {
+            return 0;
+        }
+        else {
+            return $entities[0]['_count'];
+        }
+
 
     }
 
