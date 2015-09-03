@@ -328,6 +328,7 @@ class Application {
             foreach ($moduleManager->getModuleEntities() as $moduleEntity) {
                 $dbEntityName = $moduleEntity->getDefinition()->getDBEntityName();
                 foreach ($moduleEntity->getDefinition()->getFields() as $fieldName => $calculatedField) {
+                    $calculatedField->setFieldName($fieldName);
                     $this->appCtx->addCalculatedField($dbEntityName, $fieldName, $calculatedField);
                 }
             }

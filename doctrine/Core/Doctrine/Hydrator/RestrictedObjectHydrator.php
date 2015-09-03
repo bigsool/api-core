@@ -6,9 +6,57 @@ namespace Core\Doctrine\Hydrator;
 
 use Core\Context\ApplicationContext;
 use Core\Util\ArrayExtra;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 
 class RestrictedObjectHydrator extends ObjectHydrator {
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateAllData () {
+
+        $results = parent::hydrateAllData();
+        $models = [];
+
+
+        foreach ($results as $result) {
+            if (!is_array($result)) {
+                break;
+            }
+            $models[] = $model = $result[0];
+
+            $additionsFields = $originalFields = array_slice(array_keys($result),1);
+            foreach ($additionsFields as $key => $additionsField) {
+
+                $exploded = explode('_',$additionsField);
+                $realField = array_pop($exploded);
+
+                foreach ($exploded as $associationField) {
+                    $classMetadata = $this->_em->getClassMetadata(get_class($model));
+                    $associationMappings = $classMetadata->getAssociationMappings();
+                    if (!isset($associationMappings[$associationField])) {
+                        continue 2;
+                    }
+                    $modelGetter = 'getUnrestricted' . Inflector::classify($associationField);
+                    $model = $model->$modelGetter();
+                }
+
+                $methodName = 'set' . Inflector::classify($realField);
+                if (is_callable([$model, $methodName])) {
+                    $model->$methodName($result[$additionsField]);
+                    unset($originalFields[$key]);
+                }
+            }
+        }
+
+        if (isset($originalFields) && empty($originalFields)) {
+            return $models;
+        }
+
+        return $results;
+
+    }
 
     /**
      * {@inheritdoc}

@@ -26,6 +26,7 @@ use Core\Filter\Filter;
 use Core\Module\AggregatedModuleEntity;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModelAspect;
+use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager;
 use Core\Operator\CompareOperator;
 use Core\Operator\LogicOperator;
@@ -319,6 +320,37 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         if (!$instance) {
 
+            $appProperty = (new \ReflectionClass('\Core\Application'))->getProperty('instance');
+            $appProperty->setAccessible(true);
+            $appProperty->setValue(NULL);
+            $appProperty->setAccessible(false);
+            $app = Application::getInstance();
+            $ctx = ApplicationContext::getInstance();
+
+            $ctx->setApplication($app);
+            $ruleMgr = new Processor();
+            $ctx->setRuleProcessor($ruleMgr);
+
+            // load calculated to be inserted in models
+            foreach (glob(__DIR__ . '/Module/*/*Definition.php') as $definitionFile) {
+
+                $dir = str_replace('\\','\\\\', __DIR__);
+                $dir = str_replace('/','\\/', $dir);
+                $dir = str_replace('.','\\.', $dir);
+                $pattern = '/' . $dir . '\/Module\/([^\/]+)\/([^\/]+Definition)\.php/';
+                preg_match($pattern, $definitionFile, $matches);
+
+                $className = '\Core\Module\\' . $matches[1] . '\\' . $matches[2];
+                /**
+                 * @var $class ModuleEntityDefinition
+                 */
+                $class = new $className;
+                foreach ($class->getFields() as $fieldName => $calculatedField) {
+                    $calculatedField->setFieldName($fieldName);
+                    $ctx->addCalculatedField($class->getDBEntityName(), $fieldName, $calculatedField);
+                }
+            }
+
             $config =
                 Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/../yml'), true, __DIR__ . '/../proxy',
                                                        new ArrayCache());
@@ -337,16 +369,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             $em = EntityManager::create($conn, $config);
             self::generateEntities($em);
             $em->getConnection()->query('PRAGMA foreign_keys = ON');
-
-            $appProperty = (new \ReflectionClass('\Core\Application'))->getProperty('instance');
-            $appProperty->setAccessible(true);
-            $appProperty->setValue(NULL);
-            $appProperty->setAccessible(false);
-            $app = Application::getInstance();
-            $ctx = ApplicationContext::getInstance();
-            $ctx->setApplication($app);
-            $ruleMgr = new Processor();
-            $ctx->setRuleProcessor($ruleMgr);
             $ctx->setEntityManager($em);
             $app->initTranslation();
 

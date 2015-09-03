@@ -6,14 +6,14 @@ namespace Core\Module;
 
 use Core\Context\ActionContext;
 use Core\Context\ModuleEntityUpsertContext;
-use Core\Field\CalculatedField;
+use Core\Field\Calculated;
 use Core\Filter\Filter;
 use Core\Validation\ConstraintsProvider;
 
 abstract class ModuleEntityDefinition implements ConstraintsProvider {
 
     /**
-     * @return CalculatedField[]
+     * @return Calculated[]
      */
     public function getFields () {
 

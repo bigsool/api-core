@@ -8,11 +8,12 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
+use Core\Filter\StringFilter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Util\ModelConverter;
 
-class CalculatedField implements ResolvableField {
+class CalculatedField implements Calculated {
 
     use Resolver {
         Resolver::resolve as protected _resolve;
@@ -44,17 +45,26 @@ class CalculatedField implements ResolvableField {
     protected $function;
 
     /**
-     * @var array
+     * @var string[]|ResolvableField[]
      */
     protected $requiredFields;
 
     /**
-     * @param callable $function
-     * @param array    $requiredFields
-     * @param bool     $useLeftJoin
+     * @var string
      */
-    public function __construct (callable $function, array $requiredFields = [],
-                                 $useLeftJoin = false) {
+    protected $base = '';
+
+    /**
+     * @var string
+     */
+    protected $fieldName;
+
+    /**
+     * @param callable                   $function
+     * @param string[]|ResolvableField[] $requiredFields
+     * @param bool                       $useLeftJoin
+     */
+    public function __construct (callable $function, array $requiredFields = [], $useLeftJoin = false) {
 
         $this->function = $function;
         $this->requiredFields = $requiredFields;
@@ -192,7 +202,12 @@ class CalculatedField implements ResolvableField {
             if (!($requiredField instanceof ResolvableField)) {
                 $fields[] = $field = new RealField($requiredField);
                 $field->setUseLeftJoin($this->useLeftJoin);
-            } else {
+            }
+            elseif ($requiredField instanceof Aggregate) {
+                $requiredField->setBase($this->getBase());
+                $fields[] = $requiredField;
+            }
+            else {
                 $fields[] = $requiredField;
             }
 
@@ -229,4 +244,39 @@ class CalculatedField implements ResolvableField {
 
     }
 
+    /**
+     * @return string
+     */
+    public function getBase () {
+
+        return $this->base;
+
+    }
+
+    /**
+     * @param string $base
+     */
+    public function setBase ($base) {
+
+        $this->base = $base;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldName () {
+
+        return $this->fieldName;
+
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName ($fieldName) {
+
+        $this->fieldName = $fieldName;
+
+    }
 }

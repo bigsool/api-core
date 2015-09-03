@@ -2,10 +2,17 @@
 
 namespace Core\Field;
 
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Registry;
+use Doctrine\Common\Inflector\Inflector;
 
-class Aggregate implements ResolvableField {
+class Aggregate implements Calculated {
+
+    /**
+     * @var ResolvableField
+     */
+    protected $resolvableField;
 
     /**
      * @var string
@@ -15,7 +22,7 @@ class Aggregate implements ResolvableField {
     /**
      * @var string
      */
-    protected $args;
+    protected $field;
 
     /**
      * @var string
@@ -28,13 +35,28 @@ class Aggregate implements ResolvableField {
     protected $alias;
 
     /**
-     * @param String    $fn
-     * @param String [] $args
+     * @var string
      */
-    public function __construct ($fn, $args) {
+    protected $base;
+
+    /**
+     * @var string
+     */
+    protected $fieldName;
+
+    /**
+     * @var Aggregate
+     */
+    protected $originalField;
+
+    /**
+     * @param String $fn
+     * @param String $field
+     */
+    public function __construct ($fn, $field) {
 
         $this->fn = $fn;
-        $this->args = $args;
+        $this->field = $field;
         $this->value = $fn;
 
     }
@@ -74,7 +96,7 @@ class Aggregate implements ResolvableField {
     public function isEqual (ResolvableField $resolvableField) {
 
         return $resolvableField instanceof self && $this->fn == $resolvableField->fn
-               && $this->args == $resolvableField->args;
+               && $this->field == $resolvableField->field;
 
     }
 
@@ -86,24 +108,19 @@ class Aggregate implements ResolvableField {
      */
     public function resolve (Registry $registry, FindQueryContext $ctx) {
 
-        $values = "";
-        $fieldsToUse = [];
-        foreach ($this->args as $arg) {
-            $relativeField = new RelativeField($arg);
-            $resolvableFieldsFromRelativeField = $relativeField->resolve($registry, $ctx);
-            $fieldsToUse[] = end($resolvableFieldsFromRelativeField);
+        $relativeField = new RelativeField(($this->getBase() ? $this->getBase() . '.' : '') . $this->field);
+        $resolvableFields = $relativeField->resolve($registry, $ctx);
+        $this->resolvableField = end($resolvableFields);
+        if ($this->originalField) {
+            $this->originalField->resolvableField = $this->resolvableField;
         }
-        foreach ($fieldsToUse as $fieldToUse) {
-            $values .= implode(',', $fieldToUse->resolve($registry, $ctx)) . ',';
-        }
-        $values = substr($values, 0, strlen($values) - 1);
+        $value = implode(',', $this->resolvableField->resolve($registry, $ctx)); // TODO : should return only one value
 
-        $entity = $ctx->getEntity();
         if (!$this->getAlias()) {
-            $this->setAlias($entity . ucfirst($this->value));
+            $this->setAlias(($this->getBase() ? $this->getBase() . '_' : '') . $this->getFieldName());
         }
 
-        return [$this->fn . '(' . $values . ')'];
+        return [$this->fn . '(' . $value . ')'];
 
     }
 
@@ -122,6 +139,78 @@ class Aggregate implements ResolvableField {
     public function getResolvedEntity () {
 
         return NULL;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getBase () {
+
+        return $this->base;
+
+    }
+
+    /**
+     * @param string $base
+     */
+    public function setBase ($base) {
+
+        $this->base = $base;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getFieldName () {
+
+        return $this->fieldName;
+
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setFieldName ($fieldName) {
+
+        $this->fieldName = $fieldName;
+
+    }
+
+    /**
+     * @param mixed $model
+     *
+     * @return mixed
+     */
+    public function execute (&$model) {
+
+        $resolvedEntity = $this->resolvableField->getResolvedEntity();
+        $resolvedField = $this->resolvableField->getResolvedField();
+        $metadata = ApplicationContext::getInstance()->getClassMetadata(Registry::realModelClassName($resolvedEntity));
+        $type = $metadata->getTypeOfField($resolvedField);
+
+        $getter = 'get' . Inflector::classify($this->getFieldName());
+        $value = $model->$getter();
+
+        if ($type == 'datetime') {
+            return new \DateTime($value);
+        }
+
+        return $value;
+
+    }
+
+    /**
+     * Method to use to clone the aggregate
+     * @return Aggregate
+     */
+    public function copy(){
+
+        $clone = clone $this;
+        $clone->originalField = $this;
+
+        return $clone;
 
     }
 

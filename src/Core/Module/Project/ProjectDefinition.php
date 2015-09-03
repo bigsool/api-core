@@ -3,6 +3,7 @@
 namespace Core\Module\Project;
 
 
+use Core\Field\Calculated;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
@@ -62,7 +63,7 @@ class ProjectDefinition extends ModuleEntityDefinition {
     }
 
     /**
-     * @return CalculatedField[]
+     * @return Calculated[]
      */
     public function getFields () {
 
