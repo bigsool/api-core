@@ -105,6 +105,16 @@ public function <methodName>()
 <spaces><spaces>}
 <spaces>}
 
+<spaces>// workaround to fix doctrine bug. I did a PR ( https://github.com/doctrine/doctrine2/pull/1501 )
+<spaces>$activeDevices = [];
+<spaces>foreach ($this->activeDevices as $activeDevice) {
+<spaces>    if (in_array($activeDevice->getId(),$this->activeDevicesRestrictedIds)) {
+<spaces>        $activeDevices[] = $activeDevice;
+<spaces>    }
+<spaces>}
+
+<spaces>return new \Doctrine\Common\Collections\ArrayCollection($activeDevices);
+
 <spaces>$inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this-><fieldName>RestrictedIds);
 
 <spaces>$criteria = \Doctrine\Common\Collections\Criteria::create();
