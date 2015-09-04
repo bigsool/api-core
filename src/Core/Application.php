@@ -10,6 +10,7 @@ use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
 use Core\Error\ToResolveException;
+use Core\Error\ValidationException;
 use Core\Field\RelativeField;
 use Core\Module\MagicalModuleManager;
 use Core\Module\ModuleManager;
@@ -567,6 +568,13 @@ class Application {
 
         // handle queued actions before commit
         $this->executeErrorQueuedActions($reqCtx);
+
+        if ($e instanceof ValidationException) {
+            $errMgr = $this->appCtx->getErrorManager();
+            $errMgr->addErrors($e->getErrors());
+
+            $e = $errMgr->getFormattedError();
+        }
 
         if ($e instanceof ToResolveException) {
 
