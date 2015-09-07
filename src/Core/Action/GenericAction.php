@@ -7,6 +7,7 @@ namespace Core\Action;
 use Core\Context\ActionContext;
 use Core\Context\RequestContext;
 use Core\Error\FormattedError;
+use Core\Util\ArrayExtra;
 use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\Constraint;
 use Core\Validation\Validator;
@@ -113,6 +114,21 @@ class GenericAction extends Action {
 
             if (!is_array($constraints) || count($constraints) < 1) {
                 throw new \RuntimeException('invalid constraints');
+            }
+
+            // in case we wanna validate an array of something
+            if (ArrayExtra::isAssociative($constraints)) {
+                $arrayToValidate = $context->getFinalParam($originalField);
+                $shouldBeFlat = count($constraints) == 1 && isset($constraints['']);
+                foreach ($arrayToValidate as $key => $valueToValidate) {
+                    $subConstraintsList = [];
+                    foreach ($constraints as $subField => $subConstraints) {
+                        $subOriginalField = $originalField . '.' . $key . ($shouldBeFlat ? '' : '.' . $subField);
+                        $subConstraintsList[$subOriginalField] = $subConstraints;
+                    }
+                    static::simpleValidate($subConstraintsList, $context);
+                }
+                continue;
             }
 
             $forceOptional = false;
