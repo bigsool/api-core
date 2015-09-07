@@ -903,10 +903,10 @@ class ApplicationContext {
             if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
                 return LOCAL_ENV;
             }
-            elseif (strpos(__DIR__, 'dev-api') !== false) {
+            elseif (strpos(__DIR__, 'dev') !== false) {
                 return DEV_ENV;
             }
-            elseif (strpos(__DIR__, 'stage-api') !== false) {
+            elseif (strpos(__DIR__, 'stage') !== false) {
                 return STAGE_ENV;
             }
             else {
