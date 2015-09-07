@@ -28,7 +28,25 @@ class UpdateTag extends Base {
 
         $this->getOutput()->write(sprintf('Moving tag <info>%s</info>... ', $config['git_tag']));
 
-        $cmd = "git tag -l | grep {$config['git_tag']}";
+        $this->updateTag($input, $output, $config, $this->paths['root']);
+
+        $this->updateTag($input, $output, $config, $this->paths['root'].'/vendor/api/core');
+
+        $this->getOutput()->writeln("OK\n");
+
+        return 0;
+
+    }
+
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param                 $config
+     */
+    protected function updateTag (InputInterface $input, OutputInterface $output, $config, $dir) {
+
+        $dir = escapeshellarg($dir);
+        $cmd = "cd $dir; git tag -l | grep {$config['git_tag']}";
         if ($input->getOption('verbose')) {
             $output->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
@@ -36,13 +54,13 @@ class UpdateTag extends Base {
 
         if ($result) {
 
-            $cmd = "git tag -d {$config['git_tag']}";
+            $cmd = "cd $dir; git tag -d {$config['git_tag']}";
             if ($input->getOption('verbose')) {
                 $output->writeln(sprintf('<comment>%s</comment>', $cmd));
             }
             exec($cmd);
 
-            $cmd = "git push origin :refs/tags/{$config['git_tag']}";
+            $cmd = "cd $dir; git push origin :refs/tags/{$config['git_tag']}";
             if ($input->getOption('verbose')) {
                 $output->writeln(sprintf('<comment>%s</comment>', $cmd));
             }
@@ -50,22 +68,17 @@ class UpdateTag extends Base {
 
         }
 
-        $cmd = "git tag -f {$config['git_tag']}";
+        $cmd = "cd $dir; git tag -f {$config['git_tag']}";
         if ($input->getOption('verbose')) {
             $output->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
         exec($cmd);
 
-        $cmd = "git push origin tag {$config['git_tag']}";
+        $cmd = "cd $dir; git push origin tag {$config['git_tag']}";
         if ($input->getOption('verbose')) {
             $output->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
         exec($cmd);
-
-        $this->getOutput()->writeln("OK\n");
-
-        return 0;
-
     }
 
 }
