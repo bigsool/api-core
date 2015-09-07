@@ -703,6 +703,8 @@ class Install extends Base {
         $this->setIsDown(false, $this->setDownPath, $this->isDownPath);
         $this->setIsDown(false, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
 
+        opcache_reset();
+
     }
 
     /**
