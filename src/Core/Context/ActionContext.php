@@ -244,7 +244,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
      */
     public function setDefaultParam ($key, $defaultValue) {
 
-        if (!array_key_exists($key, $this->params)) {
+        if (!$this->doesParamExist($key)) {
             $this->setParam($key, $defaultValue);
         }
 
