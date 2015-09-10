@@ -183,7 +183,7 @@ class TestCredential
     {
         $this->user = $user;
         $this->userRestrictedId = $user ? $user->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -194,9 +194,9 @@ class TestCredential
      */
     public function getUser()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->userRestrictedId) {
             $faultedVar = "is".ucfirst("user")."Faulted";
             if (!$this->$faultedVar) {
@@ -212,7 +212,7 @@ class TestCredential
             // RestrictedObjectHydrator will automatically hydrate userRestrictedId
             // Since Doctrine shares model instances, userRestrictedId will be automatically available
         }
-    
+
         return $this->user && $this->user->getId() == $this->userRestrictedId ? $this->user : NULL;
     }
 
@@ -237,7 +237,7 @@ class TestCredential
     {
         $this->loginHistories[] = $loginHistory;
         $this->loginHistoriesRestrictedIds[] = $loginHistory->getId();
-    
+
         return $this;
     }
 
@@ -259,9 +259,9 @@ class TestCredential
      */
     public function getLoginHistories()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->loginHistoriesRestrictedIds) {
             $faultedVar = "is".ucfirst("loginHistories")."Faulted";
             if ($this->$faultedVar) {
@@ -276,12 +276,22 @@ class TestCredential
                 // Since Doctrine shares model instances, loginHistoriesRestrictedId will be automatically available
             }
         }
-    
+
+        // workaround to fix doctrine bug. I did a PR ( https://github.com/doctrine/doctrine2/pull/1501 )
+        $loginHistories = [];
+        foreach ($this->loginHistories as $entity) {
+            if (in_array($entity->getId(), $this->loginHistoriesRestrictedIds)) {
+                $loginHistories[] = $entity;
+            }
+        }
+
+        return new \Doctrine\Common\Collections\ArrayCollection($loginHistories);
+
         $inExpr = \Doctrine\Common\Collections\Criteria::expr()->in("id", $this->loginHistoriesRestrictedIds);
-    
+
         $criteria = \Doctrine\Common\Collections\Criteria::create();
         $criteria->where($inExpr);
-    
+
         return $this->loginHistories->matching($criteria);
     }
 

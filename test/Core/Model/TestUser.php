@@ -267,7 +267,7 @@ class TestUser
     {
         $this->ownedCompany = $ownedCompany;
         $this->ownedCompanyRestrictedId = $ownedCompany ? $ownedCompany->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -278,9 +278,9 @@ class TestUser
      */
     public function getOwnedCompany()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->ownedCompanyRestrictedId) {
             $faultedVar = "is".ucfirst("ownedCompany")."Faulted";
             if (!$this->$faultedVar) {
@@ -296,7 +296,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate ownedCompanyRestrictedId
             // Since Doctrine shares model instances, ownedCompanyRestrictedId will be automatically available
         }
-    
+
         return $this->ownedCompany && $this->ownedCompany->getId() == $this->ownedCompanyRestrictedId ? $this->ownedCompany : NULL;
     }
 
@@ -321,7 +321,7 @@ class TestUser
     {
         $this->credential = $credential;
         $this->credentialRestrictedId = $credential ? $credential->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -332,9 +332,9 @@ class TestUser
      */
     public function getCredential()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->credentialRestrictedId) {
             $faultedVar = "is".ucfirst("credential")."Faulted";
             if (!$this->$faultedVar) {
@@ -350,7 +350,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate credentialRestrictedId
             // Since Doctrine shares model instances, credentialRestrictedId will be automatically available
         }
-    
+
         return $this->credential && $this->credential->getId() == $this->credentialRestrictedId ? $this->credential : NULL;
     }
 
@@ -375,7 +375,7 @@ class TestUser
     {
         $this->company = $company;
         $this->companyRestrictedId = $company ? $company->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -386,9 +386,9 @@ class TestUser
      */
     public function getCompany()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->companyRestrictedId) {
             $faultedVar = "is".ucfirst("company")."Faulted";
             if (!$this->$faultedVar) {
@@ -404,7 +404,7 @@ class TestUser
             // RestrictedObjectHydrator will automatically hydrate companyRestrictedId
             // Since Doctrine shares model instances, companyRestrictedId will be automatically available
         }
-    
+
         return $this->company && $this->company->getId() == $this->companyRestrictedId ? $this->company : NULL;
     }
 
@@ -443,13 +443,13 @@ class TestUser
     public function setLastLoginDate($lastLoginDate)
     {
         $this->lastLoginDate = $lastLoginDate;
-    
+
         $class = get_class($this);
         $entity = ($pos = strrpos($class, "\\")) ? substr($class, $pos + 1) : $class;
         $appCtx = \Core\Context\ApplicationContext::getInstance();
-    
+
         $this->lastLoginDate = $appCtx->getCalculatedField($entity, "lastLoginDate")->execute($this);
-    
+
         return $this;
     }
 }

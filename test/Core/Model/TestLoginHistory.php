@@ -137,7 +137,7 @@ class TestLoginHistory
     {
         $this->credential = $credential;
         $this->credentialRestrictedId = $credential ? $credential->getId() : NULL;
-    
+
         return $this;
     }
 
@@ -148,9 +148,9 @@ class TestLoginHistory
      */
     public function getCredential()
     {
-    
+
         $reqCtx = $this->findQueryContext ? $this->findQueryContext->getRequestContext() : \Core\Context\ApplicationContext::getInstance()->getInitialRequestContext();
-    
+
         if (!$this->credentialRestrictedId) {
             $faultedVar = "is".ucfirst("credential")."Faulted";
             if (!$this->$faultedVar) {
@@ -166,7 +166,7 @@ class TestLoginHistory
             // RestrictedObjectHydrator will automatically hydrate credentialRestrictedId
             // Since Doctrine shares model instances, credentialRestrictedId will be automatically available
         }
-    
+
         return $this->credential && $this->credential->getId() == $this->credentialRestrictedId ? $this->credential : NULL;
     }
 
