@@ -180,9 +180,7 @@ class Serializer {
         array_walk_recursive($data, function (&$value) {
 
             if ($value instanceof \DateTime) {
-                //$value = $value->format($value::ISO8601);
-                $timestampMilliseconds = $value->format('U') . '000';
-                $value = sprintf('\/Date(%s)/', $timestampMilliseconds);
+                $value = intval($value->format('U'));
             }
 
         });
