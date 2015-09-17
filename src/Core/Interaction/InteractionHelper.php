@@ -1,21 +1,18 @@
 <?php
 
-namespace Core\Module\Project\Interaction;
+namespace Core\Interaction;
 
-
-use Core\Interaction\Interaction;
-
-class ProjectInteractionHelper {
+class InteractionHelper {
 
     /**
      * Returns an Interaction (or not) for a given feature
      *
-     * @param string                        $feature
-     * @param ProjectInteractionsDefinition $definition
+     * @param string                 $feature
+     * @param InteractionsDefinition $definition
      *
      * @return Interaction|null
      */
-    public static function getInteractionForFeature ($feature, ProjectInteractionsDefinition $definition) {
+    public static function getInteractionForFeature ($feature, InteractionsDefinition $definition) {
 
         $callables = $definition->getInteractionCallablesForFeature($feature);
 
@@ -31,11 +28,11 @@ class ProjectInteractionHelper {
     }
 
     /**
-     * @param ProjectInteractionsDefinition $definition
+     * @param InteractionsDefinition $definition
      *
      * @return Interaction[]
      */
-    public static function getInteractions (ProjectInteractionsDefinition $definition) {
+    public static function getInteractions (InteractionsDefinition $definition) {
 
         $interactions = [];
 

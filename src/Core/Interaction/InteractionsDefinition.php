@@ -6,10 +6,10 @@
  * Time: 16:01
  */
 
-namespace Core\Module\Project\Interaction;
+namespace Core\Interaction;
 
 
-interface ProjectInteractionsDefinition {
+interface InteractionsDefinition {
 
     /**
      *
