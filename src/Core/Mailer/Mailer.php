@@ -47,7 +47,7 @@ class Mailer {
                 ]
             ],
             'subject'    => $subject,
-            'text'       => $message,
+            'html'       => $message,
         ];
 
         return $this->mandrill->messages->send($message);
