@@ -9,7 +9,7 @@
     "symfony/validator": "~2.5",
     "symfony/config": "~2.5",
     "monolog/monolog": "~1.11",
-    "doctrine/migrations": "1.0.*@dev",
+    "doctrine/migrations": "1.1.*",
     "mandrill/mandrill": "1.0.*"
   },
   "require-dev": {
