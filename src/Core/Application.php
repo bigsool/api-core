@@ -17,6 +17,7 @@ use Core\Module\ModuleManager;
 use Core\RPC\CLI;
 use Core\RPC\Handler;
 use Core\RPC\JSON;
+use Core\RPC\Local;
 use Core\Rule\Processor;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -265,9 +266,12 @@ class Application {
     }
 
     /**
+     * @param Local $rpcHandler
      *
+     * @return Response
+     * @throws \Exception
      */
-    public function runCli () {
+    public function runWithCustomRPCHandler (Local $rpcHandler) {
 
         $traceLogger = $this->appCtx->getTraceLogger();
 
@@ -282,7 +286,6 @@ class Application {
             $reqCtx = new RequestContext();
             $reqCtx->setAuth(Auth::createInternalAuth());
 
-            $rpcHandler = new CLI();
             $rpcHandler->parse(new Request());
             $this->populateRequestContext($rpcHandler, $reqCtx);
 
@@ -292,6 +295,8 @@ class Application {
 
             $this->executeController($controller, $reqCtx, $rpcHandler);
 
+            return $rpcHandler->getResult();
+
         }
         catch (\Exception $e) {
 
@@ -300,9 +305,23 @@ class Application {
                                                'stackTrace' => $e->getTraceAsString()
                                               ]));
 
+            throw $e;
+
+        }
+
+    }
+
+    /**
+     * @return Response
+     */
+    public function runCli () {
+
+        try {
+            return $this->runWithCustomRPCHandler(new Cli);
+        }
+        catch (\Exception $e) {
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
-
         }
 
     }
@@ -491,7 +510,8 @@ class Application {
         $result = $controller->apply($actCtx);
         $traceLogger->trace('controller called');
 
-        $response = $rpcHandler->getSuccessResponse($this->getSerializer($actCtx), $result);
+        $rpcHandler->setResult($result);
+        $response = $rpcHandler->getSuccessResponse($this->getSerializer($actCtx));
         $reqCtx->setResponse($response);
         $traceLogger->trace('response created');
 
@@ -588,7 +608,8 @@ class Application {
         if ($e instanceof FormattedError) {
 
             $traceLogger->trace('FormattedError thrown');
-            $response = $rpcHandler->getErrorResponse($e);
+            $rpcHandler->setError($e);
+            $response = $rpcHandler->getErrorResponse();
 
         }
         else {
@@ -601,9 +622,10 @@ class Application {
                                                                                                     $e->getLine(),
                                                                                                     $e->getTraceAsString()
             ]);
-            $response = $rpcHandler->getErrorResponse(new FormattedError(['code'    => ERROR_INTERNAL_ERROR,
-                                                                          'message' => $e->getMessage()
-                                                                         ]));
+            $rpcHandler->setError(new FormattedError(['code'    => ERROR_INTERNAL_ERROR,
+                                                      'message' => $e->getMessage()
+                                                     ]));
+            $response = $rpcHandler->getErrorResponse();
 
         }
 
@@ -637,5 +659,16 @@ class Application {
         $this->appCtx->getTraceLogger()->trace('error queue processed');
 
     }
+
+    /**
+     * @return ApplicationContext
+     */
+    public function getAppCtx () {
+
+        return $this->appCtx;
+
+    }
+
+
 
 }

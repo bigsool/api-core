@@ -17,19 +17,36 @@ interface Handler {
     public function parse (Request $request);
 
     /**
-     * @param FormattedError $error
-     *
      * @return Response
      */
-    public function getErrorResponse (FormattedError $error);
+    public function getErrorResponse ();
 
     /**
      * @param Serializer $serializer
-     * @param mixed      $data
      *
      * @return Response
      */
-    public function getSuccessResponse (Serializer $serializer, $data);
+    public function getSuccessResponse (Serializer $serializer);
+
+    /**
+     * @param mixed $data
+     */
+    public function setResult($data);
+
+    /**
+     * @return mixed
+     */
+    public function getResult();
+
+    /**
+     * @param FormattedError $error
+     */
+    public function setError($error);
+
+    /**
+     * @return FormattedError
+     */
+    public function getError();
 
     /**
      * @return string
