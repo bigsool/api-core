@@ -374,7 +374,7 @@ class Custom implements Local {
      */
     public function getErrorResponse () {
 
-        return NULL;
+        return new Response();
 
     }
 
@@ -385,7 +385,7 @@ class Custom implements Local {
      */
     public function getSuccessResponse (Serializer $serializer) {
 
-        return NULL;
+        return new Response();
 
     }
 
