@@ -10,7 +10,7 @@ use Core\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Custom implements Local {
+class Custom extends Local {
 
     /**
      * @var string

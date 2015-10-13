@@ -4,10 +4,7 @@
 namespace Core\RPC;
 
 
-use Core\Error\FormattedError;
-use Core\Serializer;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class CLI extends Custom {
 

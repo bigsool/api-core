@@ -6,16 +6,16 @@ namespace Core\RPC;
 
 use Core\Action\Action;
 
-interface Local extends Handler {
+abstract class Local extends Handler {
 
     /**
      * @return string|Action
      */
-    public function getAction ();
+    public abstract function getAction ();
 
     /**
      * @return string
      */
-    public function getModule ();
+    public abstract function getModule ();
 
 }

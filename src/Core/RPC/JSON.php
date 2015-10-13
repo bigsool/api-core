@@ -5,13 +5,12 @@ namespace Core\RPC;
 
 
 use Core\Context\ApplicationContext;
-use Core\Error\FormattedError;
 use Core\Serializer;
 use Core\Util\ArrayExtra;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class JSON implements Handler {
+class JSON extends Handler {
 
     /**
      * @var string
@@ -83,14 +82,13 @@ class JSON implements Handler {
 
     /**
      * @param Serializer $serializer
-     * @param mixed      $data
      *
      * @return Response
      */
-    public function getSuccessResponse (Serializer $serializer, $data) {
+    public function getSuccessResponse (Serializer $serializer) {
 
         return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'result'  => $serializer->serialize($data)->get(),
+                                         'result'  => $serializer->serialize($this->getResult())->get(),
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
@@ -103,14 +101,12 @@ class JSON implements Handler {
     }
 
     /**
-     * @param FormattedError $error
-     *
      * @return Response
      */
-    public function getErrorResponse (FormattedError $error) {
+    public function getErrorResponse () {
 
         return new Response(json_encode(['jsonrpc' => '2.0',
-                                         'error'   => $error->toArray(),
+                                         'error'   => $this->getError()->toArray(),
                                          'id'      => $this->getId(),
                                         ]),
                             Response::HTTP_OK, [
