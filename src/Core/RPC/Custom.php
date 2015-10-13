@@ -323,46 +323,6 @@ class Custom extends Local {
     }
 
     /**
-     * @return mixed
-     */
-    public function getResult () {
-
-        return $this->result;
-    }
-
-    /**
-     * @param mixed $result
-     *
-     * @return Custom
-     */
-    public function setResult ($result) {
-
-        $this->result = $result;
-
-        return $this;
-    }
-
-    /**
-     * @return FormattedError
-     */
-    public function getError () {
-
-        return $this->error;
-    }
-
-    /**
-     * @param FormattedError $error
-     *
-     * @return Custom
-     */
-    public function setError ($error) {
-
-        $this->error = $error;
-
-        return $this;
-    }
-
-    /**
      * @param Request $request
      */
     public function parse (Request $request) {
