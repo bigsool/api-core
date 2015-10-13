@@ -273,6 +273,11 @@ class Application {
      */
     public function runWithCustomRPCHandler (Local $rpcHandler) {
 
+        // if the transaction was previously commit/rollback then begin a new one
+        if ($this->entityManager->getConnection()->getTransactionNestingLevel() == 0) {
+            $this->entityManager->beginTransaction();
+        }
+
         $traceLogger = $this->appCtx->getTraceLogger();
 
         $logger = $this->appCtx->getLogger()->getMLogger();
@@ -330,6 +335,11 @@ class Application {
      *
      */
     protected function loadModules () {
+
+        // Module already added
+        if ($this->moduleManagers) {
+            return;
+        }
 
         foreach ($this->getModuleManagers() as $moduleManager) {
             $moduleManager->load($this->appCtx);
@@ -668,7 +678,5 @@ class Application {
         return $this->appCtx;
 
     }
-
-
 
 }
