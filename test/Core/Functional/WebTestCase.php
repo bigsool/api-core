@@ -5,6 +5,7 @@ namespace Core\Functional;
 
 
 use Core\Context\ApplicationContext;
+use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
@@ -75,7 +76,13 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         $schemaTool = new SchemaTool(self::$entityManager);
         $conn = self::$entityManager->getConnection();
 
-        $conn->query('SET FOREIGN_KEY_CHECKS=0');
+        if ($conn->getDriver() instanceof SqliteDriver) {
+            $conn->query('PRAGMA foreign_keys = OFF');
+        }
+        else {
+            $conn->query('SET FOREIGN_KEY_CHECKS=0');
+        }
+
         $schemaTool->dropDatabase();
 
         // use a static property instead of a var to keep the result which is expensive to construct
@@ -87,7 +94,13 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         foreach (self::$createSchemaSQL as $sql) {
             $conn->executeQuery($sql);
         }
-        $conn->query('SET FOREIGN_KEY_CHECKS=1');
+
+        if ($conn->getDriver() instanceof SqliteDriver) {
+            $conn->query('PRAGMA foreign_keys = ON');
+        }
+        else {
+            $conn->query('SET FOREIGN_KEY_CHECKS=1');
+        }
 
     }
 
