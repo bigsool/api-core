@@ -354,7 +354,7 @@ class Custom extends Local {
      */
     public function getAuthToken () {
 
-        return isset($this->params['authToken']) ? json_decode($this->params['authToken'], true) : [];
+        return isset($this->params['authToken']) ? $this->params['authToken'] : [];
 
     }
 }
