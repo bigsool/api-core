@@ -10,7 +10,7 @@ class Hexa extends Constraint {
 
     public function __construct () {
 
-        $this->setConstraint(new Regex(['pattern' => '/^[0-9a-f]+$/']));
+        $this->setConstraint(new Regex(['pattern' => '/^[0-9a-f]+$/i']));
         $this->setErrorCode(ERROR_INVALID_PARAM_HEXA);
 
     }
