@@ -118,7 +118,7 @@ class GenericAction extends Action {
 
             // in case we wanna validate an array of something
             if (ArrayExtra::isAssociative($constraints)) {
-                $arrayToValidate = $context->getFinalParam($originalField);
+                $arrayToValidate = $context->getFinalParam($originalField, []);
                 $shouldBeFlat = count($constraints) == 1 && isset($constraints['']);
                 foreach ($arrayToValidate as $key => $valueToValidate) {
                     $subConstraintsList = [];

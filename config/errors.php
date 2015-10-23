@@ -78,6 +78,9 @@ defined('ERROR_INVALID_PARAM_FLOAT') || define('ERROR_INVALID_PARAM_FLOAT', 1611
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_FLOAT, 'invalid float', ERROR_INVALID_PARAM));
 defined('ERROR_INVALID_PARAM_HEXA') || define('ERROR_INVALID_PARAM_HEXA', 16112);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_HEXA, 'invalid hexa', ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_REGEX') || define('ERROR_INVALID_PARAM_REGEX', 16113);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_REGEX, 'value not match with expected pattern',
+                                     ERROR_INVALID_PARAM));
 
 defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));

@@ -505,4 +505,24 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     }
 
+    /**
+     * @return string
+     */
+    public function getModule () {
+
+        return $this->module;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getActionName () {
+
+        return $this->actionName;
+
+    }
+
+
+
 }
