@@ -15,6 +15,9 @@ use GuzzleHttp\Ring\Client\CurlHandler;
 use GuzzleHttp\Subscriber\Cookie;
 use PHPUnit_Framework_TestCase;
 
+
+umask(666);
+
 abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
 
     /**
