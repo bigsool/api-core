@@ -5,10 +5,10 @@ namespace Core\Interaction;
 
 
 use Archipad\Model\Client;
-use Archipad\Module\Project\Interaction\ArchipadBinaryGoPremium;
-use Archipad\Module\Project\Interaction\ArchipadEntBinaryGoPremium;
-use Archipad\Module\Project\Interaction\GoPremium;
-use Archipad\Module\Project\Interaction\StripeGoPremium;
+use Archipad\Module\Product\Interaction\ArchipadBinaryGoPremium;
+use Archipad\Module\Product\Interaction\ArchipadEntBinaryGoPremium;
+use Archipad\Module\Product\Interaction\GoPremium;
+use Archipad\Module\Product\Interaction\StripeGoPremium;
 
 abstract class AbstractInteractionsDefinition implements InteractionsDefinition {
 
