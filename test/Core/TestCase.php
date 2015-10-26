@@ -39,7 +39,6 @@ use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
-umask(666);
 Application::defineRootDir();
 
 class TestCase extends \PHPUnit_Framework_TestCase {
