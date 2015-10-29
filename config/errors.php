@@ -86,7 +86,10 @@ defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
 
 defined('ERROR_USER_NOT_FOUND') || define('ERROR_USER_NOT_FOUND', 16301);
-$errorManager->defineError(new Error(ERROR_USER_NOT_FOUND, 'user not found'));
+$errorManager->defineError(new LocalizedError(ERROR_USER_NOT_FOUND,
+                                              $t->trans('ERROR_USER_NOT_FOUND', [], NULL, 'fr'),
+                                              $t->trans('ERROR_USER_NOT_FOUND', [], NULL, 'en')));
+
 defined('ERROR_CREDENTIAL_ALREADY_EXIST') || define('ERROR_CREDENTIAL_ALREADY_EXIST', 16302);
 $errorManager->defineError(new LocalizedError(ERROR_CREDENTIAL_ALREADY_EXIST,
                                               $t->trans('ERROR_CREDENTIAL_ALREADY_EXIST', [], NULL, 'fr'),
@@ -129,3 +132,8 @@ $errorManager->defineError(new LocalizedError(ERROR_CONNECTED_ELSEWHERE,
                                               $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'fr'),
                                               $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'en'),
                                               ERROR_PERMISSION_DENIED));
+
+defined('ERROR_EMAIL_MUST_BE_CONFIRMED') || define('ERROR_EMAIL_MUST_BE_CONFIRMED', 16313);
+$errorManager->defineError(new LocalizedError(ERROR_EMAIL_MUST_BE_CONFIRMED,
+                                              $t->trans('ERROR_EMAIL_MUST_BE_CONFIRMED', [], NULL, 'fr'),
+                                              $t->trans('ERROR_EMAIL_MUST_BE_CONFIRMED', [], NULL, 'en')));
