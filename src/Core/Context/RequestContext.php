@@ -4,7 +4,6 @@
 namespace Core\Context;
 
 
-use Archipad\RightsManager;
 use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
@@ -341,9 +340,6 @@ class RequestContext {
             $credentials = $appCtx->getAction('Core\Credential', 'checkAuth')->process($checkAuthCtx);
             $auth = new Auth();
             $auth->setCredential($credentials[0]);
-            if (in_array($credentials[0]->getLogin(), RightsManager::getRootLogins())) {
-                $auth->addRootRight();
-            }
             if (count($credentials) == 2) {
                 $auth->setSuperUserCredential($credentials[1]);
             }
