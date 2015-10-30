@@ -608,30 +608,41 @@ class Install extends Base {
     protected function runUpgradeScripts () {
 
         $doctrineFolder = $this->paths['root'] . '/doctrine/';
+        $itsFolder = $this->paths['root'] . '/its/';
 
-        $migrationConfig = Yaml::parse(file_get_contents($doctrineFolder . 'migrations.yml'));
+        $folders = ['doctrine' => $doctrineFolder, 'its' => $itsFolder];
 
-        if (count(glob($doctrineFolder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
+        foreach ($folders as $system => $folder) {
 
-            $this->getOutput()->writeln('No database patches detected.');
-
-        }
-        else {
-
-            $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
-            $returnCode = NULL;
-            $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
-            if ($this->getInput()->getOption('verbose')) {
-                $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
-            }
-            system($cmd, $returnCode);
-
-            if ($returnCode != 0) {
-                $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
+            if (!file_exists($folder)) {
+                $this->getOutput()->writeln(sprintf('Folder %s not found.', $folder));
+                continue;
             }
 
-            $this->getOutput()->writeln("\nOK\n");
+            $migrationConfig = Yaml::parse(file_get_contents($folder . 'migrations.yml'));
 
+            if (count(glob($folder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
+
+                $this->getOutput()->writeln(sprintf('No database patches detected for %s.', $system));
+
+            }
+            else {
+
+                $this->getOutput()->writeln(sprintf('Upgrading future %s <env>%s</env> DB ... ', $system, $this->getEnv()));
+                $returnCode = NULL;
+                $cmd = "cd {$folder} && php doctrine.php migrations:migrate -n";
+                if ($this->getInput()->getOption('verbose')) {
+                    $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+                }
+                system($cmd, $returnCode);
+
+                if ($returnCode != 0) {
+                    $this->abort(sprintf('Error while upgrading future %s <env>%s</env> DB', $system, $this->getEnv()));
+                }
+
+                $this->getOutput()->writeln("\nOK\n");
+
+            }
         }
 
     }
