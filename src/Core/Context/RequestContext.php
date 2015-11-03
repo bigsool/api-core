@@ -4,6 +4,7 @@
 namespace Core\Context;
 
 
+use Archipad\Model\Client;
 use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
@@ -65,6 +66,12 @@ class RequestContext {
     protected $response;
 
     protected $authToken;
+
+    /**
+     * @var Client
+     */
+    protected $currentClient;
+
 
     /**
      */
@@ -426,5 +433,24 @@ class RequestContext {
         return $this->authToken;
 
     }
+
+    /**
+     * @param Client $client
+     */
+    public function setCurrentClient ($client) {
+
+        $this->currentClient = $client;
+
+    }
+
+    /**
+     * @return Client
+     */
+    public function getCurrentClient () {
+
+        return $this->currentClient;
+
+    }
+
 
 }
