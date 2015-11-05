@@ -3,7 +3,6 @@
 
 namespace Core\Context;
 
-use Archipad\RightsManager;
 use Core\Auth;
 use Core\Parameter\UnsafeParameter;
 use Core\Validation\Parameter\Constraint;
@@ -454,14 +453,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     }
 
-    /**
-     * @return RightsManager
-     */
-    public function getRightsManager () {
-
-        return new RightsManager($this->getAuth());
-
-    }
 
     /**
      * @return Auth

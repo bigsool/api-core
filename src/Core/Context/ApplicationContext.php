@@ -677,18 +677,6 @@ class ApplicationContext {
      */
     public function getAction ($module, $name) {
 
-        // TODO : move this out of Core (must be in Archipad)
-        // Don't call V1Compatibility Actions in test context
-        if ($this->isUnitTest() && preg_match('/V1Compatibility$/', $module) && !preg_match('/Mock$/', $name)) {
-            try {
-                return $this->getAction($module, $name . 'Mock');
-            }
-            catch (\RuntimeException $e) {
-                return new GenericAction($module, $name, [], [], function () {
-                });
-            }
-        }
-
         foreach ($this->getActions() as $action) {
             if ($action->getModule() == $module && $action->getName() == $name) {
                 return $action;
@@ -1118,30 +1106,5 @@ class ApplicationContext {
 
     }
 
-    /**
-     * TODO : REMOVE THIS FUCKING SHIT FROM HERE. IT HAS NOTHING TO DO IN CORE
-     *
-     * @param string         $service
-     * @param string         $method
-     * @param array          $params
-     * @param string         $client
-     * @param mixed          $auth
-     * @param RequestContext $reqCtx
-     * @param bool           $checkAuth
-     *
-     * @return mixed
-     */
-    public function callV1API ($service, $method, $params, $client, $auth, RequestContext $reqCtx, $checkAuth = true) {
-
-        $this->config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1'];
-
-        require_once ROOT_DIR . '/' . $this->config['path'] . 'include/lib/dispatcher/localDispatcher.php';
-
-        $pdo = $this->entityManager->getConnection()->getWrappedConnection();
-
-        return callLocalAPIFromV2($pdo, $service, $method, $params, $auth, $reqCtx, $client, '',
-                                  $checkAuth)->getResult();
-
-    }
 
 } 
