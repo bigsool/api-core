@@ -104,9 +104,18 @@ class Application {
     /**
      * @return ApplicationContext
      */
+    protected function getApplicationContextFirstInstance () {
+
+        return ApplicationContext::getInstance();
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
     protected function createApplicationContext () {
 
-        $this->appCtx = ApplicationContext::getInstance();
+        $this->appCtx = $this->getApplicationContextFirstInstance();
         $this->appCtx->setApplication($this);
 
         set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
