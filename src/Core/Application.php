@@ -105,12 +105,9 @@ class Application {
     /**
      * @return ApplicationContext
      */
-    protected function getApplicationContextFirstInstance () {
+    protected function getFirstApplicationContextInstance () {
 
-        $appCtx = ApplicationContext::getInstance();
-        $appCtx->setRequestContextFactory(new RequestContextFactory());
-
-        return $appCtx;
+        return ApplicationContext::getInstance();
 
     }
 
@@ -119,7 +116,7 @@ class Application {
      */
     protected function createApplicationContext () {
 
-        $this->appCtx = $this->getApplicationContextFirstInstance();
+        $this->appCtx = $this->getFirstApplicationContextInstance();
         $this->appCtx->setApplication($this);
 
         set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());

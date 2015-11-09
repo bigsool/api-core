@@ -230,6 +230,8 @@ class ApplicationContext {
 
         $this->routes = new RouteCollection();
 
+        $this->initRequestContextFactory();
+
     }
 
     protected function loadConstants () {
@@ -1111,12 +1113,10 @@ class ApplicationContext {
 
     }
 
-    /**
-     * @return RequestContextFactory $reqCtxFactory
-     */
-    public function setRequestContextFactory ($reqCtxFactory) {
 
-        $this->reqCtxFactory = $reqCtxFactory;
+    public function initRequestContextFactory () {
+
+        $this->reqCtxFactory = new RequestContextFactory();
 
     }
 

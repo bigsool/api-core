@@ -532,7 +532,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
      */
     public function getRequestContext () {
 
-        return new RequestContext();
+        return RequestContext::_init();
 
     }
 
@@ -590,7 +590,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function getActionContext (RequestContext $requestContext = NULL, $moduleName = '', $actionName = '') {
 
         if (!$requestContext) {
-            $requestContext = new RequestContext();
+            $requestContext = RequestContext::_init();
         }
 
         return $requestContext->getApplicationContext()->getActionContext($requestContext, $moduleName, $actionName);

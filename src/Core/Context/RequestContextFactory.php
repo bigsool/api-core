@@ -9,7 +9,7 @@ class RequestContextFactory {
      */
     public function getNewRequestContext () {
 
-        return RequestContext::init();
+        return RequestContext::_init();
 
     }
 
