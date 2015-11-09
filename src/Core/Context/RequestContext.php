@@ -65,10 +65,6 @@ class RequestContext {
 
     protected $authToken;
 
-    /**
-     * @var Client
-     */
-    protected $currentClient;
 
 
     /**
@@ -438,24 +434,6 @@ class RequestContext {
     public function getAuthToken () {
 
         return $this->authToken;
-
-    }
-
-    /**
-     * @param Client $client
-     */
-    public function setCurrentClient ($client) {
-
-        $this->currentClient = $client;
-
-    }
-
-    /**
-     * @return Client
-     */
-    public function getCurrentClient () {
-
-        return $this->currentClient;
 
     }
 
