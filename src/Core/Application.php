@@ -8,6 +8,7 @@ use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
+use Core\Context\RequestContextFactory;
 use Core\Error\FormattedError;
 use Core\Error\ToResolveException;
 use Core\Error\ValidationException;
@@ -106,7 +107,10 @@ class Application {
      */
     protected function getApplicationContextFirstInstance () {
 
-        return ApplicationContext::getInstance();
+        $appCtx = ApplicationContext::getInstance();
+        $appCtx->setRequestContextFactory(new RequestContextFactory());
+
+        return $appCtx;
 
     }
 
@@ -191,7 +195,7 @@ class Application {
             // default RPCHandler
             $rpcHandler = new JSON();
 
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
 
             try {
 
@@ -288,11 +292,11 @@ class Application {
 
             $this->loadModules();
 
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
             $reqCtx->setAuth(Auth::createInternalAuth());
 
             $rpcHandler = new CLI();
-            $rpcHandler->parse(new Request());
+            $rpcHandler->parse($this->getNewRequestContext());
             $this->populateRequestContext($rpcHandler, $reqCtx);
 
             $this->appCtx->getTranslator()->setLocale($reqCtx->getLocale());
@@ -628,7 +632,7 @@ class Application {
     protected function executeErrorQueuedActions (RequestContext $reqCtx = NULL) {
 
         if (!isset($reqCtx)) {
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
         }
 
         $queue = $this->appCtx->getOnErrorActionQueue();
@@ -644,6 +648,15 @@ class Application {
         }
 
         $this->appCtx->getTraceLogger()->trace('error queue processed');
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    private function getNewRequestContext() {
+
+        return $this->appCtx->getRequestContextFactory()->getNewRequestContext();
 
     }
 

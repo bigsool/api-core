@@ -186,6 +186,11 @@ class ApplicationContext {
     protected $functionsQueueAfterCommitOrRollback;
 
     /**
+     * @var RequestContextFactory
+     */
+    protected $reqCtxFactory;
+
+    /**
      * @param object $entityName
      *
      * @return string
@@ -1106,5 +1111,23 @@ class ApplicationContext {
 
     }
 
+    /**
+     * @return RequestContextFactory $reqCtxFactory
+     */
+    public function setRequestContextFactory ($reqCtxFactory) {
 
-} 
+        $this->reqCtxFactory = $reqCtxFactory;
+
+    }
+
+    /**
+     * @return RequestContextFactory
+     */
+    public function getRequestContextFactory () {
+
+        return $this->reqCtxFactory;
+
+    }
+
+
+}
