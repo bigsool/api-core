@@ -293,7 +293,7 @@ class Application {
             $reqCtx->setAuth(Auth::createInternalAuth());
 
             $rpcHandler = new CLI();
-            $rpcHandler->parse($this->getNewRequestContext());
+            $rpcHandler->parse(new Request());
             $this->populateRequestContext($rpcHandler, $reqCtx);
 
             $this->appCtx->getTranslator()->setLocale($reqCtx->getLocale());
