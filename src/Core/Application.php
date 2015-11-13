@@ -651,7 +651,7 @@ class Application {
     /**
      * @return RequestContext
      */
-    private function getNewRequestContext() {
+    protected function getNewRequestContext() {
 
         return $this->appCtx->getRequestContextFactory()->getNewRequestContext();
 
