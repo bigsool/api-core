@@ -3,7 +3,6 @@
 
 namespace Core\Context;
 
-
 use Core\Field\Aggregate;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
@@ -53,6 +52,7 @@ class FindQueryContext implements QueryContext {
      */
     public function __construct ($entity, RequestContext $reqCtx = NULL) {
 
+        $appCtx = ApplicationContext::getInstance();
         if (!is_string($entity)) {
             throw new RuntimeException('$entity must be a string');
         }
@@ -60,7 +60,7 @@ class FindQueryContext implements QueryContext {
         $this->entity = $entity;
 
         if (is_null($reqCtx)) {
-            $reqCtx = new RequestContext();
+            $reqCtx = $appCtx->getRequestContextFactory()->getNewRequestContext();
         }
         $this->reqCtx = $reqCtx;
     }

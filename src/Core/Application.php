@@ -8,6 +8,7 @@ use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
+use Core\Context\RequestContextFactory;
 use Core\Error\FormattedError;
 use Core\Error\ToResolveException;
 use Core\Error\ValidationException;
@@ -105,9 +106,18 @@ class Application {
     /**
      * @return ApplicationContext
      */
+    protected function getFirstApplicationContextInstance () {
+
+        return ApplicationContext::getInstance();
+
+    }
+
+    /**
+     * @return ApplicationContext
+     */
     protected function createApplicationContext () {
 
-        $this->appCtx = ApplicationContext::getInstance();
+        $this->appCtx = $this->getFirstApplicationContextInstance();
         $this->appCtx->setApplication($this);
 
         set_error_handler($this->appCtx->getErrorLogger()->getErrorHandler());
@@ -183,7 +193,7 @@ class Application {
             // default RPCHandler
             $rpcHandler = new JSON();
 
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
 
             try {
 
@@ -288,7 +298,7 @@ class Application {
 
             $this->loadModules();
 
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
             $reqCtx->setAuth(Auth::createInternalAuth());
 
             $rpcHandler->parse(new Request());
@@ -651,7 +661,7 @@ class Application {
     protected function executeErrorQueuedActions (RequestContext $reqCtx = NULL) {
 
         if (!isset($reqCtx)) {
-            $reqCtx = new RequestContext();
+            $reqCtx = $this->getNewRequestContext();
         }
 
         $queue = $this->appCtx->getOnErrorActionQueue();
@@ -676,6 +686,15 @@ class Application {
     public function getAppCtx () {
 
         return $this->appCtx;
+
+    }
+
+    /**
+     * @return RequestContext
+     */
+    private function getNewRequestContext() {
+
+        return $this->appCtx->getRequestContextFactory()->getNewRequestContext();
 
     }
 

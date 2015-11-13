@@ -3,8 +3,8 @@
 
 namespace Core\Module\Client;
 
-use Archipad\Model\Client;
-use Archipad\Model\Device;
+use Core\Model\Client;
+use Core\Model\Device;
 use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;

@@ -1,9 +1,8 @@
 <?php
 
-
 namespace Core\Context;
 
-
+use Archipad\Model\Client;
 use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
@@ -66,11 +65,22 @@ class RequestContext {
 
     protected $authToken;
 
+
+
     /**
      */
-    public function __construct () {
+    protected function __construct () {
 
         $this->auth = new Auth();
+
+    }
+
+    /**
+     * Don't call the function directly, use the factory
+     */
+    public static function _init () {
+
+        return new RequestContext();
 
     }
 
@@ -331,7 +341,7 @@ class RequestContext {
             $authToken = $this->authToken;
 
             $appCtx = $this->getApplicationContext();
-            $checkAuthCtx = $appCtx->getActionContext(new RequestContext(), 'Core\Credential', 'checkAuth');
+            $checkAuthCtx = $appCtx->getActionContext(new self(), 'Core\Credential', 'checkAuth');
             $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
             $appCtx = ApplicationContext::getInstance();
             /**
@@ -426,5 +436,6 @@ class RequestContext {
         return $this->authToken;
 
     }
+
 
 }
