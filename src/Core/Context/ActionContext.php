@@ -487,8 +487,17 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
      */
     public function getRequestContext () {
 
+        return $this->getInitialActionContext()->getParentContext();
+
+    }
+
+    /**
+     * @return ActionContext
+     */
+    public function getInitialActionContext() {
+
         $context = $this;
-        while (!($context instanceof RequestContext)) {
+        while (!($context->getParentContext() instanceof RequestContext)) {
             $context = $context->getParentContext();
         }
 
