@@ -10,6 +10,7 @@ class Regex extends Constraint {
 
     /**
      * @param $options
+     *
      * @see http://symfony.com/doc/current/reference/constraints/Regex.html
      */
     public function __construct ($options) {

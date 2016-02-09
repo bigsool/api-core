@@ -54,8 +54,8 @@ class ConfigManager {
             $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
 
             // replace ENV:xxxx by Environment value
-            array_walk_recursive($configs, function(&$item, $key) {
-                if ( is_string($item) && strpos($item, 'ENV:', 0) === 0 ) {
+            array_walk_recursive($configs, function (&$item, $key) {
+                if (is_string($item) && strpos($item, 'ENV:', 0) === 0) {
                     $envVarName = substr($item, 4);
                     $item = getenv($envVarName);
                 }

@@ -5,14 +5,12 @@ namespace Core\Context;
 
 
 use Core\Action\Action;
-use Core\Action\GenericAction;
 use Core\ActionQueue;
 use Core\Application;
 use Core\Config\ConfigManager;
 use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\Calculated;
-use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\FunctionQueue;
 use Core\Helper\ModuleManagerHelperLoader;
@@ -834,8 +832,8 @@ class ApplicationContext {
                 if (file_exists($configFile = $coreConfDir . 'isDown.yml')) {
                     $configFiles[] = $configFile;
                 }
-                $configPath = $coreConfDir . $this->getEnvName(). '/config.yml';
-                $dbPath = $coreConfDir . $this->getEnvName(). '/extra.yml';
+                $configPath = $coreConfDir . $this->getEnvName() . '/config.yml';
+                $dbPath = $coreConfDir . $this->getEnvName() . '/extra.yml';
 
                 if (file_exists($configPath)) {
                     $configFiles[] = $configPath;
@@ -853,48 +851,51 @@ class ApplicationContext {
 
     }
 
-    public function getEnvType() {
+    public function getEnvType () {
         return $this->getEnvName() == 'prod' ? ENV_PROD : ENV_STAGE;
     }
 
     public function getEnvName () {
 
-        if ( getenv('ARCHIPAD_ENV') ) {
+        if (getenv('ARCHIPAD_ENV')) {
             return getenv('ARCHIPAD_ENV');
-        } else  if (isset($_SERVER['SERVER_NAME'])) {
-            // php called by apache
-            if ($_SERVER['SERVER_NAME'] == 'localhost'
-                || $_SERVER['SERVER_NAME'] == '127.0.0.1'
-                || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
-                || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
-            ) {
-                return 'local';
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
-                return 'dev';
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
-                return 'stage';
-            }
-            else {
-                return 'prod';
-            }
         }
         else {
-            $product = $this->getProduct();
-            $sep = DIRECTORY_SEPARATOR;
-            // php called from the command line
-            if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
-                return 'local';
-            }
-            elseif (strpos(__DIR__, 'dev') !== false) {
-                return 'dev';
-            }
-            elseif (strpos(__DIR__, 'stage') !== false) {
-                return 'stage';
+            if (isset($_SERVER['SERVER_NAME'])) {
+                // php called by apache
+                if ($_SERVER['SERVER_NAME'] == 'localhost'
+                    || $_SERVER['SERVER_NAME'] == '127.0.0.1'
+                    || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
+                    || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
+                ) {
+                    return 'local';
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
+                    return 'dev';
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
+                    return 'stage';
+                }
+                else {
+                    return 'prod';
+                }
             }
             else {
-                return 'prod';
+                $product = $this->getProduct();
+                $sep = DIRECTORY_SEPARATOR;
+                // php called from the command line
+                if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
+                    return 'local';
+                }
+                elseif (strpos(__DIR__, 'dev') !== false) {
+                    return 'dev';
+                }
+                elseif (strpos(__DIR__, 'stage') !== false) {
+                    return 'stage';
+                }
+                else {
+                    return 'prod';
+                }
             }
         }
 
@@ -1102,7 +1103,6 @@ class ApplicationContext {
 
     }
 
-
     public function initRequestContextFactory () {
 
         $this->reqCtxFactory = new RequestContextFactory();
@@ -1117,6 +1117,5 @@ class ApplicationContext {
         return $this->reqCtxFactory;
 
     }
-
 
 }

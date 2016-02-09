@@ -8,7 +8,6 @@ use Core\Action\Action;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\RequestContext;
-use Core\Context\RequestContextFactory;
 use Core\Error\FormattedError;
 use Core\Error\ToResolveException;
 use Core\Error\ValidationException;
@@ -692,7 +691,7 @@ class Application {
     /**
      * @return RequestContext
      */
-    protected function getNewRequestContext() {
+    protected function getNewRequestContext () {
 
         return $this->appCtx->getRequestContextFactory()->getNewRequestContext();
 

@@ -4,7 +4,7 @@
 namespace Core\Validation\Parameter;
 
 
-use Symfony\Component\Validator\Constraints\Regex AS SfRegex;
+use Symfony\Component\Validator\Constraints\Regex as SfRegex;
 
 class Hexa extends Constraint {
 

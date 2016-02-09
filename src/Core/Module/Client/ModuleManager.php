@@ -3,13 +3,13 @@
 
 namespace Core\Module\Client;
 
-use Core\Model\Client;
-use Core\Model\Device;
 use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
+use Core\Model\Client;
+use Core\Model\Device;
 use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 

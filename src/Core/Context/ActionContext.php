@@ -453,7 +453,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     }
 
-
     /**
      * @return Auth
      */
@@ -494,7 +493,7 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
     /**
      * @return ActionContext
      */
-    public function getInitialActionContext() {
+    public function getInitialActionContext () {
 
         $context = $this;
         while (!($context->getParentContext() instanceof RequestContext)) {
@@ -522,7 +521,5 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         return $this->actionName;
 
     }
-
-
 
 }

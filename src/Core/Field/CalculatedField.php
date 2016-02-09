@@ -8,7 +8,6 @@ use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Expression\AbstractKeyPath;
 use Core\Expression\Resolver;
-use Core\Filter\StringFilter;
 use Core\Registry;
 use Core\Util\ArrayExtra;
 use Core\Util\ModelConverter;

@@ -183,6 +183,7 @@ class ArrayExtra {
 
     /**
      * @see http://php.net/manual/fr/function.array-diff-assoc.php#111675
+     *
      * @param array $array1
      * @param array $array2
      *
