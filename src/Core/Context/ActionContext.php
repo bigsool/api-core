@@ -453,7 +453,6 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
     }
 
-
     /**
      * @return Auth
      */

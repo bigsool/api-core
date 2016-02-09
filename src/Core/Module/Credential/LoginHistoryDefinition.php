@@ -58,7 +58,7 @@ class LoginHistoryDefinition extends ModuleEntityDefinition {
     public function getFilters () {
 
         return [
-            new StringFilter('LoginHistory','LoginHistoryForCredential', 'credential = :credential'),
+            new StringFilter('LoginHistory', 'LoginHistoryForCredential', 'credential = :credential'),
         ];
 
     }

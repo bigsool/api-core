@@ -2,7 +2,6 @@
 
 namespace Core\Context;
 
-use Archipad\Model\Client;
 use Core\Auth;
 use Core\Error\FormattedError;
 use Core\Field\RelativeField;
@@ -64,8 +63,6 @@ class RequestContext {
     protected $response;
 
     protected $authToken;
-
-
 
     /**
      */
@@ -436,6 +433,5 @@ class RequestContext {
         return $this->authToken;
 
     }
-
 
 }

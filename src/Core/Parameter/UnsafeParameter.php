@@ -52,11 +52,12 @@ class UnsafeParameter {
 
     /**
      * Recursively finalize given value.
+     *
      * @param $param
      *
      * @return mixed
      */
-    public static function getRecursiveFinalValue($param) {
+    public static function getRecursiveFinalValue ($param) {
 
         $final = ($param instanceof UnsafeParameter) ? $param->getValue() : $param;
         if (is_array($final)) {

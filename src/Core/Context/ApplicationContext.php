@@ -5,14 +5,12 @@ namespace Core\Context;
 
 
 use Core\Action\Action;
-use Core\Action\GenericAction;
 use Core\ActionQueue;
 use Core\Application;
 use Core\Config\ConfigManager;
 use Core\Controller;
 use Core\Error\ErrorManager;
 use Core\Field\Calculated;
-use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\FunctionQueue;
 use Core\Helper\ModuleManagerHelperLoader;
@@ -1113,7 +1111,6 @@ class ApplicationContext {
 
     }
 
-
     public function initRequestContextFactory () {
 
         $this->reqCtxFactory = new RequestContextFactory();
@@ -1128,6 +1125,5 @@ class ApplicationContext {
         return $this->reqCtxFactory;
 
     }
-
 
 }

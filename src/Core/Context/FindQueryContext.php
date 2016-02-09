@@ -248,10 +248,10 @@ class FindQueryContext implements QueryContext {
 
     }
 
-    public function count() {
+    public function count () {
 
         $this->setFields([]);
-        $this->addField(new RelativeField(new Aggregate('COUNT','*')), '_count');
+        $this->addField(new RelativeField(new Aggregate('COUNT', '*')), '_count');
 
         $entities = $this->findAll();
 
@@ -261,7 +261,6 @@ class FindQueryContext implements QueryContext {
         else {
             return $entities[0]['_count'];
         }
-
 
     }
 

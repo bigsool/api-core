@@ -104,13 +104,13 @@ class RelativeField {
 
                 $field = $field->copy();
                 // set the value of this field in order to know where we are located in the calculated field
-                $field->setBase(substr($this->getValue(),0,strrpos($this->getValue(),'.')));
+                $field->setBase(substr($this->getValue(), 0, strrpos($this->getValue(), '.')));
                 $fields = [$field];
             }
             elseif ($field instanceof CalculatedField) {
 
                 // set the value of this field in order to know where we are located in the calculated field
-                $field->setBase(substr($this->getValue(),0,strrpos($this->getValue(),'.')));
+                $field->setBase(substr($this->getValue(), 0, strrpos($this->getValue(), '.')));
 
                 $fields = $field->getFinalFields($registry, $ctx);
                 $fields[] = $field;

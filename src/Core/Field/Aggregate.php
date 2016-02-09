@@ -209,7 +209,7 @@ class Aggregate implements Calculated {
      * Method to use to clone the aggregate
      * @return Aggregate
      */
-    public function copy(){
+    public function copy () {
 
         $clone = clone $this;
         $clone->originalField = $this;
