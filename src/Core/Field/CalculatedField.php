@@ -199,8 +199,15 @@ class CalculatedField implements Calculated {
         foreach ($this->requiredFields as $requiredField) {
 
             if (!($requiredField instanceof ResolvableField)) {
-                $fields[] = $field = new RealField($requiredField);
-                $field->setUseLeftJoin($this->useLeftJoin);
+                $base = $this->getBase() ? $this->getBase() . '.' : '';
+                $relativeField = new RelativeField($base . $requiredField);
+                $resolvableFields = $relativeField->resolve($registry, $ctx);
+                foreach ($resolvableFields as $field) {
+                    if ($field instanceof RealField) {
+                        $field->setUseLeftJoin($this->useLeftJoin);
+                    }
+                    $fields[] = $field;
+                }
             }
             elseif ($requiredField instanceof Aggregate) {
                 $requiredField->setBase($this->getBase());

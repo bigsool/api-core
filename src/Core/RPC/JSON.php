@@ -220,7 +220,7 @@ class JSON extends Handler {
         }
         $this->service = $explodedPathInfo[2];
 
-        $JSONContent = json_decode($request->getContent(), true) ?: [];
+        $JSONContent = $this->decodeRequestContextContent($request->getContent());
 
         $this->method = isset($JSONContent['method']) ? $JSONContent['method'] : $request->query->get('method');
         if (!isset($this->method) || !is_string($this->method)) {
@@ -260,6 +260,15 @@ class JSON extends Handler {
 
         return isset($this->params['authToken']) && is_string($this->params['authToken'])
             ? json_decode($this->params['authToken'], true) : [];
+
+    }
+
+    /**
+     * @return array
+     */
+    protected function decodeRequestContextContent ($requestContextContent) {
+
+        return json_decode($requestContextContent, true) ?: [];
 
     }
 

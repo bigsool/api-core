@@ -193,6 +193,10 @@ class Aggregate implements Calculated {
         $getter = 'get' . Inflector::classify($this->getFieldName());
         $value = $model->$getter();
 
+        if (is_null($value)) {
+            return NULL;
+        }
+
         if ($type == 'datetime') {
             return new \DateTime($value);
         }
