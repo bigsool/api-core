@@ -852,7 +852,7 @@ class ApplicationContext {
     }
 
     public function getEnvType () {
-        return $this->getEnvName() == 'prod' ? ENV_PROD : ENV_STAGE;
+        return $this->getEnvName() == 'prod' ? PROD_ENV : STAGE_ENV;
     }
 
     public function getEnvName () {
