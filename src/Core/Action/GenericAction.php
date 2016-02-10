@@ -103,7 +103,12 @@ class GenericAction extends Action {
 
         $errors = [];
 
+        $blackListedFields = [];
         foreach ($constraintsList as $originalField => $constraints) {
+
+            if (in_array($originalField, $blackListedFields)) {
+                continue;
+            }
 
             if ($basePath) {
                 $originalField = $basePath . '.' . $originalField;
@@ -175,6 +180,18 @@ class GenericAction extends Action {
 
                 $context->setParam($originalField, $finalValue);
 
+            }
+
+            // Remove check which must not be done.
+            // Use case : contact of a projectMember is not mandatory but if given, contact name is mandatory
+            // So if contact is null we don't want to check contact fields
+            if (!$result->hasErrors() && is_null($finalValue)) {
+                $originalFieldPrefix = $originalField . '.';
+                foreach (array_keys($constraintsList) as $constraintField) {
+                    if (substr($constraintField, 0, strlen($originalFieldPrefix)) == $originalFieldPrefix) {
+                        $blackListedFields[] = $constraintField;
+                    }
+                }
             }
 
         }
