@@ -147,7 +147,7 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
                           $clientName = NULL, $clientVersion = NULL, $clientLang = NULL) {
 
         if (!is_string($clientName)) {
-            $clientName = 'archipad-cloud';
+            $clientName = 'architestcloud';
         }
 
         if (!is_string($clientVersion)) {
