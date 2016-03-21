@@ -40,6 +40,16 @@ class ProjectDefinition extends ModuleEntityDefinition {
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],
+            'bucket'                 => [
+                new String(),
+                new Length(['max' => 64]),
+                new NotBlank(),
+            ],
+            'region'                 => [
+                new String(),
+                new Length(['max' => 32]),
+                new NotBlank(),
+            ],
             'creationDate'         => [
                 new DateTime(),
                 new NotBlank(),
