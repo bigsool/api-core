@@ -47,10 +47,7 @@ class ProjectDefinition extends ModuleEntityDefinition {
             ],
             'lastModificationDate' => [
                 new DateTime(),
-            ],
-            'workflow' => [
-                new Boolean(),
-            ],
+            ]
         ];
 
     }
