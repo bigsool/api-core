@@ -832,24 +832,32 @@ class ApplicationContext {
                 if (file_exists($configFile = $coreConfDir . 'isDown.yml')) {
                     $configFiles[] = $configFile;
                 }
+                if (file_exists($configFile = $coreConfDir . 'env.yml')) {
+                    $configFiles[] = $configFile;
+                }
                 $configPath = NULL;
                 $dbPath = NULL;
+                $envPath = NULL;
                 switch ($this->getEnv()) {
                     case LOCAL_ENV:
                         $configPath = $coreConfDir . 'local/config.yml';
                         $dbPath = $coreConfDir . 'local/extra.yml';
+                        $envPath = $coreConfDir . 'local/env.yml';
                         break;
                     case DEV_ENV:
                         $configPath = $coreConfDir . 'dev/config.yml';
                         $dbPath = $coreConfDir . 'dev/extra.yml';
+                        $envPath = $coreConfDir . 'dev/env.yml';
                         break;
                     case STAGE_ENV:
                         $configPath = $coreConfDir . 'stage/config.yml';
                         $dbPath = $coreConfDir . 'stage/extra.yml';
+                        $envPath = $coreConfDir . 'stage/env.yml';
                         break;
                     case PROD_ENV:
                         $configPath = $coreConfDir . 'prod/config.yml';
                         $dbPath = $coreConfDir . 'prod/extra.yml';
+                        $envPath = $coreConfDir . 'prod/env.yml';
                         break;
                 }
                 if (!is_null($configPath) && file_exists($configPath)) {
@@ -857,6 +865,9 @@ class ApplicationContext {
                 }
                 if (!is_null($dbPath) && file_exists($dbPath)) {
                     $configFiles[] = $dbPath;
+                }
+                if (!is_null($envPath) && file_exists($envPath)) {
+                    $configFiles[] = $envPath;
                 }
 
             }

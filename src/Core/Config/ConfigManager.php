@@ -51,6 +51,11 @@ class ConfigManager {
             if (!is_array($config)) {
                 throw new \RuntimeException('invalid config file');
             }
+            if (basename($yamlFilePath) == 'env.yml') {
+                array_walk_recursive($config, function(&$varName){
+                    $varName = getenv($varName);
+                });
+            }
             $configs = ArrayExtra::array_merge_recursive_distinct($configs, $config);
         }
         $this->config = $configs;
