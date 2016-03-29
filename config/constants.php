@@ -2,9 +2,9 @@
 
 if (!defined('LOCAL_ENV')) {
 
-    define('LOCAL_ENV', 'LOCAL_ENV');
-    define('DEV_ENV', 'DEV_ENV');
-    define('STAGE_ENV', 'STAGE_ENV');
-    define('PROD_ENV', 'PROD_ENV');
+    define('LOCAL_ENV', 'local');
+    define('DEV_ENV', 'dev');
+    define('STAGE_ENV', 'stage');
+    define('PROD_ENV', 'prod');
 
 }

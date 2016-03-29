@@ -10,6 +10,7 @@ use Core\Error\FormattedError;
 use Core\Util\ArrayExtra;
 use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\Constraint;
+use Core\Validation\Parameter\Object;
 use Core\Validation\Validator;
 
 class GenericAction extends Action {
@@ -123,6 +124,7 @@ class GenericAction extends Action {
 
             // in case we wanna validate an array of something
             if (ArrayExtra::isAssociative($constraints)) {
+                static::simpleValidate([$originalField => [new Object()]], $context);
                 $arrayToValidate = $context->getFinalParam($originalField, []);
                 $shouldBeFlat = count($constraints) == 1 && isset($constraints['']);
                 foreach ($arrayToValidate as $key => $valueToValidate) {

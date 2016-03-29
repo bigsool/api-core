@@ -30,7 +30,8 @@ class Validator {
         foreach ($constraintsList as $field => $constraints) {
 
             // if it's force optional and field not given, skip the validation of this field
-            if ($forceOptional && !array_key_exists($field, $params)) {
+            if (!array_key_exists($field, $params)) {
+                if ($forceOptional || !self::isMandatoryField($constraints))
                 continue;
             }
 
@@ -81,7 +82,7 @@ class Validator {
         $value = UnsafeParameter::getFinalValue($value);
 
         foreach ($constraints as $constraint) {
-            if ($forceOptional && ($constraint instanceof NotBlank || $constraint instanceof NotNull)) {
+            if ($forceOptional && self::isMandatoryConstraint($constraint)) {
                 continue;
             }
             // TODO : check if we can validate several constraint at the same time
@@ -164,9 +165,7 @@ class Validator {
         if ($forceOptional && $constraints) {
             $constraints = array_reduce($constraints, function ($constraints, Constraint $constraint) {
 
-                if (!($constraint->getConstraint() instanceof Constraints\NotBlank)
-                    && !($constraint->getConstraint() instanceof Constraints\NotNull)
-                ) {
+                if (!self::isMandatoryConstraint($constraint)) {
                     $constraints[] = $constraint;
                 }
 
@@ -196,6 +195,36 @@ class Validator {
         }
 
         return $isValid;
+    }
+
+    /**
+     * @param Constraint [] $constraintsField
+     * @return bool
+     */
+    public static function isMandatoryField($constraintsField) {
+
+        foreach ($constraintsField as $constraintField) {
+            if (self::isMandatoryConstraint($constraintField)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * @param Constraint $constraint
+     * @return bool
+     */
+    private static function isMandatoryConstraint($constraint) {
+
+        if ($constraint instanceof NotBlank || $constraint instanceof NotNull) {
+            return true;
+        }
+
+        return false;
+
     }
 
 }
