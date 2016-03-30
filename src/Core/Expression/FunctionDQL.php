@@ -14,16 +14,16 @@ class FunctionDQL implements Expression {
     protected $dqlFunction;
 
     /**
-     * @var Array
+     * @var array
      */
     protected $args;
 
     /**
      * FunctionDQL constructor.
      * @param string $dqlFunction
-     * @param Array $args
+     * @param array $args
      */
-    public function __construct ($dqlFunction, $args) {
+    public function __construct ($dqlFunction, array $args) {
 
         $this->dqlFunction = $dqlFunction;
         $this->args = $args;
@@ -31,7 +31,7 @@ class FunctionDQL implements Expression {
     }
 
     /**
-     * @return Array
+     * @return array
      */
     public function getExpressions () {
 
