@@ -867,6 +867,7 @@ class ApplicationContext {
                     || $_SERVER['SERVER_NAME'] == '127.0.0.1'
                     || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
                     || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
+                    || strpos($_SERVER['REQUEST_URI'], 'api/archipad/www') !== FALSE
             ) {
                 return LOCAL_ENV;
             }
