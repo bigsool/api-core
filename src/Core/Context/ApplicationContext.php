@@ -215,6 +215,10 @@ class ApplicationContext {
      */
     public function getInitialRequestContext () {
 
+        if (!$this->initialRequestContext) {
+            return $this->getRequestContextFactory()->getNewRequestContext();
+        }
+
         return $this->initialRequestContext;
 
     }
@@ -852,6 +856,7 @@ class ApplicationContext {
     }
 
     public function getEnvType () {
+
         return $this->getEnvName() == 'prod' ? PROD_ENV : STAGE_ENV;
     }
 
@@ -867,35 +872,35 @@ class ApplicationContext {
                     || $_SERVER['SERVER_NAME'] == '127.0.0.1'
                     || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
                     || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
-                    || strpos($_SERVER['REQUEST_URI'], 'api/archipad/www') !== FALSE
-            ) {
-                return LOCAL_ENV;
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
-                return DEV_ENV;
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
-                return STAGE_ENV;
-            }
-            else {
-                return PROD_ENV;
-            }
-        }
-        else {
-            $product = $this->getProduct();
-            $sep = DIRECTORY_SEPARATOR;
-            // php called from the command line
-            if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
-                return LOCAL_ENV;
-            }
-            elseif (strpos(__DIR__, 'dev') !== false) {
-                return DEV_ENV;
-            }
-            elseif (strpos(__DIR__, 'stage') !== false) {
-                return STAGE_ENV;
+                    || strpos($_SERVER['REQUEST_URI'], 'api/archipad/www') !== false
+                ) {
+                    return LOCAL_ENV;
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
+                    return DEV_ENV;
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
+                    return STAGE_ENV;
+                }
+                else {
+                    return PROD_ENV;
+                }
             }
             else {
-                return PROD_ENV;
+                $product = $this->getProduct();
+                $sep = DIRECTORY_SEPARATOR;
+                // php called from the command line
+                if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
+                    return LOCAL_ENV;
+                }
+                elseif (strpos(__DIR__, 'dev') !== false) {
+                    return DEV_ENV;
+                }
+                elseif (strpos(__DIR__, 'stage') !== false) {
+                    return STAGE_ENV;
+                }
+                else {
+                    return PROD_ENV;
                 }
             }
         }
