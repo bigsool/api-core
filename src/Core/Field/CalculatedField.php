@@ -84,6 +84,7 @@ class CalculatedField implements Calculated {
         foreach ($this->requiredFields as $requiredField) {
             $params[] = ArrayExtra::magicalGet($data, $requiredField);
         }
+        $params[] = $model;
 
         // Call $callable only with requiredFields
         // TODO: handle alias ?
