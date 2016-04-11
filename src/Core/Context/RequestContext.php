@@ -4,6 +4,7 @@ namespace Core\Context;
 
 use Core\Auth;
 use Core\Error\FormattedError;
+use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Model\Credential;
@@ -330,6 +331,8 @@ class RequestContext {
 
     /**
      * @param array $params
+     *
+     * @throws ToResolveException
      */
     public function setParams (array $params) {
 
@@ -357,6 +360,17 @@ class RequestContext {
                    ->addAction($setAuthAction, ['authToken' => $authToken, 'credentials' => $credentials]);
             unset($params['authToken']);
 
+        }
+
+        if ($_SERVER['PHP_AUTH_USER'] /* timestamp */) {
+            $publicKey = openssl_pkey_get_public('file://' . ROOT_DIR . '/config/public.pem');
+            $concat = $_SERVER['PHP_AUTH_USER'] . json_encode($params);
+            $rawPass = $_SERVER['PHP_AUTH_PW'];
+            $pass = base64_decode($rawPass);
+            if (!openssl_verify($concat, $pass, $publicKey)) {
+                throw new ToResolveException(ERROR_PERMISSION_DENIED);
+            }
+            $this->getAuth()->addRootRight();
         }
 
         $this->params = $params;
