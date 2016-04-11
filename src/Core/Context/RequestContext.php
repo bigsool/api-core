@@ -370,7 +370,10 @@ class RequestContext {
             if (!openssl_verify($concat, $pass, $publicKey)) {
                 throw new ToResolveException(ERROR_PERMISSION_DENIED);
             }
-            $this->getAuth()->addRootRight();
+            $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
+            $qryCtx->addField('*');
+            $qryCtx->addFilter('CredentialForLogin', 'api@archipad.com');
+            $this->getAuth()->setCredential($qryCtx->findOne())->addRootRight();
         }
 
         $this->params = $params;
