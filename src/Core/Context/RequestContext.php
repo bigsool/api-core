@@ -362,9 +362,13 @@ class RequestContext {
 
         }
 
-        if ($_SERVER['PHP_AUTH_USER'] /* timestamp */) {
+        if (array_key_exists('PHP_AUTH_USER', $_SERVER)) {
             $publicKey = openssl_pkey_get_public('file://' . ROOT_DIR . '/config/public.pem');
-            $concat = $_SERVER['PHP_AUTH_USER'] . json_encode($params);
+            $time = $_SERVER['PHP_AUTH_USER'];
+            if ($time < time() - 30|| $time > time() + 30) {
+                throw new \Exception('Not well synchronized timestamp');
+            }
+            $concat = $time . json_encode($params);
             $rawPass = $_SERVER['PHP_AUTH_PW'];
             $pass = base64_decode($rawPass);
             if (!openssl_verify($concat, $pass, $publicKey)) {
