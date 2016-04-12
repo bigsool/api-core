@@ -362,16 +362,25 @@ class RequestContext {
 
         }
 
-        if (array_key_exists('PHP_AUTH_USER', $_SERVER)) {
+        if (!empty($_SERVER['PHP_AUTH_USER']) || !empty($_SERVER['HTTP_AUTHORIZATION'])
+            || !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])
+        ) {
+            if (!empty($_SERVER['PHP_AUTH_USER'])) {
+                $time = $_SERVER['PHP_AUTH_USER'];
+                $rawPass = $_SERVER['PHP_AUTH_PW'];
+            }
+            else {
+                $authorizationKey =
+                    !empty($_SERVER['HTTP_AUTHORIZATION']) ? 'HTTP_AUTHORIZATION' : 'REDIRECT_HTTP_AUTHORIZATION';
+                list($time, $rawPass) = explode(':', base64_decode(substr($_SERVER[$authorizationKey], 6)));
+            }
             $publicKey = openssl_pkey_get_public('file://' . ROOT_DIR . '/config/public.pem');
-            $time = $_SERVER['PHP_AUTH_USER'];
-            if ($time < time() - 30|| $time > time() + 30) {
+            if ($time < time() - 30 || $time > time() + 30) {
                 throw new \Exception('Not well synchronized timestamp');
             }
             $concat = $time . json_encode($params);
-            $rawPass = $_SERVER['PHP_AUTH_PW'];
             $pass = base64_decode($rawPass);
-            if (!openssl_verify($concat, $pass, $publicKey)) {
+            if (!openssl_verify($concat, $pass, $publicKey, OPENSSL_ALGO_SHA512)) {
                 throw new ToResolveException(ERROR_PERMISSION_DENIED);
             }
             $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
