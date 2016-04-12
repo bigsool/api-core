@@ -267,6 +267,8 @@ class GenericAction extends Action {
      */
     public function process (ActionContext $context) {
 
+        $this->logCall($context);
+
         $this->authorize($context);
 
         $this->validate($context);

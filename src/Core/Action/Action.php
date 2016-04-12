@@ -34,4 +34,12 @@ abstract class Action {
      */
     public abstract function getModule ();
 
+    public function logCall (ActionContext $context) {
+
+        $traceLogger = $context->getApplicationContext()->getTraceLogger();
+        $traceLogger->trace(sprintf('action %s/%s called with params %s', $context->getModule(),
+                                    $context->getActionName(), var_export($context->getParams(), true)));
+
+    }
+
 }

@@ -67,6 +67,8 @@ class ActionReference extends Action {
      */
     public function process (ActionContext $context) {
 
+        $this->logCall($context);
+
         return $this->call('process', $context);
     }
 
