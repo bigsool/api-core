@@ -125,7 +125,9 @@ $errorManager->defineError(new LocalizedError(ERROR_HAVE_THIS_RECURRING_PRODUCT,
                                               $t->trans('ERROR_HAVE_THIS_RECURRING_PRODUCT', [], NULL, 'en')));
 
 defined('ERROR_WITH_STRIPE') || define('ERROR_WITH_STRIPE', 16311);
-$errorManager->defineError(new Error(ERROR_WITH_STRIPE, 'error during stripe payment'));
+$errorManager->defineError(new LocalizedError(ERROR_WITH_STRIPE,
+                                              $t->trans('ERROR_WITH_STRIPE', [], NULL, 'fr'),
+                                              $t->trans('ERROR_WITH_STRIPE', [], NULL, 'en')));
 
 defined('ERROR_CONNECTED_ELSEWHERE') || define('ERROR_CONNECTED_ELSEWHERE', 16312);
 $errorManager->defineError(new LocalizedError(ERROR_CONNECTED_ELSEWHERE,
