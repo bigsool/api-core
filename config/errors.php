@@ -81,6 +81,9 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_HEXA, 'invalid hexa', E
 defined('ERROR_INVALID_PARAM_REGEX') || define('ERROR_INVALID_PARAM_REGEX', 16113);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_REGEX, 'value not match with expected pattern',
                                      ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_BUCKET') || define('ERROR_INVALID_PARAM_BUCKET', 16114);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_BUCKET, 'invalid bucket name',
+                                     ERROR_INVALID_PARAM));
 
 defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
