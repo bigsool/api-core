@@ -4,7 +4,6 @@
 namespace Core\Interaction;
 
 
-
 abstract class AbstractInteractionsDefinition implements InteractionsDefinition {
 
     /**

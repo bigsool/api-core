@@ -5,13 +5,12 @@ namespace Core\RPC;
 
 
 use Core\Context\ApplicationContext;
-use Core\Error\FormattedError;
 use Core\Serializer;
 use Core\Util\ArrayExtra;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class JSONP implements Handler {
+class JSONP extends Handler {
 
     /**
      * @var string
@@ -88,17 +87,16 @@ class JSONP implements Handler {
 
     /**
      * @param Serializer $serializer
-     * @param mixed      $data
      *
      * @return Response
      */
-    public function getSuccessResponse (Serializer $serializer, $data) {
+    public function getSuccessResponse (Serializer $serializer) {
 
         return new Response($this->getCallback() . '(' . json_encode(
                                 [
                                     'jsonrpc' => '2.0',
                                     'result'  => ['success' => true,
-                                                  'data'    => $serializer->serialize($data)->get()
+                                                  'data'    => $serializer->serialize($this->getResult())->get()
                                     ],
                                     'id'      => $this->getId(),
                                 ]) . ')',
@@ -112,14 +110,12 @@ class JSONP implements Handler {
     }
 
     /**
-     * @param FormattedError $error
-     *
      * @return Response
      */
-    public function getErrorResponse (FormattedError $error) {
+    public function getErrorResponse () {
 
         return new Response($this->getCallback() . '(' . json_encode(['jsonrpc' => '2.0',
-                                                                      'error'   => $error->toArray(),
+                                                                      'error'   => $this->getError()->toArray(),
                                                                       'id'      => $this->getId(),
                                                                      ]) . ')',
                             Response::HTTP_OK, [

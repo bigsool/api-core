@@ -115,9 +115,17 @@ class Install extends Base {
                     $this->waitForTransactionsFinish();
                 }
 
-                $dumpPath = $this->dumpProdDB();
-                $this->clearNextDB();
-                $this->copyDataToNextDB($dumpPath);
+                foreach (['db', 'patchDb'] as $db) {
+
+                    if (!array_key_exists($db, $this->dbConfig['current'])) {
+                        continue;
+                    }
+
+                    $dumpPath = $this->dumpProdDB($db);
+                    $this->clearNextDB($db);
+                    $this->copyDataToNextDB($dumpPath, $db);
+
+                }
 
             }
 
@@ -298,7 +306,7 @@ class Install extends Base {
             $this->abort(sprintf('Config cannot be found in the file %s', $file));
         }
 
-        return $config['db'];
+        return $config;
 
     }
 
@@ -306,39 +314,47 @@ class Install extends Base {
 
         $output = $this->getOutput();
 
-        $currentDBName = $this->dbConfig['current']['dbname'];
-        $currentDBHost = $this->dbConfig['current']['host'];
-        $nextDBName = $this->dbConfig['next']['dbname'];
-        $nextDBHost = $this->dbConfig['next']['host'];
+        foreach (['db', 'patchDb'] as $db) {
 
-        $output->writeln(sprintf(
-                             'Current <env>%s</env> DB is <info>%s@%s</info>',
-                             $this->env, $currentDBName, $currentDBHost
-                         ));
-        $output->writeln(sprintf(
-                             'Next <env>%s</env> DB will be <info>%s@%s</info>',
-                             $this->env, $nextDBName, $nextDBHost
-                         ));
-        $output->writeln(sprintf(
-                             "<warning>Next <env>%s</env> DB will be TOTALLY ERASED !</warning>\n",
-                             $this->env
-                         ));
+            if (!array_key_exists($db, $this->dbConfig['current'])) {
+                continue;
+            }
 
-        $answer = $this->getQuestion()->ask(
-            $this->getInput(),
-            $output,
-            new Question(sprintf("Are you sure you want to continue ? "
-                                 . "All current data on <info>%s@%s</info> will be lost !"
-                                 . "\n[next <env>%s</env> database name] ",
-                                 $nextDBName, $nextDBHost, $this->env))
-        );
-        if ($answer != $nextDBName) {
-            $this->abort(
-                sprintf('Wrong database name : %s - expected : %s', $answer, $nextDBName)
+            $currentDBName = $this->dbConfig['current'][$db]['dbname'];
+            $currentDBHost = $this->dbConfig['current'][$db]['host'];
+            $nextDBName = $this->dbConfig['next'][$db]['dbname'];
+            $nextDBHost = $this->dbConfig['next'][$db]['host'];
+
+            $output->writeln(sprintf(
+                                 'Current <env>%s</env> %s is <info>%s@%s</info>',
+                                 $this->env, $db, $currentDBName, $currentDBHost
+                             ));
+            $output->writeln(sprintf(
+                                 'Next <env>%s</env> %s will be <info>%s@%s</info>',
+                                 $this->env, $db, $nextDBName, $nextDBHost
+                             ));
+            $output->writeln(sprintf(
+                                 "<warning>Next <env>%s</env> %s will be TOTALLY ERASED !</warning>\n",
+                                 $this->env, $db
+                             ));
+
+            $answer = $this->getQuestion()->ask(
+                $this->getInput(),
+                $output,
+                new Question(sprintf("Are you sure you want to continue ? "
+                                     . "All current data on <info>%s@%s</info> will be lost !"
+                                     . "\n[next <env>%s</env> database name] ",
+                                     $nextDBName, $nextDBHost, $this->env))
             );
-        }
+            if ($answer != $nextDBName) {
+                $this->abort(
+                    sprintf('Wrong database name : %s - expected : %s', $answer, $nextDBName)
+                );
+            }
 
-        $this->getOutput()->writeln('');
+            $this->getOutput()->writeln('');
+
+        }
 
     }
 
@@ -497,16 +513,21 @@ class Install extends Base {
 
     }
 
-    protected function dumpProdDB () {
+    /**
+     * @param string $db
+     *
+     * @return string
+     */
+    protected function dumpProdDB ($db) {
 
-        $this->getOutput()->write(sprintf('Dumping current <env>%s</env> DB ... ', $this->getEnv()));
+        $this->getOutput()->write(sprintf('Dumping current <env>%s</env> %s ... ', $this->getEnv(), $db));
 
-        $dumpPath = $this->dumpFolder . '/' . date('Ymj-His', time()) . '-' . $this->getEnv() . '-dump.sql';
-        $host = escapeshellarg($this->dbConfig['current']['host']);
-        $user = escapeshellarg($this->dbConfig['current']['user']);
-        $password = escapeshellarg($this->dbConfig['current']['password']);
-        $dbname = escapeshellarg($this->dbConfig['current']['dbname']);
-        $passwordCmd = empty($this->dbConfig['current']['password']) ? '' : '-p' . $password;
+        $dumpPath = $this->dumpFolder . '/' . date('Ymj-His', time()) . '-' . $this->getEnv() . '-' . $db . '-dump.sql';
+        $host = escapeshellarg($this->dbConfig['current'][$db]['host']);
+        $user = escapeshellarg($this->dbConfig['current'][$db]['user']);
+        $password = escapeshellarg($this->dbConfig['current'][$db]['password']);
+        $dbname = escapeshellarg($this->dbConfig['current'][$db]['dbname']);
+        $passwordCmd = empty($this->dbConfig['current'][$db]['password']) ? '' : '-p' . $password;
 
         $cmd =
             'mysqldump -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd . ' ' . $dbname . ' > '
@@ -519,7 +540,7 @@ class Install extends Base {
         exec($cmd, $unused, $returnCode);
 
         if ($returnCode !== 0 || !file_exists($dumpPath) || filesize($dumpPath) == 0) {
-            $this->abort(sprintf('Unable to dump <env>%s</env> database, aborting...', $this->getEnv()));
+            $this->abort(sprintf('Unable to dump <env>%s</env> %s, aborting...', $this->getEnv(), $db));
         }
 
         $this->getOutput()->writeln("OK\n");
@@ -528,19 +549,23 @@ class Install extends Base {
 
     }
 
-    protected function clearNextDB () {
+    /**
+     * @param string $db
+     */
+    protected function clearNextDB ($db) {
 
-        $this->getOutput()->write(sprintf('Clearing future <env>%s</env> DB ... ', $this->getEnv()));
+
+        $this->getOutput()->write(sprintf('Clearing future <env>%s</env> %s ... ', $this->getEnv(), $db));
 
         $cleanDatabaseFile = sys_get_temp_dir() . '/' . uniqid() . '-cleanup.sql';
 
         file_put_contents($cleanDatabaseFile, "SET FOREIGN_KEY_CHECKS = 0;\n");
 
-        $host = escapeshellarg($this->dbConfig['next']['host']);
-        $user = escapeshellarg($this->dbConfig['next']['user']);
-        $password = escapeshellarg($this->dbConfig['next']['password']);
-        $dbname = escapeshellarg($this->dbConfig['next']['dbname']);
-        $passwordCmd = empty($this->dbConfig['next']['password']) ? '' : '-p' . $password;
+        $host = escapeshellarg($this->dbConfig['next'][$db]['host']);
+        $user = escapeshellarg($this->dbConfig['next'][$db]['user']);
+        $password = escapeshellarg($this->dbConfig['next'][$db]['password']);
+        $dbname = escapeshellarg($this->dbConfig['next'][$db]['dbname']);
+        $passwordCmd = empty($this->dbConfig['next'][$db]['password']) ? '' : '-p' . $password;
 
         $returnCode = NULL;
         $_unused = NULL;
@@ -556,7 +581,7 @@ class Install extends Base {
         // But the exit status is 2 if an error occurred, unless the -q or --quiet
         // or --silent option is used and a selected line is found.
         if ($returnCode != 0 && $returnCode != 1) {
-            $this->abort(sprintf('Error while clearing future %s DB, aborting...', $this->getEnv()));
+            $this->abort(sprintf('Error while clearing future <env>%s</env> %s, aborting...', $this->getEnv(), $db));
         }
 
         file_put_contents($cleanDatabaseFile, "\nSET FOREIGN_KEY_CHECKS = 1;", FILE_APPEND);
@@ -570,35 +595,39 @@ class Install extends Base {
         exec($cmd, $_unused, $returnCode);
 
         if ($returnCode != 0) {
-            $this->abort(sprintf('Error while clearing future %s DB, aborting...', $this->getEnv()));
+            $this->abort(sprintf('Error while clearing future <env>%s</env> %s, aborting...', $this->getEnv(), $db));
         }
 
         $this->getOutput()->writeln("OK\n");
 
     }
 
-    protected function copyDataToNextDB ($dumpPath) {
+    /**
+     * @param string $dumpPath
+     * @param string $db
+     */
+    protected function copyDataToNextDB ($dumpPath, $db) {
 
-        $this->getOutput()->write(sprintf('Copying data to future <env>%s</env> DB ... ', $this->getEnv()));
 
-        $host = escapeshellarg($this->dbConfig['next']['host']);
-        $user = escapeshellarg($this->dbConfig['next']['user']);
-        $password = escapeshellarg($this->dbConfig['next']['password']);
-        $dbname = escapeshellarg($this->dbConfig['next']['dbname']);
-        $passwordCmd = empty($this->dbConfig['next']['password']) ? '' : '-p' . $password;
+        $this->getOutput()->write(sprintf('Copying data to future <env>%s</env> %s ... ', $this->getEnv(), $db));
+
+        $host = escapeshellarg($this->dbConfig['next'][$db]['host']);
+        $user = escapeshellarg($this->dbConfig['next'][$db]['user']);
+        $password = escapeshellarg($this->dbConfig['next'][$db]['password']);
+        $dbname = escapeshellarg($this->dbConfig['next'][$db]['dbname']);
+        $passwordCmd = empty($this->dbConfig['next'][$db]['password']) ? '' : '-p' . $password;
 
         $returnCode = NULL;
         $_unused = NULL;
-        $cmd =
-            'sed \'s/^.*DEFINER=.*$//g\' ' . $dumpPath . ' | mysql -h ' . $host . ' -u ' . $user . ' ' . $passwordCmd
-            . ' ' . $dbname;
+        $cmd = 'sed \'s/^.*DEFINER=.*$//g\' ' . $dumpPath . ' | mysql -h ' . $host . ' -u ' . $user . ' '
+               . $passwordCmd . ' ' . $dbname;
         if ($this->getInput()->getOption('verbose')) {
             $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
         }
         exec($cmd, $_unused, $returnCode);
 
         if ($returnCode != 0) {
-            $this->abort(sprintf('Error while copying data to future %s DB', $this->getEnv()));
+            $this->abort(sprintf('Error while copying data to future <env>%s</env> %s', $this->getEnv(), $db));
         }
 
         $this->getOutput()->writeln("OK\n");
@@ -608,30 +637,42 @@ class Install extends Base {
     protected function runUpgradeScripts () {
 
         $doctrineFolder = $this->paths['root'] . '/doctrine/';
+        $itsFolder = $this->paths['root'] . '/its/';
 
-        $migrationConfig = Yaml::parse(file_get_contents($doctrineFolder . 'migrations.yml'));
+        $folders = ['doctrine' => $doctrineFolder, 'its' => $itsFolder];
 
-        if (count(glob($doctrineFolder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
+        foreach ($folders as $system => $folder) {
 
-            $this->getOutput()->writeln('No database patches detected.');
-
-        }
-        else {
-
-            $this->getOutput()->writeln(sprintf('Upgrading future <env>%s</env> DB ... ', $this->getEnv()));
-            $returnCode = NULL;
-            $cmd = "cd {$doctrineFolder} && php doctrine.php migrations:migrate -n";
-            if ($this->getInput()->getOption('verbose')) {
-                $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
-            }
-            system($cmd, $returnCode);
-
-            if ($returnCode != 0) {
-                $this->abort(sprintf('Error while upgrading future %s DB', $this->getEnv()));
+            if (!file_exists($folder)) {
+                $this->getOutput()->writeln(sprintf('Folder %s not found.', $folder));
+                continue;
             }
 
-            $this->getOutput()->writeln("\nOK\n");
+            $migrationConfig = Yaml::parse(file_get_contents($folder . 'migrations.yml'));
 
+            if (count(glob($folder . $migrationConfig['migrations_directory'] . '/*')) == 0) {
+
+                $this->getOutput()->writeln(sprintf('No database patches detected for %s.', $system));
+
+            }
+            else {
+
+                $this->getOutput()->writeln(sprintf('Upgrading future %s <env>%s</env> DB ... ', $system,
+                                                    $this->getEnv()));
+                $returnCode = NULL;
+                $cmd = "cd {$folder} && php doctrine.php migrations:migrate -n";
+                if ($this->getInput()->getOption('verbose')) {
+                    $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+                }
+                system($cmd, $returnCode);
+
+                if ($returnCode != 0) {
+                    $this->abort(sprintf('Error while upgrading future %s <env>%s</env> DB', $system, $this->getEnv()));
+                }
+
+                $this->getOutput()->writeln("\nOK\n");
+
+            }
         }
 
     }

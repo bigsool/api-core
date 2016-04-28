@@ -60,10 +60,12 @@ class JSONPTest extends TestCase {
         $this->assertSame('service', $JSONP->getService());
         $this->assertSame('method', $JSONP->getMethod());
 
-        $response = $JSONP->getSuccessResponse(new Serializer($this->getActionContext()), 'qwe');
+        $JSONP->setResult('qwe');
+        $response = $JSONP->getSuccessResponse(new Serializer($this->getActionContext()));
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
-        $response = $JSONP->getErrorResponse(new FormattedError(new Error(1, '')));
+        $JSONP->setError(new FormattedError(new Error(1, '')));
+        $response = $JSONP->getErrorResponse();
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
 
     }

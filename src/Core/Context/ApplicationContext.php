@@ -215,6 +215,10 @@ class ApplicationContext {
      */
     public function getInitialRequestContext () {
 
+        if (!$this->initialRequestContext) {
+            return $this->getRequestContextFactory()->getNewRequestContext();
+        }
+
         return $this->initialRequestContext;
 
     }
@@ -243,11 +247,11 @@ class ApplicationContext {
      */
     public static function getInstance () {
 
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
+        if (!isset(static::$instance)) {
+            static::$instance = new static();
         }
 
-        return self::$instance;
+        return static::$instance;
 
     }
 
@@ -832,30 +836,13 @@ class ApplicationContext {
                 if (file_exists($configFile = $coreConfDir . 'isDown.yml')) {
                     $configFiles[] = $configFile;
                 }
-                $configPath = NULL;
-                $dbPath = NULL;
-                switch ($this->getEnv()) {
-                    case LOCAL_ENV:
-                        $configPath = $coreConfDir . 'local/config.yml';
-                        $dbPath = $coreConfDir . 'local/extra.yml';
-                        break;
-                    case DEV_ENV:
-                        $configPath = $coreConfDir . 'dev/config.yml';
-                        $dbPath = $coreConfDir . 'dev/extra.yml';
-                        break;
-                    case STAGE_ENV:
-                        $configPath = $coreConfDir . 'stage/config.yml';
-                        $dbPath = $coreConfDir . 'stage/extra.yml';
-                        break;
-                    case PROD_ENV:
-                        $configPath = $coreConfDir . 'prod/config.yml';
-                        $dbPath = $coreConfDir . 'prod/extra.yml';
-                        break;
-                }
-                if (!is_null($configPath) && file_exists($configPath)) {
+                $configPath = $coreConfDir . $this->getEnvName() . '/config.yml';
+                $dbPath = $coreConfDir . $this->getEnvName() . '/extra.yml';
+
+                if (file_exists($configPath)) {
                     $configFiles[] = $configPath;
                 }
-                if (!is_null($dbPath) && file_exists($dbPath)) {
+                if (file_exists($dbPath)) {
                     $configFiles[] = $dbPath;
                 }
 
@@ -868,43 +855,53 @@ class ApplicationContext {
 
     }
 
-    public function getEnv () {
+    public function getEnvType () {
 
-        if (isset($_SERVER['SERVER_NAME'])) {
-            // php called by apache
-            if ($_SERVER['SERVER_NAME'] == 'localhost'
-                || $_SERVER['SERVER_NAME'] == '127.0.0.1'
-                || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
-                || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
-                || strpos($_SERVER['REQUEST_URI'], 'api/archipad/www') !== FALSE
-            ) {
-                return LOCAL_ENV;
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
-                return DEV_ENV;
-            }
-            elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
-                return STAGE_ENV;
-            }
-            else {
-                return PROD_ENV;
-            }
+        return $this->getEnvName() == 'prod' ? PROD_ENV : STAGE_ENV;
+    }
+
+    public function getEnvName () {
+
+        if (getenv('ARCHIPAD_ENV')) {
+            return getenv('ARCHIPAD_ENV');
         }
         else {
-            $product = $this->getProduct();
-            $sep = DIRECTORY_SEPARATOR;
-            // php called from the command line
-            if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
-                return LOCAL_ENV;
-            }
-            elseif (strpos(__DIR__, 'dev') !== false) {
-                return DEV_ENV;
-            }
-            elseif (strpos(__DIR__, 'stage') !== false) {
-                return STAGE_ENV;
+            if (isset($_SERVER['SERVER_NAME'])) {
+                // php called by apache
+                if ($_SERVER['SERVER_NAME'] == 'localhost'
+                    || $_SERVER['SERVER_NAME'] == '127.0.0.1'
+                    || substr($_SERVER['SERVER_NAME'], 0, 3) == '10.'
+                    || substr($_SERVER['SERVER_NAME'], 0, 8) == '192.168.'
+                    || strpos($_SERVER['REQUEST_URI'], 'api/archipad/www') !== false
+                ) {
+                    return LOCAL_ENV;
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'dev.api.archipad-services.com') {
+                    return DEV_ENV;
+                }
+                elseif ($_SERVER['SERVER_NAME'] == 'stage.api.archipad-services.com') {
+                    return STAGE_ENV;
+                }
+                else {
+                    return PROD_ENV;
+                }
             }
             else {
-                return PROD_ENV;
+                $product = $this->getProduct();
+                $sep = DIRECTORY_SEPARATOR;
+                // php called from the command line
+                if (strpos(__DIR__, $sep . 'api' . $sep . strtolower($product) . $sep) !== false) {
+                    return LOCAL_ENV;
+                }
+                elseif (strpos(__DIR__, 'dev') !== false) {
+                    return DEV_ENV;
+                }
+                elseif (strpos(__DIR__, 'stage') !== false) {
+                    return STAGE_ENV;
+                }
+                else {
+                    return PROD_ENV;
+                }
             }
         }
 

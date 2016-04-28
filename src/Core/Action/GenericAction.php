@@ -104,7 +104,12 @@ class GenericAction extends Action {
 
         $errors = [];
 
+        $blackListedFields = [];
         foreach ($constraintsList as $originalField => $constraints) {
+
+            if (in_array($originalField, $blackListedFields)) {
+                continue;
+            }
 
             if ($basePath) {
                 $originalField = $basePath . '.' . $originalField;
@@ -120,7 +125,7 @@ class GenericAction extends Action {
             // in case we wanna validate an array of something
             if (ArrayExtra::isAssociative($constraints)) {
                 static::simpleValidate([$originalField => [new Object()]], $context);
-                $arrayToValidate = $context->getFinalParam($originalField);
+                $arrayToValidate = $context->getFinalParam($originalField, []);
                 $shouldBeFlat = count($constraints) == 1 && isset($constraints['']);
                 foreach ($arrayToValidate as $key => $valueToValidate) {
                     $subConstraintsList = [];
@@ -177,6 +182,18 @@ class GenericAction extends Action {
 
                 $context->setParam($originalField, $finalValue);
 
+            }
+
+            // Remove check which must not be done.
+            // Use case : contact of a projectMember is not mandatory but if given, contact name is mandatory
+            // So if contact is null we don't want to check contact fields
+            if (!$result->hasErrors() && is_null($finalValue)) {
+                $originalFieldPrefix = $originalField . '.';
+                foreach (array_keys($constraintsList) as $constraintField) {
+                    if (substr($constraintField, 0, strlen($originalFieldPrefix)) == $originalFieldPrefix) {
+                        $blackListedFields[] = $constraintField;
+                    }
+                }
             }
 
         }
@@ -249,6 +266,8 @@ class GenericAction extends Action {
      * @return mixed
      */
     public function process (ActionContext $context) {
+
+        $this->logCall($context);
 
         $this->authorize($context);
 

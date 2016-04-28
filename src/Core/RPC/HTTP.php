@@ -10,7 +10,7 @@ use Core\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HTTP implements Handler {
+class HTTP extends Handler {
 
     /**
      * @var string
@@ -76,13 +76,11 @@ class HTTP implements Handler {
     }
 
     /**
-     * @param FormattedError $error
-     *
      * @return Response
      */
-    public function getErrorResponse (FormattedError $error) {
+    public function getErrorResponse () {
 
-        return new Response(strval($error), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new Response(strval($this->getError()), Response::HTTP_INTERNAL_SERVER_ERROR);
 
     }
 
@@ -150,13 +148,12 @@ class HTTP implements Handler {
 
     /**
      * @param Serializer $serializer
-     * @param mixed      $data
      *
      * @return Response
      */
-    public function getSuccessResponse (Serializer $serializer, $data) {
+    public function getSuccessResponse (Serializer $serializer) {
 
-        return new Response(print_r($data, true), RESPONSE::HTTP_OK);
+        return new Response(print_r($this->getResult(), true), RESPONSE::HTTP_OK);
 
     }
 

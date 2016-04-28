@@ -108,7 +108,9 @@ class HTTPTest extends TestCase {
     public function testGetErrorResponse () {
 
         $error = ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_PERMISSION_DENIED);
-        $response = (new HTTP())->getErrorResponse($error);
+        $rpc = new HTTP();
+        $rpc->setError($error);
+        $response = $rpc->getErrorResponse();
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         $this->assertSame(strval($error), $response->getContent());

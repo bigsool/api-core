@@ -68,6 +68,8 @@ class Auth {
 
     /**
      * @param Credential $credential
+     *
+     * @return Auth
      */
     public function setCredential ($credential) {
 
@@ -82,6 +84,8 @@ class Auth {
             $this->rights[] = self::AUTHENTICATED;
         }
 
+        return $this;
+
     }
 
     /**
@@ -95,10 +99,14 @@ class Auth {
 
     /**
      * @param Credential $credential
+     *
+     * @return Auth
      */
     public function setSuperUserCredential ($credential) {
 
         $this->superUserCredential = $credential;
+
+        return $this;
 
     }
 
@@ -125,9 +133,14 @@ class Auth {
 
     }
 
+    /**
+     * @return Auth
+     */
     public function addRootRight () {
 
         $this->rights[] = static::ROOT;
+
+        return $this;
 
     }
 

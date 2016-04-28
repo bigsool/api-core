@@ -85,10 +85,10 @@ class BuildEntitiesCommand extends Command {
             throw new \RuntimeException("{$applicationClassName} is not an instance of \\Core\\Application");
         }
 
-        $modulesManagers = $application->getModuleManagers();
         $refMethLoadModules = new \ReflectionMethod($application, 'loadModules');
         $refMethLoadModules->setAccessible(true);
         $refMethLoadModules->invoke($application);
+        $modulesManagers = $application->getModuleManagers();
 
         $magicalModuleManagers = [];
 

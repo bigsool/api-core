@@ -9,76 +9,119 @@ use Core\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-interface Handler {
+abstract class Handler {
+
+    /**
+     * @var mixed
+     */
+    protected $result;
+
+    /**
+     * @var FormattedError
+     */
+    protected $error;
 
     /**
      * @param Request $request
      */
-    public function parse (Request $request);
+    public abstract function parse (Request $request);
 
     /**
-     * @param FormattedError $error
-     *
      * @return Response
      */
-    public function getErrorResponse (FormattedError $error);
+    public abstract function getErrorResponse ();
 
     /**
      * @param Serializer $serializer
-     * @param mixed      $data
      *
      * @return Response
      */
-    public function getSuccessResponse (Serializer $serializer, $data);
+    public abstract function getSuccessResponse (Serializer $serializer);
+
+    /**
+     * @param mixed $data
+     */
+    public function setResult ($data) {
+
+        $this->result = $data;
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResult () {
+
+        return $this->result;
+
+    }
+
+    /**
+     * @param FormattedError $error
+     */
+    public function setError (FormattedError $error) {
+
+        $this->error = $error;
+
+    }
+
+    /**
+     * @return FormattedError
+     */
+    public function getError () {
+
+        return $this->error;
+
+    }
 
     /**
      * @return string
      */
-    public function getPath ();
+    public abstract function getPath ();
 
     /**
      * @return string
      */
-    public function getService ();
+    public abstract function getService ();
 
     /**
      * @return string
      */
-    public function getMethod ();
+    public abstract function getMethod ();
 
     /**
      * @return string
      */
-    public function getClientName ();
+    public abstract function getClientName ();
 
     /**
      * @return string
      */
-    public function getClientVersion ();
+    public abstract function getClientVersion ();
 
     /**
      * @return string
      */
-    public function getLocale ();
+    public abstract function getLocale ();
 
     /**
      * @return array
      */
-    public function getParams ();
+    public abstract function getParams ();
 
     /**
      * @return string[]
      */
-    public function getReturnedFields ();
+    public abstract function getReturnedFields ();
 
     /**
      * @return string
      */
-    public function getIpAddress ();
+    public abstract function getIpAddress ();
 
     /**
      * @return array
      */
-    public function getAuthToken ();
+    public abstract function getAuthToken ();
 
 } 

@@ -76,6 +76,14 @@ defined('ERROR_MISSING_PARAM') || define('ERROR_MISSING_PARAM', 16110);
 $errorManager->defineError(new Error(ERROR_MISSING_PARAM, 'missing parameter', ERROR_INVALID_PARAM));
 defined('ERROR_INVALID_PARAM_FLOAT') || define('ERROR_INVALID_PARAM_FLOAT', 16111);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_FLOAT, 'invalid float', ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_HEXA') || define('ERROR_INVALID_PARAM_HEXA', 16112);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_HEXA, 'invalid hexa', ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_REGEX') || define('ERROR_INVALID_PARAM_REGEX', 16113);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_REGEX, 'value not match with expected pattern',
+                                     ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_BUCKET') || define('ERROR_INVALID_PARAM_BUCKET', 16114);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_BUCKET, 'invalid bucket name',
+                                     ERROR_INVALID_PARAM));
 
 defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
@@ -120,7 +128,9 @@ $errorManager->defineError(new LocalizedError(ERROR_HAVE_THIS_RECURRING_PRODUCT,
                                               $t->trans('ERROR_HAVE_THIS_RECURRING_PRODUCT', [], NULL, 'en')));
 
 defined('ERROR_WITH_STRIPE') || define('ERROR_WITH_STRIPE', 16311);
-$errorManager->defineError(new Error(ERROR_WITH_STRIPE, 'error during stripe payment'));
+$errorManager->defineError(new LocalizedError(ERROR_WITH_STRIPE,
+                                              $t->trans('ERROR_WITH_STRIPE', [], NULL, 'fr'),
+                                              $t->trans('ERROR_WITH_STRIPE', [], NULL, 'en')));
 
 defined('ERROR_CONNECTED_ELSEWHERE') || define('ERROR_CONNECTED_ELSEWHERE', 16312);
 $errorManager->defineError(new LocalizedError(ERROR_CONNECTED_ELSEWHERE,

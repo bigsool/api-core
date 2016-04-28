@@ -4,6 +4,7 @@ namespace Core\Context;
 
 use Core\Auth;
 use Core\Error\FormattedError;
+use Core\Error\ToResolveException;
 use Core\Field\RelativeField;
 use Core\Filter\Filter;
 use Core\Model\Credential;
@@ -330,6 +331,8 @@ class RequestContext {
 
     /**
      * @param array $params
+     *
+     * @throws ToResolveException
      */
     public function setParams (array $params) {
 
@@ -357,6 +360,33 @@ class RequestContext {
                    ->addAction($setAuthAction, ['authToken' => $authToken, 'credentials' => $credentials]);
             unset($params['authToken']);
 
+        }
+
+        if (!empty($_SERVER['PHP_AUTH_USER']) || !empty($_SERVER['HTTP_AUTHORIZATION'])
+            || !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])
+        ) {
+            if (!empty($_SERVER['PHP_AUTH_USER'])) {
+                $time = $_SERVER['PHP_AUTH_USER'];
+                $rawPass = $_SERVER['PHP_AUTH_PW'];
+            }
+            else {
+                $authorizationKey =
+                    !empty($_SERVER['HTTP_AUTHORIZATION']) ? 'HTTP_AUTHORIZATION' : 'REDIRECT_HTTP_AUTHORIZATION';
+                list($time, $rawPass) = explode(':', base64_decode(substr($_SERVER[$authorizationKey], 6)));
+            }
+            $publicKey = openssl_pkey_get_public('file://' . ROOT_DIR . '/config/public.pem');
+            if ($time < time() - 30 || $time > time() + 30) {
+                throw new \Exception('Not well synchronized timestamp');
+            }
+            $concat = $time . json_encode($params);
+            $pass = base64_decode($rawPass);
+            if (!openssl_verify($concat, $pass, $publicKey, OPENSSL_ALGO_SHA512)) {
+                throw new ToResolveException(ERROR_PERMISSION_DENIED);
+            }
+            $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
+            $qryCtx->addField('*');
+            $qryCtx->addFilter('CredentialForLogin', 'api@archipad.com');
+            $this->getAuth()->setCredential($qryCtx->findOne())->addRootRight();
         }
 
         $this->params = $params;
