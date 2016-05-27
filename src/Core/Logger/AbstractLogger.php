@@ -3,7 +3,9 @@
 
 namespace Core\Logger;
 
+use Core\Context\ApplicationContext;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\NullHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger as MLogger;
 
@@ -37,6 +39,11 @@ abstract class AbstractLogger implements LoggerInterface {
         if (!isset($this->mLogger)) {
             $channel = $this->getChannel();
             $this->mLogger = new MLogger($channel);
+
+            $config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['logger'];
+            if (array_key_exists($channel, $config) && !$config[$channel]) {
+                $this->mLogger->pushHandler(new NullHandler());
+            }
 
             // TODO
             /*
