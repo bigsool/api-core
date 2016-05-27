@@ -231,7 +231,8 @@ class JSON extends Handler {
 
         $getParams = json_decode($request->query->get('params'), true) ?: [];
         $jsonParams = isset($JSONContent['params']) && is_array($JSONContent['params']) ? $JSONContent['params'] : [];
-        $this->params = ArrayExtra::array_merge_recursive_distinct($getParams, $jsonParams);
+        $cookies = $request->cookies->all();
+        $this->params = ArrayExtra::array_merge_recursive_distinct($cookies, $getParams, $jsonParams);
 
 
         $this->id = isset($JSONContent['id']) ? $JSONContent['id'] : $request->query->get('id');
