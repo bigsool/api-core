@@ -19,7 +19,7 @@ class CLI extends Custom {
 
         $this->setModule($argv[1])
              ->setAction($argv[2])
-             ->setParams([])
+             ->setParams($argv[3])
              ->setReturnedFields([])
              ->setIpAddress('localhost');
 
