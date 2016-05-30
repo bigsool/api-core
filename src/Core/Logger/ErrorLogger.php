@@ -62,7 +62,7 @@ class ErrorLogger extends AbstractLogger {
 
         if (!isset($this->exceptionHandler)) {
 
-            $this->exceptionHandler = function (\Exception $e) {
+            $this->exceptionHandler = function ($e) {
 
                 $this->getMLogger()->addError('Uncaught ' . strval($e));
 

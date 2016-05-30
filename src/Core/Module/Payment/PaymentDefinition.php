@@ -13,11 +13,11 @@ use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\DateTime;
-use Core\Validation\Parameter\Float;
-use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\FloatConstraint;
+use Core\Validation\Parameter\Integer;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 use Core\Validation\Parameter\Text;
 
 
@@ -45,26 +45,26 @@ class PaymentDefinition extends ModuleEntityDefinition {
 
         return [
             'id'          => [
-                new Int(),
+                new Integer(),
                 new Length(['max' => 11]),
                 new NotBlank(),
             ],
             'gateway'     => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],
             'gatewayData' => [
-                new String(),
+                new StringConstraint(),
                 new NotBlank(),
                 new Length(['max' => 65000]),
             ],
             'externalId'  => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'status'      => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 new NotBlank(),
                 new Choice(
@@ -77,15 +77,15 @@ class PaymentDefinition extends ModuleEntityDefinition {
                     ]),
             ],
             'amount'      => [
-                new Float(),
+                new FloatConstraint(),
                 new NotBlank(),
             ],
             'vat'         => [
-                new Float(),
+                new FloatConstraint(),
                 new NotBlank(),
             ],
             'currency'    => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 3]),
                 new NotBlank(),
             ],

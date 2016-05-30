@@ -11,7 +11,8 @@ namespace Core\Validation\Parameter;
 
 use Symfony\Component\Validator\Constraints\Type;
 
-class Float extends Constraint {
+// Float is a reserved name
+class FloatConstraint extends Constraint {
 
     function __construct () {
 

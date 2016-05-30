@@ -15,7 +15,7 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class CredentialDefinition extends ModuleEntityDefinition {
 
@@ -36,27 +36,27 @@ class CredentialDefinition extends ModuleEntityDefinition {
         return [
             'type'     =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new Choice(['choices' => ['email']]),
                     new NotBlank(),
                 ]
             ,
             'login'    =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new NotBlank(),
                 ]
             ,
             'password' =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new Length(['max' => 255]),
                     new NotBlank(),
                 ]
             ,
             'authType' =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new NotBlank(),
                 ]
             ,

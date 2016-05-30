@@ -9,7 +9,7 @@ use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
 use Core\Helper\BasicHelper;
 use Core\Module\ModuleEntity;
-use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\Integer;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\RuntimeConstraintsProvider;
 
@@ -38,7 +38,7 @@ class BasicUpdateAction extends GenericAction {
         }
 
         $params =
-            array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [new NotBlank(), new Int()]])]]);
+            array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [new NotBlank(), new Integer()]])]]);
 
         parent::__construct($module, 'update', $minRights, $params,
             function (ActionContext $context, BasicUpdateAction $action) use (
