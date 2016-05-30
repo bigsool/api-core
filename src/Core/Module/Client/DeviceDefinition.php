@@ -10,7 +10,7 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class DeviceDefinition extends ModuleEntityDefinition {
 
@@ -21,11 +21,11 @@ class DeviceDefinition extends ModuleEntityDefinition {
 
         return [
             'UUID' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255])
             ],
             'name' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'type' => [

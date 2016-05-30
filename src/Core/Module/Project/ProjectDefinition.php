@@ -12,7 +12,7 @@ use Core\Validation\Parameter\Boolean;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class ProjectDefinition extends ModuleEntityDefinition {
 
@@ -32,12 +32,12 @@ class ProjectDefinition extends ModuleEntityDefinition {
 
         return [
             'id'                   => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 32]),
                 new NotBlank(),
             ],
             'name'                 => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 new NotBlank(),
             ],

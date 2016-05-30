@@ -14,7 +14,7 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class ProjectPatchesDefinition extends ModuleEntityDefinition {
 
@@ -34,7 +34,7 @@ class ProjectPatchesDefinition extends ModuleEntityDefinition {
 
         return [
             'id'   => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 32]),
                 new NotBlank(),
             ],

@@ -13,7 +13,7 @@ use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\NotNull;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class UserDefinition extends ModuleEntityDefinition {
 
@@ -54,14 +54,14 @@ class UserDefinition extends ModuleEntityDefinition {
         return [
             'firstName' =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new Length(['max' => 255]),
                     new NotNull(),
                 ]
             ,
             'lastName'  =>
                 [
-                    new String(),
+                    new StringConstraint(),
                     new Length(['max' => 255]),
                     new NotNull(),
                 ]

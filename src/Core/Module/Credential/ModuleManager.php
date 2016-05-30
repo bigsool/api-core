@@ -16,9 +16,9 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
 use Core\Rule\Rule;
-use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\Integer;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ModuleManager extends AbstractModuleManager {
@@ -33,8 +33,8 @@ class ModuleManager extends AbstractModuleManager {
         return [
             new GenericAction('Core\Credential', 'login', NULL, [
                 'login'     => [new CredentialDefinition()],
-                'timestamp' => [new Int(), new NotBlank()],
-                'hash'      => [new String(), new NotBlank()],
+                'timestamp' => [new Integer(), new NotBlank()],
+                'hash'      => [new StringConstraint(), new NotBlank()],
                 'authType'  => [new CredentialDefinition()],
             ], function (ActionContext $context) use ($appCtx) {
 
@@ -74,10 +74,10 @@ class ModuleManager extends AbstractModuleManager {
             }),
             new GenericAction('Core\Credential', 'renewAuthToken', NULL, [
                 'login'            => [new CredentialDefinition(), true],
-                'timestamp'        => [new Int()],
-                'hash'             => [new String()],
+                'timestamp'        => [new Integer()],
+                'hash'             => [new StringConstraint()],
                 'authType'         => [new CredentialDefinition(), true],
-                'currentAuthToken' => [new String()],
+                'currentAuthToken' => [new StringConstraint()],
             ], function (ActionContext $context) use (&$appCtx) {
 
                 $currentCredential = $context->getAuth()->getCredential();

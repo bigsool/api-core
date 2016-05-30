@@ -6,7 +6,7 @@ namespace Core\Module\Student;
 
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class StudentInfoDefinition extends ModuleEntityDefinition {
 
@@ -26,11 +26,11 @@ class StudentInfoDefinition extends ModuleEntityDefinition {
 
         return [
             'schoolName' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'number'     => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
         ];

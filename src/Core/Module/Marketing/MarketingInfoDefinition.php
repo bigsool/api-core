@@ -6,7 +6,7 @@ namespace Core\Module\Marketing;
 
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class MarketingInfoDefinition extends ModuleEntityDefinition {
 
@@ -26,7 +26,7 @@ class MarketingInfoDefinition extends ModuleEntityDefinition {
 
         return [
             'knowsFrom' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
         ];

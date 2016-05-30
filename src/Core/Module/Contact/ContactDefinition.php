@@ -9,7 +9,7 @@ use Core\Context\ModuleEntityUpsertContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Email;
 use Core\Validation\Parameter\Length;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class ContactDefinition extends ModuleEntityDefinition {
 
@@ -29,36 +29,36 @@ class ContactDefinition extends ModuleEntityDefinition {
 
         return [
             'label'    => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 // new Nullable('') TODO
             ],
             'streets'  => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 65535]),
             ],
             'city'     => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'state'    => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'zip'      => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'country'  => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'mobile'   => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'landLine' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
             ],
             'email'    => [
