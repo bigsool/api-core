@@ -40,11 +40,6 @@ abstract class AbstractLogger implements LoggerInterface {
             $channel = $this->getChannel();
             $this->mLogger = new MLogger($channel);
 
-            $config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['logger'];
-            if (array_key_exists($channel, $config) && !$config[$channel]) {
-                $this->mLogger->pushHandler(new NullHandler());
-            }
-
             // TODO
             /*
             if ($config['environment'] <= ENV_DEV) $level = MLogger::DEBUG;
@@ -58,6 +53,11 @@ abstract class AbstractLogger implements LoggerInterface {
             $stream = new RotatingFileHandler(ROOT_DIR . '/../logs/' . $channel . '.log', 0, $level, true, 0666);
             $stream->setFormatter(new LineFormatter($this->getFormat(), $this->getDateFormat()));
             $this->mLogger->pushHandler($stream);
+
+            $config = ApplicationContext::getInstance()->getConfigManager()->getConfig()['logger'];
+            if (array_key_exists($channel, $config) && !$config[$channel]) {
+                $this->mLogger->pushHandler(new NullHandler());
+            }
         }
 
         return $this->mLogger;
