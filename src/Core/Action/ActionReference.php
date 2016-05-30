@@ -88,11 +88,7 @@ class ActionReference extends Action {
      */
     private function call ($fn, ActionContext $context) {
 
-        foreach (ApplicationContext::getInstance()->getActions() as $action) {
-            if ($action->getModule() == $this->getModule() && $action->getName() == $this->getName()) {
-                return $action->$fn($context);
-            }
-        }
-        throw new \RuntimeException('Action is not added to the application context yet !');
+        return $context->getApplicationContext()->getAction($this->getModule(), $this->getName())->$fn($context);
+
     }
 }

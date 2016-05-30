@@ -3,6 +3,7 @@
 
 namespace Core\Module\Credential;
 
+use Archipad\Module\Client\ClientHelper;
 use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
@@ -146,6 +147,15 @@ class ModuleManager extends AbstractModuleManager {
                 'authToken' => [new AuthenticationValidation()]
             ], function (ActionContext $ctx) {
 
+                $appCtx = $ctx->getApplicationContext();
+
+                $clientHelper = $this->getClientHelper();
+                $client = $clientHelper::getClientFromRequestContext($ctx->getRequestContext());
+
+                if ($clientHelper::isWebClient($client) || $clientHelper::isArchipadArtisan($client)) {
+                    return;
+                }
+
                 $response = $ctx->getRequestContext()->getResponse();
 
                 if (is_null($response)) {
@@ -154,7 +164,6 @@ class ModuleManager extends AbstractModuleManager {
 
                 }
 
-                $appCtx = $ctx->getApplicationContext();
                 $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
 
                 $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
@@ -304,6 +313,15 @@ class ModuleManager extends AbstractModuleManager {
     protected function getAuthenticationHelper () {
 
         return ApplicationContext::getInstance()->getHelperClassName('Authentication');
+
+    }
+
+    /**
+     * @return ClientHelper
+     */
+    protected function getClientHelper () {
+
+        return ApplicationContext::getInstance()->getHelperClassName('Client');
 
     }
 

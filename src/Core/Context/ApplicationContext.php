@@ -84,6 +84,11 @@ class ApplicationContext {
     protected $actions = [];
 
     /**
+     * @var Action[][]
+     */
+    protected $mappedActions = [];
+
+    /**
      * @var RouteCollection
      */
     protected $routes;
@@ -474,26 +479,19 @@ class ApplicationContext {
     }
 
     /**
-     * @param Action $theAction
+     * @param Action $action
      */
-    public function addAction (Action $theAction) {
+    public function addAction (Action $action) {
 
-        $i = 0;
-        foreach ($this->actions as $action) {
-
-            // if RedefineGenericAction and alreqdy exists do not throw
-            // if RedefinedGenecirQction qnd not qlreqdy registered; throw
-
-            if ($action->getModule() == $theAction->getModule() && $action->getName() == $theAction->getName()) {
-                //$this->actions[$i] = $theAction;
-                //return;
-                throw new \RuntimeException('action already defined for this module and name (' . $action->getModule()
-                                            . ',' . $action->getName() . ')');
-            }
-            ++$i;
+        if (!array_key_exists($action->getModule(), $this->mappedActions)
+            || !array_key_exists($action->getName(), $this->mappedActions[$action->getModule()])
+        ) {
+            $this->actions[] = $action;
+            $this->mappedActions[$action->getModule()][$action->getName()] = $action;
         }
-        if (!in_array($theAction, $this->getActions(), true)) {
-            $this->actions[] = $theAction;
+        else {
+            throw new \RuntimeException('action already defined for this module and name (' . $action->getModule()
+                                        . ',' . $action->getName() . ')');
         }
 
     }
@@ -686,13 +684,11 @@ class ApplicationContext {
      */
     public function getAction ($module, $name) {
 
-        foreach ($this->getActions() as $action) {
-            if ($action->getModule() == $module && $action->getName() == $name) {
-                return $action;
-            }
+        if (!isset($this->mappedActions[$module][$name])) {
+            throw new \RuntimeException("Action $module/$name not found");
         }
 
-        throw new \RuntimeException("Action $module/$name not found");
+        return $this->mappedActions[$module][$name];
 
     }
 
