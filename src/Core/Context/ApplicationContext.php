@@ -377,7 +377,8 @@ class ApplicationContext {
         $cache = $this->getCacheProvider();
 
         $key = 'MODULE_ENTITY_DEFINITION_' . $moduleEntityName;
-        if (!$cache->contains($key)) {
+        $data = $cache->fetch($key);
+        if ($data === false) {
 
             foreach ($this->application->getModuleManagers() as $moduleManager) {
                 $moduleManagerClassName = get_class($moduleManager);
@@ -405,7 +406,7 @@ class ApplicationContext {
             throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
         }
 
-        return $cache->fetch($key);
+        return $data;
 
     }
 
