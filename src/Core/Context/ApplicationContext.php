@@ -33,6 +33,10 @@ use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
 use Core\Serializer;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -193,6 +197,11 @@ class ApplicationContext {
      * @var RequestContextFactory
      */
     protected $reqCtxFactory;
+
+    /**
+     * @var CacheProvider
+     */
+    protected $cacheProvider;
 
     /**
      * @param object $entityName
@@ -365,24 +374,38 @@ class ApplicationContext {
      */
     protected function getModuleEntityDefinition ($moduleEntityName) {
 
-        foreach ($this->application->getModuleManagers() as $moduleManager) {
-            $moduleManagerClassName = get_class($moduleManager);
-            $product = strstr($moduleManagerClassName, '\\', true);
-            if ($product == 'Core') {
-                continue;
+        $cache = $this->getCacheProvider();
+
+        $key = 'MODULE_ENTITY_DEFINITION_' . $moduleEntityName;
+        if (!$cache->contains($key)) {
+
+            foreach ($this->application->getModuleManagers() as $moduleManager) {
+                $moduleManagerClassName = get_class($moduleManager);
+                $product = strstr($moduleManagerClassName, '\\', true);
+                if ($product == 'Core') {
+                    continue;
+                }
+                $baseClassName =
+                    substr($moduleManager->getNamespace(), strlen($product));
+                $className = $baseClassName . $moduleEntityName . 'Definition';
+                if (ClassHelper::classExists($fullClassName = $product . $className)) {
+                    $moduleEntityDefinition = new $fullClassName;
+                    $cache->save($key, $moduleEntityDefinition);
+
+                    return $moduleEntityDefinition;
+                }
+                if (ClassHelper::classExists($fullClassName = 'Core' . $className)) {
+                    $moduleEntityDefinition = new $fullClassName;
+                    $cache->save($key, $moduleEntityDefinition);
+
+                    return $moduleEntityDefinition;
+                }
             }
-            $baseClassName =
-                substr($moduleManager->getNamespace(), strlen($product));
-            $className = $baseClassName . $moduleEntityName . 'Definition';
-            if (ClassHelper::classExists($fullClassName = $product . $className)) {
-                return new $fullClassName;
-            }
-            if (ClassHelper::classExists($fullClassName = 'Core' . $className)) {
-                return new $fullClassName;
-            }
+
+            throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
         }
 
-        throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
+        return $cache->fetch($key);
 
     }
 
@@ -1119,6 +1142,41 @@ class ApplicationContext {
 
         return $this->reqCtxFactory;
 
+    }
+
+    /**
+     * @return CacheProvider
+     */
+    public function getCacheProvider () {
+
+        if (!$this->cacheProvider) {
+
+            $config = $this->getConfigManager()->getConfig();
+
+            if (class_exists('Memcached')) {
+                $memCacheHost = isset($config['memcache']['host']) ? $config['memcache']['host'] : '127.0.0.1';
+                $memCachePort = isset($config['memcache']['port']) ? $config['memcache']['port'] : 11211;
+
+                $memcached = new \Memcached();
+                $memcached->addServer($memCacheHost, $memCachePort);
+                $this->cacheProvider = new MemcachedCache();
+                $this->cacheProvider->setMemcached($memcached);
+            }
+            elseif (class_exists('Memcache')) {
+                $memCacheHost = isset($config['memcache']['host']) ? $config['memcache']['host'] : '127.0.0.1';
+                $memCachePort = isset($config['memcache']['port']) ? $config['memcache']['port'] : 11211;
+
+                $memcache = new \Memcache();
+                $memcache->connect($memCacheHost, $memCachePort);
+                $this->cacheProvider = new MemcacheCache();
+                $this->cacheProvider->setMemcache($memcache);
+            }
+            else {
+                $this->cacheProvider = new ArrayCache();
+            }
+        }
+
+        return $this->cacheProvider;
     }
 
 }
