@@ -13,6 +13,7 @@ use Core\Error\ErrorManager;
 use Core\Field\Calculated;
 use Core\Filter\Filter;
 use Core\FunctionQueue;
+use Core\Helper\ClassHelper;
 use Core\Helper\ModuleManagerHelperLoader;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
@@ -373,10 +374,10 @@ class ApplicationContext {
             $baseClassName =
                 substr($moduleManager->getNamespace(), strlen($product));
             $className = $baseClassName . $moduleEntityName . 'Definition';
-            if (class_exists($fullClassName = $product . $className)) {
+            if (ClassHelper::classExists($fullClassName = $product . $className)) {
                 return new $fullClassName;
             }
-            if (class_exists($fullClassName = 'Core' . $className)) {
+            if (ClassHelper::classExists($fullClassName = 'Core' . $className)) {
                 return new $fullClassName;
             }
         }
