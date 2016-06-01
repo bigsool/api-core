@@ -201,7 +201,7 @@ class ApplicationContext {
     /**
      * @var CacheProvider
      */
-    protected $cacheProvider;
+    protected static $cacheProvider;
 
     /**
      * @param object $entityName
@@ -1148,36 +1148,33 @@ class ApplicationContext {
     /**
      * @return CacheProvider
      */
-    public function getCacheProvider () {
+    public static function getCacheProvider () {
 
-        if (!$this->cacheProvider) {
+        if (!static::$cacheProvider) {
 
-            $config = $this->getConfigManager()->getConfig();
+            $memCacheHost = '127.0.0.1';
+            $memCachePort = 11211;
 
             if (class_exists('Memcached')) {
-                $memCacheHost = isset($config['memcache']['host']) ? $config['memcache']['host'] : '127.0.0.1';
-                $memCachePort = isset($config['memcache']['port']) ? $config['memcache']['port'] : 11211;
-
                 $memcached = new \Memcached();
                 $memcached->addServer($memCacheHost, $memCachePort);
-                $this->cacheProvider = new MemcachedCache();
-                $this->cacheProvider->setMemcached($memcached);
+                $memcachedCache = new MemcachedCache();
+                $memcachedCache->setMemcached($memcached);
+                static::$cacheProvider = $memcachedCache;
             }
             elseif (class_exists('Memcache')) {
-                $memCacheHost = isset($config['memcache']['host']) ? $config['memcache']['host'] : '127.0.0.1';
-                $memCachePort = isset($config['memcache']['port']) ? $config['memcache']['port'] : 11211;
-
                 $memcache = new \Memcache();
                 $memcache->connect($memCacheHost, $memCachePort);
-                $this->cacheProvider = new MemcacheCache();
-                $this->cacheProvider->setMemcache($memcache);
+                $memcacheCache = new MemcacheCache();
+                $memcacheCache->setMemcache($memcache);
+                static::$cacheProvider = $memcacheCache;
             }
             else {
-                $this->cacheProvider = new ArrayCache();
+                static::$cacheProvider = new ArrayCache();
             }
         }
 
-        return $this->cacheProvider;
+        return static::$cacheProvider;
     }
 
 }
