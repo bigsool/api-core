@@ -20,6 +20,7 @@ use Core\RPC\JSON;
 use Core\RPC\Local;
 use Core\Rule\Processor;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Config\ConfigCacheFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -158,6 +159,7 @@ class Application {
 
         $translator = new Translator('en');
         $translator->setFallbackLocales(['en', 'fr']);
+        $translator->setConfigCacheFactory(new ConfigCacheFactory(false));
         $translator->addLoader('po', new PoFileLoader());
         $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
         if (file_exists($frPoFile)) {
