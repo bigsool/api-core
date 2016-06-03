@@ -85,7 +85,7 @@ class Parameter extends Value {
             throw new \RuntimeException("parameter $name not found");
         }
 
-        $this->realName = uniqid($this->getValue() . '_', true);
+        $this->realName = $this->getValue() . '_' . rand();
 
         $registry->setParameter($this->realName, $value);
 
