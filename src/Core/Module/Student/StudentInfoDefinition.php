@@ -4,6 +4,7 @@
 namespace Core\Module\Student;
 
 
+use Core\Context\ApplicationContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\StringConstraint;
@@ -24,14 +25,16 @@ class StudentInfoDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'schoolName' => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'number'     => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
         ];
 

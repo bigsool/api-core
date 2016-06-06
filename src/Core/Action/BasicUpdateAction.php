@@ -4,6 +4,7 @@ namespace Core\Action;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Field\RelativeField;
 use Core\Filter\StringFilter;
@@ -37,8 +38,10 @@ class BasicUpdateAction extends GenericAction {
             };
         }
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         $params =
-            array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [new NotBlank(), new Integer()]])]]);
+            array_merge($params, ['id' => [new RuntimeConstraintsProvider(['id' => [$factory->getParameter(NotBlank::class), $factory->getParameter(Integer::class)]])]]);
 
         parent::__construct($module, 'update', $minRights, $params,
             function (ActionContext $context, BasicUpdateAction $action) use (

@@ -8,6 +8,7 @@
 
 namespace Core\Module\Payment;
 
+use Core\Context\ApplicationContext;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -43,31 +44,33 @@ class PaymentDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'id'          => [
-                new Integer(),
-                new Length(['max' => 11]),
-                new NotBlank(),
+                $factory->getParameter(Integer::class),
+                $factory->getParameter(Length::class, ['max' => 11]),
+                $factory->getParameter(NotBlank::class),
             ],
             'gateway'     => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
-                new NotBlank(),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
+                $factory->getParameter(NotBlank::class),
             ],
             'gatewayData' => [
-                new StringConstraint(),
-                new NotBlank(),
-                new Length(['max' => 65000]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(NotBlank::class),
+                $factory->getParameter(Length::class, ['max' => 65000]),
             ],
             'externalId'  => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'status'      => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
-                new NotBlank(),
-                new Choice(
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
+                $factory->getParameter(NotBlank::class),
+                $factory->getParameter(Choice::class,
                     [
                         'choices' => [
                             static::PAYMENT_STATUS_PAID,
@@ -77,21 +80,21 @@ class PaymentDefinition extends ModuleEntityDefinition {
                     ]),
             ],
             'amount'      => [
-                new FloatConstraint(),
-                new NotBlank(),
+                $factory->getParameter(FloatConstraint::class),
+                $factory->getParameter(NotBlank::class),
             ],
             'vat'         => [
-                new FloatConstraint(),
-                new NotBlank(),
+                $factory->getParameter(FloatConstraint::class),
+                $factory->getParameter(NotBlank::class),
             ],
             'currency'    => [
-                new StringConstraint(),
-                new Length(['max' => 3]),
-                new NotBlank(),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 3]),
+                $factory->getParameter(NotBlank::class),
             ],
             'date'        => [
-                new DateTime(),
-                new NotBlank(),
+                $factory->getParameter(DateTime::class),
+                $factory->getParameter(NotBlank::class),
             ]
         ];
 

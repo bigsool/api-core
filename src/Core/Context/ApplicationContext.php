@@ -33,6 +33,7 @@ use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
 use Core\Serializer;
+use Core\Validation\ParameterFactory;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\MemcacheCache;
@@ -202,6 +203,11 @@ class ApplicationContext {
      * @var CacheProvider
      */
     protected static $cacheProvider;
+
+    /**
+     * @var ParameterFactory
+     */
+    protected $parameterFactory;
 
     /**
      * @param object $entityName
@@ -1175,6 +1181,19 @@ class ApplicationContext {
         }
 
         return static::$cacheProvider;
+    }
+
+    /**
+     * @return ParameterFactory
+     */
+    public function getParameterFactory() {
+
+        if (!isset($this->parameterFactory)) {
+            $this->parameterFactory = new ParameterFactory();
+        }
+
+        return $this->parameterFactory;
+
     }
 
 }

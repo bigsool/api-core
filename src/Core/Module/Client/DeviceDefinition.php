@@ -4,6 +4,7 @@
 namespace Core\Module\Client;
 
 
+use Core\Context\ApplicationContext;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -19,18 +20,20 @@ class DeviceDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'UUID' => [
-                new StringConstraint(),
-                new Length(['max' => 255])
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255])
             ],
             'name' => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'type' => [
-                new Choice(['choices' => ['ipad']]),
-                new NotBlank(),
+                $factory->getParameter(Choice::class, ['choices' => ['ipad']]),
+                $factory->getParameter(NotBlank::class),
             ],
         ];
 

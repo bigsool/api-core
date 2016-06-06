@@ -30,11 +30,13 @@ class ModuleManager extends AbstractModuleManager {
      */
     public function createActions (ApplicationContext &$appCtx) {
 
+        $factory = $appCtx->getParameterFactory();
+
         return [
             new GenericAction('Core\Credential', 'login', NULL, [
                 'login'     => [new CredentialDefinition()],
-                'timestamp' => [new Integer(), new NotBlank()],
-                'hash'      => [new StringConstraint(), new NotBlank()],
+                'timestamp' => [$factory->getParameter(Integer::class), $factory->getParameter(NotBlank::class)],
+                'hash'      => [$factory->getParameter(StringConstraint::class), $factory->getParameter(NotBlank::class)],
                 'authType'  => [new CredentialDefinition()],
             ], function (ActionContext $context) use ($appCtx) {
 
@@ -74,10 +76,10 @@ class ModuleManager extends AbstractModuleManager {
             }),
             new GenericAction('Core\Credential', 'renewAuthToken', NULL, [
                 'login'            => [new CredentialDefinition(), true],
-                'timestamp'        => [new Integer()],
-                'hash'             => [new StringConstraint()],
+                'timestamp'        => [$factory->getParameter(Integer::class)],
+                'hash'             => [$factory->getParameter(StringConstraint::class)],
                 'authType'         => [new CredentialDefinition(), true],
-                'currentAuthToken' => [new StringConstraint()],
+                'currentAuthToken' => [$factory->getParameter(StringConstraint::class)],
             ], function (ActionContext $context) use (&$appCtx) {
 
                 $currentCredential = $context->getAuth()->getCredential();

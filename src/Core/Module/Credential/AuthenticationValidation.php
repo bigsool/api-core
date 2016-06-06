@@ -4,6 +4,7 @@
 namespace Core\Module\Credential;
 
 
+use Core\Context\ApplicationContext;
 use Core\Validation\ConstraintsProvider;
 use Core\Validation\Parameter\NotBlank;
 use Core\Validation\Parameter\Object;
@@ -29,10 +30,12 @@ class AuthenticationValidation implements ConstraintsProvider {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return ['authToken' =>
                     [
-                        new Object(),
-                        new NotBlank(),
+                        $factory->getParameter(Object::class),
+                        $factory->getParameter(NotBlank::class),
                     ]
         ];
 
