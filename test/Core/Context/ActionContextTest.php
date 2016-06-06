@@ -40,7 +40,7 @@ class ActionContextTest extends TestCase {
         $appCtx = $this->getApplicationContext();
         $reqCtx = $appCtx->getRequestContextFactory()->getNewRequestContext();
         $auth = $this->getMockAuth();
-        $params = ['a' => new UnsafeParameter(0, ''), 'b', new UnsafeParameter(new \stdClass(), '')];
+        $params = ['a' => new UnsafeParameter(0, 0, ''), 'b', new UnsafeParameter(new \stdClass(), new \stdClass(), '')];
         $reqCtx->setAuth($auth);
         $actCtx = $this->getActionContext($reqCtx);
         $actCtx->setParams($params);
@@ -55,9 +55,9 @@ class ActionContextTest extends TestCase {
     public function testParams () {
 
         $array =
-            ['a'                  => new UnsafeParameter(0, ''),
+            ['a'                  => new UnsafeParameter(0, 0, ''),
              0                    => 'b',
-             1                    => new UnsafeParameter(new \stdClass(), ''),
+             1                    => new UnsafeParameter(new \stdClass(), new \stdClass(), ''),
              'first.second.third' => 'qwe'
             ];
         $expected =

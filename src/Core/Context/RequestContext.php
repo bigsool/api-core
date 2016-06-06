@@ -342,7 +342,7 @@ class RequestContext {
 
             $appCtx = $this->getApplicationContext();
             $checkAuthCtx = $appCtx->getActionContext(new self(), 'Core\Credential', 'checkAuth');
-            $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, 'authToken')]);
+            $checkAuthCtx->setParams(['authToken' => new UnsafeParameter($authToken, $authToken, 'authToken')]);
             $appCtx = ApplicationContext::getInstance();
             /**
              * @var Credential[] $credentials
