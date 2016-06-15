@@ -26,6 +26,16 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
     protected $uiParams = [];
 
     /**
+     * @var string
+     */
+    protected $buyDisabled = false;
+
+    /**
+     * @var string
+     */
+    protected $navigate = null;
+
+    /**
      * @return string
      */
     public function getType () {
@@ -70,6 +80,18 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
 
     }
 
+    public function setBuyDisabled($buyDisabled) {
+
+        $this->buyDisabled = $buyDisabled;
+
+    }
+
+    public function setNavigate($navigate) {
+
+        $this->navigate = $navigate;
+
+    }
+
     /**
      * @return array
      */
@@ -80,6 +102,8 @@ class ChangeSubscriptionPlanInteraction extends AlertInteraction {
                                'topic'                   => $this->getTopic(),
                                'message'                 => $this->getMessage(),
                                'subscription_definition' => $this->getSubscriptionParams(),
+                               'buy_disabled' => $this->buyDisabled,
+                               'navigate' => $this->navigate
                            ], $this->getUiParams());
 
     }
