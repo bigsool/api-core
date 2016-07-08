@@ -74,14 +74,8 @@ class Application {
         if (function_exists('opcache_get_status')) {
             $opcacheStatus = opcache_get_status(false);
             $opcacheStatistics = $opcacheStatus['opcache_statistics'];
-            $realpath = realpath(ROOT_DIR);
-            $dirname = dirname($realpath);
-            $exploded = explode('-', basename($realpath), 3);
-            if (isset($exploded[2])) {
-                unset($exploded[2]);
-            }
-            $basename = implode('-', $exploded);
-            $path = $dirname . '/' . $basename;
+            $path = realpath(ROOT_DIR);
+            clearstatcache(true, $path);
             $fileTimestamp = filemtime($path);
             $opcacheStartTime = $opcacheStatistics['last_restart_time'] ?: $opcacheStatistics['start_time'];
             if ($opcacheStartTime < $fileTimestamp) {
