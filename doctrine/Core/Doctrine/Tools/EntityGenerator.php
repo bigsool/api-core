@@ -98,7 +98,10 @@ public function <methodName>()
 <spaces><spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<targetEntity>", $reqCtx);
 <spaces><spaces><spaces>$qryContext->addFields("id","<inversedBy>");
 <spaces><spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<targetEntity>","","<inversedBy>.id = :id"), $this->getId());
-<spaces><spaces><spaces>$qryContext->findAll();
+<spaces><spaces><spaces>$entities = $qryContext->findAll();
+<spaces><spaces><spaces>foreach ($entities as $entity) {
+<spaces><spaces><spaces><spaces>$this-><fieldName>RestrictedIds[] = $entity->getId();
+<spaces><spaces><spaces>}
 <spaces><spaces><spaces>// this query will hydrate <entity> and <targetEntity>
 <spaces><spaces><spaces>// RestrictedObjectHydrator will automatically hydrate <fieldName>RestrictedId
 <spaces><spaces><spaces>// Since Doctrine shares model instances, <fieldName>RestrictedId will be automatically available
@@ -147,7 +150,10 @@ public function <methodName>()
 <spaces><spaces>$qryContext = new \Core\Context\FindQueryContext("<targetEntity>", $reqCtx);
 <spaces><spaces>$qryContext->addFields("id","<inversedBy>");
 <spaces><spaces>$qryContext->addFilter(new \Core\Filter\StringFilter("<targetEntity>","","<inversedBy>.id = :id"), $this->getId());
-<spaces><spaces>$qryContext->findAll();
+<spaces><spaces>$entity = $qryContext->findOne(false);
+<spaces><spaces>if ($entity) {
+<spaces><spaces><spaces>$this-><fieldName>RestrictedId = $entity->getId();
+<spaces><spaces>}
 <spaces><spaces>// this query will hydrate <entity> and <targetEntity>
 <spaces><spaces>// RestrictedObjectHydrator will automatically hydrate <fieldName>RestrictedId
 <spaces><spaces>// Since Doctrine shares model instances, <fieldName>RestrictedId will be automatically available

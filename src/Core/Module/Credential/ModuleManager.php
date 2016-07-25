@@ -3,6 +3,7 @@
 
 namespace Core\Module\Credential;
 
+use Archipad\Module\Client\ClientHelper;
 use Core\Action\Action;
 use Core\Action\GenericAction;
 use Core\Context\ActionContext;
@@ -15,9 +16,9 @@ use Core\Module\ModuleEntityDefinition;
 use Core\Module\ModuleManager as AbstractModuleManager;
 use Core\Rule\FieldRule;
 use Core\Rule\Rule;
-use Core\Validation\Parameter\Int;
+use Core\Validation\Parameter\Integer;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class ModuleManager extends AbstractModuleManager {
@@ -32,8 +33,8 @@ class ModuleManager extends AbstractModuleManager {
         return [
             new GenericAction('Core\Credential', 'login', NULL, [
                 'login'     => [new CredentialDefinition()],
-                'timestamp' => [new Int(), new NotBlank()],
-                'hash'      => [new String(), new NotBlank()],
+                'timestamp' => [new Integer(), new NotBlank()],
+                'hash'      => [new StringConstraint(), new NotBlank()],
                 'authType'  => [new CredentialDefinition()],
             ], function (ActionContext $context) use ($appCtx) {
 
@@ -73,10 +74,10 @@ class ModuleManager extends AbstractModuleManager {
             }),
             new GenericAction('Core\Credential', 'renewAuthToken', NULL, [
                 'login'            => [new CredentialDefinition(), true],
-                'timestamp'        => [new Int()],
-                'hash'             => [new String()],
+                'timestamp'        => [new Integer()],
+                'hash'             => [new StringConstraint()],
                 'authType'         => [new CredentialDefinition(), true],
-                'currentAuthToken' => [new String()],
+                'currentAuthToken' => [new StringConstraint()],
             ], function (ActionContext $context) use (&$appCtx) {
 
                 $currentCredential = $context->getAuth()->getCredential();
@@ -146,6 +147,15 @@ class ModuleManager extends AbstractModuleManager {
                 'authToken' => [new AuthenticationValidation()]
             ], function (ActionContext $ctx) {
 
+                $appCtx = $ctx->getApplicationContext();
+
+                $clientHelper = $this->getClientHelper();
+                $client = $clientHelper::getClientFromRequestContext($ctx->getRequestContext());
+
+                if ($clientHelper::isWebClient($client) || $clientHelper::isArchipadArtisan($client)) {
+                    return;
+                }
+
                 $response = $ctx->getRequestContext()->getResponse();
 
                 if (is_null($response)) {
@@ -154,7 +164,6 @@ class ModuleManager extends AbstractModuleManager {
 
                 }
 
-                $appCtx = $ctx->getApplicationContext();
                 $expire = time() + $appCtx->getConfigManager()->getConfig()['credential']['expirationAuthToken'];
 
                 $response->headers->setCookie(new Cookie('authToken', json_encode($ctx->getParam('authToken')),
@@ -304,6 +313,15 @@ class ModuleManager extends AbstractModuleManager {
     protected function getAuthenticationHelper () {
 
         return ApplicationContext::getInstance()->getHelperClassName('Authentication');
+
+    }
+
+    /**
+     * @return ClientHelper
+     */
+    protected function getClientHelper () {
+
+        return ApplicationContext::getInstance()->getHelperClassName('Client');
 
     }
 

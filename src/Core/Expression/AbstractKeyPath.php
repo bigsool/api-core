@@ -78,4 +78,11 @@ abstract class AbstractKeyPath extends Value {
 
     }
 
+    /**
+     * @return bool
+     */
+    public function shouldUseLeftJoin() {
+        return $this->useLeftJoin;
+    }
+
 }

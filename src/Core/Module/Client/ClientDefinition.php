@@ -10,7 +10,7 @@ use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
-use Core\Validation\Parameter\String;
+use Core\Validation\Parameter\StringConstraint;
 
 class ClientDefinition extends ModuleEntityDefinition {
 
@@ -30,12 +30,12 @@ class ClientDefinition extends ModuleEntityDefinition {
 
         return [
             'name'    => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 new NotBlank()
             ],
             'version' => [
-                new String(),
+                new StringConstraint(),
                 new Length(['max' => 255]),
                 new NotBlank()
             ],

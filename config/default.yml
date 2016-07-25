@@ -3,3 +3,8 @@ credential:
 characters: abcdefhjkmnpqrtwxyzABCDEFHJKLMNPRTWXYZ1234789
 mailer:
   from: 'support@archipad.com'
+logger:
+  sql: false
+  log: false
+  requests: true
+  errors: true

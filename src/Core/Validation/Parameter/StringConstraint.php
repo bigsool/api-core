@@ -5,7 +5,8 @@ namespace Core\Validation\Parameter;
 
 use Symfony\Component\Validator\Constraints;
 
-class String extends Constraint {
+// String is a reserved name
+class StringConstraint extends Constraint {
 
     public function __construct () {
 
