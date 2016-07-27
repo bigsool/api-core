@@ -1158,24 +1158,29 @@ class ApplicationContext {
 
         if (!static::$cacheProvider) {
 
-            $memCacheHost = '127.0.0.1';
-            $memCachePort = 11211;
+            try {
 
-            if (class_exists('Memcached')) {
-                $memcached = new \Memcached();
-                $memcached->addServer($memCacheHost, $memCachePort);
-                $memcachedCache = new MemcachedCache();
-                $memcachedCache->setMemcached($memcached);
-                static::$cacheProvider = $memcachedCache;
-            }
-            elseif (class_exists('Memcache')) {
-                $memcache = new \Memcache();
-                $memcache->connect($memCacheHost, $memCachePort);
-                $memcacheCache = new MemcacheCache();
-                $memcacheCache->setMemcache($memcache);
-                static::$cacheProvider = $memcacheCache;
-            }
-            else {
+                $memCacheHost = '127.0.0.1';
+                $memCachePort = 11211;
+
+                if (class_exists('Memcached')) {
+                    $memcached = new \Memcached();
+                    $memcached->addServer($memCacheHost, $memCachePort);
+                    $memcachedCache = new MemcachedCache();
+                    $memcachedCache->setMemcached($memcached);
+                    static::$cacheProvider = $memcachedCache;
+                }
+                elseif (class_exists('Memcache')) {
+                    $memcache = new \Memcache();
+                    $memcache->connect($memCacheHost, $memCachePort);
+                    $memcacheCache = new MemcacheCache();
+                    $memcacheCache->setMemcache($memcache);
+                    static::$cacheProvider = $memcacheCache;
+                }
+                else {
+                    static::$cacheProvider = new ArrayCache();
+                }
+            } catch (\Exception $e) {
                 static::$cacheProvider = new ArrayCache();
             }
         }
