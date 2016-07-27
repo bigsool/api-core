@@ -17,14 +17,20 @@ class UnsafeParameter {
     protected $path;
 
     /**
+     * @var mixed
+     */
+    protected $unsafeValue;
+
+    /**
+     * @param mixed  $unsafeValue
      * @param mixed  $value
      * @param string $path
      */
-    public function __construct ($value, $path) {
+    public function __construct ($unsafeValue, $value, $path) {
 
         $this->value = $value;
         $this->path = $path;
-
+        $this->unsafeValue = $unsafeValue;
     }
 
     /**
@@ -59,14 +65,22 @@ class UnsafeParameter {
      */
     public static function getRecursiveFinalValue ($param) {
 
-        $final = ($param instanceof UnsafeParameter) ? $param->getValue() : $param;
-        if (is_array($final)) {
-            foreach ($final as &$_final) {
-                $_final = static::getRecursiveFinalValue($_final);
-            }
+        if ($param instanceof UnsafeParameter) {
+            return $param->getUnsafeValue();
         }
+        if (is_array($param)) {
+            $unsafeParam = [];
+            foreach ($param as $key => $value) {
+                if ($value instanceof UnsafeParameter) {
+                    $unsafeParam[$key] = $value->getUnsafeValue();
+                } else {
+                    $unsafeParam[$key] = $value;
+                }
+            }
+            return $unsafeParam;
+        }
+        return $param;
 
-        return $final;
     }
 
     /**
@@ -93,5 +107,13 @@ class UnsafeParameter {
 
         return false;
 
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getUnsafeValue () {
+
+        return $this->unsafeValue;
     }
 }

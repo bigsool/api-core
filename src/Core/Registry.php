@@ -68,6 +68,11 @@ class Registry implements EventSubscriber {
     protected $params = [];
 
     /**
+     * @var array
+     */
+    protected static $realModelClassNames = [];
+
+    /**
      *
      */
     public function __construct () {
@@ -252,14 +257,20 @@ class Registry implements EventSubscriber {
      */
     public static function realModelClassName ($entity) {
 
-        $product = ApplicationContext::getInstance()->getProduct();
+        if (!array_key_exists($entity, static::$realModelClassNames)) {
 
-        $class = '\\' . $product . '\Model\\' . $entity;
-        if (!class_exists($class)) {
-            throw new \RuntimeException('entity not found');
+            $product = ApplicationContext::getInstance()->getProduct();
+
+            $class = '\\' . $product . '\Model\\' . $entity;
+            if (!class_exists($class)) {
+                throw new \RuntimeException('entity not found');
+            }
+
+            static::$realModelClassNames[$entity] = $class;
+
         }
 
-        return $class;
+        return static::$realModelClassNames[$entity];
 
     }
 

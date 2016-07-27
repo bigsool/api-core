@@ -20,6 +20,7 @@ use Core\RPC\JSON;
 use Core\RPC\Local;
 use Core\Rule\Processor;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Config\ConfigCacheFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -73,14 +74,8 @@ class Application {
         if (function_exists('opcache_get_status')) {
             $opcacheStatus = opcache_get_status(false);
             $opcacheStatistics = $opcacheStatus['opcache_statistics'];
-            $realpath = realpath(ROOT_DIR);
-            $dirname = dirname($realpath);
-            $exploded = explode('-', basename($realpath), 3);
-            if (isset($exploded[2])) {
-                unset($exploded[2]);
-            }
-            $basename = implode('-', $exploded);
-            $path = $dirname . '/' . $basename;
+            $path = realpath(ROOT_DIR);
+            clearstatcache(true, $path);
             $fileTimestamp = filemtime($path);
             $opcacheStartTime = $opcacheStatistics['last_restart_time'] ?: $opcacheStatistics['start_time'];
             if ($opcacheStartTime < $fileTimestamp) {
@@ -158,6 +153,7 @@ class Application {
 
         $translator = new Translator('en');
         $translator->setFallbackLocales(['en', 'fr']);
+        $translator->setConfigCacheFactory(new ConfigCacheFactory(false));
         $translator->addLoader('po', new PoFileLoader());
         $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
         if (file_exists($frPoFile)) {
@@ -201,12 +197,7 @@ class Application {
 
                 if (strtoupper($_SERVER['REQUEST_METHOD']) == 'OPTIONS') {
 
-                    $response = new Response('', Response::HTTP_OK, [
-                        'Content-type'                 => 'application/json',
-                        'Access-Control-Allow-Origin'  => '*',
-                        'Access-Control-Allow-Headers' => 'Content-Type, Accept',
-                        'Access-Control-Max-Age'       => 60 * 60 * 24 // 1 day in seconds
-                    ]);
+                    $response = new Response('', Response::HTTP_OK);
                 }
                 else {
 

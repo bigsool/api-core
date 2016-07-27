@@ -5,6 +5,7 @@ namespace Core\Module\Client;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Context\ModuleEntityUpsertContext;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -28,16 +29,18 @@ class ClientDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'name'    => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
-                new NotBlank()
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
+                $factory->getParameter(NotBlank::class),
             ],
             'version' => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
-                new NotBlank()
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
+                $factory->getParameter(NotBlank::class),
             ],
             // TODO : LOCALE ?
         ];

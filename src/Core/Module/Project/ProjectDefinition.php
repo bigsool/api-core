@@ -3,6 +3,7 @@
 namespace Core\Module\Project;
 
 
+use Core\Context\ApplicationContext;
 use Core\Field\Calculated;
 use Core\Field\CalculatedField;
 use Core\Filter\Filter;
@@ -31,16 +32,18 @@ class ProjectDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'id'                   => [
-                new StringConstraint(),
-                new Length(['max' => 32]),
-                new NotBlank(),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class,['max' => 32]),
+                $factory->getParameter(NotBlank::class),
             ],
             'name'                 => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
-                new NotBlank(),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class,['max' => 255]),
+                $factory->getParameter(NotBlank::class),
             ],
             'bucket'                 => [
                 new StringConstraint(),
@@ -53,11 +56,11 @@ class ProjectDefinition extends ModuleEntityDefinition {
                 new NotBlank(),
             ],
             'creationDate'         => [
-                new DateTime(),
-                new NotBlank(),
+                $factory->getParameter(DateTime::class),
+                $factory->getParameter(NotBlank::class),
             ],
             'lastModificationDate' => [
-                new DateTime(),
+                $factory->getParameter(DateTime::class),
             ]
         ];
 

@@ -39,6 +39,11 @@ trait Resolver {
     protected $targetedEntityAlias;
 
     /**
+     * @var string[]
+     */
+    protected static $entityForClasses = [];
+
+    /**
      * @return string|NULL
      */
     public function getTargetedEntityAlias () {
@@ -214,7 +219,11 @@ trait Resolver {
      */
     protected function getEntityForClass ($class) {
 
-        return (new \ReflectionClass($class))->getShortName();
+        if (!array_key_exists($class, static::$entityForClasses)) {
+            static::$entityForClasses[$class] = (new \ReflectionClass($class))->getShortName();
+        }
+
+        return static::$entityForClasses[$class];
 
     }
 

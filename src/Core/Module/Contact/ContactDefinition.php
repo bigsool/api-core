@@ -5,6 +5,7 @@ namespace Core\Module\Contact;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Context\ModuleEntityUpsertContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Email;
@@ -27,42 +28,44 @@ class ContactDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'label'    => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
                 // new Nullable('') TODO
             ],
             'streets'  => [
-                new StringConstraint(),
-                new Length(['max' => 65535]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 65535]),
             ],
             'city'     => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'state'    => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'zip'      => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'country'  => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'mobile'   => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'landLine' => [
-                new StringConstraint(),
-                new Length(['max' => 255]),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 255]),
             ],
             'email'    => [
-                new Email(),
+                $factory->getParameter(Email::class),
             ],
         ];
 

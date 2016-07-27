@@ -13,6 +13,7 @@ use Core\Error\ErrorManager;
 use Core\Field\Calculated;
 use Core\Filter\Filter;
 use Core\FunctionQueue;
+use Core\Helper\ClassHelper;
 use Core\Helper\ModuleManagerHelperLoader;
 use Core\Logger\ErrorLogger;
 use Core\Logger\Logger;
@@ -32,6 +33,11 @@ use Core\Registry;
 use Core\Rule\Processor;
 use Core\Rule\Rule;
 use Core\Serializer;
+use Core\Validation\ParameterFactory;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -192,6 +198,16 @@ class ApplicationContext {
      * @var RequestContextFactory
      */
     protected $reqCtxFactory;
+
+    /**
+     * @var CacheProvider
+     */
+    protected static $cacheProvider;
+
+    /**
+     * @var ParameterFactory
+     */
+    protected $parameterFactory;
 
     /**
      * @param object $entityName
@@ -364,24 +380,39 @@ class ApplicationContext {
      */
     protected function getModuleEntityDefinition ($moduleEntityName) {
 
-        foreach ($this->application->getModuleManagers() as $moduleManager) {
-            $moduleManagerClassName = get_class($moduleManager);
-            $product = strstr($moduleManagerClassName, '\\', true);
-            if ($product == 'Core') {
-                continue;
+        $cache = $this->getCacheProvider();
+
+        $key = 'MODULE_ENTITY_DEFINITION_' . $moduleEntityName;
+        $data = $cache->fetch($key);
+        if ($data === false) {
+
+            foreach ($this->application->getModuleManagers() as $moduleManager) {
+                $moduleManagerClassName = get_class($moduleManager);
+                $product = strstr($moduleManagerClassName, '\\', true);
+                if ($product == 'Core') {
+                    continue;
+                }
+                $baseClassName =
+                    substr($moduleManager->getNamespace(), strlen($product));
+                $className = $baseClassName . $moduleEntityName . 'Definition';
+                if (ClassHelper::classExists($fullClassName = $product . $className)) {
+                    $moduleEntityDefinition = new $fullClassName;
+                    $cache->save($key, $moduleEntityDefinition);
+
+                    return $moduleEntityDefinition;
+                }
+                if (ClassHelper::classExists($fullClassName = 'Core' . $className)) {
+                    $moduleEntityDefinition = new $fullClassName;
+                    $cache->save($key, $moduleEntityDefinition);
+
+                    return $moduleEntityDefinition;
+                }
             }
-            $baseClassName =
-                substr($moduleManager->getNamespace(), strlen($product));
-            $className = $baseClassName . $moduleEntityName . 'Definition';
-            if (class_exists($fullClassName = $product . $className)) {
-                return new $fullClassName;
-            }
-            if (class_exists($fullClassName = 'Core' . $className)) {
-                return new $fullClassName;
-            }
+
+            throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
         }
 
-        throw new \RuntimeException(sprintf('ModuleEntityDefinition for %s not found', $moduleEntityName));
+        return $data;
 
     }
 
@@ -1117,6 +1148,56 @@ class ApplicationContext {
     public function getRequestContextFactory () {
 
         return $this->reqCtxFactory;
+
+    }
+
+    /**
+     * @return CacheProvider
+     */
+    public static function getCacheProvider () {
+
+        if (!static::$cacheProvider) {
+
+            try {
+
+                $memCacheHost = '127.0.0.1';
+                $memCachePort = 11211;
+
+                if (class_exists('Memcached')) {
+                    $memcached = new \Memcached();
+                    $memcached->addServer($memCacheHost, $memCachePort);
+                    $memcachedCache = new MemcachedCache();
+                    $memcachedCache->setMemcached($memcached);
+                    static::$cacheProvider = $memcachedCache;
+                }
+                elseif (class_exists('Memcache')) {
+                    $memcache = new \Memcache();
+                    $memcache->connect($memCacheHost, $memCachePort);
+                    $memcacheCache = new MemcacheCache();
+                    $memcacheCache->setMemcache($memcache);
+                    static::$cacheProvider = $memcacheCache;
+                }
+                else {
+                    static::$cacheProvider = new ArrayCache();
+                }
+            } catch (\Exception $e) {
+                static::$cacheProvider = new ArrayCache();
+            }
+        }
+
+        return static::$cacheProvider;
+    }
+
+    /**
+     * @return ParameterFactory
+     */
+    public function getParameterFactory() {
+
+        if (!isset($this->parameterFactory)) {
+            $this->parameterFactory = new ParameterFactory();
+        }
+
+        return $this->parameterFactory;
 
     }
 

@@ -84,7 +84,8 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
         foreach ($values as $key => $value) {
             $newPath = !empty($path) ? "$path.$key" : $key;
             $params[$key] =
-                new UnsafeParameter(is_array($value) ? $this->convertToUnsafeParameter($value, $newPath) : $value,
+                new UnsafeParameter($value,
+                                    is_array($value) ? $this->convertToUnsafeParameter($value, $newPath) : $value,
                                     $newPath);
         }
 

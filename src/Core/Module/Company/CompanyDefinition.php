@@ -4,6 +4,7 @@
 namespace Core\Module\Company;
 
 
+use Core\Context\ApplicationContext;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -27,18 +28,20 @@ class CompanyDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'name' =>
                 [
-                    new StringConstraint(),
-                    new Length(['max' => 255]),
-                    new NotBlank(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Length::class, ['max' => 255]),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
             'vat'  =>
                 [
-                    new StringConstraint(),
-                    new Length(['max' => 255]),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Length::class, ['max' => 255]),
                 ]
             ,
         ];

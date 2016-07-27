@@ -5,6 +5,7 @@ namespace Core\Module\Credential;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\ModuleEntityUpsertContext;
 use Core\Context\RequestContext;
@@ -33,31 +34,33 @@ class CredentialDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'type'     =>
                 [
-                    new StringConstraint(),
-                    new Choice(['choices' => ['email']]),
-                    new NotBlank(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Choice::class, ['choices' => ['email']]),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
             'login'    =>
                 [
-                    new StringConstraint(),
-                    new NotBlank(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
             'password' =>
                 [
-                    new StringConstraint(),
-                    new Length(['max' => 255]),
-                    new NotBlank(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Length::class, ['max' => 255]),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
             'authType' =>
                 [
-                    new StringConstraint(),
-                    new NotBlank(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
         ];

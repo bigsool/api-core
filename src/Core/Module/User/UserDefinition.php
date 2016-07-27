@@ -5,6 +5,7 @@ namespace Core\Module\User;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Context\ModuleEntityUpsertContext;
 use Core\Expression\BinaryExpression;
 use Core\Expression\KeyPath;
@@ -57,25 +58,27 @@ class UserDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'firstName' =>
                 [
-                    new StringConstraint(),
-                    new Length(['max' => 255]),
-                    new NotNull(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Length::class, ['max' => 255]),
+                    $factory->getParameter(NotNull::class),
                 ]
             ,
             'lastName'  =>
                 [
-                    new StringConstraint(),
-                    new Length(['max' => 255]),
-                    new NotNull(),
+                    $factory->getParameter(StringConstraint::class),
+                    $factory->getParameter(Length::class, ['max' => 255]),
+                    $factory->getParameter(NotNull::class),
                 ]
             ,
             'lang'      =>
                 [
-                    new Choice(['choices' => ['fr', 'en']]),
-                    new NotBlank(),
+                    $factory->getParameter(Choice::class, ['choices' => ['fr', 'en']]),
+                    $factory->getParameter(NotBlank::class),
                 ]
             ,
         ];

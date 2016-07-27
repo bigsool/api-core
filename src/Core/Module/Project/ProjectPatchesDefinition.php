@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bigsool
- * Date: 19/06/15
- * Time: 15:11
- */
 
 namespace Core\Module\Project;
 
 
 use Core\Context\ActionContext;
+use Core\Context\ApplicationContext;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
@@ -32,15 +27,17 @@ class ProjectPatchesDefinition extends ModuleEntityDefinition {
      */
     public function getConstraintsList () {
 
+        $factory = ApplicationContext::getInstance()->getParameterFactory();
+
         return [
             'id'   => [
-                new StringConstraint(),
-                new Length(['max' => 32]),
-                new NotBlank(),
+                $factory->getParameter(StringConstraint::class),
+                $factory->getParameter(Length::class, ['max' => 32]),
+                $factory->getParameter(NotBlank::class),
             ],
             'date' => [
-                new DateTime(),
-                new NotBlank(),
+                $factory->getParameter(DateTime::class),
+                $factory->getParameter(NotBlank::class),
             ]
         ];
 

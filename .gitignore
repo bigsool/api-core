@@ -3,5 +3,4 @@ vendor/
 doc/
 coverage/
 api-doc/
-composer.lock
 *.*~
