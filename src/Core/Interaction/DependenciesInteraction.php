@@ -4,6 +4,7 @@ namespace Core\Interaction;
 
 
 use Archipad\Model\Dependency;
+use Archipad\Module\Dependency\ModuleManager;
 
 class DependenciesInteraction extends AbstractInteraction {
 
@@ -37,12 +38,25 @@ class DependenciesInteraction extends AbstractInteraction {
     public function toArray () {
 
         $form = [];
+        $report = [];
+
         foreach ($this->dependencies as $dependency) {
-            $form[] = $dependency->getBundleId();
+
+            if ($dependency->getType() == ModuleManager::FORM_TYPE) {
+                $form[] = $dependency->getBundleId();
+            }
+            elseif ($dependency->getType() == ModuleManager::REPORT_TYPE) {
+                $report[] = $dependency->getBundleId();
+            }
+            else {
+                $form[] = $dependency->getBundleId();
+            }
+
         }
 
         return array_merge(parent::toArray(),['projectId' => $this->projectId,
-                                              'dependencies' => ['report' => [],'form' => $form]]);
+                                              'dependencies' => ['report' => $report,'form' => $form]]);
+
     }
 
 }
