@@ -325,7 +325,6 @@ class Application {
             return $this->runWithCustomRPCHandler(new Cli);
         }
         catch (\Exception $e) {
-            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             exit('Internal Server Error');
         }
 
