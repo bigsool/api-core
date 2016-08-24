@@ -10,6 +10,7 @@ use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Boolean;
+use Core\Validation\Parameter\Bucket;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
@@ -43,6 +44,16 @@ class ProjectDefinition extends ModuleEntityDefinition {
                 $factory->getParameter(StringConstraint::class),
                 $factory->getParameter(Length::class,['max' => 255]),
                 $factory->getParameter(NotBlank::class),
+            ],
+            'bucket'                 => [
+                new StringConstraint(),
+                new Bucket(),
+                new NotBlank(),
+            ],
+            'region'                 => [
+                new StringConstraint(),
+                new Length(['max' => 32]),
+                new NotBlank(),
             ],
             'creationDate'         => [
                 $factory->getParameter(DateTime::class),

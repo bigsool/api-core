@@ -7,9 +7,15 @@ namespace Core\Module\User;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Context\ModuleEntityUpsertContext;
+use Core\Expression\BinaryExpression;
+use Core\Expression\KeyPath;
+use Core\Expression\Parameter;
+use Core\Filter\ExpressionFilter;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
+use Core\Operator\AndOperator;
+use Core\Operator\EqualOperator;
 use Core\Validation\Parameter\Choice;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;
@@ -93,7 +99,17 @@ class UserDefinition extends ModuleEntityDefinition {
      */
     public function getFilters () {
 
-        return [new StringFilter('User', 'UserForId', 'id = :id')];
+        return [
+            new StringFilter('User', 'UserForId', 'id = :id'),
+            new ExpressionFilter('User', 'OwnerOfCompanyId',
+                             new BinaryExpression(new AndOperator(),
+                                                  new BinaryExpression(new EqualOperator(),
+                                                                       new KeyPath('company.id'),
+                                                                       new Parameter(':companyId')),
+                                                  new BinaryExpression(new EqualOperator(),
+                                                                       new KeyPath('company.owner.id'),
+                                                                       new KeyPath('id')))),
+        ];
 
     }
 

@@ -20,6 +20,14 @@ Project:
           type: datetime
           nullable: false
           column: last_modification_date
+      bucket:
+          type: string
+          nullable: false
+          length: 64
+      region:
+          type: string
+          nullable: false
+          length: 32
   oneToMany:
       patches:
           targetEntity: Core\Model\ProjectPatches
