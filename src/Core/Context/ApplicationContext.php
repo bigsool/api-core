@@ -872,6 +872,9 @@ class ApplicationContext {
                 if (file_exists($dbPath)) {
                     $configFiles[] = $dbPath;
                 }
+                if (file_exists($configFile = $coreConfDir . $this->getEnvName() . '/dependencies.yml')) {
+                    $configFiles[] = $configFile;
+                }
 
             }
 
