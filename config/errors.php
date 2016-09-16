@@ -142,3 +142,15 @@ defined('ERROR_EMAIL_MUST_BE_CONFIRMED') || define('ERROR_EMAIL_MUST_BE_CONFIRME
 $errorManager->defineError(new LocalizedError(ERROR_EMAIL_MUST_BE_CONFIRMED,
                                               $t->trans('ERROR_EMAIL_MUST_BE_CONFIRMED', [], NULL, 'fr'),
                                               $t->trans('ERROR_EMAIL_MUST_BE_CONFIRMED', [], NULL, 'en')));
+
+
+defined('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAVE_PREMIUM') || define('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAVE_PREMIUM', 16314);
+$errorManager->defineError(new LocalizedError(ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAVE_PREMIUM,
+                                              $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAVE_PREMIUM', [], NULL, 'fr'),
+                                              $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAVE_PREMIUM', [], NULL, 'en')));
+
+
+defined('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER') || define('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER', 16315);
+$errorManager->defineError(new LocalizedError(ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER,
+                                              $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER', [], NULL, 'fr'),
+                                              $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER', [], NULL, 'en')));
