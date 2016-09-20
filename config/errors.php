@@ -157,5 +157,10 @@ $errorManager->defineError(new LocalizedError(ERROR_CANNOT_ACTIVATE_TRIAL_ALREAD
 
 defined('ERROR_SHARED_REPORT_NOT_FOUND') || define('ERROR_SHARED_REPORT_NOT_FOUND', 16316);
 $errorManager->defineError(new LocalizedError(ERROR_SHARED_REPORT_NOT_FOUND,
-    $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'fr'),
-    $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'en')));
+                                              $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'fr'),
+                                              $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'en')));
+
+defined('ERROR_PLEASE_UPGRADE_ARCHIPAD') || define('ERROR_PLEASE_UPGRADE_ARCHIPAD', 16317);
+$errorManager->defineError(new LocalizedError(ERROR_PLEASE_UPGRADE_ARCHIPAD,
+                                              $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'fr'),
+                                              $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'en')));
