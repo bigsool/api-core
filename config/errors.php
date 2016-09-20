@@ -154,3 +154,8 @@ defined('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER') || define('ERROR_CANNOT
 $errorManager->defineError(new LocalizedError(ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER,
                                               $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER', [], NULL, 'fr'),
                                               $t->trans('ERROR_CANNOT_ACTIVATE_TRIAL_ALREADY_HAD_OFFER', [], NULL, 'en')));
+
+defined('ERROR_SHARED_REPORT_NOT_FOUND') || define('ERROR_SHARED_REPORT_NOT_FOUND', 16316);
+$errorManager->defineError(new LocalizedError(ERROR_SHARED_REPORT_NOT_FOUND,
+    $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'fr'),
+    $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'en')));
