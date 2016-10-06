@@ -593,6 +593,7 @@ class Application {
     protected function handleException (RequestContext $reqCtx, \Exception $e, Handler $rpcHandler) {
 
         $traceLogger = $this->appCtx->getTraceLogger();
+        $errorLogger = $this->appCtx->getErrorLogger();
 
 
         // handle queued actions before commit
@@ -624,15 +625,17 @@ class Application {
         else {
 
             $traceLogger->trace('Unexpected Exception thrown');
-            $this->appCtx->getErrorLogger()->getMLogger()->addError('Unexpected Exception thrown', [get_class($e),
+            $errorLogger->getMLogger()->addError('Unexpected Exception thrown', [get_class($e),
                                                                                                     $e->getCode(),
                                                                                                     $e->getMessage(),
                                                                                                     $e->getFile(),
                                                                                                     $e->getLine(),
                                                                                                     $e->getTraceAsString()
             ]);
+
             $rpcHandler->setError(new FormattedError(['code'    => ERROR_INTERNAL_ERROR,
-                                                      'message' => $e->getMessage()
+                                                      'message' => sprintf('Internal Error, please contact us at support@archipad with the error number %s.',
+                                                                           $errorLogger->getSessionId())
                                                      ]));
             $response = $rpcHandler->getErrorResponse();
 
