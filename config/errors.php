@@ -84,6 +84,9 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_REGEX, 'value not match
 defined('ERROR_INVALID_PARAM_BUCKET') || define('ERROR_INVALID_PARAM_BUCKET', 16114);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_BUCKET, 'invalid bucket name',
                                      ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_SHARED_REPORT_ID') || define('ERROR_INVALID_SHARED_REPORT_ID', 16115);
+$errorManager->defineError(new Error(ERROR_INVALID_SHARED_REPORT_ID, 'invalid report id',
+    ERROR_INVALID_PARAM));
 
 defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
