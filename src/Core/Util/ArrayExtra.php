@@ -94,7 +94,15 @@ class ArrayExtra {
 
         }
 
-        $array[$key] = $value;
+        if (is_array($value) && count($value) && !self::isAssociative($value)) {
+            $i = 0;
+            foreach ($value as $elem) {
+                $array[$i++][$key] = $elem;
+            }
+        }
+        else {
+            $array[$key] = $value;
+        }
 
     }
 
