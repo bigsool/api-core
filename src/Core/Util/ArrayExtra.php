@@ -160,7 +160,7 @@ class ArrayExtra {
                 continue;
             }
 
-            if (!isset($array[$key])) {
+            if (!array_key_exists($key,$array)) {
                 $isset = false;
 
                 return NULL;
