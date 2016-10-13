@@ -282,8 +282,7 @@ class Serializer {
             }
             $currNewData = [];
             foreach ($this->actCtx->getRequestContext()->getReturnedFields() as $field) {
-                ArrayExtra::magicalSet($currNewData, $field->getValue(),
-                                       ArrayExtra::magicalGet($currData, $field->getValue()));
+                ArrayExtra::magicalFilterByKey($currData, $currNewData, $field->getValue());
             }
             $newData[] = $currNewData;
         }

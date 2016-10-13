@@ -82,10 +82,11 @@ class ArrayExtra {
         $exploded = explode('.', $key);
         foreach ($exploded as $index => $key) {
 
-            // it's not necessary to create an array for the last key
+            // it's not necessary to create an array for the last keytest.archiweb-proto.db
             if ($index + 1 == count($exploded)) {
                 break;
             }
+
 
             if (!isset($array[$key])) {
                 $array[$key] = [];
@@ -94,17 +95,56 @@ class ArrayExtra {
 
         }
 
-        if (is_array($value) && count($value) && !self::isAssociative($value)) {
-            $i = 0;
-            foreach ($value as $elem) {
-                $array[$i++][$key] = $elem;
-            }
-        }
-        else {
-            $array[$key] = $value;
-        }
+        $array[$key] = $value;
 
     }
+
+    /**
+     * @param array $result
+     * @param array $newResult
+     * @param string $key
+     */
+    public static function magicalFilterByKey (array &$result, array &$newResult, $key) {
+
+        $exploded = explode('.', $key);
+
+        if (count($exploded)) {
+
+            foreach ($exploded as $index => $key) {
+
+                if ($index + 1 == count($exploded)) {
+                    break;
+                }
+
+                if (!self::isAssociative($result[$key])) {
+                    $i = 0;
+                    foreach ($result[$key] as $resultKey) {
+                        if (!isset($newResult[$key][$i])) {
+                            $newResult[$key][$i] = [];
+                        }
+                        self::magicalFilterByKey($resultKey,$newResult[$key][$i],implode('.',array_slice($exploded,$index + 1,count($exploded))));
+                        ++$i;
+                    }
+                    return;
+                }
+
+                if (!isset($newResult[$key])) {
+                    $newResult[$key] = [];
+                }
+
+                $newResult = &$newResult[$key];
+                $result = &$result[$key];
+
+            }
+
+            $key = end($exploded);
+
+        }
+
+        $newResult[$key] = $result[$key];
+
+    }
+
 
     /**
      * add the possibility to use a dot (.) to separate the different dimensions of an array
