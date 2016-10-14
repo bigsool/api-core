@@ -116,6 +116,10 @@ class ArrayExtra {
                     break;
                 }
 
+                if (!array_key_exists($key,$result)) {
+                    self::handleKeyFilterNotFound($key);
+                }
+
                 if (!self::isAssociative($result[$key])) {
                     $i = 0;
                     foreach ($result[$key] as $resultKey) {
@@ -141,9 +145,22 @@ class ArrayExtra {
 
         }
 
-        if (isset($result[$key])) {
+        if (array_key_exists($key,$result)) {
             $newResult[$key] = $result[$key];
         }
+        else {
+            self::handleKeyFilterNotFound($key);
+        }
+
+    }
+
+    /**
+     * @param string $key
+     * @throws \Exception
+     */
+    private static function handleKeyFilterNotFound($key) {
+
+        throw new \Exception('bad requested field key : '.$key);
 
     }
 
