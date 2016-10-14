@@ -141,7 +141,9 @@ class ArrayExtra {
 
         }
 
-        $newResult[$key] = $result[$key];
+        if (isset($result[$key])) {
+            $newResult[$key] = $result[$key];
+        }
 
     }
 
