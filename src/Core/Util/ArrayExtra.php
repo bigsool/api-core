@@ -117,7 +117,7 @@ class ArrayExtra {
                 }
 
                 if (!array_key_exists($key,$result)) {
-                    self::handleKeyFilterNotFound($key);
+                    return false;
                 }
 
                 if (!self::isAssociative($result[$key])) {
@@ -149,18 +149,8 @@ class ArrayExtra {
             $newResult[$key] = $result[$key];
         }
         else {
-            self::handleKeyFilterNotFound($key);
+            return false;
         }
-
-    }
-
-    /**
-     * @param string $key
-     * @throws \Exception
-     */
-    private static function handleKeyFilterNotFound($key) {
-
-        throw new \Exception('bad requested field key : '.$key);
 
     }
 
