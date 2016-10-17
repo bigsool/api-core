@@ -122,12 +122,17 @@ class ArrayExtra {
 
                 if (!self::isAssociative($result[$key])) {
                     $i = 0;
-                    foreach ($result[$key] as $resultKey) {
-                        if (!isset($newResult[$key][$i])) {
-                            $newResult[$key][$i] = [];
+                    if (count($result[$key])) {
+                        foreach ($result[$key] as $resultKey) {
+                            if (!isset($newResult[$key][$i])) {
+                                $newResult[$key][$i] = [];
+                            }
+                            self::magicalFilterByKey($resultKey,$newResult[$key][$i],implode('.',array_slice($exploded,$index + 1,count($exploded))));
+                            ++$i;
                         }
-                        self::magicalFilterByKey($resultKey,$newResult[$key][$i],implode('.',array_slice($exploded,$index + 1,count($exploded))));
-                        ++$i;
+                    }
+                    else {
+                        $newResult[$key] = [];
                     }
                     return;
                 }
