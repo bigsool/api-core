@@ -6,6 +6,7 @@ namespace Core\Module\Credential;
 use Archipad\Module\Client\ClientHelper;
 use Core\Action\Action;
 use Core\Action\GenericAction;
+use Core\Auth;
 use Core\Context\ActionContext;
 use Core\Context\ApplicationContext;
 use Core\Error\ToResolveException;
@@ -233,8 +234,10 @@ class ModuleManager extends AbstractModuleManager {
 
                 $password = $context->getAuth()->getCredential()->getPassword();
 
-                if ($params['currentPassword'] != $password) {
-                    throw new ToResolveException(ERROR_PERMISSION_DENIED);
+                if (!$context->getAuth()->hasRights(Auth::ROOT)) {
+                    if ($params['currentPassword'] != $password) {
+                        throw new ToResolveException(ERROR_PERMISSION_DENIED);
+                    }
                 }
 
                 $context->unsetParam('currentPassword');
