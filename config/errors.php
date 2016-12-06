@@ -167,3 +167,8 @@ defined('ERROR_PLEASE_UPGRADE_ARCHIPAD') || define('ERROR_PLEASE_UPGRADE_ARCHIPA
 $errorManager->defineError(new LocalizedError(ERROR_PLEASE_UPGRADE_ARCHIPAD,
                                               $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'fr'),
                                               $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'en')));
+
+defined('ERROR_SHARED_REPORT_INVALID_PASSWORD') || define('ERROR_SHARED_REPORT_INVALID_PASSWORD', 16318);
+$errorManager->defineError(new LocalizedError(ERROR_SHARED_REPORT_INVALID_PASSWORD,
+                                              $t->trans('ERROR_SHARED_REPORT_INVALID_PASSWORD', [], NULL, 'fr'),
+                                              $t->trans('ERROR_SHARED_REPORT_INVALID_PASSWORD', [], NULL, 'en')));
