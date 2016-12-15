@@ -78,13 +78,13 @@ class UpsertHelper {
         $prefix2 = 'set';
 
         if ($mapping['type'] == ClassMetadataInfo::ONE_TO_MANY || $mapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-            $field1 = substr($field1, 0, strlen($field1) - 1);
+            $field1 = self::singularNameFromPlurialName($field1);
             $prefix1 = "add";
         }
 
         if ($mapping['type'] == ClassMetadataInfo::MANY_TO_ONE || $mapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-            $field2 = $mapping['inversedBy'];
-            $field2 = substr($field2, 0, strlen($field2) - 1);
+            $field2 = isset($mapping['inversedBy']) ? $mapping['inversedBy'] : $mapping['mappedBy'];
+            $field2 = self::singularNameFromPlurialName($field2);
             $prefix2 = "add";
         }
 
@@ -95,6 +95,18 @@ class UpsertHelper {
 
         $fn = $prefix2 . ucfirst($field2);
         $targetModel->$fn($sourceModel);
+
+    }
+
+    private static function singularNameFromPlurialName ($name) {
+
+        $nameSize = strlen($name);
+
+        if (substr($name,$nameSize - 3,$nameSize) == 'ies') { // handle dependencies => dependency
+            return substr($name, 0, $nameSize - 3)."y";
+        }
+
+        return substr($name, 0, strlen($name) - 1);
 
     }
 
