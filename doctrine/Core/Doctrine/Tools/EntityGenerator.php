@@ -165,6 +165,37 @@ public function <methodName>()
     /**
      * @var string
      */
+    protected static $getAssociationWithoutInversedByMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @return <variableType>
+ */
+public function <methodName>()
+{
+<spaces>return $this-><fieldName>;
+}';
+
+    /**
+     * @var string
+     */
+    protected static $setAssociationWithoutInversedByMethodTemplate =
+        '/**
+ * <description>
+ *
+ * @param <variableType> $<variableName>
+ *
+ * @return <entity>
+ */
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
+{
+<spaces>$this-><fieldName> = $<variableName>;
+<spaces>return $this;
+}';
+
+    /**
+     * @var string
+     */
     protected static $getCalculatedFieldMethodTemplate =
         '/**
  * <description>
@@ -366,6 +397,14 @@ public function <methodName>(<methodTypeHint>$<variableName>)
             $targetEntity = end($explodedTargetEntity);
 
             $inversedBy = $associationMapping['inversedBy'] ?: $associationMapping['mappedBy'];
+
+            if (!$inversedBy) { // handle cases like billing account
+                $var = sprintf('%s%sWithoutInversedByMethodTemplate', $type, $collectionOrAssociation);
+                if (isset(static::$$var)) {
+                    $template = static::$$var;
+                }
+            }
+
             $replacements = array(
                 '<description>'     => ucfirst($type) . ' ' . $variableName,
                 '<methodTypeHint>'  => $methodTypeHint,
