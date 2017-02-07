@@ -24,7 +24,7 @@ class DependenciesInteraction extends AbstractInteraction {
      */
     public function __construct ($projectId, $dependencies) {
 
-        parent::__construct("","");
+        parent::__construct(null,null);
 
         $this->projectId = $projectId;
 
