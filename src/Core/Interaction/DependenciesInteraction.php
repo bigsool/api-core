@@ -57,6 +57,10 @@ class DependenciesInteraction extends AbstractInteraction {
 
             $AS3DependencyZip = DependencyHelper::getAS3DependencyZipFromDependencyAndClient($dependency->getBundleId(),$this->clientName);
 
+            if (!$AS3DependencyZip) {
+                continue;
+            }
+
             $AS3DependencyZipInfos = [
                 'bundleId' => $AS3DependencyZip->getBundleId(),
                 'versionTag' => $AS3DependencyZip->getVersionTag(),
