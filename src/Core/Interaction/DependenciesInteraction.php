@@ -65,7 +65,7 @@ class DependenciesInteraction extends AbstractInteraction {
                 'bundleId' => $AS3DependencyZip->getBundleId(),
                 'versionTag' => $AS3DependencyZip->getVersionTag(),
                 'size' => $AS3DependencyZip->getSize(),
-                'lastModificationDate' => $AS3DependencyZip->getLastModificationDate(),
+                'lastModificationDate' => DependencyHelper::getDateFormattedForClient($AS3DependencyZip->getLastModificationDate()),
             ];
 
             if ($dependency->getType() == ModuleManager::FORM_TYPE) {
