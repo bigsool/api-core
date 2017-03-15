@@ -47,12 +47,6 @@ class Install extends Base {
         'config_2.php',
     );
 
-    protected $dependenciesConfigFilename = 'dependencies.yml';
-
-    protected $dependenciesConfigRealPath;
-
-    protected $dependenciesConfigLinkName;
-
     protected $dumpFolder;
 
     protected $isDown = false;
@@ -190,10 +184,6 @@ class Install extends Base {
 
         $this->dbConfigLinkNameArchiweb = $configDirArchiweb . 'config.php';
 
-        $this->dependenciesConfigRealPath = $this->dbConfigDirectory . '/'. $this->dependenciesConfigFilename;
-
-        $this->dependenciesConfigLinkName = $this->configDir . '/'. $this->dependenciesConfigFilename;
-
     }
 
     protected function isFirstInstall ($verbose = false) {
@@ -224,10 +214,6 @@ class Install extends Base {
                 $this->abort(sprintf('Config file %s cannot be found. You are supposed to create it.', $configPath));
             }
 
-        }
-
-        if (!file_exists($this->dependenciesConfigRealPath)) {
-            $this->abort(sprintf('Dependencies config file %s cannot be found. You are supposed to create it.', $this->dependenciesConfigPath));
         }
 
         $this->getOutput()->writeln("OK\n");
@@ -408,14 +394,6 @@ class Install extends Base {
         }
         else {
             $this->getOutput()->writeln('Cancelled');
-        }
-
-        if (file_exists($this->dependenciesConfigLinkName) && !unlink($this->dependenciesConfigLinkName)) {
-            $this->abort(sprintf('Unable to remove existing dependencies config link <info>%s</info>', $this->dependenciesConfigLinkName));
-        }
-
-        if (!symlink($this->dependenciesConfigRealPath, $this->dependenciesConfigLinkName)) {
-            $this->abort('Unable to create dependencies config symlink, aborting...');
         }
 
     }
