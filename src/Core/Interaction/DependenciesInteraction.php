@@ -20,25 +20,17 @@ class DependenciesInteraction extends AbstractInteraction {
     protected $dependencies;
 
     /**
-     * @var string
-     */
-    protected $clientName;
-
-    /**
      * DependenciesInteraction constructor.
      * @param string $projectId
      * @param string $dependencies
-     * @param string $clientName
      */
-    public function __construct ($projectId, $dependencies, $clientName) {
+    public function __construct ($projectId, $dependencies) {
 
         parent::__construct(null,null);
 
         $this->projectId = $projectId;
 
         $this->dependencies = $dependencies;
-
-        $this->clientName = $clientName;
 
     }
 
@@ -55,7 +47,7 @@ class DependenciesInteraction extends AbstractInteraction {
 
         foreach ($this->dependencies as $dependency) {
 
-            $AS3DependencyZip = DependencyHelper::getAS3DependencyZipFromDependencyAndClient($dependency->getBundleId(),$this->clientName);
+            $AS3DependencyZip = DependencyHelper::getAS3DependencyZipFromDependency($dependency->getBundleId());
 
             if (!$AS3DependencyZip) {
                 continue;
