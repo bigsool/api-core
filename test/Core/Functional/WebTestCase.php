@@ -11,12 +11,9 @@ use Doctrine\ORM\Tools\SchemaTool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Ring\Client\CurlHandler;
-use GuzzleHttp\Subscriber\Cookie;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
+abstract class WebTestCase extends TestCase {
 
     /**
      * @var EntityManager
@@ -118,19 +115,17 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
      */
     protected static function createClient () {
 
+        self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
+
         $wwwPath = static::getWWWPath();
         $config = [
-            'base_url' => "http://localhost/{$wwwPath}/jsonrpc/",
-            'handler'  => new CurlHandler(),
-            'defaults' => [
-                'headers' => [
-                    'User-Agent' => ApplicationContext::UNIT_TESTS_USER_ARGENT
-                ]
-            ]
+            'base_uri' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'headers'  => [
+                'User-Agent' => ApplicationContext::UNIT_TESTS_USER_ARGENT
+            ],
+            'cookies'  => self::$cookies
         ];
         self::$client = new Client($config);
-        self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
-        self::$client->getEmitter()->attach(new Cookie(self::$cookies));
 
     }
 
@@ -201,11 +196,10 @@ abstract class WebTestCase extends \PHPUnit_Framework_TestCase {
         self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => self::$cookies]);
 
         try {
-            return self::$lastRequest->json(['object' => false, /*'big_int_strings' => true*/]);
+            return json_decode(self::$lastRequest->getBody(), true);
         }
         catch (\Exception $e) {
-            self::fail('mal formated response to the request : ' . self::$lastRequest->getEffectiveUrl() . "\n"
-                       . self::$lastRequest->getBody());
+            self::fail('mal formated response to the request : ' . $url . "\n" . self::$lastRequest->getBody());
         }
 
     }
