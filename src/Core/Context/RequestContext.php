@@ -362,8 +362,9 @@ class RequestContext {
 
         }
 
-        if (!empty($_SERVER['PHP_AUTH_USER']) || !empty($_SERVER['HTTP_AUTHORIZATION'])
-            || !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])
+        if (!$this->getAuth()->getCredential()
+            && (!empty($_SERVER['PHP_AUTH_USER']) || !empty($_SERVER['HTTP_AUTHORIZATION'])
+                || !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION']))
         ) {
             if (!empty($_SERVER['PHP_AUTH_USER'])) {
                 $time = $_SERVER['PHP_AUTH_USER'];
