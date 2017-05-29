@@ -151,7 +151,7 @@ class CheckRevision extends Base {
             }
             $this->getOutput()->writeln('');
         }
-        elseif (strlen($currentRev) != 7) {
+        elseif (strlen($currentRev) != 7 && strlen($currentRev) != 8) {
             $this->abort(sprintf("ERROR : Not a valid revision found on server: <rev>%s</rev>", $currentRev));
         }
         else {
