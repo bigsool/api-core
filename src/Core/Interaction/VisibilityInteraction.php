@@ -19,8 +19,6 @@ class VisibilityInteraction extends AlertInteraction {
     public function toArray () {
         return [
              'type' => $this->getType(),
-             'message' => $this->getMessage(),
-             'topic' => $this->getTopic(),
              'value' => $this->isDisplayed
             ];
     }
