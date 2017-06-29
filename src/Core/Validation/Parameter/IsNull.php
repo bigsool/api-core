@@ -5,11 +5,11 @@ namespace Core\Validation\Parameter;
 
 use Symfony\Component\Validator\Constraints;
 
-class Null extends Constraint {
+class IsNull extends Constraint {
 
     public function __construct () {
 
-        $this->setConstraint(new Constraints\Null());
+        $this->setConstraint(new Constraints\IsNull());
         $this->setErrorCode(ERROR_INVALID_PARAM_NULL);
 
     }
