@@ -489,6 +489,8 @@ class Install extends Base {
 
             }
 
+            touch($this->paths['root'] . '/www/.htaccess');
+
         }
 
         $this->isDown = $isDown;
