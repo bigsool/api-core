@@ -104,7 +104,7 @@ class Serializer {
             $this->convertDateTime($data);
         }
 
-        if (is_array($data) && !$this->inProxyMode && $this->actCtx->getModule() != 'Archipad\ITS') {
+        if (is_array($data) && !$this->inProxyMode && $this->actCtx->getModule() != 'Archipad\ITS' && !$this->actCtx->getRequestContext()->shouldSendAllFields()) {
             $this->dataSerialized = $this->removeDoctrineId($this->requiredKeyPaths, $data);
             $this->dataSerialized = $this->keepOnlyRequestedFields($this->dataSerialized);
         }

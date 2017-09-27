@@ -63,7 +63,15 @@ class RequestContext {
      */
     protected $response;
 
+    /**
+     * @var string
+     */
     protected $authToken;
+
+    /**
+     * @var bool
+     */
+    protected $shouldSendAllFields = false;
 
     /**
      */
@@ -462,6 +470,27 @@ class RequestContext {
     public function getAuthToken () {
 
         return $this->authToken;
+
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function shouldSendAllFields(): bool
+    {
+
+        return $this->shouldSendAllFields;
+
+    }
+
+    /**
+     * @param bool $shouldSendAllFields
+     */
+    public function setShouldSendAllFields(bool $shouldSendAllFields)
+    {
+
+        $this->shouldSendAllFields = $shouldSendAllFields;
 
     }
 
