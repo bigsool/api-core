@@ -449,6 +449,8 @@ class Install extends Base {
         $this->setIsDown(true, $this->setDownPath, $this->isDownPath);
         $this->setIsDown(true, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
 
+        $this->clearCache();
+
     }
 
     protected function setIsDown ($isDown, $setDownPath, $isDownPath, $product = "") {
@@ -488,8 +490,6 @@ class Install extends Base {
                 $this->abort();
 
             }
-
-            touch($this->paths['root'] . '/www/.htaccess');
 
         }
 
@@ -739,14 +739,14 @@ class Install extends Base {
 
         $this->getOutput()->writeln("OK\n");
 
+        $this->clearCache();
+
     }
 
     protected function setUp () {
 
         $this->setIsDown(false, $this->setDownPath, $this->isDownPath);
         $this->setIsDown(false, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
-
-        opcache_reset();
 
     }
 
@@ -798,6 +798,21 @@ class Install extends Base {
 
         $this->getOutput()->writeln('');
 
+    }
+
+    /**
+     * Touching .htaccess file clears cache because in run.php we check the mtime of .htaccess to clear cache if mtime
+     * of .htaccess is more recent than date of cache creation
+     */
+    protected function clearCache () {
+
+        $htaccessPath = $this->deployDestDir . '/www/.htaccess';
+        if ($this->getInput()->getOption('verbose')) {
+            $this->getOutput()->writeln(sprintf("<comment>touch %s</comment>\n", $htaccessPath));
+        }
+        touch($htaccessPath);
+
+        opcache_reset(); // reset cache for cli
     }
 
 }
