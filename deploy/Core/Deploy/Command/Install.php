@@ -19,11 +19,17 @@ class Install extends Base {
 
     protected $dbConfigLinkName;
 
+    protected $dbConfigLinkNameArchiweb;
+
     protected $dbConfigLinkArchiweb;
 
     protected $dbConfigRealPath;
 
     protected $nextDBConfigRealPath;
+
+    protected $dbConfigRealPathArchiweb;
+
+    protected $nextDBConfigRealPathArchiweb;
 
     protected $setDownPath;
 
@@ -55,6 +61,8 @@ class Install extends Base {
      * @var string
      */
     protected $configDir;
+
+    protected $shouldRestoreArchiwebConfigLink = false;
 
     protected function configure () {
 
@@ -132,6 +140,8 @@ class Install extends Base {
             $this->runUpgradeScripts();
 
             $this->changeTheLink();
+
+            $this->shouldRestoreArchiwebConfigLink = false;
 
             $this->setUp();
 
@@ -256,7 +266,7 @@ class Install extends Base {
                     $this->dbConfigDirectory . '/' . $this->dbConfigFilenames[1 % count($this->dbConfigFilenames)];
                 $this->dbConfig['next'] = $this->loadDBConfig($this->nextDBConfigRealPath);
 
-                $this->nextDBConfigRealPathArchiweb =
+                $this->nextDBConfigRealPathArchiweb = $this->dbConfigRealPathArchiweb =
                     $this->dbConfigDirectory . '/' . $this->dbConfigFilenamesArchiweb[1
                                                                                       % count($this->dbConfigFilenamesArchiweb)];
 
@@ -277,6 +287,8 @@ class Install extends Base {
 
                 $this->nextDBConfigRealPath =
                     $configDirectory . '/' . $this->dbConfigFilenames[($index + 1) % count($this->dbConfigFilenames)];
+
+                $this->dbConfigRealPathArchiweb = $configDirectory . '/' . $this->dbConfigFilenamesArchiweb[$index];
 
                 $this->nextDBConfigRealPathArchiweb =
                     $configDirectory . '/' . $this->dbConfigFilenamesArchiweb[($index + 1)
@@ -389,6 +401,8 @@ class Install extends Base {
                 $this->abort('Unable to create config symlink, aborting...');
             }
 
+            $this->shouldRestoreArchiwebConfigLink = true;
+
             $this->getOutput()->writeln('OK');
 
         }
@@ -446,7 +460,7 @@ class Install extends Base {
 
     protected function setDown () {
 
-        $this->setIsDown(true, $this->setDownPath, $this->isDownPath);
+        $this->setIsDown(true, $this->setDownPath, $this->isDownPath, 'Archipad');
         $this->setIsDown(true, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
 
         $this->clearCache();
@@ -459,6 +473,10 @@ class Install extends Base {
 
             $this->getOutput()->writeln("Setting $product env as DOWN ... ");
 
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf("\n<comment>copy %s to %s</comment>\n", $this->setDownPath,
+                                                    $this->isDownPath));
+            }
             if (!copy($this->setDownPath, $this->isDownPath)) {
 
                 $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
@@ -482,6 +500,9 @@ class Install extends Base {
 
             $this->getOutput()->writeln("Setting $product env as UP ... ");
 
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf("\n<comment>emptying %s</comment>\n", $this->isDownPath));
+            }
             if (false === file_put_contents($this->isDownPath, '')) {
 
                 $this->getOutput()->writeln("\n<error>/!\\ /!\\ /!\\ /!\\ CRITICAL ERROR /!\\ /!\\ /!\\ /!\\</error>");
@@ -745,8 +766,32 @@ class Install extends Base {
 
     protected function setUp () {
 
-        $this->setIsDown(false, $this->setDownPath, $this->isDownPath);
+        if ($this->shouldRestoreArchiwebConfigLink) {
+
+            $this->getOutput()->write(sprintf('Restoring config link to <info>%s</info> with the name <info>%s</info> ... ',
+                                              $this->dbConfigRealPathArchiweb, $this->dbConfigLinkNameArchiweb));
+
+            if (file_exists($this->dbConfigLinkNameArchiweb) && !unlink($this->dbConfigLinkNameArchiweb)) {
+                $this->abort(sprintf('Unable to remove existing config link <info>%s</info>',
+                                     $this->dbConfigLinkNameArchiweb));
+            }
+
+            if (!symlink($this->dbConfigRealPathArchiweb, $this->dbConfigLinkNameArchiweb)) {
+                $this->getOutput()->writeln("<error>UNABLE TO RESTORE ARCHIWEB CONFIG SYMLINK !!!</error>");
+                $this->getOutput()
+                     ->writeln(sprintf("<error>you're in deep shit, Archipad and Archiweb don't use the same database, no <env>%s</env> anymore !!</error>",
+                                       $this->getEnv()));
+                $this->abort('Please fix manually');
+            }
+
+            $this->shouldRestoreArchiwebConfigLink = false;
+
+        }
+
+        $this->setIsDown(false, $this->setDownPath, $this->isDownPath, 'Archipad');
         $this->setIsDown(false, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
+
+        $this->clearCache();
 
     }
 
