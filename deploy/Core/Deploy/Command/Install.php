@@ -461,7 +461,7 @@ class Install extends Base {
     protected function setDown () {
 
         $this->setIsDown(true, $this->setDownPath, $this->isDownPath, 'Archipad');
-        $this->setIsDown(true, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
+        $this->setIsDown(true, $this->setDownPathArchiweb, $this->isDownPathArchiweb, 'Archiweb');
 
         $this->clearCache();
 
@@ -474,16 +474,16 @@ class Install extends Base {
             $this->getOutput()->writeln("Setting $product env as DOWN ... ");
 
             if ($this->getInput()->getOption('verbose')) {
-                $this->getOutput()->writeln(sprintf("\n<comment>copy %s to %s</comment>\n", $this->setDownPath,
-                                                    $this->isDownPath));
+                $this->getOutput()->writeln(sprintf('<comment>copy %s to %s</comment>', $setDownPath,
+                                                    $isDownPath));
             }
-            if (!copy($this->setDownPath, $this->isDownPath)) {
+            if (!copy($setDownPath, $isDownPath)) {
 
                 $this->getOutput()->writeln("\n<error>Unable to set env down</error>");
 
                 $this->setIsDown(false, $setDownPath, $isDownPath, $product);
 
-                $content = file_get_contents($this->isDownPath);
+                $content = file_get_contents($isDownPath);
                 if ($content) {
                     $this->getOutput()->writeln('<error>WARNING ! Below is content of isDown.yml<error>');
                     $this->getOutput()
@@ -501,9 +501,9 @@ class Install extends Base {
             $this->getOutput()->writeln("Setting $product env as UP ... ");
 
             if ($this->getInput()->getOption('verbose')) {
-                $this->getOutput()->writeln(sprintf("\n<comment>emptying %s</comment>\n", $this->isDownPath));
+                $this->getOutput()->writeln(sprintf('<comment>empty %s</comment>', $isDownPath));
             }
-            if (false === file_put_contents($this->isDownPath, '')) {
+            if (false === file_put_contents($isDownPath, '')) {
 
                 $this->getOutput()->writeln("\n<error>/!\\ /!\\ /!\\ /!\\ CRITICAL ERROR /!\\ /!\\ /!\\ /!\\</error>");
                 $this->getOutput()->writeln('<error>ERROR WHILE RE-UPPING ENV !!</error>');
@@ -784,12 +784,14 @@ class Install extends Base {
                 $this->abort('Please fix manually');
             }
 
+            $this->getOutput()->writeln("OK\n");
+
             $this->shouldRestoreArchiwebConfigLink = false;
 
         }
 
         $this->setIsDown(false, $this->setDownPath, $this->isDownPath, 'Archipad');
-        $this->setIsDown(false, $this->setDownPathArchiweb, $this->setDownPathArchiweb, 'Archiweb');
+        $this->setIsDown(false, $this->setDownPathArchiweb, $this->isDownPathArchiweb, 'Archiweb');
 
         $this->clearCache();
 
