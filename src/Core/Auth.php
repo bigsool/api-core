@@ -111,6 +111,13 @@ class Auth {
     }
 
     /**
+     * @return bool
+     */
+    public function isLoggedAs (): bool {
+        return !!$this->getSuperUserCredential();
+    }
+
+    /**
      * @param string|string[] $rights
      *
      * @return bool
