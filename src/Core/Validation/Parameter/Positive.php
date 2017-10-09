@@ -5,7 +5,7 @@ namespace Core\Validation\Parameter;
 
 use Symfony\Component\Validator\Constraints;
 
-class PositiveInteger extends Constraint {
+class Positive extends Constraint {
 
     public function __construct () {
 
