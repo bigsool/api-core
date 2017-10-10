@@ -421,6 +421,15 @@ class Registry implements EventSubscriber {
         $query = $qb->getQuery();
         self::$dql = $query->getDQL();
 
+        $limit = $ctx->getLimit();
+        if ($limit > 0) {
+            $query->setMaxResults($limit);
+        }
+        $offset = $ctx->getOffset();
+        if ($offset > 0) {
+            $query->setFirstResult($offset);
+        }
+
         // this will add related entity fields
         $query->setHint(Query::HINT_INCLUDE_META_COLUMNS, true);
 
