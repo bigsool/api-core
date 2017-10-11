@@ -47,6 +47,38 @@ class FindQueryContext implements QueryContext {
     protected $moduleEntity;
 
     /**
+     * @var int
+     */
+    protected $limit = 0;
+
+    /**
+     * @var int
+     */
+    protected $offset = 0;
+
+    /**
+     * @param $limit
+     */
+    public function setLimit(int $limit) {
+        $this->limit = $limit;
+    }
+    /**
+     * @return int
+     */
+    public function getLimit(): int { return $this->limit; }
+
+    /**
+     * @param $offset
+     */
+    public function setOffset(int $offset) {
+        $this->offset = $offset;
+    }
+    /**
+     * @return int
+     */
+    public function getOffset(): int { return $this->offset; }
+
+    /**
      * @param string         $entity
      * @param RequestContext $reqCtx
      */
