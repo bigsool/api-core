@@ -41,6 +41,8 @@ $errorManager->defineError(new LocalizedError(ERROR_API_UNAVAILABLE,
                                               $t->trans('ERROR_API_UNAVAILABLE', [], NULL, 'en'),
                                               ERROR_INTERNAL_ERROR));
 
+defined('ERROR_AMAZON_ERROR') || define('ERROR_AMAZON_ERROR', 16);
+$errorManager->defineError(new Error(ERROR_AMAZON_ERROR, 'amazon error', ERROR_INTERNAL_ERROR));
 
 defined('ERROR_AUTH_TOKEN_EXPIRED') || define('ERROR_AUTH_TOKEN_EXPIRED', 19);
 $errorManager->defineError(new Error(ERROR_AUTH_TOKEN_EXPIRED, 'Auth token expired', ERROR_PERMISSION_DENIED));
