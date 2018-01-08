@@ -40,7 +40,7 @@ class ProjectDefinition extends ModuleEntityDefinition {
                 $factory->getParameter(StringConstraint::class),
                 $factory->getParameter(Length::class,['max' => 32]),
                 $factory->getParameter(NotBlank::class),
-                $factory->getParameter(Decimal::class),
+                //$factory->getParameter(Decimal::class), TODO investigate use
             ],
             'name'                 => [
                 $factory->getParameter(StringConstraint::class),
