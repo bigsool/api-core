@@ -634,7 +634,7 @@ class Application {
             ]);
 
             $rpcHandler->setError(new FormattedError(['code'    => ERROR_INTERNAL_ERROR,
-                                                      'message' => sprintf('Internal Error, please contact us at support@archipad with the error number %s.',
+                                                      'message' => sprintf('Internal Error, please contact us at support@archipad.com with the error number %s.',
                                                                            $errorLogger->getSessionId())
                                                      ]));
             $response = $rpcHandler->getErrorResponse();
