@@ -70,33 +70,37 @@ abstract class WebTestCase extends TestCase {
 
         }
 
-        $schemaTool = new SchemaTool(self::$entityManager);
         $conn = self::$entityManager->getConnection();
 
-        if ($conn->getDriver() instanceof SqliteDriver) {
-            $conn->query('PRAGMA foreign_keys = OFF');
-        }
-        else {
-            $conn->query('SET FOREIGN_KEY_CHECKS=0');
+        echo "Dropping databases\n";
+
+        $conn->beginTransaction();
+
+        foreach ([
+                     'DROP DATABASE archiweb',
+                     'DROP DATABASE patches',
+                     'CREATE DATABASE archiweb',
+                     'CREATE DATABASE patches',
+                     'USE archiweb'
+                 ] as $run
+        ) {
+            echo "exec '$run'\n";
+            $conn->exec($run);
         }
 
-        $schemaTool->dropDatabase();
+        $conn->commit();
 
-        // use a static property instead of a var to keep the result which is expensive to construct
-        if (!isset(self::$createSchemaSQL)) {
-            self::$createSchemaSQL =
-                $schemaTool->getCreateSchemaSql(self::$entityManager->getMetadataFactory()->getAllMetadata());
-        }
+        echo "Dropped databases\n";
 
-        foreach (self::$createSchemaSQL as $sql) {
-            $conn->executeQuery($sql);
-        }
+        $dirs = [
+            static::getArchiwebRootFolder() . '/doctrine/',
+            realpath(static::getRootFolder() . '/its/')
+        ];
 
-        if ($conn->getDriver() instanceof SqliteDriver) {
-            $conn->query('PRAGMA foreign_keys = ON');
-        }
-        else {
-            $conn->query('SET FOREIGN_KEY_CHECKS=1');
+        foreach ($dirs as $dir) {
+            echo "Executing migrations at '$dir'\n";
+            chdir($dir);
+            echo exec('php doctrine.php m:m -n -vvv')."\n";
         }
 
     }
@@ -106,7 +110,19 @@ abstract class WebTestCase extends TestCase {
      */
     protected static function getRootFolder () {
 
-        return __DIR__ . '/../../..';
+        return realpath(__DIR__ . '/../../..');
+
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getArchiwebRootFolder() {
+
+        return realpath(
+            static::getRootFolder().'/'.ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1']['path']
+            ?? static::getRootFolder() . '/../../archiweb'
+        );
 
     }
 
