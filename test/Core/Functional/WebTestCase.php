@@ -41,6 +41,19 @@ abstract class WebTestCase extends TestCase {
     protected static $lastRequest;
 
     /**
+     * @var array
+     */
+    protected static $config;
+
+    public static function getConfig() {
+        if (self::$config === null) {
+            self::$config = ApplicationContext::getInstance()->getConfigManager()->getConfig();
+        }
+
+        return self::$config;
+    }
+
+    /**
      *
      */
     public static function setUpBeforeClass () {
@@ -76,17 +89,25 @@ abstract class WebTestCase extends TestCase {
 
         $conn->beginTransaction();
 
-        foreach ([
-                     'DROP DATABASE archiweb',
-                     'DROP DATABASE patches',
-                     'CREATE DATABASE archiweb',
-                     'CREATE DATABASE patches',
-                     'USE archiweb'
-                 ] as $run
-        ) {
-            echo "exec '$run'\n";
-            $conn->exec($run);
+
+        $dbs = [
+            self::getConfig()['patchDb']['dbname'],
+            self::getConfig()['db']['dbname']
+        ];
+
+        foreach ($dbs as $db) {
+            foreach ([
+                         'DROP DATABASE ',
+                         'CREATE DATABASE ',
+                         'USE '
+                     ] as $run
+            ) {
+                echo "exec '".$run.$db."'\n";
+                $conn->exec($run.$db);
+            }
         }
+
+        // Last DB will be the used one.
 
         $conn->commit();
 
@@ -120,7 +141,7 @@ abstract class WebTestCase extends TestCase {
     protected static function getArchiwebRootFolder() {
 
         return realpath(
-            static::getRootFolder().'/'.ApplicationContext::getInstance()->getConfigManager()->getConfig()['v1']['path']
+            static::getRootFolder().'/'.self::getConfig()['v1']['path']
             ?? static::getRootFolder() . '/../../archiweb'
         );
 
@@ -188,7 +209,7 @@ abstract class WebTestCase extends TestCase {
         }
 
         $postData = ['jsonrpc' => '2.0',
-                     'method'  => $method
+            'method'  => $method
         ];
         if (!is_null($id)) {
             $postData['id'] = $id;
@@ -202,11 +223,11 @@ abstract class WebTestCase extends TestCase {
 
         if (is_string($auth)) {
             self::$cookies->setCookie(new SetCookie([
-                                                        'Domain'  => 'localhost',
-                                                        'Name'    => 'authToken',
-                                                        'Value'   => $auth,
-                                                        'Discard' => true
-                                                    ]));
+                'Domain'  => 'localhost',
+                'Name'    => 'authToken',
+                'Value'   => $auth,
+                'Discard' => true
+            ]));
         }
 
         self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => self::$cookies]);
@@ -331,4 +352,4 @@ abstract class WebTestCase extends TestCase {
 
     }
 
-} 
+}
