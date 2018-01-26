@@ -102,8 +102,9 @@ abstract class WebTestCase extends TestCase {
                          'USE '
                      ] as $run
             ) {
-                echo "exec '".$run.$db."'\n";
-                $conn->exec($run.$db);
+                $sql = $run.$db;
+                echo "exec '".$sql."'\n";
+                $conn->exec($sql);
             }
         }
 
