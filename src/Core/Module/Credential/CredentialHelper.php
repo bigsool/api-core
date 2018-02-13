@@ -62,16 +62,11 @@ class CredentialHelper {
 
     /**
      * @param string $login
-     *
      * @param $error
      * @return Credential
      * @throws \Core\Error\FormattedError
      */
-    public static function credentialForLogin ($login, $error) {
-
-        if($error === null){
-            $error = ERROR_USER_NOT_FOUND;
-        }
+    public static function credentialForLogin ($login, $error = ERROR_USER_NOT_FOUND) {
 
         $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
         $qryCtx->addField('*');
