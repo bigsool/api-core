@@ -11,6 +11,7 @@ use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
 use Core\Validation\Parameter\Boolean;
 use Core\Validation\Parameter\Bucket;
+use Core\Validation\Parameter\Decimal;
 use Core\Validation\Parameter\DateTime;
 use Core\Validation\Parameter\Length;
 use Core\Validation\Parameter\NotBlank;

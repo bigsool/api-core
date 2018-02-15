@@ -41,6 +41,19 @@ abstract class WebTestCase extends TestCase {
     protected static $lastRequest;
 
     /**
+     * @var array
+     */
+    protected static $config;
+
+    public static function getConfig() {
+        if (self::$config === null) {
+            self::$config = ApplicationContext::getInstance()->getConfigManager()->getConfig();
+        }
+
+        return self::$config;
+    }
+
+    /**
      *
      */
     public static function setUpBeforeClass () {
@@ -70,33 +83,46 @@ abstract class WebTestCase extends TestCase {
 
         }
 
-        $schemaTool = new SchemaTool(self::$entityManager);
         $conn = self::$entityManager->getConnection();
 
-        if ($conn->getDriver() instanceof SqliteDriver) {
-            $conn->query('PRAGMA foreign_keys = OFF');
-        }
-        else {
-            $conn->query('SET FOREIGN_KEY_CHECKS=0');
+        echo "Dropping databases\n";
+
+        $conn->beginTransaction();
+
+
+        $dbs = [
+            self::getConfig()['patchDb']['dbname'],
+            self::getConfig()['db']['dbname']
+        ];
+
+        foreach ($dbs as $db) {
+            foreach ([
+                         'DROP DATABASE ',
+                         'CREATE DATABASE ',
+                         'USE '
+                     ] as $run
+            ) {
+                $sql = $run.$db;
+                echo "exec '".$sql."'\n";
+                $conn->exec($sql);
+            }
         }
 
-        $schemaTool->dropDatabase();
+        // Last DB will be the used one.
 
-        // use a static property instead of a var to keep the result which is expensive to construct
-        if (!isset(self::$createSchemaSQL)) {
-            self::$createSchemaSQL =
-                $schemaTool->getCreateSchemaSql(self::$entityManager->getMetadataFactory()->getAllMetadata());
-        }
+        $conn->commit();
 
-        foreach (self::$createSchemaSQL as $sql) {
-            $conn->executeQuery($sql);
-        }
+        echo "Dropped databases\n";
 
-        if ($conn->getDriver() instanceof SqliteDriver) {
-            $conn->query('PRAGMA foreign_keys = ON');
-        }
-        else {
-            $conn->query('SET FOREIGN_KEY_CHECKS=1');
+        $dirs = [
+            static::getArchiwebRootFolder() . '/doctrine/',
+            realpath(static::getRootFolder() . '/its/')
+        ];
+
+        foreach ($dirs as $dir) {
+            echo "Executing migrations at '$dir'\n";
+            chdir($dir);
+            echo exec('php doctrine.php m:m -n -vvv')."\n";
         }
 
     }
@@ -106,7 +132,19 @@ abstract class WebTestCase extends TestCase {
      */
     protected static function getRootFolder () {
 
-        return __DIR__ . '/../../..';
+        return realpath(__DIR__ . '/../../..');
+
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getArchiwebRootFolder() {
+
+        return realpath(
+            static::getRootFolder().'/'.self::getConfig()['v1']['path']
+            ?? static::getRootFolder() . '/../../archiweb'
+        );
 
     }
 
@@ -172,7 +210,7 @@ abstract class WebTestCase extends TestCase {
         }
 
         $postData = ['jsonrpc' => '2.0',
-                     'method'  => $method
+            'method'  => $method
         ];
         if (!is_null($id)) {
             $postData['id'] = $id;
@@ -186,11 +224,11 @@ abstract class WebTestCase extends TestCase {
 
         if (is_string($auth)) {
             self::$cookies->setCookie(new SetCookie([
-                                                        'Domain'  => 'localhost',
-                                                        'Name'    => 'authToken',
-                                                        'Value'   => $auth,
-                                                        'Discard' => true
-                                                    ]));
+                'Domain'  => 'localhost',
+                'Name'    => 'authToken',
+                'Value'   => $auth,
+                'Discard' => true
+            ]));
         }
 
         self::$lastRequest = self::$client->post($url, ['json' => $postData, 'cookies' => self::$cookies]);
@@ -315,4 +353,4 @@ abstract class WebTestCase extends TestCase {
 
     }
 
-} 
+}

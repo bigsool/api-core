@@ -44,7 +44,7 @@ class ErrorLogger extends AbstractLogger {
                     $this->getMLogger()->addError("[$errno] $errstr ($errfile : $errline) [$jsonCtx]");
 
                     http_response_code(500);
-                    die(sprintf('Internal Error, please contact us at support@archipad with the error number %s.',
+                    die(sprintf('Internal Error, please contact us at support@archipad.com with the error number %s.',
                                 $this->getSessionId()));
 
                 };
@@ -67,7 +67,7 @@ class ErrorLogger extends AbstractLogger {
                 $this->getMLogger()->addError('Uncaught ' . strval($e));
 
                 http_response_code(500);
-                die(sprintf('Internal Error, please contact us at support@archipad with the error number %s.',
+                die(sprintf('Internal Error, please contact us at support@archipad.com with the error number %s.',
                             $this->getSessionId()));
 
             };
@@ -99,7 +99,7 @@ class ErrorLogger extends AbstractLogger {
                     $this->getMLogger()->addError("Shutdown with error $type: $message ($file : $line)");
 
                     http_response_code(500);
-                    die(sprintf('Internal Error, please contact us at support@archipad with the error number %s.',
+                    die(sprintf('Internal Error, please contact us at support@archipad.com with the error number %s.',
                                 $this->getSessionId()));
 
                 }

@@ -89,6 +89,8 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_BUCKET, 'invalid bucket
 defined('ERROR_INVALID_SHARED_REPORT_ID') || define('ERROR_INVALID_SHARED_REPORT_ID', 16115);
 $errorManager->defineError(new Error(ERROR_INVALID_SHARED_REPORT_ID, 'invalid report id',
     ERROR_INVALID_PARAM));
+defined('ERROR_INVALID_PARAM_DECIMAL') || define('ERROR_INVALID_PARAM_DECIMAL', 16116);
+$errorManager->defineError(new Error(ERROR_INVALID_PARAM_DECIMAL, 'invalid decimal', ERROR_INVALID_PARAM));
 
 defined('ERROR_COMPANY_NOT_FOUND') || define('ERROR_COMPANY_NOT_FOUND', 16201);
 $errorManager->defineError(new Error(ERROR_COMPANY_NOT_FOUND, 'company not found'));
@@ -182,3 +184,6 @@ $errorManager->defineError(new LocalizedError(ERROR_PROJECT_TEMPLATE_NOT_FOUND,
 
 defined('ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS') || define('ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS', 16320);
 $errorManager->defineError(new Error(ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS, 'project template already exists'));
+
+defined('ERROR_DEPENDENCY_NOT_FOUND') || define('ERROR_DEPENDENCY_NOT_FOUND', 16330);
+$errorManager->defineError(new Error(ERROR_DEPENDENCY_NOT_FOUND, 'dependency not found'));
