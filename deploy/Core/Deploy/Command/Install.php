@@ -97,47 +97,57 @@ class Install extends Base {
         $isFirstInstall = true;
         $isStageOrProd = $this->isStageOrProd();
 
+        $migrationNeeded = TRUE;
+
         if ($isStageOrProd) {
 
             if (($isFirstInstall = $this->isFirstInstall())) {
                 $this->checkIfConfigFilesExists();
             }
 
-            $this->loadDBConfigs();
+            if ($migrationNeeded = $this->doesMigrationNeeded()) {
 
-            if (!$isFirstInstall) {
-                $this->confirmNextDBName();
+                $this->loadDBConfigs();
+
+                if (!$isFirstInstall) {
+                    $this->confirmNextDBName();
+                }
+
+                $this->createConfigLink();
+
             }
-
-            $this->createConfigLink();
 
         }
 
         $this->runSanityChecks();
 
         try {
-            if ($isStageOrProd) {
 
-                if (!$isFirstInstall) {
-                    $this->setDown();
-                    $this->waitForTransactionsFinish();
-                }
+            if ($migrationNeeded) {
 
-                foreach (['db', 'patchDb'] as $db) {
+                if ($isStageOrProd) {
 
-                    if (!array_key_exists($db, $this->dbConfig['current'])) {
-                        continue;
+                    if (!$isFirstInstall) {
+                        $this->setDown();
+                        $this->waitForTransactionsFinish();
                     }
 
-                    $dumpPath = $this->dumpProdDB($db);
-                    $this->clearNextDB($db);
-                    $this->copyDataToNextDB($dumpPath, $db);
+                    foreach (['db', 'patchDb'] as $db) {
+
+                        if (!array_key_exists($db, $this->dbConfig['current'])) {
+                            continue;
+                        }
+
+                        $dumpPath = $this->dumpProdDB($db);
+                        $this->clearNextDB($db);
+                        $this->copyDataToNextDB($dumpPath, $db);
+
+                    }
 
                 }
 
+                $this->runUpgradeScripts();
             }
-
-            $this->runUpgradeScripts();
 
             $this->changeTheLink();
 
@@ -167,7 +177,7 @@ class Install extends Base {
 
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
-        $this->dumpFolder = $this->paths['root'] . '/dump';
+        $this->dumpFolder = '/tmp/dump';
 
         $this->getEnvConf();
         $configFolderArchiweb =
@@ -659,10 +669,7 @@ class Install extends Base {
 
     protected function runUpgradeScripts () {
 
-        $doctrineFolder = $this->paths['root'] . '/doctrine/';
-        $itsFolder = $this->paths['root'] . '/its/';
-
-        $folders = ['doctrine' => $doctrineFolder, 'its' => $itsFolder];
+        $folders = $this->getMigrationFolders();
 
         foreach ($folders as $system => $folder) {
 
@@ -860,6 +867,68 @@ class Install extends Base {
         touch($htaccessPath);
 
         opcache_reset(); // reset cache for cli
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDoctrineFolder (): string {
+        return $this->paths['root'] . '/doctrine/';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getITSFolder (): string {
+        return $this->paths['root'] . '/its/';
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getMigrationFolders (): array {
+        return ['doctrine' => $this->getDoctrineFolder(), 'its' => $this->getITSFolder()];
+    }
+
+    /**
+     * @return bool
+     */
+    protected function doesMigrationNeeded (): bool {
+
+        $needed = FALSE;
+
+        foreach ($this->getMigrationFolders() as $folder) {
+
+            $cmd = "cd {$folder} && php doctrine.php m:s | grep $'New Migrations:' | cut -d ':' -f 2";
+
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
+            }
+            $returnCode = NULL;
+            $unused = NULL;
+            exec($cmd, $nbOfPatchesToApply, $returnCode);
+
+            if ($this->getInput()->getOption('verbose')) {
+                $this->getOutput()->writeln(sprintf('%s', $nbOfPatchesToApply));
+            }
+
+            if ($returnCode !== 0) {
+                $this->abort(sprintf("Unable to detect available migrations, aborting..."));
+            }
+
+            if ($nbOfPatchesToApply !== '0') {
+                $needed = TRUE;
+                break;
+            }
+
+        }
+
+        if (!$needed && !$this->confirm(sprintf("About to skip migration, OK ?\n[Y/n] ", $this->env))) {
+            $needed = TRUE;
+        }
+
+        return $needed;
+
     }
 
 }
