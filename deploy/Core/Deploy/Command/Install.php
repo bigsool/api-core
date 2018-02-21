@@ -177,7 +177,7 @@ class Install extends Base {
 
         parent::setEnv($env);
         $this->configDir = $this->paths['root'] . '/config/' . $this->getEnv();
-        $this->dumpFolder = '/tmp/dump';
+        $this->dumpFolder = sys_get_temp_dir();
 
         $this->getEnvConf();
         $configFolderArchiweb =
