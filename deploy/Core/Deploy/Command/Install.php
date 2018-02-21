@@ -64,6 +64,8 @@ class Install extends Base {
 
     protected $shouldRestoreArchiwebConfigLink = false;
 
+    protected $isFirstInstall = null;
+
     protected function configure () {
 
         parent::configure();
@@ -104,6 +106,8 @@ class Install extends Base {
             if (($isFirstInstall = $this->isFirstInstall())) {
                 $this->checkIfConfigFilesExists();
             }
+
+            $this->loadCurrentConfig();
 
             if ($migrationNeeded = $this->doesMigrationNeeded()) {
 
@@ -206,20 +210,23 @@ class Install extends Base {
 
     }
 
-    protected function isFirstInstall ($verbose = false) {
+    protected function isFirstInstall ($verbose = FALSE) {
 
-        if (!file_exists(Helper::getRemoteDestLink($this->paths['environmentFile']))) {
-            if (!$verbose) {
-                return true;
+        if ($this->isFirstInstall === NULL) {
+            if (!file_exists(Helper::getRemoteDestLink($this->paths['environmentFile']))) {
+                if (!$verbose) {
+                    $this->isFirstInstall = TRUE;
+                } else {
+                    $this->getOutput()->writeln("<warning>No revision found on server.</warning>");
+                    if (!$this->confirm("Is It your first commit ?\n[Y/n] ")) {
+                        $this->abort('Installation aborted by user');
+                    }
+                }
             }
-            $this->getOutput()
-                 ->writeln("<warning>No revision found on server.</warning>");
-            if (!$this->confirm("Is It your first commit ?\n[Y/n] ")) {
-                $this->abort('Installation aborted by user');
-            }
+            $this->isFirstInstall = FALSE;
         }
 
-        return false;
+        return $this->isFirstInstall;
 
     }
 
@@ -242,28 +249,7 @@ class Install extends Base {
 
     protected function loadDBConfigs () {
 
-        $this->getOutput()->write("Loading current config ... ");
-
         $isFirstInstall = $this->isFirstInstall();
-
-        if (!$isFirstInstall) {
-
-            $this->dbConfigRealPath =
-                Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv()
-                . '/extra.yml';
-            $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
-
-            $this->getOutput()->writeln("OK");
-
-        }
-        else {
-
-            $this->dbConfigRealPath = $this->dbConfigDirectory . '/' . $this->dbConfigFilenames[0];
-            $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
-
-            $this->getOutput()->writeln("OK");
-
-        }
 
         // rotating config file for stage and prod
         if ($this->isStageOrProd()) {
@@ -377,6 +363,23 @@ class Install extends Base {
             $this->getOutput()->writeln('');
 
         }
+
+    }
+
+    protected function createConfigLinkToCurrentDB () {
+
+        $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
+                                          $this->dbConfigRealPath, $this->dbConfigLinkName));
+
+        if (file_exists($this->dbConfigLinkName) && !unlink($this->dbConfigLinkName)) {
+            $this->abort(sprintf('Unable to remove existing config link <info>%s</info>', $this->dbConfigLinkName));
+        }
+
+        if (!symlink($this->dbConfigRealPath, $this->dbConfigLinkName)) {
+            $this->abort('Unable to create config symlink, aborting...');
+        }
+
+        $this->getOutput()->writeln('OK');
 
     }
 
@@ -895,11 +898,14 @@ class Install extends Base {
      */
     protected function doesMigrationNeeded (): bool {
 
+        // I need to refer to current bd to check if migrations are needed
+        $this->createConfigLinkToCurrentDB();
+
         $needed = FALSE;
 
         foreach ($this->getMigrationFolders() as $folder) {
 
-            $cmd = "cd {$folder} && php doctrine.php m:s | grep $'New Migrations:' | cut -d ':' -f 2";
+            $cmd = "cd {$folder} && php doctrine.php m:s | grep New\ Migrations | cut -d ':' -f 2";
 
             if ($this->getInput()->getOption('verbose')) {
                 $this->getOutput()->writeln(sprintf('<comment>%s</comment>', $cmd));
@@ -907,6 +913,7 @@ class Install extends Base {
             $returnCode = NULL;
             $unused = NULL;
             exec($cmd, $nbOfPatchesToApply, $returnCode);
+            $nbOfPatchesToApply = trim(implode("\n", $nbOfPatchesToApply));
 
             if ($this->getInput()->getOption('verbose')) {
                 $this->getOutput()->writeln(sprintf('%s', $nbOfPatchesToApply));
@@ -929,6 +936,31 @@ class Install extends Base {
 
         return $needed;
 
+    }
+
+
+    protected function loadCurrentConfig () {
+        $this->getOutput()->write("Loading current config ... ");
+
+        $isFirstInstall = $this->isFirstInstall();
+
+        if (!$isFirstInstall) {
+
+            $this->dbConfigRealPath
+                = realpath(Helper::getRemoteDestLink($this->paths['environmentFile']) . '/config/' . $this->getEnv()
+                  . '/extra.yml');
+            $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
+
+            $this->getOutput()->writeln("OK");
+
+        } else {
+
+            $this->dbConfigRealPath = $this->dbConfigDirectory . '/' . $this->dbConfigFilenames[0];
+            $this->dbConfig['current'] = $this->loadDBConfig($this->dbConfigRealPath);
+
+            $this->getOutput()->writeln("OK");
+
+        }
     }
 
 }
