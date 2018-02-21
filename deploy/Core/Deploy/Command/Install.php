@@ -368,14 +368,15 @@ class Install extends Base {
 
     protected function createConfigLinkToCurrentDB () {
 
+        $realDbConfigLinkName = realpath($this->dbConfigRealPath);
         $this->getOutput()->write(sprintf('Creating config link to <info>%s</info> with the name <info>%s</info> ... ',
-                                          $this->dbConfigRealPath, $this->dbConfigLinkName));
+                                          $realDbConfigLinkName, $this->dbConfigLinkName));
 
         if (file_exists($this->dbConfigLinkName) && !unlink($this->dbConfigLinkName)) {
             $this->abort(sprintf('Unable to remove existing config link <info>%s</info>', $this->dbConfigLinkName));
         }
 
-        if (!symlink($this->dbConfigRealPath, $this->dbConfigLinkName)) {
+        if (!symlink($realDbConfigLinkName, $this->dbConfigLinkName)) {
             $this->abort('Unable to create config symlink, aborting...');
         }
 
