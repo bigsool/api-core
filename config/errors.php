@@ -47,10 +47,6 @@ $errorManager->defineError(new Error(ERROR_AMAZON_ERROR, 'amazon error', ERROR_I
 defined('ERROR_AUTH_TOKEN_EXPIRED') || define('ERROR_AUTH_TOKEN_EXPIRED', 19);
 $errorManager->defineError(new Error(ERROR_AUTH_TOKEN_EXPIRED, 'Auth token expired', ERROR_PERMISSION_DENIED));
 
-
-defined('ERROR_BAD_ENTITY') || define('ERROR_BAD_ENTITY', 16028);
-$errorManager->defineError(new Error(ERROR_BAD_ENTITY, 'requested entity not available', ERROR_REQUEST_INVALID));
-
 defined('ERROR_BAD_FIELD') || define('ERROR_BAD_FIELD', 16029);
 $errorManager->defineError(new Error(ERROR_BAD_FIELD, 'one or more field are invalid', ERROR_REQUEST_INVALID));
 
@@ -86,9 +82,6 @@ $errorManager->defineError(new Error(ERROR_INVALID_PARAM_REGEX, 'value not match
 defined('ERROR_INVALID_PARAM_BUCKET') || define('ERROR_INVALID_PARAM_BUCKET', 16114);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_BUCKET, 'invalid bucket name',
                                      ERROR_INVALID_PARAM));
-defined('ERROR_INVALID_SHARED_REPORT_ID') || define('ERROR_INVALID_SHARED_REPORT_ID', 16115);
-$errorManager->defineError(new Error(ERROR_INVALID_SHARED_REPORT_ID, 'invalid report id',
-    ERROR_INVALID_PARAM));
 defined('ERROR_INVALID_PARAM_DECIMAL') || define('ERROR_INVALID_PARAM_DECIMAL', 16116);
 $errorManager->defineError(new Error(ERROR_INVALID_PARAM_DECIMAL, 'invalid decimal', ERROR_INVALID_PARAM));
 
@@ -139,12 +132,6 @@ $errorManager->defineError(new LocalizedError(ERROR_WITH_STRIPE,
                                               $t->trans('ERROR_WITH_STRIPE', [], NULL, 'fr'),
                                               $t->trans('ERROR_WITH_STRIPE', [], NULL, 'en')));
 
-defined('ERROR_CONNECTED_ELSEWHERE') || define('ERROR_CONNECTED_ELSEWHERE', 16312);
-$errorManager->defineError(new LocalizedError(ERROR_CONNECTED_ELSEWHERE,
-                                              $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'fr'),
-                                              $t->trans('ERROR_CONNECTED_ELSEWHERE', [], NULL, 'en'),
-                                              ERROR_PERMISSION_DENIED));
-
 defined('ERROR_EMAIL_MUST_BE_CONFIRMED') || define('ERROR_EMAIL_MUST_BE_CONFIRMED', 16313);
 $errorManager->defineError(new LocalizedError(ERROR_EMAIL_MUST_BE_CONFIRMED,
                                               $t->trans('ERROR_EMAIL_MUST_BE_CONFIRMED', [], NULL, 'fr'),
@@ -167,11 +154,6 @@ $errorManager->defineError(new LocalizedError(ERROR_SHARED_REPORT_NOT_FOUND,
                                               $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'fr'),
                                               $t->trans('ERROR_SHARED_REPORT_NOT_FOUND', [], NULL, 'en')));
 
-defined('ERROR_PLEASE_UPGRADE_ARCHIPAD') || define('ERROR_PLEASE_UPGRADE_ARCHIPAD', 16317);
-$errorManager->defineError(new LocalizedError(ERROR_PLEASE_UPGRADE_ARCHIPAD,
-                                              $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'fr'),
-                                              $t->trans('ERROR_PLEASE_UPGRADE_ARCHIPAD', [], NULL, 'en')));
-
 defined('ERROR_SHARED_REPORT_INVALID_PASSWORD') || define('ERROR_SHARED_REPORT_INVALID_PASSWORD', 16318);
 $errorManager->defineError(new LocalizedError(ERROR_SHARED_REPORT_INVALID_PASSWORD,
                                               $t->trans('ERROR_SHARED_REPORT_INVALID_PASSWORD', [], NULL, 'fr'),
@@ -184,6 +166,3 @@ $errorManager->defineError(new LocalizedError(ERROR_PROJECT_TEMPLATE_NOT_FOUND,
 
 defined('ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS') || define('ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS', 16320);
 $errorManager->defineError(new Error(ERROR_PROJECT_TEMPLATE_ALREADY_EXISTS, 'project template already exists'));
-
-defined('ERROR_DEPENDENCY_NOT_FOUND') || define('ERROR_DEPENDENCY_NOT_FOUND', 16330);
-$errorManager->defineError(new Error(ERROR_DEPENDENCY_NOT_FOUND, 'dependency not found'));
