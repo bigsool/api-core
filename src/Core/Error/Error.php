@@ -4,7 +4,13 @@
 namespace Core\Error;
 
 
+use Symfony\Component\Translation\Translator;
+
 class Error {
+    /**
+     * @var Translator
+     */
+    protected $translator;
 
     /**
      * @var int
@@ -32,8 +38,9 @@ class Error {
      * @param int    $parentCode
      * @param string $field
      */
-    public function __construct ($code, $message, $parentCode = NULL, $field = NULL) {
+    public function __construct (Translator $translator, $code, $message, $parentCode = NULL, $field = NULL) {
 
+        $this->translator = $translator;
         $this->code = $code;
         $this->message = $message;
         $this->field = $field;
@@ -55,7 +62,7 @@ class Error {
      */
     public function getMessage () {
 
-        return $this->message;
+        return $this->translator->trans($this->message);
 
     }
 

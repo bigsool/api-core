@@ -16,7 +16,7 @@ class ToResolveException extends \Exception {
 
     /**
      * @param string $errorCode
-     * @param null   $field
+     * @param mixed|null   $field
      */
     public function __construct ($errorCode, $field = NULL) {
 

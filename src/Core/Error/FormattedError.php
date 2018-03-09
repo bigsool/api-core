@@ -7,11 +7,6 @@ namespace Core\Error;
 class FormattedError extends \Exception {
 
     /**
-     * @var string
-     */
-    static protected $lang = 'en';
-
-    /**
      * @var int
      */
     protected $code;
@@ -62,9 +57,6 @@ class FormattedError extends \Exception {
 
         $this->code = $error->getCode();
         $this->message = $error->getMessage();
-        if ($error instanceof LocalizedError) {
-            $this->localizedMessage = self::$lang == "fr" ? $error->getFrMessage() : $error->getEnMessage();
-        }
         $this->field = $field ? $field : $error->getField();
 
     }
@@ -82,14 +74,6 @@ class FormattedError extends \Exception {
 
         if (isset($error['message'])) {
             $this->message = $error['message'];
-        }
-
-        if (isset($error['frMessage']) && isset($error['enMessage'])) {
-            $this->message = self::$lang == "fr" ? $error['frMessage'] : $error['enMessage'];
-        }
-
-        if (isset($error['localizedMessage'])) {
-            $this->message = $this->localizedMessage = $error['localizedMessage'];
         }
 
         if (!$this->message) {
@@ -112,15 +96,6 @@ class FormattedError extends \Exception {
     public function addChildError (FormattedError $childError) {
 
         $this->childErrors[] = $childError;
-
-    }
-
-    /**
-     * @param string $lang
-     */
-    static public function setLang ($lang) {
-
-        self::$lang = $lang;
 
     }
 

@@ -129,7 +129,6 @@ class RequestContext {
      */
     public function setLocale ($locale) {
 
-        FormattedError::setLang($locale);
         $this->locale = $locale;
 
     }

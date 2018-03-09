@@ -4,12 +4,17 @@
 namespace Core\Error;
 
 
+use Core\Context\ApplicationContext;
+
 class ErrorManager {
 
     /**
      * @var Error[]
      */
     protected $definedErrors;
+
+    /** @var ApplicationContext */
+    protected $appCtx;
 
     /**
      * @var Error[]
@@ -18,21 +23,34 @@ class ErrorManager {
 
     /**
      * The constructor should be called only by the ApplicationContext
+     * @param ApplicationContext $appCtx current application context
      */
-    protected function __construct () {
+    protected function __construct (ApplicationContext $appCtx) {
+        $this->appCtx = $appCtx;
     }
 
     /**
-     * @param Error $error
+     * @param string $message the constant pivot key, must be defined beforehand
+     * @param int|null $parentCode the parent code
+     * @param mixed|null $field
+     * @throws \RuntimeException either if the given $message was not `define()`d before, or was already fed to defineError
      */
-    public function defineError (Error $error) {
+    public function defineError (string $message, $parentCode = NULL, $field = NULL) {
 
-        $errorCode = $error->getCode();
+        if (!defined($message)) {
+            throw new \RuntimeException(
+                sprintf('Exception "%s" is not defined as constant, but fed to ErrorManager->defineError', $message)
+            );
+        }
+
+        $errorCode = constant($message);
+
         if (isset($this->definedErrors[$errorCode])) {
             throw new \RuntimeException('already defined error ' . $errorCode);
         }
 
-        $this->definedErrors[$errorCode] = $error;
+        $translator = $this->appCtx->getTranslator();
+        $this->definedErrors[$errorCode] = new Error($translator, $errorCode, $message, $parentCode, $field);
 
     }
 

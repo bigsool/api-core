@@ -151,17 +151,42 @@ class Application {
      */
     public function initTranslation () {
 
-        $translator = new Translator('en');
-        $translator->setFallbackLocales(['en', 'fr']);
+        $key = 'TRANSLATION';
+
+        $config = $this->appCtx->getConfigManager()->getConfig();
+        // Guarantee having a trailing slash
+        $translationsPath = realpath(ROOT_DIR . '/' . $config['resourcePaths']['translations']).'/';
+        $cacheProvider = $this->appCtx->getCacheProvider();
+        $translations  = $cacheProvider->fetch($key);
+        $languageCodes = [];
+
+        if ($translations === false) {
+            foreach (new \DirectoryIterator($translationsPath) as $file) {
+                if ($file->getExtension() === 'po') {
+                    $languageCodes[] = rtrim($file->getFilename(), '.po');
+                }
+            }
+            // Scanning, loading
+            // trade-off, if we change the config without clearing the cache, it will take up to 10m to be updated
+            $cacheProvider->save($key, $languageCodes, 600);
+        }
+
+        $defaultLocale = 'en';
+        $translator = new Translator($defaultLocale);
+        $translator->setFallbackLocales([$defaultLocale]);
         $translator->setConfigCacheFactory(new ConfigCacheFactory(false));
         $translator->addLoader('po', new PoFileLoader());
-        $frPoFile = ROOT_DIR . '/resources/translations/fr.po';
-        if (file_exists($frPoFile)) {
-            $translator->addResource('po', $frPoFile, 'fr');
-        }
-        $enPoFile = ROOT_DIR . '/resources/translations/en.po';
-        if (file_exists($enPoFile)) {
-            $translator->addResource('po', $enPoFile, 'en');
+
+        foreach ($languageCodes as $code) {
+            $path = $translationsPath.$code.'.po';
+
+            if (!file_exists($path)) {
+                throw new \RuntimeException(
+                    sprintf('Entry %s is in cache but cannot be found in filesystem. Did you remove it ?', $code)
+                );
+            }
+
+            $translator->addResource('po', $path, $code);
         }
 
         $this->appCtx->setTranslator($translator);

@@ -796,7 +796,7 @@ class ApplicationContext {
             $this->errorManager = $errorManager->newInstanceWithoutConstructor();
             $constructor = $errorManager->getConstructor();
             $constructor->setAccessible(true);
-            $constructor->invoke($this->errorManager);
+            $constructor->invoke($this->errorManager, $this);
             $constructor->setAccessible(false);
         }
 
