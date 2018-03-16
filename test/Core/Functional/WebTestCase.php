@@ -18,7 +18,12 @@ abstract class WebTestCase extends TestCase {
     /**
      * @var EntityManager
      */
-    protected static $entityManager;
+    protected static $archiwebEntityManager;
+
+    /**
+     * @var EntityManager
+     */
+    protected static $patchesEntityManager;
 
     /**
      * @var Client
@@ -71,7 +76,7 @@ abstract class WebTestCase extends TestCase {
      */
     public static function resetDatabase () {
 
-        if (!isset(self::$entityManager)) {
+        if (!isset(self::$archiwebEntityManager)) {
 
             require static::getRootFolder() . '/doctrine/config.php';
 
@@ -79,38 +84,31 @@ abstract class WebTestCase extends TestCase {
              * @var EntityManager $entityManager
              */
 
-            self::$entityManager = $entityManager;
+            self::$archiwebEntityManager = $entityManager;
 
         }
 
-        $conn = self::$entityManager->getConnection();
+        if (!isset(self::$patchesEntityManager)) {
+
+            require static::getRootFolder() . '/its/config.php';
+
+            /**
+             * @var EntityManager $entityManager
+             */
+
+            self::$patchesEntityManager = $entityManager;
+
+        }
+
+        $archiwebConn = self::$archiwebEntityManager->getConnection();
+        $patchesConn = self::$patchesEntityManager->getConnection();
 
         echo "Dropping databases\n";
 
-        $conn->beginTransaction();
-
-
-        $dbs = [
-            self::getConfig()['patchDb']['dbname'],
-            self::getConfig()['db']['dbname']
-        ];
-
-        foreach ($dbs as $db) {
-            foreach ([
-                         'DROP DATABASE ',
-                         'CREATE DATABASE ',
-                         'USE '
-                     ] as $run
-            ) {
-                $sql = $run.$db;
-                echo "exec '".$sql."'\n";
-                $conn->exec($sql);
-            }
-        }
-
-        // Last DB will be the used one.
-
-        $conn->commit();
+        $archiwebConn->exec(sprintf('DROP DATABASE %1$s; CREATE DATABASE %1$s; USE %1$s;',
+                                    self::getConfig()['db']['dbname']));
+        $patchesConn->exec(sprintf('DROP DATABASE %1$s; CREATE DATABASE %1$s; USE %1$s;',
+                                   self::getConfig()['patchDb']['dbname']));
 
         echo "Dropped databases\n";
 
@@ -122,7 +120,7 @@ abstract class WebTestCase extends TestCase {
         foreach ($dirs as $dir) {
             echo "Executing migrations at '$dir'\n";
             chdir($dir);
-            echo exec('php doctrine.php m:m -n -vvv')."\n";
+            passthru('php doctrine.php m:m -n');
         }
 
     }
