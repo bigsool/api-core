@@ -289,7 +289,9 @@ class Application {
             $this->loadModules();
 
             $reqCtx = $this->getNewRequestContext();
-            $reqCtx->setAuth(Auth::createInternalAuth());
+            $reqCtx->setAuth(Auth::createInternalAuth(TRUE));
+
+            $reqCtx->getApplicationContext()->setInitialRequestContext($reqCtx);
 
             $rpcHandler->parse(new Request());
             $this->populateRequestContext($rpcHandler, $reqCtx);

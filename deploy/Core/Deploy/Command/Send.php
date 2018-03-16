@@ -72,7 +72,7 @@ class Send extends Base {
     protected function copyPreviousRev () {
 
         $shouldCopy = false;
-        $revision = substr($this->getInput()->getArgument('revision'), 0, 7);
+        $revision = $this->getInput()->getArgument('revision');
         if ($this->revOnTheServer) {
 
             if ($this->confirm(sprintf("Should we copy the previous revision folder <info>%s</info>\n" .

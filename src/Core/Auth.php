@@ -4,6 +4,8 @@
 namespace Core;
 
 
+use Core\Context\FindQueryContext;
+use Core\Context\RequestContext;
 use Core\Model\Credential;
 
 class Auth {
@@ -45,13 +47,22 @@ class Auth {
     }
 
     /**
+     * @param bool $addAPIUser true if we must add api@archipad.com user to the Auth. Default false
      * @return Auth
+     * @throws Error\FormattedError
      */
-    public static function createInternalAuth () {
+    public static function createInternalAuth ($addAPIUser = FALSE) {
 
         $auth = new static;
         $auth->rights[] = static::ROOT;
         $auth->rights[] = static::INTERNAL;
+
+        if ($addAPIUser) {
+            $qryCtx = new FindQueryContext('Credential', RequestContext::createNewInternalRequestContext());
+            $qryCtx->addField('*');
+            $qryCtx->addFilter('CredentialForLogin', 'api@archipad.com');
+            $auth->setCredential($qryCtx->findOne())->addRootRight();
+        }
 
         return $auth;
 
