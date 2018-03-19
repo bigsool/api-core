@@ -63,6 +63,8 @@ abstract class WebTestCase extends TestCase {
      */
     public static function setUpBeforeClass () {
 
+        echo "\n".get_called_class();
+
         parent::setUpBeforeClass();
 
         self::resetDatabase();
@@ -103,7 +105,7 @@ abstract class WebTestCase extends TestCase {
         $archiwebConn = self::$archiwebEntityManager->getConnection();
         $patchesConn = self::$patchesEntityManager->getConnection();
 
-        echo "Dropping databases\n";
+        echo "\nDropping databases\n";
 
         $archiwebConn->exec(sprintf('DROP DATABASE %1$s; CREATE DATABASE %1$s; USE %1$s;',
                                     self::getConfig()['db']['dbname']));
@@ -120,7 +122,7 @@ abstract class WebTestCase extends TestCase {
         foreach ($dirs as $dir) {
             echo "Executing migrations at '$dir'\n";
             chdir($dir);
-            passthru('php doctrine.php m:m -n');
+            passthru('php doctrine.php m:m -n -q 1>/dev/null 2>&1');
         }
 
     }
@@ -153,24 +155,16 @@ abstract class WebTestCase extends TestCase {
 
         self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
 
-        $wwwPath = static::getWWWPath();
+        $baseURL = ApplicationContext::getInstance()->getConfigManager()->getConfig()['APIBaseURL'];
+
         $config = [
-            'base_uri' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'base_uri' => "{$baseURL}/jsonrpc/",
             'headers'  => [
                 'User-Agent' => ApplicationContext::UNIT_TESTS_USER_ARGENT
             ],
             'cookies'  => self::$cookies
         ];
         self::$client = new Client($config);
-
-    }
-
-    /**
-     * @return string
-     */
-    public static function getWWWPath () {
-
-        return 'api/core/www/run.php';
 
     }
 
