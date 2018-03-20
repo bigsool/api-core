@@ -77,7 +77,6 @@ class UserDefinition extends ModuleEntityDefinition {
             ,
             'lang'      =>
                 [
-                    $factory->getParameter(Choice::class, ['choices' => ['fr', 'en']]),
                     $factory->getParameter(NotBlank::class),
                 ]
             ,
