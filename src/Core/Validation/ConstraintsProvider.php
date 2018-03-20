@@ -8,10 +8,10 @@ interface ConstraintsProvider {
 
     /**
      * @param string $field
-     *
+     * @param bool   $makeOptional
      * @return Constraint[]
      */
-    public function getConstraintsFor ($field);
+    public function getConstraintsFor (string $field, bool $makeOptional = FALSE);
 
     /**
      * @return Constraint[][]
