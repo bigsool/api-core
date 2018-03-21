@@ -71,4 +71,11 @@ class UnaryExpression implements ExpressionWithOperator {
         return $this->value;
 
     }
+
+    /**
+     *
+     */
+    public function __clone () {
+        $this->value = clone $this->value;
+    }
 }

@@ -403,9 +403,9 @@ class Registry implements EventSubscriber {
                 }
                 else {
                     foreach ($entityAliases[$filterEntity] as $entityAlias) {
-                        $filter = clone $filter;
-                        $filter->setAliasForEntityToUse($entityAlias);
-                        $expressions[] = $filter->getExpression();
+                        $clonedFilter = clone $filter;
+                        $clonedFilter->setAliasForEntityToUse($entityAlias);
+                        $expressions[] = $clonedFilter->getExpression();
                     }
                 }
             }

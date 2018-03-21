@@ -68,4 +68,16 @@ class NAryExpression implements ExpressionWithOperator {
             }) . ')';
 
     }
+
+    /**
+     *
+     */
+    public function __clone()
+    {
+        $clonedExpression = [];
+        foreach ($this->expressions as $expression) {
+            $clonedExpression = clone $expression;
+        }
+        $this->expressions = $clonedExpression;
+    }
 }

@@ -74,4 +74,13 @@ class AggregatedFilter extends Filter {
 
     }
 
+    /**
+     *
+     */
+    public function __clone () {
+        $this->filters = array_map(function(Filter $filter) {
+            return clone $filter;
+        }, $this->filters);
+    }
+
 }

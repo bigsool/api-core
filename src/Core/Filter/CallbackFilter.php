@@ -6,6 +6,9 @@ use Core\Expression\Expression;
 
 class CallbackFilter extends Filter {
 
+    /**
+     * @var callable
+     */
     private $callback;
 
     /**

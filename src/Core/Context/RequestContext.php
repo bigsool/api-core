@@ -286,7 +286,7 @@ class RequestContext {
             }
 
             $value = $returnedField->getValue();
-            if (!is_string($value) || $value == '*') {
+            if (!is_string($value)) {
                 throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_BAD_FIELD);
             }
 
