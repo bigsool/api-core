@@ -210,9 +210,6 @@ class JSONP extends Handler {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_CLIENT_IS_INVALID);
         }
         list($this->clientName, $this->clientVersion, $this->locale) = $explodedClient;
-        if ($this->locale != 'fr') {
-            $this->locale = 'en';
-        }
 
         if (!isset($explodedPathInfo[2])) {
             throw ApplicationContext::getInstance()->getErrorManager()->getFormattedError(ERROR_SERVICE_NOT_FOUND);
