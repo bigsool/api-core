@@ -189,4 +189,13 @@ abstract class Filter {
 
     }
 
+    /**
+     *
+     */
+    public function __clone () {
+        if ($this->expression) {
+            $this->expression = clone $this->expression;
+        }
+    }
+
 }

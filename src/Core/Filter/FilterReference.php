@@ -7,6 +7,9 @@ use Core\Expression\Expression;
 
 class FilterReference extends Filter {
 
+    /**
+     * @var ApplicationContext
+     */
     private $appCtx;
 
     /**

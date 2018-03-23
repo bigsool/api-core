@@ -9,6 +9,8 @@ use Core\Context\ModuleEntityUpsertContext;
 use Core\Field\Calculated;
 use Core\Filter\Filter;
 use Core\Validation\ConstraintsProvider;
+use Core\Validation\Parameter\Constraint;
+use Core\Validation\Parameter\NotBlank;
 
 abstract class ModuleEntityDefinition implements ConstraintsProvider {
 
@@ -66,14 +68,22 @@ abstract class ModuleEntityDefinition implements ConstraintsProvider {
 
     /**
      * @param string $field
+     * @param bool   $makeOptional
      *
      * @return \Core\Validation\Parameter\Constraint[]
      */
-    public function getConstraintsFor ($field) {
+    public function getConstraintsFor (string $field, bool $makeOptional = FALSE) {
 
         $constraints = $this->getConstraintsList();
 
-        return isset($constraints[$field]) ? $constraints[$field] : [];
+        return isset($constraints[$field])
+            ? ($makeOptional
+                ? array_filter($constraints[$field],
+                    function (Constraint $c) {
+                        return !($c instanceof NotBlank);
+                    })
+                : $constraints[$field])
+            : [];
 
     }
 

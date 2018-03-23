@@ -117,4 +117,13 @@ class BinaryExpression implements ExpressionWithOperator {
         return $this->right;
 
     }
+
+    /**
+     *
+     */
+    public function __clone()
+    {
+        $this->left = clone $this->left;
+        $this->right = clone $this->right;
+    }
 }

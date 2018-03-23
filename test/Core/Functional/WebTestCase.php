@@ -18,7 +18,12 @@ abstract class WebTestCase extends TestCase {
     /**
      * @var EntityManager
      */
-    protected static $entityManager;
+    protected static $archiwebEntityManager;
+
+    /**
+     * @var EntityManager
+     */
+    protected static $patchesEntityManager;
 
     /**
      * @var Client
@@ -58,6 +63,8 @@ abstract class WebTestCase extends TestCase {
      */
     public static function setUpBeforeClass () {
 
+        echo "\n".get_called_class();
+
         parent::setUpBeforeClass();
 
         self::resetDatabase();
@@ -71,7 +78,7 @@ abstract class WebTestCase extends TestCase {
      */
     public static function resetDatabase () {
 
-        if (!isset(self::$entityManager)) {
+        if (!isset(self::$archiwebEntityManager)) {
 
             require static::getRootFolder() . '/doctrine/config.php';
 
@@ -79,38 +86,31 @@ abstract class WebTestCase extends TestCase {
              * @var EntityManager $entityManager
              */
 
-            self::$entityManager = $entityManager;
+            self::$archiwebEntityManager = $entityManager;
 
         }
 
-        $conn = self::$entityManager->getConnection();
+        if (!isset(self::$patchesEntityManager)) {
 
-        echo "Dropping databases\n";
+            require static::getRootFolder() . '/its/config.php';
 
-        $conn->beginTransaction();
+            /**
+             * @var EntityManager $entityManager
+             */
 
+            self::$patchesEntityManager = $entityManager;
 
-        $dbs = [
-            self::getConfig()['patchDb']['dbname'],
-            self::getConfig()['db']['dbname']
-        ];
-
-        foreach ($dbs as $db) {
-            foreach ([
-                         'DROP DATABASE ',
-                         'CREATE DATABASE ',
-                         'USE '
-                     ] as $run
-            ) {
-                $sql = $run.$db;
-                echo "exec '".$sql."'\n";
-                $conn->exec($sql);
-            }
         }
 
-        // Last DB will be the used one.
+        $archiwebConn = self::$archiwebEntityManager->getConnection();
+        $patchesConn = self::$patchesEntityManager->getConnection();
 
-        $conn->commit();
+        echo "\nDropping databases\n";
+
+        $archiwebConn->exec(sprintf('DROP DATABASE %1$s; CREATE DATABASE %1$s; USE %1$s;',
+                                    self::getConfig()['db']['dbname']));
+        $patchesConn->exec(sprintf('DROP DATABASE %1$s; CREATE DATABASE %1$s; USE %1$s;',
+                                   self::getConfig()['patchDb']['dbname']));
 
         echo "Dropped databases\n";
 
@@ -122,7 +122,7 @@ abstract class WebTestCase extends TestCase {
         foreach ($dirs as $dir) {
             echo "Executing migrations at '$dir'\n";
             chdir($dir);
-            echo exec('php doctrine.php m:m -n -vvv')."\n";
+            passthru('php doctrine.php m:m -n -q 1>/dev/null 2>&1');
         }
 
     }
@@ -155,24 +155,16 @@ abstract class WebTestCase extends TestCase {
 
         self::$cookies = CookieJar::fromArray(['XDEBUG_SESSION' => 'PHPSTORM'], 'localhost');
 
-        $wwwPath = static::getWWWPath();
+        $baseURL = ApplicationContext::getInstance()->getConfigManager()->getConfig()['APIBaseURL'];
+
         $config = [
-            'base_uri' => "http://localhost/{$wwwPath}/jsonrpc/",
+            'base_uri' => "{$baseURL}/jsonrpc/",
             'headers'  => [
                 'User-Agent' => ApplicationContext::UNIT_TESTS_USER_ARGENT
             ],
             'cookies'  => self::$cookies
         ];
         self::$client = new Client($config);
-
-    }
-
-    /**
-     * @return string
-     */
-    public static function getWWWPath () {
-
-        return 'api/core/www/run.php';
 
     }
 

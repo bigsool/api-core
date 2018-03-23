@@ -150,7 +150,12 @@ class ArrayExtra {
 
         }
 
-        if (array_key_exists($key,$result)) {
+        if ($key === '*') {
+            foreach ($result as $key => &$value) {
+                $newResult[$key] = &$value;
+            }
+        }
+        elseif (array_key_exists($key,$result)) {
             $newResult[$key] = $result[$key];
         }
         else {
