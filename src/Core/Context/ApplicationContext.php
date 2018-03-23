@@ -1160,8 +1160,9 @@ class ApplicationContext {
 
             try {
 
-                $memCacheHost = getEnv('MEMCACHED_HOST');
-                $memCachePort = getEnv('MEMCACHED_PORT');
+                // I cannot use the config because the config need the cache
+                $memCacheHost = getEnv('MEMCACHED_HOST') ?: '127.0.0.1';
+                $memCachePort = getEnv('MEMCACHED_PORT') ?: '11211';
 
                 if (class_exists('Memcached')) {
                     $memcached = new \Memcached();
