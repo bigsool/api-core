@@ -62,7 +62,17 @@ class Error {
      */
     public function getMessage () {
 
-        return $this->translator->trans($this->message);
+        $trans = $this->translator->trans($this->message);
+
+        if (empty($trans)) {
+            $fallback = $this->translator->getFallbackLocales()[0] ?? null;
+
+            if (!!$fallback) {
+                $trans = $this->translator->trans($this->message, [], null, $fallback);
+            } else $trans = $this->message;
+        }
+
+        return $trans;
 
     }
 
