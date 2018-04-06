@@ -169,6 +169,8 @@ class Application {
             // Scanning, loading
             // trade-off, if we change the config without clearing the cache, it will take up to 10m to be updated
             $cacheProvider->save($key, $languageCodes, 600);
+        } else {
+            $languageCodes = $translations;
         }
 
         $defaultLocale = 'en';
