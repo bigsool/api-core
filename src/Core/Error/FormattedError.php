@@ -17,11 +17,6 @@ class FormattedError extends \Exception {
     protected $message;
 
     /**
-     * @var string|null
-     */
-    protected $localizedMessage;
-
-    /**
      * @var string
      */
     protected $field;
@@ -136,7 +131,7 @@ class FormattedError extends \Exception {
             $childErrors[] = $childError->toArray();
         }
 
-        $result = ["code" => $this->code, "message" => $this->message];
+        $result = ["code" => $this->code, "message" => $this->message, 'localizedMessage' => $this->message];
 
         if ($this->field) {
             $result["field"] = $this->field;
@@ -146,20 +141,7 @@ class FormattedError extends \Exception {
             $result["errors"] = $childErrors;
         }
 
-        if ($this->localizedMessage) {
-            $result['localizedMessage'] = $this->localizedMessage;
-        }
-
         return $result;
-
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getLocalizedMessage () {
-
-        return $this->localizedMessage;
 
     }
 
