@@ -58,6 +58,14 @@ class Error {
     }
 
     /**
+     * @return null|string
+     */
+    public function getLocalizedMessage () {
+        $trans = $this->translator->trans($this->message);
+        return empty($trans) ? NULL : $trans;
+    }
+
+    /**
      * @return string
      */
     public function getMessage () {
