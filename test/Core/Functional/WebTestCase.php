@@ -73,6 +73,12 @@ abstract class WebTestCase extends TestCase {
 
     }
 
+    protected function setUp () {
+        parent::setUp();
+        self::createClient(); // reset connection status
+    }
+
+
     /**
      * @throws \Doctrine\DBAL\DBALException
      */
