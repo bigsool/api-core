@@ -87,7 +87,7 @@ class FormattedErrorTest extends TestCase {
         FormattedError::setLang("fr");
         $formattedError = new FormattedError($error);
         $this->assertEquals('login fail', $formattedError->getMessage());
-        $this->assertEquals('echec authentification', $formattedError->getLocalizedMessage());
+        $this->assertEquals('echec authentification', $formattedError->getMessage());
 
         FormattedError::setLang("en");
         $formattedError = new FormattedError($error);

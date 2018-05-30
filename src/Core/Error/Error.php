@@ -33,9 +33,10 @@ class Error {
     protected $parentCode;
 
     /**
-     * @param int    $code
+     * @param Translator $translator
+     * @param int $code
      * @param string $message
-     * @param int    $parentCode
+     * @param int $parentCode
      * @param string $field
      */
     public function __construct (Translator $translator, $code, $message, $parentCode = NULL, $field = NULL) {
@@ -55,14 +56,6 @@ class Error {
 
         return $this->code;
 
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getLocalizedMessage () {
-        $trans = $this->translator->trans($this->message);
-        return empty($trans) ? NULL : $trans;
     }
 
     /**

@@ -57,7 +57,6 @@ class FormattedError extends \Exception {
 
         $this->code = $error->getCode();
         $this->message = $error->getMessage();
-        $this->localizedMessage = $error->getLocalizedMessage();
         $this->field = $field ? $field : $error->getField();
 
     }

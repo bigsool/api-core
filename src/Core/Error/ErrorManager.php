@@ -30,13 +30,27 @@ class ErrorManager {
     }
 
     /**
+     * @param int $code the associated code, we don't need the constant pivot key
+     * @param string $message the untranslated message
+     * @param int|null $parentCode the parent code
+     * @param mixed|null $field
+     */
+    public function defineUntranslatableError(int $code, string $message, $parentCode = NULL, $field = NULL) {
+        if (isset($this->definedErrors[$code])) {
+            throw new \RuntimeException('already defined error ' . $code);
+        }
+
+        $translator = $this->appCtx->getTranslator();
+        $this->definedErrors[$code] = new UntranslatedError($translator, $code, $message, $parentCode, $field);
+    }
+
+    /**
      * @param string $message the constant pivot key, must be defined beforehand
      * @param int|null $parentCode the parent code
      * @param mixed|null $field
      * @throws \RuntimeException either if the given $message was not `define()`d before, or was already fed to defineError
      */
     public function defineError (string $message, $parentCode = NULL, $field = NULL) {
-
         if (!defined($message)) {
             throw new \RuntimeException(
                 sprintf('Exception "%s" is not defined as constant, but fed to ErrorManager->defineError', $message)
