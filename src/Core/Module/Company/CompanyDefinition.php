@@ -53,7 +53,10 @@ class CompanyDefinition extends ModuleEntityDefinition {
      */
     public function getFilters () {
 
-        return [new StringFilter('Company', 'CompanyForId', 'id = :id')];
+        return [
+            new StringFilter('Company', 'CompanyForId', 'id = :id'),
+            new StringFilter('Company', 'CompanyForOwner', 'owner = :owner_id')
+        ];
 
     }
 

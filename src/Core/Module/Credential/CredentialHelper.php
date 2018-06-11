@@ -4,6 +4,8 @@
 namespace Core\Module\Credential;
 
 
+use Core\Config\ConfigManager;
+use Core\Context\ApplicationContext;
 use Core\Context\FindQueryContext;
 use Core\Context\RequestContext;
 use Core\Error\ToResolveException;
@@ -46,9 +48,15 @@ class CredentialHelper {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
 
+        $ip = ApplicationContext::getInstance()->getConfigManager()->getConfig()['auth']['fakeIp'];
+
         $superUserCredential = static::credentialForLogin($superLogin);
         $superHash = sha1(implode('#', $logins) . $superUserCredential->getPassword() . $timestamp);
-        if ($superHash != (isset($authParams['hash']) ? $authParams['hash'] : '')) {
+        $superHashWithIP = sha1(implode('#', $logins) . $superUserCredential->getPassword() . $timestamp.$ip);
+        if (
+            $superHash != (isset($authParams['hash']) ? $authParams['hash'] : '')
+            && $superHashWithIP != (isset($authParams['hash']) ? $authParams['hash'] : '')
+        ) {
             throw new ToResolveException(ERROR_PERMISSION_DENIED);
         }
 
