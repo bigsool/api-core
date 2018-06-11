@@ -476,6 +476,11 @@ class ActionContext implements \ArrayAccess, \IteratorAggregate {
 
         $reqCtx = $this->getRequestContext();
 
+        // not 100% sure of this clone but that fix the erase of the initial
+        // returnedFields by calling callLocalV2API from V1
+        $reqCtx = clone $reqCtx;
+        //
+        
         $client = $reqCtx->getClientName() . '+' . $reqCtx->getClientVersion() . '+' . $reqCtx->getLocale();
 
         return $this->getApplicationContext()
