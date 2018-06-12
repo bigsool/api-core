@@ -5,8 +5,6 @@ namespace Core\Module\Client;
 
 
 use Core\Context\ApplicationContext;
-use Core\Context\FindQueryContext;
-use Core\Field\CalculatedField;
 use Core\Filter\Filter;
 use Core\Filter\StringFilter;
 use Core\Module\ModuleEntityDefinition;
@@ -58,23 +56,5 @@ class DeviceDefinition extends ModuleEntityDefinition {
         return [new StringFilter('Device', 'DeviceForUUID', 'UUID = :UUID')];
 
     }
-
-    /**
-     * @return \Core\Field\Calculated[]
-     */
-    public function getFields() {
-        return [
-            'state' => new CalculatedField(function ($id) {
-                $appCtx = ApplicationContext::getInstance();
-
-                $qryCtx = new FindQueryContext('DeviceCompanyState', $appCtx->getInitialRequestContext());
-                $qryCtx->addFilter('DeviceCompanyStateForDevice', $id);
-                $entity = $qryCtx->findOne(false);
-
-                echo $entity;
-            }, ['id'])
-        ];
-    }
-
 
 }
