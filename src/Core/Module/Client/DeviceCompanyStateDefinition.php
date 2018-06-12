@@ -24,7 +24,7 @@ class DeviceCompanyStateDefinition extends ModuleEntityDefinition {
 
     public function getFilters() {
         return [
-            new StringFilter('DeviceCompanyState', 'DeviceCompanyStateForDevice', 'device = :device_id')
+            new StringFilter('DeviceCompanyState', 'DeviceCompanyStateForDevice', 'device_id = :device_id')
         ];
     }
 

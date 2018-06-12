@@ -69,14 +69,9 @@ class DeviceDefinition extends ModuleEntityDefinition {
 
                 $qryCtx = new FindQueryContext('DeviceCompanyState', $appCtx->getInitialRequestContext());
                 $qryCtx->addFilter('DeviceCompanyStateForDevice', $id);
-                $entities = $qryCtx->findAll();
+                $entity = $qryCtx->findOne(false);
 
-                foreach ($entities as $entity) {
-                    $var = $entity->getFunctionality();
-                    echo $var;
-                }
-
-                echo $entities;
+                echo $entity;
             }, ['id'])
         ];
     }

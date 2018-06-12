@@ -111,7 +111,6 @@ class ModuleManager extends AbstractModuleManager {
         return [
             'Client',
             'Device',
-            'DeviceCompanyState',
         ];
 
     }
