@@ -108,6 +108,8 @@ class UserDefinition extends ModuleEntityDefinition {
                                                   new BinaryExpression(new EqualOperator(),
                                                                        new KeyPath('company.owner.id'),
                                                                        new KeyPath('id')))),
+
+            new StringFilter('User', 'UserForCredential', 'credential = :id'),
         ];
 
     }
